@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bhikadia.boilerplate">
+    package="one.thebox.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -18,10 +18,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
-        <!-- TODO change provider name-->
         <provider
             android:name=".data.AppContentProvider"
-            android:authorities="com.bhikadia.boilerplate.provider"
+            android:authorities="one.thebox.android.provider"
             android:enabled="true"
             android:exported="false" />
 

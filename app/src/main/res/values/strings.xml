@@ -1,10 +1,10 @@
 <resources>
     <!-- App strings-->
-    <string name="app_name">Boiler Plate</string>
+    <string name="app_name">The Box</string>
 
     <!-- Account Authenticator, Content Provider -->
-    <string name="account_type">com.bhikadia.boilerplate.account</string>
-    <string name="authority">com.bhikadia.boilerplate.provider</string>
+    <string name="account_type">one.thebox.android.account</string>
+    <string name="authority">one.thebox.android.provider</string>
     <string name="auth_token_type">User Access</string>
 
     <!-- Hello world-->
