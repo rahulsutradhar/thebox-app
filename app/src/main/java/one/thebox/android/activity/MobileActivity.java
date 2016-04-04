@@ -2,12 +2,18 @@ package one.thebox.android.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import one.thebox.android.R;
 
-public class MobileActivity extends AppCompatActivity {
+public class MobileActivity extends BaseActivity {
+
+    @Override
+    protected void onResume() {
+        verifyIfLoggedOut();
+        super.onResume();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
