@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import one.thebox.android.activity.LoginActivity;
+import one.thebox.android.activity.MobileActivity;
 
 /**
  * Created by harsh on 11/12/15.
@@ -52,7 +53,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
             return result;
         }
-        final Intent intent = new Intent(context, LoginActivity.class);
+        final Intent intent = new Intent(context, MobileActivity.class);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);

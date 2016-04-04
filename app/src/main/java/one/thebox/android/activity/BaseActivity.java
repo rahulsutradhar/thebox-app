@@ -44,7 +44,7 @@ public class BaseActivity extends AppCompatActivity {
 
             Toast.makeText(this, getString(R.string.logout_message), Toast.LENGTH_LONG).show();
 
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, MobileActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

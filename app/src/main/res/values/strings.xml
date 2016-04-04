@@ -20,4 +20,5 @@
 
     <!-- Message strings -->
     <string name="logout_message">You\'ve been signed out. Please sign in again!</string>
+    <string name="title_activity_mobile">MobileActivity</string>
 </resources>
