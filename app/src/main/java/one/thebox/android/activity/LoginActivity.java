@@ -1,20 +1,12 @@
 package one.thebox.android.activity;
 
-import android.accounts.Account;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-
 import one.thebox.android.R;
-import one.thebox.android.api.BaseApi;
-import one.thebox.android.api.RegisterApi;
 
-public class LoginActivity extends BaseActivity implements BaseApi.ApiListener {
-
-    ProgressDialog progressDialog;
+public class LoginActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
@@ -28,38 +20,12 @@ public class LoginActivity extends BaseActivity implements BaseApi.ApiListener {
         setContentView(R.layout.activity_login);
     }
 
-    public void register(View view){
-        progressDialog = ProgressDialog.show(LoginActivity.this,  "Please wait ...", "Registering ...", true );
-        progressDialog.setCancelable(false);
-
-        RegisterApi registerApi = new RegisterApi();
-        registerApi.setApiListener(this);
-        registerApi.call();
+    public void submitClicked(View view) {
+        Toast.makeText(this, "submit clicked", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onSuccessful() {
+    public void pickLocationClicked(View view) {
+        Toast.makeText(this, "location clicked", Toast.LENGTH_SHORT).show();
 
-    }
-
-    @Override
-    public void onError(String errorMessage) {
-        Toast.makeText(getApplicationContext(), "error : " + errorMessage, Toast.LENGTH_LONG).show();
-        progressDialog.dismiss();
-    }
-
-    @Override
-    public void onVolleyError(VolleyError error) {
-        Toast.makeText(getApplicationContext(), "Volley error", Toast.LENGTH_LONG).show();
-        progressDialog.dismiss();
-    }
-
-    @Override
-    public void onParsedData(Object object) {
-        Account account = (Account) object;
-        if(account != null){
-            progressDialog.dismiss();
-            verifyIfLoggedOut();
-        }
     }
 }

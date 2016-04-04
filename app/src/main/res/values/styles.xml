@@ -17,4 +17,10 @@
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>-->
     </style>
+
+    <style name="AppTheme.Green" parent="AppTheme">
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryDark">@color/green</item>
+        <item name="colorAccent">@color/white</item>
+    </style>
 </resources>
