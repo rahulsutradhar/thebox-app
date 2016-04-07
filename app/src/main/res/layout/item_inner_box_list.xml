@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/davy_grey" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="12dp"
+            android:text="Purifying Neem"
+            android:textColor="@color/dim_gray"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/product_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/product_name"
+            android:text="by Himalaya"
+            android:textColor="@color/dim_gray"
+            android:textSize="12dp" />
+
+        <TextView
+            android:id="@+id/quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/product_brand"
+            android:layout_marginTop="12dp"
+            android:text="55ml"
+            android:textColor="@color/black"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/change_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/quantity"
+            android:layout_alignTop="@+id/quantity"
+            android:layout_marginLeft="4dp"
+            android:layout_toEndOf="@+id/quantity"
+            android:layout_toRightOf="@+id/quantity"
+            android:gravity="center_vertical"
+            android:text="Change"
+            android:textColor="@color/brilliant_rose"
+            android:textSize="10dp" />
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/quantity"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/davy_grey"
+            android:id="@+id/android.support.v7.widget.RecyclerView" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:textColor="@color/black"
+            android:textSize="14dp"
+            android:layout_below="@+id/android.support.v7.widget.RecyclerView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginLeft="4dp"
+            android:background="@color/brilliant_rose"
+            android:layout_alignBottom="@+id/textView"
+            android:layout_toRightOf="@+id/textView"
+            android:layout_toEndOf="@+id/textView"
+            android:layout_alignTop="@+id/textView2"
+            android:id="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="5 Rs Saving"
+            android:textColor="@color/brilliant_rose"
+            android:textSize="10dp"
+            android:layout_alignTop="@+id/textView"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView"
+            android:layout_alignBottom="@+id/textView" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,21 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <color name="primary">#3F51B5</color>
-    <color name="primary_dark">#303F9F</color>
-    <color name="primary_light">#C5CAE9</color>
-    <color name="accent">#FF4081</color>
-    <color name="text">#FFFFFF</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
-    <color name="divide_color">#B6B6B6</color>
-    <color name="white">#ffffff</color>
-    <color name="manatee">#979797</color>
-    <color name="black">#000000</color>
-    <color name="timberwolf">#d8d8d8</color>
-    <color name="dim_gray">#646161</color>
-    <color name="brilliant_rose">#ff4da6</color>
-    <color name="neon_carrot">#ffa64d</color>
-    <color name="bistre">#323030</color>
-    <color name="cornflower_blue">#4da6ff</color>
-    <color name="green">#50E1C1</color>
+  <color name="primary">#3F51B5</color>
+  <color name="primary_dark">#303F9F</color>
+  <color name="primary_light">#C5CAE9</color>
+  <color name="accent">#FF4081</color>
+  <color name="text">#FFFFFF</color>
+  <color name="primary_text">#212121</color>
+  <color name="secondary_text">#727272</color>
+  <color name="divide_color">#B6B6B6</color>
+  <color name="white">#ffffff</color>
+  <color name="manatee">#979797</color>
+  <color name="black">#000000</color>
+  <color name="timberwolf">#d8d8d8</color>
+  <color name="dim_gray">#646161</color>
+  <color name="brilliant_rose">#ff4da6</color>
+  <color name="neon_carrot">#ffa64d</color>
+  <color name="bistre">#323030</color>
+  <color name="cornflower_blue">#4da6ff</color>
+  <color name="green">#50E1C1</color>
+  <color name="davy_grey">#575555</color>
+  <color name="medium_turquoise">#50e3c2</color>
+  <color name="red_orange">#ff4d4d</color>
 </resources>
+
