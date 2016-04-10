@@ -19,7 +19,6 @@
             android:backgroundTint="@color/neon_carrot"
             android:elevation="6dp"
             android:gravity="center_vertical"
-            android:theme="@style/BaseToolBar.Transparent"
             app:contentInsetEnd="6dp"
             app:contentInsetLeft="6dp"
             app:contentInsetRight="6dp"

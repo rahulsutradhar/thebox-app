@@ -13,6 +13,9 @@ import android.widget.Toast;
 import one.thebox.android.R;
 import one.thebox.android.fragment.HomeFragment;
 
+/**
+ * Created by Ajeet Kumar Meena on 8/10/15.
+ */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Toolbar toolbar;

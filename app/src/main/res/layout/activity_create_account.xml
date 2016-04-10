@@ -71,7 +71,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@color/green"
-                android:onClick="pickLocationClicked"
                 android:padding="8dp"
                 android:src="@drawable/ic_location_on_white_18dp"
                 android:tint="#FD4DA5" />
@@ -85,7 +84,6 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center|bottom"
         android:background="@drawable/button_green"
-        android:onClick="submitClicked"
         android:padding="16dp"
         android:text="Submit"
         android:textColor="@color/white" />

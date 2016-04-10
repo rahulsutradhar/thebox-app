@@ -19,8 +19,8 @@
     </style>
 
     <style name="AppTheme.Green" parent="AppTheme">
-        <item name="colorPrimary">@color/green</item>
-        <item name="colorPrimaryDark">@color/green</item>
+        <item name="colorPrimary">@color/manatee</item>
+        <item name="colorPrimaryDark">@color/manatee</item>
         <item name="colorAccent">@color/white</item>
     </style>
 </resources>
