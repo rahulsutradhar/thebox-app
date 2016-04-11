@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -7,14 +8,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import one.thebox.android.R;
 import one.thebox.android.fragment.Bills;
 import one.thebox.android.fragment.ExploreBoxes;
 import one.thebox.android.fragment.HomeFragment;
 import one.thebox.android.fragment.MyAccount;
-import one.thebox.android.fragment.MyBoxes;
+import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.MyOrders;
 
 /**
@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachMyBoxesFragment() {
-        MyBoxes fragment = new MyBoxes();
+        MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();

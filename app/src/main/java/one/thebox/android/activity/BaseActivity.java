@@ -15,12 +15,11 @@ import android.widget.Toast;
 
 import one.thebox.android.R;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.fragment.OnFragmentInteractionListener;
 
 /**
  * Created by harsh on 10/12/15.
  */
-abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, OnFragmentInteractionListener {
+abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
 
     boolean isLoginActivity = false;
     private Toolbar toolbar;
@@ -121,10 +120,5 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         int id = v.getId();
         onClick(id);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }
