@@ -4,14 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import one.thebox.android.R;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public   class LoginActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView signIn, createAccount, facebookButton, googleButton;
 
@@ -19,7 +18,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_social_login);
+        setContentView(R.layout.activity_login);
         initViews();
     }
 
@@ -41,14 +40,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
 
     @Override
-    public void onClick(View view) {
-        int id = view.getId();
+    void onClick(int id) {
         switch (id) {
             case R.id.sign_in: {
                 break;
             }
             case R.id.create_account: {
-                startActivity(new Intent(this,MobileNumberActivity.class));
+                startActivity(new Intent(this, MobileNumberActivity.class));
                 finish();
                 break;
             }
@@ -60,4 +58,5 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         }
     }
+
 }

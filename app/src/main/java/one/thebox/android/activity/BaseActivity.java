@@ -2,6 +2,8 @@ package one.thebox.android.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.SurfaceTexture;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,28 +15,29 @@ import android.widget.Toast;
 
 import one.thebox.android.R;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.OnFragmentInteractionListener;
 
 /**
  * Created by harsh on 10/12/15.
  */
-public class BaseActivity extends AppCompatActivity {
+abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener, OnFragmentInteractionListener {
 
     boolean isLoginActivity = false;
     private Toolbar toolbar;
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;
+    private boolean shouldHandleDrawer;
+
+    abstract void onClick(int id);
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
     }
 
-    // Verifying if user logged out and start MainActivity if not
     public void verifyIfLoggedOut() {
         isLoginActivity = true;
-
         boolean isLoggedIn = MyApplication.getInstance().getAccountUtil().hasAccount();
-
         if (isLoggedIn) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -50,7 +53,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -93,7 +95,9 @@ public class BaseActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-                finish();
+                if (!shouldHandleDrawer) {
+                    finish();
+                }
                 break;
             default:
                 break;
@@ -107,5 +111,20 @@ public class BaseActivity extends AppCompatActivity {
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+    }
+
+    public void shouldHandleDrawer() {
+        this.shouldHandleDrawer = true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        onClick(id);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

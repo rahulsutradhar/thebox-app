@@ -12,7 +12,7 @@ import one.thebox.android.R;
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
-public class OtpVerificationActivity extends AppCompatActivity implements View.OnClickListener {
+public class OtpVerificationActivity extends BaseActivity implements View.OnClickListener {
 
     EditText otpVerifictionEditText;
     TextView resendButton, noCodeButton, doneButton;
@@ -20,7 +20,7 @@ public class OtpVerificationActivity extends AppCompatActivity implements View.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otp_verification);
+        setContentView(R.layout.activity_otp);
         initViews();
     }
 
@@ -33,11 +33,10 @@ public class OtpVerificationActivity extends AppCompatActivity implements View.O
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
+    void onClick(int id) {
         switch (id) {
             case R.id.done_button: {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, SignUpActivity.class));
                 finish();
                 break;
             }

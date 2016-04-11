@@ -74,9 +74,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.SignUpActivity" />
         <activity android:name=".activity.CreateAccountActivity" />
-        <activity android:name=".activity.MobileNumberActivity" />
-        <activity android:name=".activity.OtpVerificationActivity"></activity>
+_        <activity android:name=".activity.MobileNumberActivity" />
+        <activity android:name=".activity.OtpVerificationActivity"/>
     </application>
 
 </manifest>
