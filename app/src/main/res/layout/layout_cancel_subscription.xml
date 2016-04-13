@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="You are saving 250 Rs per year"
+        android:textColor="@color/dim_gray"
+        android:textSize="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Plus your time which is invaluable"
+        android:textColor="@color/brilliant_rose" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="May be we can help"
+        android:textColor="@color/dim_gray" />
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Found a cheaper option"
+            android:textColor="@color/dim_gray" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Product is not finished"
+            android:textColor="@color/dim_gray" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Added a different option"
+            android:textColor="@color/dim_gray" />
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Did not find size i needed"
+            android:textColor="@color/dim_gray" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Need a different frequency"
+            android:textColor="@color/dim_gray" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Product is bad"
+            android:textColor="@color/dim_gray" />
+
+
+    </RadioGroup>
+
+</LinearLayout>

@@ -8,12 +8,12 @@ import java.util.ArrayList;
 public class Box {
 
     private ArrayList<SmartItem> smartItems;
-    private ArrayList<ExpandedListItem> expandedListItems;
+    private ArrayList<BoxItem> boxItems;
     private boolean isExpandedListVisible;
 
-    public Box(ArrayList<SmartItem> smartItems, ArrayList<ExpandedListItem> expandedListItems) {
+    public Box(ArrayList<SmartItem> smartItems, ArrayList<BoxItem> boxItems) {
         this.smartItems = smartItems;
-        this.expandedListItems = expandedListItems;
+        this.boxItems = boxItems;
     }
 
     public ArrayList<SmartItem> getSmartItems() {
@@ -28,7 +28,7 @@ public class Box {
 
     }
 
-    public static class ExpandedListItem {
+    public static class BoxItem {
 
     }
 
@@ -40,11 +40,11 @@ public class Box {
         isExpandedListVisible = expandedListVisible;
     }
 
-    public ArrayList<ExpandedListItem> getExpandedListItems() {
-        return expandedListItems;
+    public ArrayList<BoxItem> getBoxItems() {
+        return boxItems;
     }
 
-    public void setExpandedListItems(ArrayList<ExpandedListItem> expandedListItems) {
-        this.expandedListItems = expandedListItems;
+    public void setBoxItems(ArrayList<BoxItem> boxItems) {
+        this.boxItems = boxItems;
     }
 }

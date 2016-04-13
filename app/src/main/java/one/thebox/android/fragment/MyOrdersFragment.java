@@ -1,7 +1,6 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,12 +12,12 @@ import one.thebox.android.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ExploreBoxes.OnFragmentInteractionListener} interface
+ * {@link MyOrdersFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ExploreBoxes#newInstance} factory method to
+ * Use the {@link MyOrdersFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ExploreBoxes extends Fragment {
+public class MyOrdersFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,7 +27,7 @@ public class ExploreBoxes extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ExploreBoxes() {
+    public MyOrdersFragment() {
         // Required empty public constructor
     }
 
@@ -38,11 +37,11 @@ public class ExploreBoxes extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ExploreBoxes.
+     * @return A new instance of fragment MyOrdersFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ExploreBoxes newInstance(String param1, String param2) {
-        ExploreBoxes fragment = new ExploreBoxes();
+    public static MyOrdersFragment newInstance(String param1, String param2) {
+        MyOrdersFragment fragment = new MyOrdersFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -63,7 +62,7 @@ public class ExploreBoxes extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_explore_boxes, container, false);
+        return inflater.inflate(R.layout.fragment_my_orders, container, false);
     }
 
     @Override
@@ -75,5 +74,4 @@ public class ExploreBoxes extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
-
 }

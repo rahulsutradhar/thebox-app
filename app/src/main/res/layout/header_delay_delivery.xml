@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingRight="16dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Choose from upcoming delivery slots"
+        android:textColor="@color/dim_gray" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:text="Delivered to you every week"
+        android:textColor="@color/dim_gray" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Arriving in 3 days"
+        android:textColor="@color/brilliant_rose" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+
+        android:text="&quot;Combile deliveries to save cost&quot;"
+        android:textColor="@color/brilliant_rose" />
+
+    <View
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/manatee"/>
+
+</LinearLayout>

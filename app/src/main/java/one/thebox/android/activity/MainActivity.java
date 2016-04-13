@@ -1,29 +1,34 @@
 package one.thebox.android.activity;
 
-import android.net.Uri;
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import one.thebox.android.R;
-import one.thebox.android.fragment.Bills;
-import one.thebox.android.fragment.ExploreBoxes;
-import one.thebox.android.fragment.HomeFragment;
-import one.thebox.android.fragment.MyAccount;
+import one.thebox.android.fragment.BillsFragment;
+import one.thebox.android.fragment.ExploreBoxesFragment;
+import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
-import one.thebox.android.fragment.MyOrders;
+import one.thebox.android.fragment.MyOrdersFragment;
+import one.thebox.android.fragment.SearchResultFragment;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private ImageView searchResult;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         shouldHandleDrawer();
         initViews();
+        setupSearchView();
         setupNavigationDrawer();
         attachMyBoxesFragment();
     }
@@ -55,9 +61,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setTitle("My Boxes");
     }
 
+    private void setupSearchView() {
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
+    }
+
     private void initViews() {
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        searchResult = (ImageView) findViewById(R.id.button_search);
+        searchView = (SearchView) findViewById(R.id.search);
+        searchResult.setOnClickListener(this);
     }
 
     @Override
@@ -80,7 +96,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                setTitle("Bills");
+                setTitle("BillsFragment");
                 attachBillsFragment();
                 return true;
             case R.id.my_orders:
@@ -97,28 +113,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachExploreBoxes() {
-        ExploreBoxes fragment = new ExploreBoxes();
+        ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
     }
 
     private void attachMyOrders() {
-        MyOrders fragment = new MyOrders();
+        MyOrdersFragment fragment = new MyOrdersFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
     }
 
     private void attachBillsFragment() {
-        Bills fragment = new Bills();
+        BillsFragment fragment = new BillsFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
     }
 
     private void attachMyAccountFragment() {
-        MyAccount fragment = new MyAccount();
+        MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
@@ -133,6 +149,37 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     void onClick(int id) {
+        switch (id) {
+            case R.id.search: {
+                break;
+            }
+        }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        openSearchResultActivity(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        searchFor(newText);
+        return true;
+    }
+
+    private void searchFor(String newText) {
+        attachSearchResultFragment();
+    }
+
+    private void attachSearchResultFragment() {
+        SearchResultFragment fragment = new SearchResultFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.commit();
+    }
+
+    private void openSearchResultActivity(String query) {
 
     }
 }

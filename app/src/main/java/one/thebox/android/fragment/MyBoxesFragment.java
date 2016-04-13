@@ -1,7 +1,11 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,17 +13,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
+import one.thebox.android.Events.SwapEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
+import one.thebox.android.adapter.SwapAdapter;
 
 public class MyBoxesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private BottomSheetDialog bottomSheetDialog;
+    private SwapAdapter swapAdapter;
 
     private ArrayList<Box> boxes = new ArrayList<>();
 
@@ -41,14 +53,14 @@ public class MyBoxesFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         for (int i = 0; i < 5; i++) {
             ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
-            ArrayList<Box.ExpandedListItem> expandedListItems = new ArrayList<>();
+            ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
             for (int j = 0; j < 10; j++) {
                 smartItems.add(new Box.SmartItem());
-                expandedListItems.add(new Box.ExpandedListItem());
+                boxItems.add(new Box.BoxItem());
             }
-            boxes.add(new Box(smartItems,expandedListItems));
+            boxes.add(new Box(smartItems, boxItems));
         }
-        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), getChildFragmentManager());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
     }
@@ -63,6 +75,21 @@ public class MyBoxesFragment extends Fragment {
         if (getArguments() != null) {
 
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override

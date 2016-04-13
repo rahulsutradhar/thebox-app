@@ -3,36 +3,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true">
 
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_gravity="top"
-            android:background="@color/primary"
-            android:backgroundTint="@color/primary"
-            android:elevation="6dp"
-            android:gravity="center_vertical"
-            app:contentInsetEnd="6dp"
-            app:contentInsetLeft="6dp"
-            app:contentInsetRight="6dp"
-            app:contentInsetStart="6dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-        </FrameLayout>
-    </LinearLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_gravity="top"
+                android:background="@color/primary"
+                android:backgroundTint="@color/primary"
+                android:elevation="6dp"
+                android:gravity="center_vertical"
+                app:contentInsetEnd="6dp"
+                app:contentInsetLeft="6dp"
+                app:contentInsetRight="6dp"
+                app:contentInsetStart="6dp">
+
+                <ImageView
+                    android:id="@+id/button_search"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="right"
+                    android:background="@color/white"
+                    android:visibility="gone" />
+
+                <android.support.v7.widget.SearchView
+                    android:id="@+id/search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="center_vertical"
+                    app:theme="@style/SearchViewTheme" />
+
+            </android.support.v7.widget.Toolbar>
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
+        </LinearLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
