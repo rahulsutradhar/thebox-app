@@ -24,6 +24,7 @@ import java.util.List;
 
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.DeliverySlot;
+import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
 import one.thebox.android.fragment.SizeAndFrequencyFragment;
 import one.thebox.android.util.DisplayUtil;
@@ -340,15 +341,13 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
                     }
                 });
-                TabLayout tabLayout = (TabLayout) customView.findViewById(R.id.tabs);
-                ViewPager viewPager = (ViewPager) customView.findViewById(R.id.viewPager);
-                ViewPagerAdapter adapter = new ViewPagerAdapter(childFragmentManager);
-                adapter.addFragment(new SizeAndFrequencyFragment(), "Monthly");
-                adapter.addFragment(new SizeAndFrequencyFragment(), "Twice a Month");
-                adapter.addFragment(new SizeAndFrequencyFragment(), "Weekly");
-                viewPager.setAdapter(adapter);
-                tabLayout.setupWithViewPager(viewPager);
-                //viewPager.setVisibility(View.GONE);
+                RecyclerView recyclerView = (RecyclerView) customView.findViewById(R.id.recycler_view);
+                SizeAndFrequencyAdapter sizeAndFrequencyAdapter = new SizeAndFrequencyAdapter(mContext);
+                for (int i = 0; i < 10; i++) {
+                    sizeAndFrequencyAdapter.addSizeAndFrequency(new SizeAndFrequency());
+                }
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                recyclerView.setAdapter(sizeAndFrequencyAdapter);
                 dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                 dialog.show();
             }

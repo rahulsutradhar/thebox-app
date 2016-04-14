@@ -88,23 +88,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.closeDrawers();
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
+                searchView.setIconified(true);
                 setTitle("My Boxes");
                 attachMyBoxesFragment();
                 return true;
             case R.id.my_account:
+                searchView.setIconified(true);
                 setTitle("Account");
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
+                searchView.setIconified(true);
                 setTitle("BillsFragment");
                 attachBillsFragment();
                 return true;
             case R.id.my_orders:
+                searchView.setIconified(true);
                 setTitle("Orders");
                 attachMyOrders();
                 return true;
             case R.id.explore_boxes: {
-                setTitle("Explore");
+                setTitle("");
+                searchView.setIconified(false);
                 attachExploreBoxes();
                 return true;
             }

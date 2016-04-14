@@ -70,6 +70,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -86,7 +87,8 @@
         _
         <activity android:name=".activity.MobileNumberActivity" />
         <activity android:name=".activity.OtpVerificationActivity" />
-        <activity android:name=".activity.SearchResultActivity"></activity>
+        <activity android:name=".activity.SearchResultActivity" />
+        <activity android:name=".activity.ExploreItemDetailActivity"></activity>
     </application>
 
 </manifest>

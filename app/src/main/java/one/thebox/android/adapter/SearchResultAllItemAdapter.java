@@ -1,6 +1,9 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -8,6 +11,8 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
+import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.fragment.SearchResultFragment;
 
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
@@ -51,6 +56,7 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        itemViewHolder.setViews();
     }
 
     @Override
@@ -103,9 +109,16 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
             searchResultText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    attachSearchDetailFragment();
                 }
             });
+        }
+
+        private void attachSearchDetailFragment() {
+            SearchDetailFragment fragment = new SearchDetailFragment();
+            FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment);
+            fragmentTransaction.commit();
         }
     }
 }

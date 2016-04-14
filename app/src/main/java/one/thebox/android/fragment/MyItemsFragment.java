@@ -10,17 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import one.thebox.android.Models.Box;
-import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
-import one.thebox.android.adapter.MyBoxItemAdapter;
-import one.thebox.android.adapter.SearchResultAllItemAdapter;
+import one.thebox.android.adapter.SearchResultMyItemAdapter;
 
 
 public class MyItemsFragment extends Fragment {
 
     private View rootView;
     private RecyclerView recyclerView;
-    private MyBoxItemAdapter myBoxItemAdapter;
+    private SearchResultMyItemAdapter searchResultMyItemAdapter;
 
     public MyItemsFragment() {
     }
@@ -41,12 +39,12 @@ public class MyItemsFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        myBoxItemAdapter = new MyBoxItemAdapter(getActivity());
+        searchResultMyItemAdapter = new SearchResultMyItemAdapter(getActivity());
         for (int i = 0; i < 10; i++) {
-            myBoxItemAdapter.addBoxItem(new Box.BoxItem());
+            searchResultMyItemAdapter.addBoxItem(new Box.BoxItem());
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(myBoxItemAdapter);
+        recyclerView.setAdapter(searchResultMyItemAdapter);
     }
 
     private void initViews() {

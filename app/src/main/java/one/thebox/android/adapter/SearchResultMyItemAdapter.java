@@ -1,6 +1,8 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,16 +13,16 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.util.DisplayUtil;
 
-public class MyBoxItemAdapter extends BaseRecyclerAdapter {
+public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
 
     ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
 
-    public MyBoxItemAdapter(Context context, ArrayList<Box.BoxItem> boxItems) {
+    public SearchResultMyItemAdapter(Context context, ArrayList<Box.BoxItem> boxItems) {
         super(context);
         this.boxItems = boxItems;
     }
 
-    public MyBoxItemAdapter(Context context) {
+    public SearchResultMyItemAdapter(Context context) {
         super(context);
     }
 
@@ -99,15 +101,28 @@ public class MyBoxItemAdapter extends BaseRecyclerAdapter {
     }
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
-        private TextView adjustButton;
+
+        private RecyclerView recyclerView;
+        private MyBoxRecyclerAdapter.SmartItemAdapter smartItemAdapter;
+        private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            adjustButton = (TextView) itemView.findViewById(R.id.adjust);
+            recyclerView = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
+            setupRecyclerView();
         }
 
         public void setViews(Box.BoxItem boxItem) {
 
+        }
+
+        private void setupRecyclerView() {
+            for (int i = 0; i < 10; i++) {
+                smartItems.add(new Box.SmartItem());
+            }
+            smartItemAdapter = new MyBoxRecyclerAdapter.SmartItemAdapter(mContext, smartItems);
+            recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            recyclerView.setAdapter(smartItemAdapter);
         }
     }
 }

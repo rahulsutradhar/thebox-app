@@ -1,6 +1,7 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.view.menu.MenuView;
 import android.view.View;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
+import one.thebox.android.activity.ExploreItemDetailActivity;
 
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
@@ -18,6 +20,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
     public ExploreItemAdapter(Context context) {
         super(context);
+        mViewType = RECYCLER_VIEW_TYPE_HEADER;
     }
 
     public void addExploreItems(ExploreItem exploreItem) {
@@ -49,7 +52,8 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
-
+        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        itemViewHolder.setViewHolder();
     }
 
     @Override
@@ -84,8 +88,20 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
+        private View itemView;
+
         public ItemViewHolder(View itemView) {
             super(itemView);
+            this.itemView = itemView;
+        }
+
+        public void setViewHolder() {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class));
+                }
+            });
         }
     }
 
