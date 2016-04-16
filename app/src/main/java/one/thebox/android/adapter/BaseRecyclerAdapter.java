@@ -68,7 +68,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         } else if (getItemViewType(position) == RECYCLER_ADAPTER_HEADER) {
             onBindViewHeaderHolder((HeaderHolder) holder, position);
         } else {
-            onBindViewFooterHolder((FooterHolder) holder, position);
+            if (position != -1)
+                onBindViewFooterHolder((FooterHolder) holder, position);
         }
     }
 
@@ -84,7 +85,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
                 itemCount = getItemsCount();
                 break;
             case RECYCLER_VIEW_TYPE_FOOTER:
-                itemCount = getItemsCount() + 1;
+                itemCount = getItemsCount();
                 break;
             case RECYCLER_VIEW_TYPE_HEADER:
                 itemCount = getItemsCount() + 1;
@@ -111,7 +112,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
                     return RECYCLER_ADAPTER_ITEM;
                 }
             case RECYCLER_VIEW_TYPE_FOOTER:
-                if (position == getItemCount() -1 ) {
+                if (position == getItemCount() - 1) {
                     return RECYCLER_ADAPTER_FOOTER;
                 } else {
                     return RECYCLER_ADAPTER_ITEM;

@@ -24,9 +24,9 @@
         android:textSize="16sp" />
 
     <RadioGroup
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <RadioButton
@@ -56,85 +56,81 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/black_underline_edit_text"
+        android:padding="8dp"
         android:textColorHint="@color/dim_gray">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/black_underline_edit_text"
             android:hint="Label"
             android:inputType="text"
-            android:textColorHint="@color/dim_gray" />
+            android:padding="8dp"
+            android:textColor="@color/dim_gray" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/black_underline_edit_text"
+        android:padding="8dp"
         android:textColorHint="@color/dim_gray">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/black_underline_edit_text"
             android:hint="Label"
             android:inputType="text"
-            android:textColorHint="@color/dim_gray" />
+            android:padding="8dp"
+            android:textColor="@color/dim_gray" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/black_underline_edit_text"
+        android:padding="8dp"
         android:textColorHint="@color/dim_gray">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/black_underline_edit_text"
             android:hint="Label"
             android:inputType="text"
-            android:textColorHint="@color/dim_gray" />
+            android:padding="8dp"
+            android:textColor="@color/dim_gray" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/black_underline_edit_text"
+        android:padding="8dp"
         android:textColorHint="@color/dim_gray">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/black_underline_edit_text"
             android:hint="Label"
             android:inputType="text"
-            android:textColorHint="@color/dim_gray" />
+            android:padding="8dp"
+            android:textColor="@color/dim_gray" />
     </android.support.design.widget.TextInputLayout>
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="32dp"
-        android:paddingRight="32dp"
-        android:paddingLeft="32dp"
-        android:paddingTop="8dp"
         android:layout_gravity="center_horizontal"
+        android:layout_margin="32dp"
+        android:background="@drawable/grey_borders"
         android:paddingBottom="8dp"
-        android:textSize="16sp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="8dp"
         android:text="Add"
         android:textColor="@color/dim_gray"
-        android:background="@drawable/grey_borders" />
+        android:textSize="16sp" />
 
 
 </LinearLayout>
