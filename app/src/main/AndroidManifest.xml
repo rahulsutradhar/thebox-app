@@ -88,7 +88,8 @@
         <activity android:name=".activity.MobileNumberActivity" />
         <activity android:name=".activity.OtpVerificationActivity" />
         <activity android:name=".activity.SearchResultActivity" />
-        <activity android:name=".activity.ExploreItemDetailActivity"></activity>
+        <activity android:name=".activity.ExploreItemDetailActivity" />
+        <activity android:name=".activity.ConfirmDetailsActivity"></activity>
     </application>
 
 </manifest>

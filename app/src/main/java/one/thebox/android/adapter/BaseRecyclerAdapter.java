@@ -78,16 +78,25 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
+        int itemCount;
         switch (mViewType) {
             case RECYCLER_VIEW_TYPE_NORMAL:
-                return getItemsCount();
+                itemCount = getItemsCount();
+                break;
             case RECYCLER_VIEW_TYPE_FOOTER:
+                itemCount = getItemsCount() + 1;
+                break;
             case RECYCLER_VIEW_TYPE_HEADER:
-                return getItemsCount() + 1;
+                itemCount = getItemsCount() + 1;
+                break;
             case RECYCLER_VIEW_TYPE_HEADER_FOOTER:
-                return getItemsCount() + 2;
+                itemCount = getItemsCount() + 2;
+                break;
+            default:
+                itemCount = getItemsCount() + 2;
+                break;
         }
-        return getItemsCount();
+        return itemCount;
     }
 
     @Override
@@ -102,8 +111,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
                     return RECYCLER_ADAPTER_ITEM;
                 }
             case RECYCLER_VIEW_TYPE_FOOTER:
-                if (position == getItemCount() - 1) {
-                    return RECYCLER_ADAPTER_HEADER;
+                if (position == getItemCount() -1 ) {
+                    return RECYCLER_ADAPTER_FOOTER;
                 } else {
                     return RECYCLER_ADAPTER_ITEM;
                 }
