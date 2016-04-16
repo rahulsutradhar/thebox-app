@@ -21,7 +21,7 @@
         app:contentInsetRight="6dp"
         app:contentInsetStart="6dp" />
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -31,19 +31,18 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view_"
+                android:id="@+id/recycler_view_payment_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
+                android:id="@+id/recycler_view_delivery_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-
-
         </LinearLayout>
-    </ScrollView>
+
+    </android.support.v4.widget.NestedScrollView>
 
 
     <TextView

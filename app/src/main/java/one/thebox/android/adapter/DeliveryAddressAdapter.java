@@ -6,6 +6,7 @@ import android.view.View;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Address;
+import one.thebox.android.R;
 
 /**
  * Created by Ajeet Kumar Meena on 15-04-2016.
@@ -33,12 +34,12 @@ public class DeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected ItemHolder getItemHolder(View view) {
-        return null;
+        return new ItemViewHolder(view);
     }
 
     @Override
     protected HeaderHolder getHeaderHolder(View view) {
-        return null;
+        return new HeaderViewHolder(view);
     }
 
     @Override
@@ -63,17 +64,17 @@ public class DeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return 0;
+        return addresses.size();
     }
 
     @Override
     protected int getItemLayoutId() {
-        return 0;
+        return R.layout.item_delivery_address;
     }
 
     @Override
     protected int getHeaderLayoutId() {
-        return 0;
+        return R.layout.header_delivery_address;
     }
 
     @Override
