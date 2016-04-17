@@ -3,8 +3,6 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -12,7 +10,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Address;
-import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.R;
 
 /**
@@ -134,12 +131,12 @@ public class ChangeAddressAdapter extends BaseRecyclerAdapter {
     }
 
     class FooterViewHolder extends FooterHolder {
-        private TextView createNewButton;
+        private TextView editAddressButton;
 
         public FooterViewHolder(View itemView) {
             super(itemView);
-            createNewButton = (TextView) itemView.findViewById(R.id.create_new_button);
-            createNewButton.setOnClickListener(new View.OnClickListener() {
+            editAddressButton = (TextView) itemView.findViewById(R.id.create_new_button);
+            editAddressButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     openAddAddressBottomSheet();

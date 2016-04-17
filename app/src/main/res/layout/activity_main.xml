@@ -33,7 +33,7 @@
                 app:contentInsetStart="6dp">
 
                 <ImageView
-                    android:id="@+id/button_search"
+                    android:id="@+id/button_special_action"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_gravity="right"

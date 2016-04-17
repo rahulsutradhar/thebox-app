@@ -23,7 +23,8 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,7 +92,8 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:buttonTint="@color/dim_gray"
-                    android:text="I want different addresses for my orders"
+                    android:checked="false"
+                    android:text="I want different timeslots for my orders"
                     android:textColor="@color/dim_gray" />
 
             </LinearLayout>
@@ -100,11 +102,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <Spinner
+                <TextView
+                    android:id="@+id/button_select_time_slot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spinner"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/curve_grey_border"
+                    android:padding="16dp"
+                    android:text="7:30 - 9:00, 13 Feb, Wednesday"
+                    android:textColor="@color/dim_gray" />
 
             </FrameLayout>
 
@@ -121,7 +128,7 @@
         android:background="@color/primary"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:text="Select and Pay"
+        android:text="Proceed to Payment"
         android:textColor="@color/white"
         android:visibility="visible" />
 

@@ -2,6 +2,7 @@ package one.thebox.android.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -27,7 +28,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    private ImageView searchResult;
+    private ImageView buttonSpecialAction;
     private SearchView searchView;
 
     @Override
@@ -71,9 +72,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void initViews() {
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        searchResult = (ImageView) findViewById(R.id.button_search);
+        buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
         searchView = (SearchView) findViewById(R.id.search);
-        searchResult.setOnClickListener(this);
+        buttonSpecialAction.setOnClickListener(this);
     }
 
     @Override
@@ -89,26 +90,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
                 searchView.setIconified(true);
+                buttonSpecialAction.setVisibility(View.GONE);
+                buttonSpecialAction.setOnClickListener(null);
+                searchView.setVisibility(View.VISIBLE);
                 setTitle("My Boxes");
                 attachMyBoxesFragment();
                 return true;
             case R.id.my_account:
                 searchView.setIconified(true);
+                buttonSpecialAction.setVisibility(View.VISIBLE);
+                searchView.setVisibility(View.GONE);
+                buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(MainActivity.this,UpdateProfileActivity.class));
+                    }
+                });
                 setTitle("Account");
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
                 searchView.setIconified(true);
+                buttonSpecialAction.setVisibility(View.GONE);
+                buttonSpecialAction.setOnClickListener(null);
+                searchView.setVisibility(View.VISIBLE);
                 setTitle("BillsFragment");
                 attachBillsFragment();
                 return true;
             case R.id.my_orders:
                 searchView.setIconified(true);
+                buttonSpecialAction.setVisibility(View.GONE);
+                searchView.setVisibility(View.VISIBLE);
+                buttonSpecialAction.setOnClickListener(null);
                 setTitle("Orders");
                 attachMyOrders();
                 return true;
             case R.id.explore_boxes: {
                 setTitle("");
+                buttonSpecialAction.setVisibility(View.GONE);
+                searchView.setVisibility(View.VISIBLE);
+                buttonSpecialAction.setOnClickListener(null);
                 searchView.setIconified(false);
                 attachExploreBoxes();
                 return true;

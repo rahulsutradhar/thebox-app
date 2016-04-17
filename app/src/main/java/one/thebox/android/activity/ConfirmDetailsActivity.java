@@ -25,6 +25,7 @@ public class ConfirmDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_details);
+        setTitle("Confirm Details Activity");
         initViews();
         setupRecyclerAdapter();
     }

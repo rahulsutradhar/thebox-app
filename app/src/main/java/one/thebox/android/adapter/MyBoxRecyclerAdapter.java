@@ -331,7 +331,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         private void openChangeSizeDialog() {
             MaterialDialog dialog = new MaterialDialog.Builder(mContext)
                     .title("Change Size and Frequency")
-                    .customView(R.layout.layout_change_size_and_frequency, true)
+                    .customView(R.layout.layout_change_size_and_frequency, false)
                     .build();
             View customView = dialog.getCustomView();
             if (customView != null) {
@@ -341,6 +341,40 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
                     }
                 });
+                final int colorDimGray = mContext.getResources().getColor(R.color.dim_gray);
+                final int colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
+                final TextView buttonMonthly = (TextView) customView.findViewById(R.id.button_monthly);
+                final TextView buttonTwiceAMonth = (TextView) customView.findViewById(R.id.button_twice_a_month);
+                final TextView buttonWeekly = (TextView) customView.findViewById(R.id.button_weekly);
+                View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int id = v.getId();
+                        switch (id) {
+                            case R.id.button_monthly: {
+                                buttonMonthly.setTextColor(colorRose);
+                                buttonTwiceAMonth.setTextColor(colorDimGray);
+                                buttonWeekly.setTextColor(colorDimGray);
+                                break;
+                            }
+                            case R.id.button_twice_a_month: {
+                                buttonMonthly.setTextColor(colorDimGray);
+                                buttonTwiceAMonth.setTextColor(colorRose);
+                                buttonWeekly.setTextColor(colorDimGray);
+                                break;
+                            }
+                            case R.id.button_weekly: {
+                                buttonMonthly.setTextColor(colorDimGray);
+                                buttonTwiceAMonth.setTextColor(colorDimGray);
+                                buttonWeekly.setTextColor(colorRose);
+                                break;
+                            }
+                        }
+                    }
+                };
+                buttonMonthly.setOnClickListener(onClickListener);
+                buttonTwiceAMonth.setOnClickListener(onClickListener);
+                buttonWeekly.setOnClickListener(onClickListener);
                 RecyclerView recyclerView = (RecyclerView) customView.findViewById(R.id.recycler_view);
                 SizeAndFrequencyAdapter sizeAndFrequencyAdapter = new SizeAndFrequencyAdapter(mContext);
                 for (int i = 0; i < 10; i++) {

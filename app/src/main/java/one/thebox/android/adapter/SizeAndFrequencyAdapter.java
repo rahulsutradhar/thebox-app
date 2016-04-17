@@ -2,6 +2,7 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -48,8 +49,22 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, int position) {
-
+    public void onBindViewItemHolder(ItemHolder holder, final int position) {
+        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sizeAndFrequencies.get(position).setSelected(true);
+                notifyItemChanged(position);
+                for (int i = 0; i < sizeAndFrequencies.size(); i++) {
+                    if (sizeAndFrequencies.get(i).isSelected() && i != position) {
+                        sizeAndFrequencies.get(i).setSelected(false);
+                        notifyItemChanged(i);
+                    }
+                }
+            }
+        });
+        itemViewHolder.setViewHolder(sizeAndFrequencies.get(position));
     }
 
     @Override
@@ -84,8 +99,26 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
+        private TextView sizeTextView;
+        private TextView costTextView;
+        private int colorDimGray, colorRose;
+
         public ItemViewHolder(View itemView) {
             super(itemView);
+            sizeTextView = (TextView) itemView.findViewById(R.id.size_text_view);
+            costTextView = (TextView) itemView.findViewById(R.id.cost_text_view);
+            colorDimGray = mContext.getResources().getColor(R.color.dim_gray);
+            colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
+        }
+
+        public void setViewHolder(SizeAndFrequency sizeAndFrequency) {
+            if (sizeAndFrequency.isSelected()) {
+                sizeTextView.setTextColor(colorRose);
+                costTextView.setTextColor(colorRose);
+            } else {
+                sizeTextView.setTextColor(colorDimGray);
+                costTextView.setTextColor(colorDimGray);
+            }
         }
     }
 }
