@@ -9,8 +9,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import one.thebox.android.R;
@@ -29,7 +32,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
-    private SearchView searchView;
+    private EditText searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,23 +63,37 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         actionBarDrawerToggle.syncState();
         navigationView.setCheckedItem(R.id.explore_boxes);
         setTitle("Explore Boxes");
-        searchView.setIconified(false);
+        searchView.setVisibility(View.VISIBLE);
 
     }
 
     private void setupSearchView() {
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(this);
     }
 
     private void initViews() {
+        searchView = (EditText) findViewById(R.id.search);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
-        searchView = (SearchView) findViewById(R.id.search);
         buttonSpecialAction.setOnClickListener(this);
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                attachSearchResultFragment();
+            }
+        });
     }
 
     @Override
@@ -91,7 +108,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.closeDrawers();
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
-                searchView.setIconified(true);
+                searchView.setVisibility(View.GONE);
                 buttonSpecialAction.setVisibility(View.GONE);
                 buttonSpecialAction.setOnClickListener(null);
                 searchView.setVisibility(View.VISIBLE);
@@ -99,7 +116,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 attachMyBoxesFragment();
                 return true;
             case R.id.my_account:
-                searchView.setIconified(true);
+                searchView.setVisibility(View.GONE);
                 buttonSpecialAction.setVisibility(View.VISIBLE);
                 searchView.setVisibility(View.GONE);
                 buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +129,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                searchView.setIconified(true);
+                searchView.setVisibility(View.GONE);
                 buttonSpecialAction.setVisibility(View.GONE);
                 buttonSpecialAction.setOnClickListener(null);
                 searchView.setVisibility(View.VISIBLE);
@@ -125,7 +142,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 buttonSpecialAction.setVisibility(View.GONE);
                 searchView.setVisibility(View.VISIBLE);
                 buttonSpecialAction.setOnClickListener(null);
-                searchView.setIconified(false);
+                searchView.setVisibility(View.VISIBLE);
                 setTitle("Explore Boxes");
                 attachExploreBoxes();
                 return true;
@@ -198,7 +215,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if(getActiveFragmentTag()==null || !getActiveFragmentTag().equals("Explore Boxes")) {
             SearchResultFragment fragment = new SearchResultFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment,"Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.add(R.id.frame, fragment,"Search Result").addToBackStack("Explore Boxes");
             fragmentTransaction.commit();
         }
     }

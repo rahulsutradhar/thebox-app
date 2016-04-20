@@ -79,7 +79,7 @@
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
@@ -90,11 +90,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
 
             </intent-filter>
         </activity>
-        <activity android:name=".activity.FillUserInfoActivity" />
         <activity android:name=".activity.FillUserInfoActivity" />
         _
         <activity android:name=".activity.MobileNumberActivity" />

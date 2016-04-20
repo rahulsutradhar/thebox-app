@@ -52,12 +52,19 @@
 
                 </android.support.v7.widget.Toolbar>
 
-                <android.support.v7.widget.SearchView
+                <EditText
                     android:id="@+id/search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
-                    android:padding="8dp"
+                    android:padding="10dp"
+                    android:hint="Search"
+                    android:textColorHint="@color/manatee"
+                    android:textColor="@color/dim_gray"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:background="@drawable/search_view_backgroung"
                     android:gravity="center_vertical"
                     app:theme="@style/SearchViewTheme" />
 
