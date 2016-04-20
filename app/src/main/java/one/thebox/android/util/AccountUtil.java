@@ -82,7 +82,7 @@ public class AccountUtil {
         accountManager.addAccountExplicitly(account, "", null);
         accountManager.setAuthToken(account, context.getString(R.string.auth_token_type), token);
 
-        MyApplication.getInstance().getSyncUtil().setSyncSettings();
+       // MyApplication.getInstance().getSyncUtil().setSyncSettings();
         return account;
     }
 

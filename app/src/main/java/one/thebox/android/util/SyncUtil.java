@@ -23,7 +23,7 @@ public class SyncUtil {
     }
 
     public void setSyncSettings() {
-        Account account = MyApplication.getInstance().getAccountUtil().getAccount();
-        ContentResolver.setSyncAutomatically(account, context.getString(R.string.authority), true);
+        //Account account = MyApplication.getInstance().getAccountUtil().getAccount();
+      //  ContentResolver.setSyncAutomatically(account, context.getString(R.string.authority), true);
     }
 }

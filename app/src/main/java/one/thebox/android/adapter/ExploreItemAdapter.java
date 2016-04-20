@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.view.menu.MenuView;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -20,7 +23,6 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
     public ExploreItemAdapter(Context context) {
         super(context);
-        mViewType = RECYCLER_VIEW_TYPE_HEADER;
     }
 
     public void addExploreItems(ExploreItem exploreItem) {
@@ -53,7 +55,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViewHolder();
+        itemViewHolder.setViewHolder(exploreItems.get(position));
     }
 
     @Override
@@ -89,19 +91,22 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
     class ItemViewHolder extends ItemHolder {
 
         private View itemView;
+        private ImageView imageView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
+            imageView = (ImageView) itemView.findViewById(R.id.image_view);
         }
 
-        public void setViewHolder() {
+        public void setViewHolder(ExploreItem exploreItem) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class));
                 }
             });
+            Picasso.with(mContext).load("http://media.thedenverchannel.com/photo/2015/11/17/products%20image%20for%20grocery%20delivery_1447824686293_27027613_ver1.0.png").into(imageView);
         }
     }
 

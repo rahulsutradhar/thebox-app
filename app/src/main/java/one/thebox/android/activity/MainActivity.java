@@ -39,7 +39,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initViews();
         setupSearchView();
         setupNavigationDrawer();
-        attachMyBoxesFragment();
+        attachExploreBoxes();
     }
 
     private void setupNavigationDrawer() {
@@ -58,8 +58,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-        navigationView.setCheckedItem(R.id.my_boxes);
-        setTitle("My Boxes");
+        navigationView.setCheckedItem(R.id.explore_boxes);
+        setTitle("Explore Boxes");
+        searchView.setIconified(false);
+
     }
 
     private void setupSearchView() {
@@ -117,20 +119,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 setTitle("BillsFragment");
                 attachBillsFragment();
                 return true;
-            case R.id.my_orders:
-                searchView.setIconified(true);
-                buttonSpecialAction.setVisibility(View.GONE);
-                searchView.setVisibility(View.VISIBLE);
-                buttonSpecialAction.setOnClickListener(null);
-                setTitle("Orders");
-                attachMyOrders();
-                return true;
+
             case R.id.explore_boxes: {
                 setTitle("");
                 buttonSpecialAction.setVisibility(View.GONE);
                 searchView.setVisibility(View.VISIBLE);
                 buttonSpecialAction.setOnClickListener(null);
                 searchView.setIconified(false);
+                setTitle("Explore Boxes");
                 attachExploreBoxes();
                 return true;
             }
@@ -141,35 +137,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void attachExploreBoxes() {
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment,"Explore Boxes");
         fragmentTransaction.commit();
     }
 
     private void attachMyOrders() {
         MyOrdersFragment fragment = new MyOrdersFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment,"My Orders");
         fragmentTransaction.commit();
     }
 
     private void attachBillsFragment() {
         BillsFragment fragment = new BillsFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
     }
 
     private void attachMyAccountFragment() {
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment, "My Account");
         fragmentTransaction.commit();
     }
 
     private void attachMyBoxesFragment() {
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
         fragmentTransaction.commit();
     }
 
@@ -199,13 +195,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachSearchResultFragment() {
-        SearchResultFragment fragment = new SearchResultFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
-        fragmentTransaction.commit();
+        if(getActiveFragmentTag()==null || !getActiveFragmentTag().equals("Explore Boxes")) {
+            SearchResultFragment fragment = new SearchResultFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment,"Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.commit();
+        }
     }
 
     private void openSearchResultActivity(String query) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public String getActiveFragmentTag() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            return null;
+        }
+        return getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
     }
 }

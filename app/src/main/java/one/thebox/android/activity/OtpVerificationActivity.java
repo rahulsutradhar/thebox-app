@@ -1,45 +1,177 @@
 package one.thebox.android.activity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.R;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
+import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.SignUpRequestBody;
+import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.app.MyApplication;
+import permissions.dispatcher.RuntimePermissions;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
 public class OtpVerificationActivity extends BaseActivity implements View.OnClickListener {
 
-    EditText otpVerifictionEditText;
-    TextView resendButton, noCodeButton, doneButton;
+    EditText otpVerificationEditText;
+    TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
+    String phoneNumber;
+    private int otp;
+    private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
+    private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
+    private boolean isSignUpActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp);
+        initVariables();
         initViews();
     }
 
+    private void initVariables() {
+        phoneNumber = getIntent().getStringExtra(EXTRA_PHONE_NUMBER);
+        isSignUpActivity = getIntent().getBooleanExtra(EXTRA_IS_SIGN_UP_ACTIVITY, false);
+    }
+
+    public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
+        return new Intent(context, OtpVerificationActivity.class)
+                .putExtra(EXTRA_PHONE_NUMBER, "+91" + phoneNumber)
+                .putExtra(EXTRA_IS_SIGN_UP_ACTIVITY, isSignUpActivity);
+
+    }
+
     private void initViews() {
-        otpVerifictionEditText = (EditText) findViewById(R.id.otp_number_edit_text);
+        otpVerificationEditText = (EditText) findViewById(R.id.edit_text_mobile_number);
         resendButton = (TextView) findViewById(R.id.button_resend);
         noCodeButton = (TextView) findViewById(R.id.button_no_code);
         doneButton = (TextView) findViewById(R.id.done_button);
+        toPhoneNumberTextView = (TextView) findViewById(R.id.text_view_to_phone_number);
+        resendButton.setOnClickListener(this);
         doneButton.setOnClickListener(this);
+        toPhoneNumberTextView.setText("to " + phoneNumber);
+    }
+
+    @Subscribe
+    public void onSmsEvent(SmsEvent smsEvent) {
+        if (smsEvent.getMessage().contains("awesome")) {
+            String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
+            otp = Integer.parseInt(otpString);
+            final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+            MyApplication.getAPIService().verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp))).enqueue(new Callback<ApiResponse>() {
+                @Override
+                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    dialog.dismiss();
+                    startActivity(new Intent(OtpVerificationActivity.this, SignUpActivity.class));
+                    finish();
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    dialog.dismiss();
+                }
+            });
+        }
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
     void onClick(int id) {
         switch (id) {
             case R.id.done_button: {
-                startActivity(new Intent(this, SignUpActivity.class));
-                finish();
+                if (isValidOtp()) {
+                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService()
+                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
+                            .enqueue(new Callback<UserSignInSignUpResponse>() {
+                                @Override
+                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                                    if(response.body()!=null){
+                                        Toast.makeText(OtpVerificationActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+
+                                }
+                            });
+                }
                 break;
             }
+
+            case R.id.button_resend: {
+                if (isSignUpActivity) {
+                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber))).enqueue(new Callback<ApiResponse>() {
+                        @Override
+                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                            dialog.dismiss();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ApiResponse> call, Throwable t) {
+                            dialog.dismiss();
+                        }
+                    });
+                } else {
+                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService()
+                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
+                            .enqueue(new Callback<UserSignInSignUpResponse>() {
+                                @Override
+                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                                    if(response.body()!=null){
+                                        Toast.makeText(OtpVerificationActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+
+                                }
+                            });
+                }
+            }
         }
+    }
+
+    public boolean isValidOtp() {
+        if (otpVerificationEditText.getText().toString().isEmpty()) {
+            otpVerificationEditText.setError("Otp could not be empty");
+            return false;
+        }
+        otp = Integer.parseInt(otpVerificationEditText.getText().toString());
+        return true;
     }
 }

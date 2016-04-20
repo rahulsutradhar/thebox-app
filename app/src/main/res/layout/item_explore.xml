@@ -12,6 +12,7 @@
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="146dp"
+        android:scaleType="centerCrop"
         android:background="@color/white" />
 
     <LinearLayout
@@ -38,7 +39,7 @@
                 android:layout_marginRight="4dp"
                 android:text="Shahnaz Beauty Box"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/box_creator"
@@ -46,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="by shahnaz khan"
                 android:textColor="@color/white"
-                android:textSize="10dp" />
+                android:textSize="14dp" />
 
         </LinearLayout>
 
@@ -66,7 +67,7 @@
                 android:layout_weight="1"
                 android:text="Nutrigrain biscuits, Eat Natural bar..."
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/number_of_item"
@@ -74,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:text="6 items"
                 android:textColor="@color/white"
-                android:textSize="10dp" />
+                android:textSize="14dp" />
 
         </LinearLayout>
 

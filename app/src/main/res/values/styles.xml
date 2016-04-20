@@ -8,6 +8,7 @@
         <item name="md_positive_color">@color/brilliant_rose</item>
         <item name="md_negative_color">@color/dim_gray</item>
         <item name="md_content_color">@color/dim_gray</item>
+        <item name="android:windowContentOverlay">@null</item>
 
     </style>
 

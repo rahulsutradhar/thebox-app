@@ -41,7 +41,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        MyApplication.getInstance().clearUserData(db);
+      //  MyApplication.getInstance().clearUserData(db);
     }
 
     public void dropAllTables(SQLiteDatabase db) {

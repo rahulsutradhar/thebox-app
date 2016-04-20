@@ -34,16 +34,6 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
         super.onPostResume();
     }
 
-    public void verifyIfLoggedOut() {
-        isLoginActivity = true;
-        boolean isLoggedIn = MyApplication.getInstance().getAccountUtil().hasAccount();
-        if (isLoggedIn) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-        }
-    }
-
 
     public Toolbar getToolbar() {
         return toolbar;

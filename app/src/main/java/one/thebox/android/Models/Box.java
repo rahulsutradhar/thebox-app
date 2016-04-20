@@ -29,7 +29,33 @@ public class Box {
     }
 
     public static class BoxItem {
+        int size;
+        int frequency;
+        int noOfItemsSelected;
 
+        public int getNoOfItemsSelected() {
+            return noOfItemsSelected;
+        }
+
+        public void setNoOfItemsSelected(int noOfItemsSelected) {
+            this.noOfItemsSelected = noOfItemsSelected;
+        }
+
+        public int getFrequency() {
+            return frequency;
+        }
+
+        public void setFrequency(int frequency) {
+            this.frequency = frequency;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
     }
 
     public boolean isExpandedListVisible() {

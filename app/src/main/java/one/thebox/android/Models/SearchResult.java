@@ -5,6 +5,14 @@ package one.thebox.android.Models;
  */
 public class SearchResult {
     public static class SearchSuggestion{
+        private boolean isSelected;
 
+        public boolean isSelected() {
+            return isSelected;
+        }
+
+        public void setSelected(boolean selected) {
+            isSelected = selected;
+        }
     }
 }

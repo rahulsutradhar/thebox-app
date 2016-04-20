@@ -7,9 +7,11 @@ import android.support.v7.widget.RecyclerView;
 
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.adapter.SearchDetailAdapter;
+import one.thebox.android.adapter.SearchSuggestionAdapter;
 
 public class ExploreItemDetailActivity extends BaseActivity {
 
