@@ -94,8 +94,8 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".activity.CreateAccountActivity" />
-        <activity android:name=".activity.CreateAccountActivity" />
+        <activity android:name=".activity.FillUserInfoActivity" />
+        <activity android:name=".activity.FillUserInfoActivity" />
         _
         <activity android:name=".activity.MobileNumberActivity" />
         <activity android:name=".activity.OtpVerificationActivity" />

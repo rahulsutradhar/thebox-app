@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import one.thebox.android.R;
 
-public class CreateAccountActivity extends AppCompatActivity implements View.OnClickListener {
+public class FillUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button submitButton;
     private EditText nameEditText, nameEmail, localityEditText;

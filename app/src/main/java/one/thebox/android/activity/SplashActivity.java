@@ -28,8 +28,8 @@ public class SplashActivity extends AppCompatActivity {
                 if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
                     startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
                 } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, CreateAccountActivity.class));
-                } else if(!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
+                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+                } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 }
                 finish();

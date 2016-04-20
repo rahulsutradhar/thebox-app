@@ -13,12 +13,12 @@ import retrofit2.http.POST;
 public interface APIService {
 
     @POST("/users")
-    Call<ApiResponse> createNewUser(
+    Call<UserSignInSignUpResponse> createNewUser(
             @Body CreateUserRequestBody createUserRequestBody
     );
 
     @POST("/sign_up/verify_otp")
-    Call<ApiResponse> verifyOtp(
+    Call<UserSignInSignUpResponse> verifyOtp(
             @Body OtpRequestBody otpRequestBody
     );
 

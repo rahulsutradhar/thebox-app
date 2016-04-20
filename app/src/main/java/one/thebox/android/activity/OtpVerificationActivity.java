@@ -20,6 +20,7 @@ import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,19 +75,30 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             otp = Integer.parseInt(otpString);
             final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-            MyApplication.getAPIService().verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp))).enqueue(new Callback<ApiResponse>() {
-                @Override
-                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                    dialog.dismiss();
-                    startActivity(new Intent(OtpVerificationActivity.this, CreateAccountActivity.class));
-                    finish();
-                }
+            MyApplication.getAPIService()
+                    .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
+                    .enqueue(new Callback<UserSignInSignUpResponse>() {
+                        @Override
+                        public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                            dialog.dismiss();
+                            if (response.body() != null) {
+                                if (response.body().isSuccess()) {
+                                    if(response.body().getUser()!=null) {
+                                        PrefUtils.saveUser(OtpVerificationActivity.this,response.body().getUser());
+                                        PrefUtils.saveToken(OtpVerificationActivity.this,response.body().getUser().getAuthToken());
+                                        startActivity(new Intent(OtpVerificationActivity.this,FillUserInfoActivity.class));
+                                    }
+                                } else {
+                                    Toast.makeText(OtpVerificationActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
 
-                @Override
-                public void onFailure(Call<ApiResponse> call, Throwable t) {
-                    dialog.dismiss();
-                }
-            });
+                        @Override
+                        public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                            dialog.dismiss();
+                        }
+                    });
         }
 
     }
@@ -110,18 +122,27 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                 if (isValidOtp()) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
                     MyApplication.getAPIService()
-                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
+                            .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    if(response.body()!=null){
-                                        Toast.makeText(OtpVerificationActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                                if(response.body().getUser()!=null) {
+                                                    PrefUtils.saveUser(OtpVerificationActivity.this,response.body().getUser());
+                                                    PrefUtils.saveToken(OtpVerificationActivity.this,response.body().getUser().getAuthToken());
+                                                    startActivity(new Intent(OtpVerificationActivity.this,FillUserInfoActivity.class));
+                                                }
+                                        } else {
+                                            Toast.makeText(OtpVerificationActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-
+                                    dialog.dismiss();
                                 }
                             });
                 }
@@ -131,27 +152,26 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
             case R.id.button_resend: {
                 if (isSignUpActivity) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-                    MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber))).enqueue(new Callback<ApiResponse>() {
-                        @Override
-                        public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                            dialog.dismiss();
-                        }
-
-                        @Override
-                        public void onFailure(Call<ApiResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-                } else {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-                    MyApplication.getAPIService()
-                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
+                    MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    if(response.body()!=null){
-                                        Toast.makeText(OtpVerificationActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
-                                    }
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+
+                                }
+                            });
+                } else {
+                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService()
+                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
+                            .enqueue(new Callback<UserSignInSignUpResponse>() {
+                                @Override
+                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+
                                 }
 
                                 @Override

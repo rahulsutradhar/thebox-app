@@ -1,9 +1,7 @@
 package one.thebox.android.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,14 +12,12 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import one.thebox.android.R;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
+import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
-import permissions.dispatcher.OnShowRationale;
-import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,18 +75,26 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void submitMobileNumber() {
         final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-        MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber))).enqueue(new Callback<ApiResponse>() {
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                dialog.dismiss();
-                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this, phoneNumber, true));
-            }
+        MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
+                .enqueue(new Callback<UserSignInSignUpResponse>() {
+                    @Override
+                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                        dialog.dismiss();
+                        if(response.body()!=null) {
+                            if(response.isSuccess()) {
+                                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this,phoneNumber,true));
+                            }else {
+                                Toast.makeText(MobileNumberActivity.this,response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                dialog.dismiss();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+
     }
 
     public boolean isValidMobileNumber() {

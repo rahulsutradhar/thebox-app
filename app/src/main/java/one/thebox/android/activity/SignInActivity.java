@@ -70,12 +70,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                User user = response.body().getUser();
-                                if(user!=null) {
-                                    PrefUtils.saveUser(SignInActivity.this, user);
-                                    PrefUtils.saveToken(SignInActivity.this, user.getAuthToken());
-                                }
-                                startActivity(OtpVerificationActivity.getInstance(SignInActivity.this,phoneNumber,false));
+                                startActivity(OtpVerificationActivity.getInstance(SignInActivity.this, phoneNumber, false));
                             } else {
                                 Toast.makeText(SignInActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
