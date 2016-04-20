@@ -16,6 +16,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import org.greenrobot.eventbus.EventBus;
+
+import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.R;
 import one.thebox.android.fragment.BillsFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
@@ -92,6 +95,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void afterTextChanged(Editable s) {
                 attachSearchResultFragment();
+                EventBus.getDefault().post(new SearchEvent(s.toString()));
             }
         });
     }
@@ -122,7 +126,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(MainActivity.this,UpdateProfileActivity.class));
+                        startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
                     }
                 });
                 setTitle("Account");
@@ -154,14 +158,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void attachExploreBoxes() {
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment,"Explore Boxes");
+        fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
         fragmentTransaction.commit();
     }
 
     private void attachMyOrders() {
         MyOrdersFragment fragment = new MyOrdersFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment,"My Orders");
+        fragmentTransaction.replace(R.id.frame, fragment, "My Orders");
         fragmentTransaction.commit();
     }
 
@@ -212,10 +216,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachSearchResultFragment() {
-        if(getActiveFragmentTag()==null || !getActiveFragmentTag().equals("Explore Boxes")) {
+        if (getActiveFragmentTag() == null || !getActiveFragmentTag().equals("Explore Boxes")) {
             SearchResultFragment fragment = new SearchResultFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.frame, fragment,"Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.add(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
             fragmentTransaction.commit();
         }
     }
