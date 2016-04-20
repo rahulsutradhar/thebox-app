@@ -23,7 +23,7 @@
             app:contentInsetEnd="6dp"
             app:contentInsetLeft="6dp"
             app:contentInsetRight="6dp"
-            app:contentInsetStart="6dp"/>
+            app:contentInsetStart="6dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -107,12 +107,38 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="67dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/primary"
-        app:layout_anchorGravity="bottom|right|end" />
+        android:layout_margin="8dp"
+        >
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:elevation="0dp"
+            android:layout_margin="8dp"
+            app:backgroundTint="@color/primary"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            app:layout_anchorGravity="bottom|right|end" />
+
+        <TextView
+            android:id="@+id/no_of_item_selected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/circular_background"
+            android:text="0"
+            android:visibility="gone"
+            android:gravity="center"
+            android:textColor="@color/white"
+            />
+
+
+    </RelativeLayout>
 </FrameLayout>

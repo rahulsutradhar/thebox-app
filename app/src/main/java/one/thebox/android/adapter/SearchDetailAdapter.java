@@ -13,9 +13,12 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.SizeAndFrequency;
@@ -73,6 +76,13 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                 boxItems.get(position).setNoOfItemsSelected(boxItems.get(position).getNoOfItemsSelected() + 1);
                 CustomToast.show(mContext,"Total Savings: 300 Rs per month");
                 notifyItemChanged(holder.getAdapterPosition());
+                int count = 0;
+                for(int i=0; i<boxItems.size();i++) {
+                    if(boxItems.get(i).getNoOfItemsSelected()>0){
+                        count++;
+                    }
+                }
+                EventBus.getDefault().post(new ItemAddEvent(count));
             }
         });
         itemViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +90,13 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             public void onClick(View v) {
                 if (boxItems.get(position).getNoOfItemsSelected() > 0) {
                     boxItems.get(position).setNoOfItemsSelected(boxItems.get(position).getNoOfItemsSelected() - 1);
+                    int count = 0;
+                    for(int i=0; i<boxItems.size();i++) {
+                        if(boxItems.get(i).getNoOfItemsSelected()>0){
+                            count++;
+                        }
+                    }
+                    EventBus.getDefault().post(new ItemAddEvent(count));
                     notifyItemChanged(holder.getAdapterPosition());
                 } else {
                     Toast.makeText(mContext, "CTA", Toast.LENGTH_SHORT).show();

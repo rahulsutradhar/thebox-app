@@ -4,7 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
@@ -17,6 +23,7 @@ public class ExploreItemDetailActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
+    private TextView noOfItemSelectedTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +36,8 @@ public class ExploreItemDetailActivity extends BaseActivity {
 
     private void initViews() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        noOfItemSelectedTextView = (TextView) findViewById(R.id.no_of_item_selected);
+        noOfItemSelectedTextView.bringToFront();
     }
 
     private void setupRecyclerView() {
@@ -43,5 +52,27 @@ public class ExploreItemDetailActivity extends BaseActivity {
     @Override
     void onClick(int id) {
 
+    }
+
+    @Subscribe
+    public void onItemAddEvent(ItemAddEvent itemAddEvent) {
+        if (itemAddEvent.getNoOfItems() <= 0) {
+            noOfItemSelectedTextView.setVisibility(View.GONE);
+        } else {
+            noOfItemSelectedTextView.setVisibility(View.VISIBLE);
+            noOfItemSelectedTextView.setText(String.valueOf(itemAddEvent.getNoOfItems()));
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }
