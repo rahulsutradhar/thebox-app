@@ -20,6 +20,7 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
+import one.thebox.android.util.CustomToast;
 
 public class SearchDetailAdapter extends BaseRecyclerAdapter {
 
@@ -70,7 +71,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             @Override
             public void onClick(View v) {
                 boxItems.get(position).setNoOfItemsSelected(boxItems.get(position).getNoOfItemsSelected() + 1);
-                Toast.makeText(mContext,"Total Savings: 300 Rs per month",Toast.LENGTH_SHORT).show();
+                CustomToast.show(mContext,"Total Savings: 300 Rs per month");
                 notifyItemChanged(holder.getAdapterPosition());
             }
         });
