@@ -22,16 +22,17 @@
             android:id="@+id/name_text_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="@color/dim_gray"
-            android:layout_margin="16dp">
+            android:layout_margin="16dp"
+            android:textColorHint="@color/dim_gray">
 
             <EditText
+                android:id="@+id/edit_text_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/black_underline_edit_text"
                 android:hint="Name"
                 android:inputType="text"
                 android:padding="8dp"
-                android:background="@drawable/black_underline_edit_text"
                 android:textColor="@color/dim_gray"
                 android:textColorHint="@color/dim_gray" />
         </android.support.design.widget.TextInputLayout>
@@ -40,16 +41,17 @@
             android:id="@+id/dob_text_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="@color/dim_gray"
-            android:layout_margin="16dp">
+            android:layout_margin="16dp"
+            android:textColorHint="@color/dim_gray">
 
             <EditText
+                android:id="@+id/edit_text_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Date of Birth"
-                android:inputType="date"
-                android:padding="8dp"
                 android:background="@drawable/black_underline_edit_text"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="8dp"
                 android:textColor="@color/dim_gray"
                 android:textColorHint="@color/dim_gray" />
         </android.support.design.widget.TextInputLayout>
@@ -62,18 +64,19 @@
                 android:id="@+id/locality_text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColorHint="@color/dim_gray"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:textColorHint="@color/dim_gray">
 
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/black_underline_edit_text"
                     android:hint="Locality"
                     android:inputType="text"
                     android:padding="8dp"
-                    android:background="@drawable/black_underline_edit_text"
                     android:textColor="@color/dim_gray"
-                    android:textColorHint="@color/dim_gray"/>
+                    android:textColorHint="@color/dim_gray"
+                    android:id="@+id/edit_text_locality" />
             </android.support.design.widget.TextInputLayout>
 
             <ImageButton
@@ -93,7 +96,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/sign_up_button"
+        android:id="@+id/button_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
