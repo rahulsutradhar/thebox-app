@@ -18,10 +18,8 @@ import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
-import one.thebox.android.api.RequestBodies.SignUpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
-import permissions.dispatcher.RuntimePermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,7 +78,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                 @Override
                 public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                     dialog.dismiss();
-                    startActivity(new Intent(OtpVerificationActivity.this, SignUpActivity.class));
+                    startActivity(new Intent(OtpVerificationActivity.this, CreateAccountActivity.class));
                     finish();
                 }
 
