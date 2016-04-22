@@ -56,9 +56,20 @@
                 android:textColorHint="@color/dim_gray" />
         </android.support.design.widget.TextInputLayout>
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/android:progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:layout_marginBottom="22dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:padding="8dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/locality_text_input"
@@ -67,7 +78,8 @@
                 android:padding="16dp"
                 android:textColorHint="@color/dim_gray">
 
-                <EditText
+                <AutoCompleteTextView
+                    android:id="@+id/edit_text_locality"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/black_underline_edit_text"
@@ -75,24 +87,11 @@
                     android:inputType="text"
                     android:padding="8dp"
                     android:textColor="@color/dim_gray"
-                    android:textColorHint="@color/dim_gray"
-                    android:id="@+id/edit_text_locality" />
+                    android:textColorHint="@color/dim_gray" />
             </android.support.design.widget.TextInputLayout>
 
-            <ImageButton
-                android:id="@+id/pick_location_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@color/white"
-                android:padding="8dp"
-                android:src="@drawable/ic_location_on_white_18dp"
-                android:tint="#FD4DA5" />
-        </RelativeLayout>
+
+        </FrameLayout>
     </LinearLayout>
 
     <Button

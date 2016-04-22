@@ -79,7 +79,7 @@
                 <action android:name="android.intent.action.SEARCH" />
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
             <meta-data
@@ -90,8 +90,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".activity.FillUserInfoActivity" />
@@ -105,8 +104,9 @@
         <activity android:name=".activity.AddressesActivity" />
         <activity android:name=".activity.ConfirmOtpActivity" />
         <activity android:name=".activity.UpdateProfileActivity" />
-        <activity android:name=".activity.UpdatePhoneNumberActivity"></activity>
-        <activity android:name=".activity.SignInActivity"></activity>
+        <activity android:name=".activity.UpdatePhoneNumberActivity" />
+        <activity android:name=".activity.SignInActivity" />
+        <activity android:name=".activity.LocalitiesAutoCompleteActivity"></activity>
     </application>
 
 </manifest>

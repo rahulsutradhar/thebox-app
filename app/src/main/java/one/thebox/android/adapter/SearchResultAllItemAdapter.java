@@ -55,8 +55,14 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachSearchDetailFragment();
+            }
+        });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews();
+        itemViewHolder.setViews(searchResults.get(position));
     }
 
     @Override
@@ -105,20 +111,15 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
             searchResultText = (TextView) itemView.findViewById(R.id.text_search_result);
         }
 
-        public void setViews() {
-            searchResultText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    attachSearchDetailFragment();
-                }
-            });
+        public void setViews(SearchResult searchResult) {
+            searchResultText.setText(searchResult.getResult());
         }
+    }
 
-        private void attachSearchDetailFragment() {
-            SearchDetailFragment fragment = new SearchDetailFragment();
-            FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment);
-            fragmentTransaction.commit();
-        }
+    private void attachSearchDetailFragment() {
+        SearchDetailFragment fragment = new SearchDetailFragment();
+        FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.commit();
     }
 }

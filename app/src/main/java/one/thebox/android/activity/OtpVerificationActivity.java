@@ -83,13 +83,17 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    if(response.body().getUser()!=null) {
-                                        PrefUtils.saveUser(OtpVerificationActivity.this,response.body().getUser());
-                                        PrefUtils.saveToken(OtpVerificationActivity.this,response.body().getUser().getAuthToken());
-                                        startActivity(new Intent(OtpVerificationActivity.this,FillUserInfoActivity.class));
+                                    if (response.body().getUser() != null) {
+                                        PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
+                                        PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                        if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
+                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                        } else {
+                                            startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                        }
                                     }
                                 } else {
-                                    Toast.makeText(OtpVerificationActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(OtpVerificationActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -129,13 +133,13 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     dialog.dismiss();
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
-                                                if(response.body().getUser()!=null) {
-                                                    PrefUtils.saveUser(OtpVerificationActivity.this,response.body().getUser());
-                                                    PrefUtils.saveToken(OtpVerificationActivity.this,response.body().getUser().getAuthToken());
-                                                    startActivity(new Intent(OtpVerificationActivity.this,FillUserInfoActivity.class));
-                                                }
+                                            if (response.body().getUser() != null) {
+                                                PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
+                                                PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                                startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                            }
                                         } else {
-                                            Toast.makeText(OtpVerificationActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(OtpVerificationActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }

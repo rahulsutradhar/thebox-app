@@ -171,83 +171,23 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         private MyBoxRecyclerAdapter.SmartItemAdapter smartItemAdapter;
         private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
         private TextView addButton, subtractButton;
-        private ArrayList<View> sliders = new ArrayList<>();
-        private ArrayList<TextView> titles = new ArrayList<>();
-        private ArrayList<TextView> prices = new ArrayList<>();
-        private ArrayList<LinearLayout> linearLayouts = new ArrayList<>();
         private TextView changeButton, noOfItemSelected;
         private LinearLayout savingHolder;
 
-        private View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = v.getId();
-                int selectedPosition = 0;
-                switch (id) {
-                    case R.id.layout1: {
-                        selectedPosition = 0;
-                        break;
-                    }
-                    case R.id.layout2: {
-                        selectedPosition = 1;
-                        break;
-                    }
-                    case R.id.layout3: {
-                        selectedPosition = 2;
-                        break;
-                    }
-                }
-                boxItems.get(getAdapterPosition()).setFrequency(selectedPosition);
-                selectPosition(selectedPosition);
-            }
-        };
 
-        public void selectPosition(int selectedPosition) {
-            for (int i = 0; i < linearLayouts.size(); i++) {
-                if (i == selectedPosition) {
-                    sliders.get(i).setVisibility(View.VISIBLE);
-                    titles.get(i).setTextColor(mContext.getResources().getColor(R.color.black));
-                    prices.get(i).setTextColor(mContext.getResources().getColor(R.color.black));
-                    titles.get(i).setTextSize(selectedTextSize);
-                    prices.get(i).setTextSize(selectedTextSize);
-                } else {
-                    sliders.get(i).setVisibility(View.GONE);
-                    titles.get(i).setTextColor(mContext.getResources().getColor(R.color.dim_gray));
-                    prices.get(i).setTextColor(mContext.getResources().getColor(R.color.dim_gray));
-                    titles.get(i).setTextSize(unselectedTextSize);
-                    prices.get(i).setTextSize(unselectedTextSize);
-                }
-            }
-        }
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             recyclerView = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
-            titles.add((TextView) itemView.findViewById(R.id.monthly));
-            titles.add((TextView) itemView.findViewById(R.id.twice_a_month));
-            titles.add((TextView) itemView.findViewById(R.id.weekly));
-            prices.add((TextView) itemView.findViewById(R.id.price1));
-            prices.add((TextView) itemView.findViewById(R.id.price2));
-            prices.add((TextView) itemView.findViewById(R.id.price3));
-            linearLayouts.add((LinearLayout) itemView.findViewById(R.id.layout1));
-            linearLayouts.add((LinearLayout) itemView.findViewById(R.id.layout2));
-            linearLayouts.add((LinearLayout) itemView.findViewById(R.id.layout3));
-            sliders.add(itemView.findViewById(R.id.selector1));
-            sliders.add(itemView.findViewById(R.id.selector2));
-            sliders.add(itemView.findViewById(R.id.selector3));
             changeButton = (TextView) itemView.findViewById(R.id.button_change);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
             savingHolder = (LinearLayout) itemView.findViewById(R.id.saving_holder);
-            for (int i = 0; i < sliders.size(); i++) {
-                linearLayouts.get(i).setOnClickListener(onClickListener);
-            }
             setupRecyclerView();
         }
 
         public void setViews(Box.BoxItem boxItem) {
-            selectPosition(boxItem.getFrequency());
             noOfItemSelected.setText(String.valueOf(boxItem.getNoOfItemsSelected()));
             if (boxItem.getNoOfItemsSelected() > 0) {
                 savingHolder.setVisibility(View.VISIBLE);

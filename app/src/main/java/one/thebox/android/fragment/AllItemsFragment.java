@@ -13,6 +13,8 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
@@ -24,6 +26,7 @@ public class AllItemsFragment extends Fragment {
     private View rootView;
     private RecyclerView recyclerView;
     private SearchResultAllItemAdapter searchResultAllItemAdapter;
+    private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     public AllItemsFragment() {
     }
@@ -46,9 +49,7 @@ public class AllItemsFragment extends Fragment {
 
     private void setupRecyclerView() {
         searchResultAllItemAdapter = new SearchResultAllItemAdapter(getActivity());
-        for (int i = 0; i < 10; i++) {
-            searchResultAllItemAdapter.addSearchResult(new SearchResult());
-        }
+        searchResultAllItemAdapter.setSearchResults(searchResults);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(searchResultAllItemAdapter);
     }
@@ -58,8 +59,20 @@ public class AllItemsFragment extends Fragment {
     }
 
     @Subscribe
-    public void onSearchEvent(SearchEvent searchEvent){
-        Toast.makeText(getActivity(),searchEvent.getQuery(),Toast.LENGTH_SHORT).show();
+    public void onSearchEvent(SearchEvent searchEvent) {
+        searchResults.clear();
+        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
+            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i);
+            SearchResult searchResult = new SearchResult(categoryName);
+            searchResults.add(searchResult);
+        }
+        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
+            String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
+            SearchResult searchResult = new SearchResult(itemName);
+            searchResults.add(searchResult);
+        }
+        searchResultAllItemAdapter.setSearchResults(searchResults);
+        recyclerView.setAdapter(searchResultAllItemAdapter);
     }
 
     @Override

@@ -9,23 +9,35 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.R;
+import one.thebox.android.api.Responses.LocalitiesResponse;
+import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.BillsFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.MyOrdersFragment;
 import one.thebox.android.fragment.SearchResultFragment;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
@@ -36,6 +48,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
     private EditText searchView;
+    private String query;
+    private boolean callHasBeenCompleted = true;
+    private ProgressBar progressBar;
+    private FrameLayout searchViewHolder;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    Call<SearchAutoCompleteResponse> call;
+    Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
+        @Override
+        public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
+            progressBar.setVisibility(View.GONE);
+            callHasBeenCompleted = true;
+            if (response.body() != null) {
+                EventBus.getDefault().post(new SearchEvent(query, response.body()));
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SearchAutoCompleteResponse> call, Throwable t) {
+            progressBar.setVisibility(View.GONE);
+            callHasBeenCompleted = true;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +84,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void setupNavigationDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.openDrawer, R.string.closeDrawer) {
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -63,6 +98,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        setSupportActionBar(getToolbar());
         actionBarDrawerToggle.syncState();
         navigationView.setCheckedItem(R.id.explore_boxes);
         setTitle("Explore Boxes");
@@ -80,7 +116,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
+        searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
+
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,8 +134,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void afterTextChanged(Editable s) {
+                query = s.toString();
                 attachSearchResultFragment();
-                EventBus.getDefault().post(new SearchEvent(s.toString()));
+                if (s.length() > 0) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (callHasBeenCompleted) {
+                        callHasBeenCompleted = false;
+                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call.enqueue(searchAutoCompleteResponseCallback);
+                    } else {
+                        call.cancel();
+                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call.enqueue(searchAutoCompleteResponseCallback);
+                    }
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -112,42 +166,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.closeDrawers();
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
-                searchView.setVisibility(View.GONE);
-                buttonSpecialAction.setVisibility(View.GONE);
-                buttonSpecialAction.setOnClickListener(null);
-                searchView.setVisibility(View.VISIBLE);
-                setTitle("My Boxes");
                 attachMyBoxesFragment();
                 return true;
             case R.id.my_account:
-                searchView.setVisibility(View.GONE);
-                buttonSpecialAction.setVisibility(View.VISIBLE);
-                searchView.setVisibility(View.GONE);
-                buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
-                    }
-                });
-                setTitle("Account");
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                searchView.setVisibility(View.GONE);
-                buttonSpecialAction.setVisibility(View.GONE);
-                buttonSpecialAction.setOnClickListener(null);
-                searchView.setVisibility(View.VISIBLE);
-                setTitle("BillsFragment");
                 attachBillsFragment();
                 return true;
 
             case R.id.explore_boxes: {
                 setTitle("");
-                buttonSpecialAction.setVisibility(View.GONE);
-                searchView.setVisibility(View.VISIBLE);
-                buttonSpecialAction.setOnClickListener(null);
-                searchView.setVisibility(View.VISIBLE);
-                setTitle("Explore Boxes");
                 attachExploreBoxes();
                 return true;
             }
@@ -156,20 +185,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachExploreBoxes() {
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("Explore Boxes");
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
         fragmentTransaction.commit();
     }
 
-    private void attachMyOrders() {
-        MyOrdersFragment fragment = new MyOrdersFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "My Orders");
-        fragmentTransaction.commit();
-    }
-
     private void attachBillsFragment() {
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("My Orders");
         BillsFragment fragment = new BillsFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
@@ -177,6 +207,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachMyAccountFragment() {
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
+            }
+        });
+        getToolbar().setTitle("My Account");
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
@@ -184,6 +223,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachMyBoxesFragment() {
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("My Boxes");
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -217,6 +260,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void attachSearchResultFragment() {
         if (getActiveFragmentTag() == null || !getActiveFragmentTag().equals("Explore Boxes")) {
+            getToolbar().setTitle("Search");
             SearchResultFragment fragment = new SearchResultFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
@@ -242,5 +286,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return null;
         }
         return getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return actionBarDrawerToggle.onOptionsItemSelected(item);
     }
 }

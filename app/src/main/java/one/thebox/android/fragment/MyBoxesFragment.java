@@ -60,7 +60,7 @@ public class MyBoxesFragment extends Fragment {
             }
             boxes.add(new Box(smartItems, boxItems));
         }
-        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), getChildFragmentManager());
+        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
     }

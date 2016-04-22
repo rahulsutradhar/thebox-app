@@ -35,11 +35,9 @@ import one.thebox.android.util.DisplayUtil;
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.OnClickListener {
 
     private ArrayList<Box> boxes;
-    private static FragmentManager childFragmentManager;
 
-    public MyBoxRecyclerAdapter(Context context, FragmentManager childFragmentManager) {
+    public MyBoxRecyclerAdapter(Context context) {
         super(context);
-        this.childFragmentManager = childFragmentManager;
     }
 
     public void addBox(Box box) {

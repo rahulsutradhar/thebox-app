@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
+import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.adapter.SearchResultMyItemAdapter;
 
 
@@ -18,7 +21,7 @@ public class MyItemsFragment extends Fragment {
 
     private View rootView;
     private RecyclerView recyclerView;
-    private SearchResultMyItemAdapter searchResultMyItemAdapter;
+    private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
 
     public MyItemsFragment() {
     }
@@ -39,14 +42,22 @@ public class MyItemsFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        searchResultMyItemAdapter = new SearchResultMyItemAdapter(getActivity());
-        for (int i = 0; i < 10; i++) {
-            searchResultMyItemAdapter.addBoxItem(new Box.BoxItem());
+        ArrayList<Box> boxes = new ArrayList<>();
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        for (int i = 0; i < 5; i++) {
+            ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
+            ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
+            for (int j = 0; j < 10; j++) {
+                smartItems.add(new Box.SmartItem());
+                boxItems.add(new Box.BoxItem());
+            }
+            boxes.add(new Box(smartItems, boxItems));
         }
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(searchResultMyItemAdapter);
+        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+        myBoxRecyclerAdapter.setBoxes(boxes);
+        recyclerView.setAdapter(myBoxRecyclerAdapter);
     }
-
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
     }

@@ -81,10 +81,10 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
                         dialog.dismiss();
                         if(response.body()!=null) {
-                            if(response.isSuccess()) {
+                            if(response.body().isSuccess()) {
                                 startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this,phoneNumber,true));
                             }else {
-                                Toast.makeText(MobileNumberActivity.this,response.body().getMessage(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MobileNumberActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
                             }
                         }
                     }

@@ -23,8 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
-                app:elevation="0dp"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:elevation="0dp">
 
 
                 <android.support.v7.widget.Toolbar
@@ -35,11 +35,11 @@
                     android:background="@color/primary"
                     android:backgroundTint="@color/primary"
                     android:gravity="center_vertical"
-                    app:elevation="0dp"
                     app:contentInsetEnd="6dp"
                     app:contentInsetLeft="6dp"
                     app:contentInsetRight="6dp"
-                    app:contentInsetStart="6dp">
+                    app:contentInsetStart="6dp"
+                    app:elevation="0dp">
 
                     <ImageView
                         android:id="@+id/button_special_action"
@@ -52,21 +52,40 @@
 
                 </android.support.v7.widget.Toolbar>
 
-                <EditText
-                    android:id="@+id/search"
+                <FrameLayout
+                    android:id="@+id/search_view_holder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:padding="10dp"
-                    android:hint="Search"
-                    android:textColorHint="@color/manatee"
-                    android:textColor="@color/dim_gray"
                     android:layout_marginBottom="12dp"
-                    android:layout_marginRight="12dp"
                     android:layout_marginLeft="12dp"
-                    android:background="@drawable/search_view_backgroung"
-                    android:gravity="center_vertical"
-                    app:theme="@style/SearchViewTheme" />
+                    android:layout_marginRight="12dp">
+
+                    <EditText
+                        android:id="@+id/search"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+
+                        android:background="@drawable/search_view_backgroung"
+                        android:gravity="center_vertical"
+                        android:hint="Search"
+                        android:padding="10dp"
+                        android:textColor="@color/dim_gray"
+                        android:textColorHint="@color/manatee" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        style="?android:attr/android:progressBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|center_vertical"
+                        android:gravity="center"
+                        android:paddingRight="12dp"
+
+                         />
+
+
+                </FrameLayout>
 
 
             </android.support.design.widget.AppBarLayout>

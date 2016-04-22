@@ -19,7 +19,7 @@ import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.adapter.SearchSuggestionAdapter;
 
-public class ExploreItemDetailActivity extends BaseActivity {
+public class ExploreItemDetailActivity extends AppCompatActivity{
 
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
@@ -47,11 +47,6 @@ public class ExploreItemDetailActivity extends BaseActivity {
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(searchDetailAdapter);
-    }
-
-    @Override
-    void onClick(int id) {
-
     }
 
     @Subscribe

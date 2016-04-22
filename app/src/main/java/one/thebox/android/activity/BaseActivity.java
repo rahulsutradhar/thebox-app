@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -45,11 +47,17 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+
             if (hasTransparentTitle) {
                 toolbar.setTitleTextColor(Color.argb(0, 255, 255, 255));
             }
         }
         //setToolbarFont();
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     /*private void setToolbarFont() {
@@ -110,5 +118,9 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         int id = v.getId();
         onClick(id);
+    }
+
+    public void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
     }
 }

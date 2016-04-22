@@ -5,12 +5,11 @@ import android.os.Bundle;
 
 import one.thebox.android.R;
 
-public class ConfirmOtpActivity extends AppCompatActivity {
+public class LocalitiesAutoCompleteActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_confirm_otp);
-        setTitle("Confirm OTP");
+        setContentView(R.layout.activity_localities_auto_complete);
     }
 }
