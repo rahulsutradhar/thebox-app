@@ -1,7 +1,6 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,10 +15,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
@@ -31,9 +30,9 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
     private static final float unselectedTextSize = 14;
     private static int selectedTextColor;
     private static int unSelectedTextColor;
-    ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
+    ArrayList<BoxItem> boxItems = new ArrayList<>();
 
-    public SearchDetailAdapter(Context context, ArrayList<Box.BoxItem> boxItems) {
+    public SearchDetailAdapter(Context context, ArrayList<BoxItem> boxItems) {
         super(context);
         this.boxItems = boxItems;
         selectedTextColor = mContext.getResources().getColor(R.color.black);
@@ -47,7 +46,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
     }
 
 
-    public void addBoxItem(Box.BoxItem boxItem) {
+    public void addBoxItem(BoxItem boxItem) {
         boxItems.add(boxItem);
     }
 
@@ -167,27 +166,35 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends ItemHolder {
 
-        private RecyclerView recyclerView;
-        private MyBoxRecyclerAdapter.SmartItemAdapter smartItemAdapter;
+        private RecyclerView recyclerViewSavings;
+        private RecyclerView recyclerViewFrequency;
+        private MyBoxRecyclerAdapter.SavingsAdapter savingsAdapter;
         private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
         private TextView addButton, subtractButton;
         private TextView changeButton, noOfItemSelected;
         private LinearLayout savingHolder;
+        
 
 
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            recyclerView = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
+            recyclerViewSavings = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             changeButton = (TextView) itemView.findViewById(R.id.button_change);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
             savingHolder = (LinearLayout) itemView.findViewById(R.id.saving_holder);
-            setupRecyclerView();
+            recyclerViewFrequency = (RecyclerView) itemView.findViewById(R.id.recycler_view_frequency);
+            setupRecyclerViewSavings();
+            setupRecyclerViewFrequency();
         }
 
-        public void setViews(Box.BoxItem boxItem) {
+        private void setupRecyclerViewFrequency() {
+
+        }
+
+        public void setViews(BoxItem boxItem) {
             noOfItemSelected.setText(String.valueOf(boxItem.getNoOfItemsSelected()));
             if (boxItem.getNoOfItemsSelected() > 0) {
                 savingHolder.setVisibility(View.VISIBLE);
@@ -196,13 +203,72 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             }
         }
 
-        private void setupRecyclerView() {
+        private void setupRecyclerViewSavings() {
             for (int i = 0; i < 6; i++) {
                 smartItems.add(new Box.SmartItem());
             }
-            smartItemAdapter = new MyBoxRecyclerAdapter.SmartItemAdapter(mContext, smartItems);
-            recyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
-            recyclerView.setAdapter(smartItemAdapter);
+            savingsAdapter = new MyBoxRecyclerAdapter.SavingsAdapter(mContext, smartItems);
+            recyclerViewSavings.setLayoutManager(new GridLayoutManager(mContext, 3));
+            recyclerViewSavings.setAdapter(savingsAdapter);
+        }
+
+        class FrequencyAdapter extends BaseRecyclerAdapter{
+
+
+
+            public FrequencyAdapter(Context context) {
+                super(context);
+            }
+
+            @Override
+            protected ItemHolder getItemHolder(View view) {
+                return null;
+            }
+
+            @Override
+            protected HeaderHolder getHeaderHolder(View view) {
+                return null;
+            }
+
+            @Override
+            protected FooterHolder getFooterHolder(View view) {
+                return null;
+            }
+
+            @Override
+            public void onBindViewItemHolder(ItemHolder holder, int position) {
+
+            }
+
+            @Override
+            public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
+
+            }
+
+            @Override
+            public void onBindViewFooterHolder(FooterHolder holder, int position) {
+
+            }
+
+            @Override
+            public int getItemsCount() {
+                return 0;
+            }
+
+            @Override
+            protected int getItemLayoutId() {
+                return 0;
+            }
+
+            @Override
+            protected int getHeaderLayoutId() {
+                return 0;
+            }
+
+            @Override
+            protected int getFooterLayoutId() {
+                return 0;
+            }
         }
     }
 

@@ -32,6 +32,10 @@ public class Box {
         int size;
         int frequency;
         int noOfItemsSelected;
+        int id;
+        String title;
+        String brand;
+
 
         public int getNoOfItemsSelected() {
             return noOfItemsSelected;

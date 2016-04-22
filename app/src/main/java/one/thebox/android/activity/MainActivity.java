@@ -18,12 +18,14 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Events.SearchEvent;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
@@ -70,11 +72,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             callHasBeenCompleted = true;
         }
     };
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        user = PrefUtils.getUser(this);
         shouldHandleDrawer();
         initViews();
         setupSearchView();
@@ -84,6 +88,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void setupNavigationDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
+        userNameTextView.setText(user.getName());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.openDrawer, R.string.closeDrawer) {
 

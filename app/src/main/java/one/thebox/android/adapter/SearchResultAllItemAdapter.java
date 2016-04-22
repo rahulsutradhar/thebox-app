@@ -54,11 +54,11 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, int position) {
+    public void onBindViewItemHolder(ItemHolder holder, final int position) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachSearchDetailFragment();
+                attachSearchDetailFragment(searchResults.get(position).getResult());
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -116,8 +116,8 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    private void attachSearchDetailFragment() {
-        SearchDetailFragment fragment = new SearchDetailFragment();
+    private void attachSearchDetailFragment(String query) {
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
         FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();

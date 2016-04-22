@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.view.menu.MenuView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -92,11 +93,16 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
         private View itemView;
         private ImageView imageView;
+        private TextView title, subTitle, noOfItemsTextView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
             imageView = (ImageView) itemView.findViewById(R.id.image_view);
+            title = (TextView) itemView.findViewById(R.id.title_text_view);
+            subTitle = (TextView) itemView.findViewById(R.id.sub_title_text_view);
+            noOfItemsTextView = (TextView) itemView.findViewById(R.id.number_of_item);
+
         }
 
         public void setViewHolder(ExploreItem exploreItem) {
@@ -106,7 +112,10 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
                     mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class));
                 }
             });
-            Picasso.with(mContext).load("http://media.thedenverchannel.com/photo/2015/11/17/products%20image%20for%20grocery%20delivery_1447824686293_27027613_ver1.0.png").into(imageView);
+            title.setText(exploreItem.getTitle());
+            subTitle.setText(exploreItem.getSubTitle());
+            noOfItemsTextView.setText(exploreItem.getTotalItems() + " items");
+            Picasso.with(mContext).load(exploreItem.getImageUrl()).into(imageView);
         }
     }
 

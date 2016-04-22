@@ -5,7 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -103,7 +102,7 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private RecyclerView recyclerView;
-        private MyBoxRecyclerAdapter.SmartItemAdapter smartItemAdapter;
+        private MyBoxRecyclerAdapter.SavingsAdapter savingsAdapter;
         private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
 
         public ItemViewHolder(View itemView) {
@@ -120,9 +119,9 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
             for (int i = 0; i < 10; i++) {
                 smartItems.add(new Box.SmartItem());
             }
-            smartItemAdapter = new MyBoxRecyclerAdapter.SmartItemAdapter(mContext, smartItems);
+            savingsAdapter = new MyBoxRecyclerAdapter.SavingsAdapter(mContext, smartItems);
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-            recyclerView.setAdapter(smartItemAdapter);
+            recyclerView.setAdapter(savingsAdapter);
         }
     }
 }

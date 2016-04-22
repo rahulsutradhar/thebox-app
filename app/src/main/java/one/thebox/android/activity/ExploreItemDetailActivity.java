@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
@@ -43,7 +44,7 @@ public class ExploreItemDetailActivity extends AppCompatActivity{
     private void setupRecyclerView() {
         searchDetailAdapter = new SearchDetailAdapter(this);
         for (int i = 0; i < 10; i++) {
-            searchDetailAdapter.addBoxItem(new Box.BoxItem());
+            searchDetailAdapter.addBoxItem(new BoxItem());
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(searchDetailAdapter);

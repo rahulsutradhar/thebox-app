@@ -1,10 +1,13 @@
 package one.thebox.android.api;
 
 
+import com.google.android.gms.common.api.Api;
+
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.SignUpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
+import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -54,5 +57,12 @@ public interface APIService {
     @GET("/autocomplete")
     Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("authtoken") String authToken,
                                                         @Query("query") String query);
+
+    @GET("/get_all_boxes")
+    Call<ExploreItemResponse> getAllExploreBoxes(@Header("authtoken") String authToken);
+
+    @GET("/searchresults")
+    Call<ApiResponse> getSearchResults(@Header("authtoken") String authToken,
+                               @Query("query") String query);
 
 }

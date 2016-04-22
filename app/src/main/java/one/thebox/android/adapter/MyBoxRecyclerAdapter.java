@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,7 +24,6 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
-import one.thebox.android.fragment.SizeAndFrequencyFragment;
 import one.thebox.android.util.DisplayUtil;
 
 /**
@@ -116,11 +113,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
     }
 
-    public static class SmartItemAdapter extends BaseRecyclerAdapter {
+    public static class SavingsAdapter extends BaseRecyclerAdapter {
 
         ArrayList<Box.SmartItem> smartItems;
 
-        public SmartItemAdapter(Context context, ArrayList<Box.SmartItem> smartItems) {
+        public SavingsAdapter(Context context, ArrayList<Box.SmartItem> smartItems) {
             super(context);
             this.smartItems = smartItems;
         }
@@ -470,7 +467,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
     }
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
-        private MyBoxRecyclerAdapter.SmartItemAdapter smartItemAdapter;
+        private SavingsAdapter savingsAdapter;
         private MyBoxRecyclerAdapter.ExpandedListAdapter expandedListAdapter;
         private RecyclerView recyclerViewSmartItems;
         private RecyclerView recyclerViewExpandedList;
@@ -487,8 +484,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
         public void setViews(Box box) {
             this.recyclerViewSmartItems.setLayoutManager(horizontalLinearLayoutManager);
-            this.smartItemAdapter = new MyBoxRecyclerAdapter.SmartItemAdapter(mContext, box.getSmartItems());
-            this.recyclerViewSmartItems.setAdapter(smartItemAdapter);
+            this.savingsAdapter = new SavingsAdapter(mContext, box.getSmartItems());
+            this.recyclerViewSmartItems.setAdapter(savingsAdapter);
             if (box.isExpandedListVisible()) {
                 recyclerViewExpandedList.setVisibility(View.VISIBLE);
                 this.recyclerViewExpandedList.setLayoutManager(verticalLinearLayoutManager);

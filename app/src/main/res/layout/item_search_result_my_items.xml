@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingBottom="18dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="18dp">
 
         <ImageView
             android:layout_width="100dp"
@@ -69,115 +69,11 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_frequency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/layout1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/monthly"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Monthly"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/price1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="50 Rs"
-                        android:textColor="@color/black"
-                        android:textSize="14sp" />
-
-                    <View
-                        android:id="@+id/selector1"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@color/black" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/twice_a_month"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Twice a month"
-                        android:textColor="@color/dim_gray"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/price2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="52 Rs"
-                        android:textColor="@color/dim_gray"
-                        android:textSize="14sp" />
-
-                    <View
-                        android:id="@+id/selector2"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@color/black"
-                        android:visibility="gone" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/weekly"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Weekly"
-                        android:textColor="@color/dim_gray"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/price3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="55 Rs"
-                        android:textColor="@color/dim_gray"
-                        android:textSize="14sp" />
-
-                    <View
-                        android:id="@+id/selector3"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@color/black"
-                        android:visibility="gone" />
-
-
-                </LinearLayout>
-            </LinearLayout>
+                android:visibility="gone"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -251,29 +147,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/timberwolf"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:gravity="center_vertical"
-            android:paddingTop="16dp"
-            android:layout_gravity="center_horizontal">
+            android:paddingTop="16dp">
 
             <ImageView
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/dim_gray"
-                />
+                android:background="@color/dim_gray" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Saving increased on these categories"
                 android:textColor="@color/black"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
         </LinearLayout>
 

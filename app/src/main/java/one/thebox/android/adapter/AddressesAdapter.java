@@ -7,32 +7,36 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Address;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
+import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 15-04-2016.
  */
 public class AddressesAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Address> addresses = new ArrayList<>();
+    private ArrayList<User.Address> addresses = new ArrayList<>();
 
     public AddressesAdapter(Context context) {
         super(context);
     }
 
-    public void addAddress(Address address) {
+    public void addAddress(User.Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<Address> getAddresses() {
+    public ArrayList<User.Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<Address> addresses) {
+    public void setAddresses(ArrayList<User.Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -52,8 +56,15 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, int position) {
-
+    public void onBindViewItemHolder(ItemHolder holder, final int position) {
+        ItemAddressViewHolder itemAddressViewHolder = (ItemAddressViewHolder) holder;
+        itemAddressViewHolder.setView(addresses.get(position));
+        itemAddressViewHolder.editAddressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddAddressBottomSheet(addresses.get(position), position);
+            }
+        });
     }
 
     @Override
@@ -87,25 +98,32 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
     }
 
     class ItemAddressViewHolder extends ItemHolder {
-
+        private TextView typeNameTextView, addressTextView;
         private ImageView editAddressButton;
 
         public ItemAddressViewHolder(View itemView) {
             super(itemView);
             editAddressButton = (ImageView) itemView.findViewById(R.id.edit_address_button);
-            editAddressButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    openAddAddressBottomSheet();
-                }
-            });
+            typeNameTextView = (TextView) itemView.findViewById(R.id.type_name_text_view);
+            addressTextView = (TextView) itemView.findViewById(R.id.address_text_view);
         }
 
-        private void openAddAddressBottomSheet() {
-            View bottomSheet = ((Activity)mContext).getLayoutInflater().inflate(R.layout.layout_add_address, null);
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
+        public void setView(User.Address address) {
+            typeNameTextView.setText(address.getAddressTypeName(address.getType()));
+            addressTextView.setText(address.getFlat() + ", " + address.getStreet());
         }
+    }
+
+    private void openAddAddressBottomSheet(User.Address address, final int position) {
+        new AddEditAddressViewHelper((Activity) mContext, new AddEditAddressViewHelper.OnAddressAdded() {
+            @Override
+            public void onAddressAdded(User.Address address) {
+                addresses.set(position, address);
+                User user = PrefUtils.getUser(mContext);
+                user.setAddresses(addresses);
+                PrefUtils.saveUser(mContext, user);
+                notifyItemChanged(position);
+            }
+        }, address).show();
     }
 }

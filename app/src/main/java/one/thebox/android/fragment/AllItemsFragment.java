@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,6 +28,7 @@ public class AllItemsFragment extends Fragment {
     private RecyclerView recyclerView;
     private SearchResultAllItemAdapter searchResultAllItemAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
+    private TextView noItemFoundTextView;
 
     public AllItemsFragment() {
     }
@@ -56,6 +58,7 @@ public class AllItemsFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        noItemFoundTextView = (TextView) rootView.findViewById(R.id.no_item_found_text_view);
     }
 
     @Subscribe
@@ -70,6 +73,13 @@ public class AllItemsFragment extends Fragment {
             String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
             SearchResult searchResult = new SearchResult(itemName);
             searchResults.add(searchResult);
+        }
+        if (searchResults.size() == 0) {
+            noItemFoundTextView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            noItemFoundTextView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
         }
         searchResultAllItemAdapter.setSearchResults(searchResults);
         recyclerView.setAdapter(searchResultAllItemAdapter);

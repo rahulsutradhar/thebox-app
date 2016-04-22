@@ -9,22 +9,29 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Models.Address;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
 import one.thebox.android.adapter.AddressesAdapter;
 import one.thebox.android.adapter.ChangeAddressAdapter;
 import one.thebox.android.adapter.EditDeliveryAddressAdapter;
+import one.thebox.android.util.PrefUtils;
 
 public class AddressesActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private AddressesAdapter addressesAdapter;
     private TextView buttonCreateNew;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
+        user = PrefUtils.getUser(this);
         initViews();
         setTitle("Addresses");
         setupRecyclerViews();
@@ -32,9 +39,7 @@ public class AddressesActivity extends BaseActivity {
 
     private void setupRecyclerViews() {
         addressesAdapter = new AddressesAdapter(this);
-        for (int i = 0; i < 10; i++) {
-            addressesAdapter.addAddress(new Address());
-        }
+        addressesAdapter.setAddresses(user.getAddresses());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(addressesAdapter);
     }
@@ -61,9 +66,16 @@ public class AddressesActivity extends BaseActivity {
     }
 
     private void openAddAddressBottomSheet() {
-        View bottomSheet = getLayoutInflater().inflate(R.layout.layout_add_address, null);
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(bottomSheet);
-        bottomSheetDialog.show();
+        new AddEditAddressViewHelper(this, new AddEditAddressViewHelper.OnAddressAdded() {
+            @Override
+            public void onAddressAdded(User.Address address) {
+                User user = PrefUtils.getUser(AddressesActivity.this);
+                ArrayList<User.Address> addresses = user.getAddresses();
+                addresses.add(address);
+                user.setAddresses(addresses);
+                PrefUtils.saveUser(AddressesActivity.this,user);
+                setupRecyclerViews();
+            }
+        }).show();
     }
 }
