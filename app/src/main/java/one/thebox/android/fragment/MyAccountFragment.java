@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Address;
@@ -29,8 +31,13 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
 import one.thebox.android.activity.AddressesActivity;
 import one.thebox.android.activity.OrderDetailActivity;
+import one.thebox.android.activity.SplashActivity;
+import one.thebox.android.api.ApiResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MyAccountFragment extends Fragment implements View.OnClickListener {
@@ -38,7 +45,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     private View rootView;
     private TextView showAllAddressesButton;
     private TextView showAllOrdersButton;
-    private TextView userName, email, phoneNumber, address, lastOrder;
+    private TextView userName, email, phoneNumber, address, lastOrder, signOut;
     private User user;
 
     public MyAccountFragment() {
@@ -76,8 +83,12 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         } else {
             showAllAddressesButton.setText("Show all");
             showAllAddressesButton.setOnClickListener(this);
-            address.setText(user.getAddresses().get(0).getFlat() + "," +
-                    user.getAddresses().get(0).getStreet());
+            for (int i = 0; i < user.getAddresses().size(); i++) {
+                if (user.getAddresses().get(i).isCurrentAddress()) {
+                    address.setText(user.getAddresses().get(i).getFlat() + ", " +
+                            user.getAddresses().get(i).getStreet());
+                }
+            }
         }
     }
 
@@ -92,6 +103,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         phoneNumber = (TextView) rootView.findViewById(R.id.phone_text_view);
         address = (TextView) rootView.findViewById(R.id.address_text_view);
         lastOrder = (TextView) rootView.findViewById(R.id.last_order_text_view);
+        signOut = (TextView) rootView.findViewById(R.id.button_sign_out);
+        signOut.setOnClickListener(this);
     }
 
 
@@ -116,6 +129,24 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             case R.id.button_show_all_orders: {
                 startActivity(new Intent(getActivity(), OrderDetailActivity.class));
                 break;
+            }
+            case R.id.button_sign_out:{
+                final MaterialDialog dialog = new MaterialDialog.Builder(getActivity()).progressIndeterminateStyle(true).progress(true, 0).show();
+                MyApplication.getAPIService().signOut(PrefUtils.getToken(getActivity()))
+                        .enqueue(new Callback<ApiResponse>() {
+                            @Override
+                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                                dialog.dismiss();
+                                PrefUtils.removeAll(getActivity());
+                                startActivity(new Intent(getActivity(),SplashActivity.class));
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                                dialog.dismiss();
+                            }
+                        });
             }
         }
     }

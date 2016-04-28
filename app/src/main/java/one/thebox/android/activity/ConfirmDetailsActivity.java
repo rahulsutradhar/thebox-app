@@ -104,9 +104,4 @@ public class ConfirmDetailsActivity extends BaseActivity {
             }
         });
     }
-
-    @Override
-    void onClick(int id) {
-
-    }
 }

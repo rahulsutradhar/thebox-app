@@ -11,8 +11,11 @@ import one.thebox.android.api.ApiResponse;
  * Created by Ajeet Kumar Meena on 19-04-2016.
  */
 public class UserSignInSignUpResponse extends ApiResponse implements Serializable{
+    @SerializedName("success")
     private boolean success;
+    @SerializedName("info")
     private String info;
+    @SerializedName("user")
     private User user;
 
     public UserSignInSignUpResponse(boolean success, String info, User user) {

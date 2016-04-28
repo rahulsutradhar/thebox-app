@@ -4,51 +4,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:padding="12dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:text="Please select frequency:"
+        android:textColor="@color/dim_gray"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/button_monthly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="Monthly"
-            android:textColor="@color/brilliant_rose"
-            android:textSize="16dp" />
+    </RadioGroup>
 
-        <TextView
-            android:id="@+id/button_twice_a_month"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="Twice a month"
-            android:textColor="@color/dim_gray"
-            android:textSize="16dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please select size:"
+        android:textColor="@color/dim_gray"/>
 
-        <TextView
-            android:id="@+id/button_weekly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:text="Weekly"
-            android:textColor="@color/dim_gray"
-            android:textSize="16dp" />
-
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/manatee" />
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler_view"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 
 </LinearLayout>

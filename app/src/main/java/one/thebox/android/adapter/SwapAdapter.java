@@ -6,6 +6,8 @@ import android.view.View;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.UserCategory;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 
 /**
@@ -13,28 +15,33 @@ import one.thebox.android.R;
  */
 public class SwapAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
+    ArrayList<UserItem> userItems = new ArrayList<>();
 
     public SwapAdapter(Context context) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_HEADER;
     }
 
-    public void addBoxItems(Box.BoxItem boxItem) {
-        boxItems.add(boxItem);
+    public void addUserItem(UserItem userItem) {
+        userItems.add(userItem);
     }
 
-    public ArrayList<Box.BoxItem> getBoxItems() {
-        return boxItems;
+    public ArrayList<UserItem> getUserItems() {
+        return userItems;
     }
 
-    public void setBoxItems(ArrayList<Box.BoxItem> boxItems) {
-        this.boxItems = boxItems;
+    public void setUserItems(ArrayList<UserItem> userItems) {
+        this.userItems = userItems;
     }
 
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
     }
 
     @Override
@@ -64,7 +71,7 @@ public class SwapAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return boxItems.size();
+        return userItems.size();
     }
 
     @Override
@@ -75,6 +82,11 @@ public class SwapAdapter extends BaseRecyclerAdapter {
     @Override
     protected int getHeaderLayoutId() {
         return R.layout.header_swap_items;
+    }
+
+    @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
     }
 
     @Override

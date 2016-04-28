@@ -92,4 +92,5 @@ public class ExploreBoxesFragment extends Fragment {
                     }
                 });
     }
+
 }

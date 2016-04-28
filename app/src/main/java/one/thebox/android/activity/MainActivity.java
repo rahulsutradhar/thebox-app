@@ -19,6 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -40,12 +44,15 @@ import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Header;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
+    public static boolean isSearchFragmentIsAttached = false;
+    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
@@ -84,6 +91,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupSearchView();
         setupNavigationDrawer();
         attachExploreBoxes();
+        boolean isFirstLogin = true;
+        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
+            getAllAddresses();
+        }
     }
 
     private void setupNavigationDrawer() {
@@ -241,7 +252,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    void onClick(int id) {
+    public void onClick(View view) {
+        int id = view.getId();
         switch (id) {
             case R.id.search: {
                 break;
@@ -266,11 +278,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachSearchResultFragment() {
-        if (getActiveFragmentTag() == null || !getActiveFragmentTag().equals("Explore Boxes")) {
+        if (!isSearchFragmentIsAttached) {
+            isSearchFragmentIsAttached = true;
             getToolbar().setTitle("Search");
             SearchResultFragment fragment = new SearchResultFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
             fragmentTransaction.commit();
         }
     }
@@ -298,5 +311,36 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return actionBarDrawerToggle.onOptionsItemSelected(item);
+    }
+
+    public void getAllAddresses() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
+                .enqueue(new Callback<GetAllAddressResponse>() {
+                    @Override
+                    public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                PrefUtils.getBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
+                                User user = PrefUtils.getUser(MainActivity.this);
+                                user.setAddresses(response.body().getUserAddresses());
+                                PrefUtils.saveUser(MainActivity.this, user);
+                            } else {
+                                Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<GetAllAddressResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

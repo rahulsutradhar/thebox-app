@@ -3,8 +3,7 @@ package one.thebox.android.api.Responses;
 import java.io.Serializable;
 import java.util.List;
 
-import one.thebox.android.Models.Categories;
-import one.thebox.android.Models.Items;
+import one.thebox.android.Models.Category;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -12,9 +11,9 @@ import one.thebox.android.api.ApiResponse;
  */
 public class SearchAutoCompleteResponse extends ApiResponse implements Serializable {
     private List<String> items;
-    private List<String> categories;
+    private List<Category> categories;
 
-    public SearchAutoCompleteResponse(List<String> items, List<String> categories) {
+    public SearchAutoCompleteResponse(List<String> items, List<Category> categories) {
         this.items = items;
         this.categories = categories;
     }
@@ -27,11 +26,11 @@ public class SearchAutoCompleteResponse extends ApiResponse implements Serializa
         this.items = items;
     }
 
-    public List<String> getCategories() {
+    public List<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
 }

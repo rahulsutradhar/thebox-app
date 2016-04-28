@@ -9,14 +9,15 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.Category;
 import one.thebox.android.R;
 import one.thebox.android.util.DisplayUtil;
 
 public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
+    ArrayList<Box> boxItems = new ArrayList<>();
 
-    public SearchResultMyItemAdapter(Context context, ArrayList<Box.BoxItem> boxItems) {
+    public SearchResultMyItemAdapter(Context context, ArrayList<Box> boxItems) {
         super(context);
         this.boxItems = boxItems;
     }
@@ -26,13 +27,18 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
     }
 
 
-    public void addBoxItem(Box.BoxItem boxItem) {
+    public void addBoxItem(Box boxItem) {
         boxItems.add(boxItem);
     }
 
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
     }
 
     @Override
@@ -77,6 +83,11 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
+    }
+
+    @Override
     protected int getFooterLayoutId() {
         return 0;
     }
@@ -102,8 +113,8 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private RecyclerView recyclerView;
-        private MyBoxRecyclerAdapter.SavingsAdapter savingsAdapter;
-        private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
+        private MyBoxRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
+        private ArrayList<Category> categories = new ArrayList<>();
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -111,17 +122,17 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
             setupRecyclerView();
         }
 
-        public void setViews(Box.BoxItem boxItem) {
+        public void setViews(Box boxItem) {
 
         }
 
         private void setupRecyclerView() {
-            for (int i = 0; i < 10; i++) {
-                smartItems.add(new Box.SmartItem());
-            }
-            savingsAdapter = new MyBoxRecyclerAdapter.SavingsAdapter(mContext, smartItems);
+  /*         *//* for (int i = 0; i < 10; i++) {
+                categories.add(new Box.);
+            }*//*
+            remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, categories);
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-            recyclerView.setAdapter(savingsAdapter);
+            recyclerView.setAdapter(remainingCategoryAdapter);*/
         }
     }
 }

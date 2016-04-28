@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -36,8 +38,8 @@ public class AllItemsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -65,8 +67,9 @@ public class AllItemsFragment extends Fragment {
     public void onSearchEvent(SearchEvent searchEvent) {
         searchResults.clear();
         for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
-            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i);
-            SearchResult searchResult = new SearchResult(categoryName);
+            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
+            int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
+            SearchResult searchResult = new SearchResult(categoryId,categoryName);
             searchResults.add(searchResult);
         }
         for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
@@ -84,16 +87,4 @@ public class AllItemsFragment extends Fragment {
         searchResultAllItemAdapter.setSearchResults(searchResults);
         recyclerView.setAdapter(searchResultAllItemAdapter);
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
-    }
-
 }

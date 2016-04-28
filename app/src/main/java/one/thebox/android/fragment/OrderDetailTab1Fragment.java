@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
-import one.thebox.android.adapter.OrderDetailAdapter;
+
 
 
 public class OrderDetailTab1Fragment extends Fragment {
 
     private View rootView;
     private RecyclerView recyclerView;
+/*
     private OrderDetailAdapter orderDetailAdapter;
+*/
 
 
     public OrderDetailTab1Fragment() {
@@ -40,12 +42,12 @@ public class OrderDetailTab1Fragment extends Fragment {
     }
 
     private void setupRecyclerAdapter() {
-        orderDetailAdapter = new OrderDetailAdapter(getActivity());
+      /*  orderDetailAdapter = new OrderDetailAdapter(getActivity());
         for (int i = 0; i < 10; i++) {
             orderDetailAdapter.addBoxItem(new Box.BoxItem());
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(orderDetailAdapter);
+        recyclerView.setAdapter(orderDetailAdapter);*/
     }
 
     private void initViews() {

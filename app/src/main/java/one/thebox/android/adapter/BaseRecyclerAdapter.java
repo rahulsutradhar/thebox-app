@@ -2,6 +2,7 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
     public static final int RECYCLER_VIEW_TYPE_HEADER_FOOTER = 303;
+    private boolean isManyItemViewTypeAdapter;
+    public int adapterCurrentPosition;
 
     protected int mViewType = RECYCLER_VIEW_TYPE_NORMAL;
     private OnItemClickListener itemClickListener;
@@ -28,11 +31,26 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         this.mContext = context;
     }
 
+    public boolean isManyItemViewTypeAdapter() {
+        return isManyItemViewTypeAdapter;
+    }
+
+    public void setManyItemViewTypeAdapter(boolean manyItemViewTypeAdapter) {
+        isManyItemViewTypeAdapter = manyItemViewTypeAdapter;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d("Test OnCreateViewHolder", String.valueOf(adapterCurrentPosition));
         if (viewType == RECYCLER_ADAPTER_ITEM) {
-            View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(), parent, false);
-            return getItemHolder(itemView);
+            if (isManyItemViewTypeAdapter) {
+                View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(adapterCurrentPosition), parent, false);
+                return getItemHolder(itemView, adapterCurrentPosition);
+            } else {
+                View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(), parent, false);
+                return getItemHolder(itemView);
+            }
+
         } else if (viewType == RECYCLER_ADAPTER_HEADER) {
             if (getHeaderLayoutId() != -1) {
                 View headerView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getHeaderLayoutId(), parent, false);
@@ -50,6 +68,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d("Test OnBindViewHolder", String.valueOf(adapterCurrentPosition));
         if (getItemViewType(position) == RECYCLER_ADAPTER_ITEM) {
             int itemPos = position;
             if (mViewType != RECYCLER_VIEW_TYPE_NORMAL) {
@@ -102,6 +121,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
+        adapterCurrentPosition = position - 1;
         switch (mViewType) {
             case RECYCLER_VIEW_TYPE_NORMAL:
                 return RECYCLER_ADAPTER_ITEM;
@@ -135,6 +155,9 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     protected abstract ItemHolder getItemHolder(View view);
 
+    protected abstract ItemHolder getItemHolder(View view, int position);
+
+
     protected abstract HeaderHolder getHeaderHolder(View view);
 
     protected abstract FooterHolder getFooterHolder(View view);
@@ -148,6 +171,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
     public abstract int getItemsCount();
 
     protected abstract int getItemLayoutId();
+
+    protected abstract int getItemLayoutId(int position);
 
     protected abstract int getHeaderLayoutId();
 

@@ -38,6 +38,11 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
+    }
+
+    @Override
     protected HeaderHolder getHeaderHolder(View view) {
         return null;
     }
@@ -88,6 +93,11 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
+        return 0;
+    }
+
+    @Override
+    protected int getItemLayoutId(int position) {
         return 0;
     }
 

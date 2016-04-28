@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,12 +24,21 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.adapter.SwapAdapter;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.Responses.AddToMyBoxResponse;
+import one.thebox.android.api.Responses.MyBoxResponse;
+import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MyBoxesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
+    private ProgressBar progressBar;
     private BottomSheetBehavior bottomSheetBehavior;
     private BottomSheetDialog bottomSheetDialog;
     private SwapAdapter swapAdapter;
@@ -44,28 +54,20 @@ public class MyBoxesFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
         initViews();
-        setupRecyclerView();
+        getMyBoxes();
         return rootLayout;
     }
 
     private void setupRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        for (int i = 0; i < 5; i++) {
-            ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
-            ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
-            for (int j = 0; j < 10; j++) {
-                smartItems.add(new Box.SmartItem());
-                boxItems.add(new Box.BoxItem());
-            }
-            boxes.add(new Box(smartItems, boxItems));
-        }
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
     }
 
     private void initViews() {
+        this.progressBar = (ProgressBar) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
     }
 
@@ -100,5 +102,24 @@ public class MyBoxesFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void getMyBoxes() {
+        MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<MyBoxResponse>() {
+                    @Override
+                    public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
+                        progressBar.setVisibility(View.GONE);
+                        if (response.body() != null) {
+                            boxes.addAll(new ArrayList<>(response.body().getBoxes()));
+                            setupRecyclerView();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MyBoxResponse> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
     }
 }

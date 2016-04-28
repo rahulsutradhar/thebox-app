@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
 
@@ -14,28 +15,39 @@ import one.thebox.android.R;
  */
 public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<SizeAndFrequency> sizeAndFrequencies;
+    ArrayList<BoxItem.PriceAndSize> priceAndSizes;
+    int currentItemSelected = 0;
+    int prevItemSelected = 0;
 
     public SizeAndFrequencyAdapter(Context context) {
         super(context);
-        sizeAndFrequencies = new ArrayList<>();
+        priceAndSizes = new ArrayList<>();
     }
 
-    public void addSizeAndFrequency(SizeAndFrequency sizeAndFrequency) {
-        sizeAndFrequencies.add(sizeAndFrequency);
+    public int getCurrentItemSelected() {
+        return currentItemSelected;
     }
 
-    public ArrayList<SizeAndFrequency> getSizeAndFrequencies() {
-        return sizeAndFrequencies;
+    public void setCurrentItemSelected(int currentItemSelected) {
+        this.currentItemSelected = currentItemSelected;
     }
 
-    public void setSizeAndFrequencies(ArrayList<SizeAndFrequency> sizeAndFrequencies) {
-        this.sizeAndFrequencies = sizeAndFrequencies;
+    public ArrayList<BoxItem.PriceAndSize> getPriceAndSizes() {
+        return priceAndSizes;
+    }
+
+    public void setPriceAndSizes(ArrayList<BoxItem.PriceAndSize> priceAndSizes) {
+        this.priceAndSizes = priceAndSizes;
     }
 
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
     }
 
     @Override
@@ -54,17 +66,13 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sizeAndFrequencies.get(position).setSelected(true);
-                notifyItemChanged(position);
-                for (int i = 0; i < sizeAndFrequencies.size(); i++) {
-                    if (sizeAndFrequencies.get(i).isSelected() && i != position) {
-                        sizeAndFrequencies.get(i).setSelected(false);
-                        notifyItemChanged(i);
-                    }
-                }
+                prevItemSelected = currentItemSelected;
+                currentItemSelected = position;
+                notifyItemChanged(prevItemSelected);
+                notifyItemChanged(currentItemSelected);
             }
         });
-        itemViewHolder.setViewHolder(sizeAndFrequencies.get(position));
+        itemViewHolder.setViewHolder(priceAndSizes.get(position));
     }
 
     @Override
@@ -79,7 +87,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return sizeAndFrequencies.size();
+        return priceAndSizes.size();
     }
 
     @Override
@@ -89,6 +97,11 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
+        return 0;
+    }
+
+    @Override
+    protected int getItemLayoutId(int position) {
         return 0;
     }
 
@@ -111,14 +124,17 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 
-        public void setViewHolder(SizeAndFrequency sizeAndFrequency) {
-            if (sizeAndFrequency.isSelected()) {
+        public void setViewHolder(BoxItem.PriceAndSize priceAndSize) {
+            sizeTextView.setText(priceAndSize.getSize() + " " + priceAndSize.getSizeUnit());
+            costTextView.setText(priceAndSize.getPrice() + " Rs");
+            if (getAdapterPosition() == currentItemSelected) {
                 sizeTextView.setTextColor(colorRose);
                 costTextView.setTextColor(colorRose);
-            } else {
+            } else if (getAdapterPosition() == prevItemSelected) {
                 sizeTextView.setTextColor(colorDimGray);
                 costTextView.setTextColor(colorDimGray);
             }
+
         }
     }
 }

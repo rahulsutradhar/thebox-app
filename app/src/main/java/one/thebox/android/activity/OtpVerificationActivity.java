@@ -88,8 +88,10 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                            finish();
                                         } else {
                                             startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                            finish();
                                         }
                                     }
                                 } else {
@@ -120,7 +122,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     }
 
     @Override
-    void onClick(int id) {
+    public void onClick(View view) {
+        int id = view.getId();
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
@@ -136,7 +139,13 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                             if (response.body().getUser() != null) {
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
-                                                startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                                if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
+                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                                    finish();
+                                                } else {
+                                                    startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                                    finish();
+                                                }
                                             }
                                         } else {
                                             Toast.makeText(OtpVerificationActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -160,12 +169,12 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-
+                                    dialog.dismiss();
                                 }
 
                                 @Override
                                 public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-
+                                    dialog.dismiss();
                                 }
                             });
                 } else {
@@ -175,12 +184,12 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-
+                                    dialog.dismiss();
                                 }
 
                                 @Override
                                 public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-
+                                    dialog.dismiss();
                                 }
                             });
                 }

@@ -16,17 +16,23 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Locality;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
+import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
+import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Header;
 
 /**
  * Created by Ajeet Kumar Meena on 22-04-2016.
@@ -50,12 +56,13 @@ public class AddEditAddressViewHelper {
     private User.Address address;
 
     private void setupViews() {
-        label.setText(address.getLabel());
-        flat.setText(address.getLabel());
+        label.setText(address.getSociety());
+        flat.setText(address.getSociety());
         street.setText(address.getStreet());
         ((RadioButton) radioGroup.getChildAt(address.getType())).setChecked(true);
         localityAutoCompleteTextView.setText(address.getLocality().getName());
         primaryAddress.setChecked(address.isCurrentAddress());
+        addButton.setText("Save");
     }
 
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
@@ -127,25 +134,109 @@ public class AddEditAddressViewHelper {
                 }
                 User user = PrefUtils.getUser(context);
                 boolean primaryAddressCanBeFalse = !(user.getAddresses() == null || user.getAddresses().isEmpty());
-                if (!primaryAddressCanBeFalse && primaryAddress.isSelected()) {
+                if (!primaryAddressCanBeFalse && !primaryAddress.isChecked()) {
                     Toast.makeText(context, "Your first address should be primary", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (localitySelected == null) {
+                    localityAutoCompleteTextView.setError("Selected locality doesn't exist");
+                    return;
+                }
                 int type = radioGroup.indexOfChild(bottomSheet.findViewById(radioGroup.getCheckedRadioButtonId()));
-                if(localitySelected==null && address!=null){
+                if (localitySelected == null && address != null) {
                     localitySelected = address.getLocality();
                 }
-                User.Address address = new User.Address(type,
+                //TODO: Make the api call here.
+                int id;
+                if (address != null) {
+                    id = address.getId();
+                } else {
+                    id = 0;
+                }
+                User.Address address = new User.Address(id, type,
                         label.getText().toString(),
                         flat.getText().toString(),
                         street.getText().toString(),
                         localitySelected,
-                        primaryAddress.isSelected()
+                        primaryAddress.isChecked(), User.Address.getAddressTypeName(type)
                 );
-                onAddressAdded.onAddressAdded(address);
-                bottomSheetDialog.dismiss();
+
+                if (AddEditAddressViewHelper.this.address != null) {
+                    updateAddress(address);
+                } else {
+                    addAddress(address);
+                }
+
             }
         });
+    }
+
+    private void addAddress(final User.Address address) {
+        final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().addAddress(PrefUtils.getToken(context),
+                new AddAddressRequestBody(
+                        new AddAddressRequestBody.Address(
+                                address.getLocality().getCode(),
+                                address.getType(),
+                                address.getFlat(),
+                                address.getSociety(),
+                                address.getStreet())))
+                .enqueue(new Callback<AddressesApiResponse>() {
+                    @Override
+                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                bottomSheetDialog.dismiss();
+                                address.setId(response.body().getAddress().getId());
+                                onAddressAdded.onAddressAdded(address);
+                                Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+    private void updateAddress(final User.Address address) {
+        final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().updateAddress(PrefUtils.getToken(context),
+                new UpdateAddressRequestBody(
+                        new UpdateAddressRequestBody.Address(
+                                address.getId()
+                                , address.getLocality().getCode(),
+                                address.getType(),
+                                address.getFlat(),
+                                address.getSociety(),
+                                address.getStreet())))
+                .enqueue(new Callback<AddressesApiResponse>() {
+                    @Override
+                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                bottomSheetDialog.dismiss();
+                                onAddressAdded.onAddressAdded(address);
+                                Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
     }
 
     private void setupAutoComplete() {
@@ -192,7 +283,7 @@ public class AddEditAddressViewHelper {
 
     private void initViews() {
         progressBar = (ProgressBar) bottomSheet.findViewById(R.id.progress_bar);
-        label = (EditText) bottomSheet.findViewById(R.id.label_edit_text);
+        label = (EditText) bottomSheet.findViewById(R.id.society_edit_text);
         flat = (EditText) bottomSheet.findViewById(R.id.flat_edit_text);
         street = (EditText) bottomSheet.findViewById(R.id.street_edit_text);
         radioGroup = (RadioGroup) bottomSheet.findViewById(R.id.radio_group_type);

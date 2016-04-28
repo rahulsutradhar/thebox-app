@@ -1,65 +1,82 @@
 package one.thebox.android.Models;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by Ajeet Kumar Meena on 11-04-2016.
- */
-public class Box {
-
-    private ArrayList<SmartItem> smartItems;
-    private ArrayList<BoxItem> boxItems;
+public class Box implements Serializable {
+    @SerializedName("id")
+    private int id;
+    @SerializedName("user_id")
+    private int userId;
+    @SerializedName("box_id")
+    private int boxId;
+    @SerializedName("remaining_categories")
+    private List<Category> remainingCategories;
+    @SerializedName("usercategories")
+    private List<UserCategory> userCategories;
+    @SerializedName("box")
+    private BoxDetail box;
     private boolean isExpandedListVisible;
 
-    public Box(ArrayList<SmartItem> smartItems, ArrayList<BoxItem> boxItems) {
-        this.smartItems = smartItems;
-        this.boxItems = boxItems;
+
+    public Box(int id, int userId, int boxId, List<Category> remainingCategories, List<UserCategory> userCategories, BoxDetail box) {
+        this.id = id;
+        this.userId = userId;
+        this.boxId = boxId;
+        this.remainingCategories = remainingCategories;
+        this.userCategories = userCategories;
+        this.box = box;
     }
 
-    public ArrayList<SmartItem> getSmartItems() {
-        return smartItems;
+    public int getId() {
+        return id;
     }
 
-    public void setSmartItems(ArrayList<SmartItem> smartItems) {
-        this.smartItems = smartItems;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public static class SmartItem{
-
+    public int getUserId() {
+        return userId;
     }
 
-    public static class BoxItem {
-        int size;
-        int frequency;
-        int noOfItemsSelected;
-        int id;
-        String title;
-        String brand;
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
+    public int getBoxId() {
+        return boxId;
+    }
 
-        public int getNoOfItemsSelected() {
-            return noOfItemsSelected;
-        }
+    public void setBoxId(int boxId) {
+        this.boxId = boxId;
+    }
 
-        public void setNoOfItemsSelected(int noOfItemsSelected) {
-            this.noOfItemsSelected = noOfItemsSelected;
-        }
+    public List<Category> getRemainingCategories() {
+        return remainingCategories;
+    }
 
-        public int getFrequency() {
-            return frequency;
-        }
+    public void setRemainingCategories(List<Category> remainingCategories) {
+        this.remainingCategories = remainingCategories;
+    }
 
-        public void setFrequency(int frequency) {
-            this.frequency = frequency;
-        }
+    public List<UserCategory> getUserCategories() {
+        return userCategories;
+    }
 
-        public int getSize() {
-            return size;
-        }
+    public void setUserCategories(List<UserCategory> userCategories) {
+        this.userCategories = userCategories;
+    }
 
-        public void setSize(int size) {
-            this.size = size;
-        }
+    public BoxDetail getBoxDetail() {
+        return box;
+    }
+
+    public void setBox(BoxDetail box) {
+        this.box = box;
     }
 
     public boolean isExpandedListVisible() {
@@ -70,11 +87,22 @@ public class Box {
         isExpandedListVisible = expandedListVisible;
     }
 
-    public ArrayList<BoxItem> getBoxItems() {
-        return boxItems;
+    public ArrayList<UserItem> getAllItemInTheBox() {
+        ArrayList<UserItem> userItems = new ArrayList<>();
+        for (UserCategory userCategory : userCategories) {
+            userItems.addAll(userCategory.getUserItems());
+        }
+        return userItems;
     }
 
-    public void setBoxItems(ArrayList<BoxItem> boxItems) {
-        this.boxItems = boxItems;
+    public String getSubTitle() {
+        String subTitle = "";
+        for (UserCategory userCategory : userCategories) {
+            subTitle = userCategory.getCategory().getTitle() + ", " + subTitle;
+        }
+        if (subTitle != null && !subTitle.isEmpty()) {
+            subTitle = subTitle.substring(0, subTitle.length() - 2);
+        }
+        return subTitle;
     }
 }

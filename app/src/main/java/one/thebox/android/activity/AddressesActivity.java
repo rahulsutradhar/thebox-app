@@ -20,7 +20,7 @@ import one.thebox.android.adapter.ChangeAddressAdapter;
 import one.thebox.android.adapter.EditDeliveryAddressAdapter;
 import one.thebox.android.util.PrefUtils;
 
-public class AddressesActivity extends BaseActivity {
+public class AddressesActivity extends BaseActivity implements View.OnClickListener{
 
     private RecyclerView recyclerView;
     private AddressesAdapter addressesAdapter;
@@ -31,13 +31,13 @@ public class AddressesActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
-        user = PrefUtils.getUser(this);
         initViews();
         setTitle("Addresses");
         setupRecyclerViews();
     }
 
     private void setupRecyclerViews() {
+        user = PrefUtils.getUser(this);
         addressesAdapter = new AddressesAdapter(this);
         addressesAdapter.setAddresses(user.getAddresses());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -56,7 +56,8 @@ public class AddressesActivity extends BaseActivity {
     }
 
     @Override
-    void onClick(int id) {
+    public void onClick(View view) {
+        int id = view.getId();
         switch (id) {
             case R.id.create_new_button: {
                 openAddAddressBottomSheet();
@@ -71,9 +72,10 @@ public class AddressesActivity extends BaseActivity {
             public void onAddressAdded(User.Address address) {
                 User user = PrefUtils.getUser(AddressesActivity.this);
                 ArrayList<User.Address> addresses = user.getAddresses();
+
                 addresses.add(address);
                 user.setAddresses(addresses);
-                PrefUtils.saveUser(AddressesActivity.this,user);
+                PrefUtils.saveUser(AddressesActivity.this, user);
                 setupRecyclerViews();
             }
         }).show();

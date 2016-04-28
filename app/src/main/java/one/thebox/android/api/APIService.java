@@ -1,15 +1,26 @@
 package one.thebox.android.api;
 
 
-import com.google.android.gms.common.api.Api;
-
+import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
+import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.RequestBodies.SignUpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
+import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
+import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
+import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
+import one.thebox.android.api.Responses.AddToMyBoxResponse;
+import one.thebox.android.api.Responses.AddressesApiResponse;
+import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
+import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.Responses.ExploreItemResponse;
+import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
+import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
+import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -62,7 +73,47 @@ public interface APIService {
     Call<ExploreItemResponse> getAllExploreBoxes(@Header("authtoken") String authToken);
 
     @GET("/searchresults")
-    Call<ApiResponse> getSearchResults(@Header("authtoken") String authToken,
-                               @Query("query") String query);
+    Call<SearchDetailResponse> getSearchResults(@Header("authtoken") String authToken,
+                                                @Query("query") String query);
 
+    @POST("/users/sign_out")
+    Call<ApiResponse> signOut(@Header("authtoken") String authToken);
+
+    @POST("/updatemyprofile")
+    Call<ApiResponse> updateProfile(@Header("authtoken") String authtoken,
+                                    @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
+
+    @POST("/addtomybox")
+    Call<AddToMyBoxResponse> addToMyBox(@Header("authtoken") String authToken,
+                                        @Body AddToMyBoxRequestBody addToMyBoxRequestBody);
+
+    @GET("/allitemsforcategory")
+    Call<CategoryBoxItemsResponse> getCategoryBoxItems(@Header("authtoken") String authToken,
+                                                       @Query("id") int id);
+
+    @GET("/explore_box")
+    Call<ExploreBoxResponse> getExploreBox(@Header("authtoken") String authToken,
+                                           @Query("id") int id);
+
+    @GET("/gogetmybox")
+    Call<MyBoxResponse> getMyBoxes(@Header("authtoken") String authToken);
+
+    @POST("/updateitemquantity")
+    Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,
+                                                  @Body UpdateItemQuantityRequestBody updateItemQuantityRequestBody);
+
+    @POST("/updateitemconfig")
+    Call<ApiResponse> updateItemConfig(@Header("authtoken") String authToken,
+                                       @Body UpdateItemConfigurationRequest updateItemConfigurationRequest);
+
+    @POST("/addmyaddress")
+    Call<AddressesApiResponse> addAddress(@Header("authtoken") String authToken,
+                                          @Body AddAddressRequestBody addAddressRequestBody);
+
+    @POST("/updatemyaddress")
+    Call<AddressesApiResponse> updateAddress(@Header("authtoken") String authTokken,
+                                             @Body UpdateAddressRequestBody updateAddressRequestBody);
+
+    @GET("/getmyaddresses")
+    Call<GetAllAddressResponse> getAllAddresses(@Header("authtoken") String authToken);
 }

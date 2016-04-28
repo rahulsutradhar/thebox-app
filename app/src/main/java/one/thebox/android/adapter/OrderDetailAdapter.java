@@ -1,3 +1,4 @@
+/*
 package one.thebox.android.adapter;
 
 import android.content.Context;
@@ -8,33 +9,35 @@ import java.util.ArrayList;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 
+*/
 /**
  * Created by Ajeet Kumar Meena on 17-04-2016.
- */
+ *//*
+
 public class OrderDetailAdapter extends BaseRecyclerAdapter{
 
-    private ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
+    private ArrayList<Box.BoxItem> userItems = new ArrayList<>();
 
     public OrderDetailAdapter(Context context) {
         super(context);
     }
 
     public void addBoxItem(Box.BoxItem boxItem) {
-            boxItems.add(boxItem);
+            userItems.add(boxItem);
     }
 
 
-    public ArrayList<Box.BoxItem> getBoxItems() {
-        return boxItems;
+    public ArrayList<Box.BoxItem> getUserItems() {
+        return userItems;
     }
 
-    public void setBoxItems(ArrayList<Box.BoxItem> boxItems) {
-        this.boxItems = boxItems;
+    public void setUserItems(ArrayList<Box.BoxItem> userItems) {
+        this.userItems = userItems;
     }
 
     @Override
     protected ItemHolder getItemHolder(View view) {
-        return new ItemViewHolder(view);
+        return new SearchedItemViewHolder(view);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class OrderDetailAdapter extends BaseRecyclerAdapter{
 
     @Override
     public int getItemsCount() {
-        return boxItems.size();
+        return userItems.size();
     }
 
     @Override
@@ -82,10 +85,11 @@ public class OrderDetailAdapter extends BaseRecyclerAdapter{
         return 0;
     }
 
-    private class ItemViewHolder extends  ItemHolder{
+    private class SearchedItemViewHolder extends  ItemHolder{
 
-        public ItemViewHolder(View itemView) {
+        public SearchedItemViewHolder(View itemView) {
             super(itemView);
         }
     }
 }
+*/

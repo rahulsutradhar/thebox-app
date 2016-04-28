@@ -45,7 +45,7 @@ public class MyItemsFragment extends Fragment {
         ArrayList<Box> boxes = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        for (int i = 0; i < 5; i++) {
+   /*     for (int i = 0; i < 5; i++) {
             ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
             ArrayList<Box.BoxItem> boxItems = new ArrayList<>();
             for (int j = 0; j < 10; j++) {
@@ -53,11 +53,12 @@ public class MyItemsFragment extends Fragment {
                 boxItems.add(new Box.BoxItem());
             }
             boxes.add(new Box(smartItems, boxItems));
-        }
+        }*/
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
     }
+
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
     }

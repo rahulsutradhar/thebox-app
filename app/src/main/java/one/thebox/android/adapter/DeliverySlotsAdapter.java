@@ -43,6 +43,11 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
+    }
+
+    @Override
     protected HeaderHolder getHeaderHolder(View view) {
         return new HeaderViewHolder(view);
     }
@@ -81,6 +86,11 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
     @Override
     protected int getHeaderLayoutId() {
         return R.layout.header_delay_delivery;
+    }
+
+    @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
     }
 
     @Override

@@ -46,24 +46,24 @@
             android:text="Arriving in 6 days"
             android:textColor="@color/brilliant_rose"
             android:textSize="10dp"
-            android:layout_below="@+id/textView5"
+            android:layout_below="@+id/delivery_time"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/text_view_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="One 55ml Tube, 50 Rs Monthly"
             android:textColor="@color/black"
             android:textSize="14dp"
-            android:layout_alignBottom="@+id/textView2"
+            android:layout_alignBottom="@+id/savings"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginBottom="9dp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/savings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -71,12 +71,12 @@
             android:textColor="@color/brilliant_rose"
             android:textSize="10dp"
             android:layout_marginTop="46dp"
-            android:layout_below="@+id/textView5"
+            android:layout_below="@+id/delivery_time"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/delivery_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delivered to you on 2nd of every month"
@@ -100,7 +100,7 @@
             android:paddingRight="24dp"
             android:paddingLeft="24dp"
             android:background="@drawable/grey_borders"
-            android:layout_below="@+id/textView"
+            android:layout_below="@+id/text_view_size"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="18dp" />

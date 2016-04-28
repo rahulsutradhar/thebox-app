@@ -2,8 +2,12 @@ package one.thebox.android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
 
@@ -44,6 +48,11 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
+    }
+
+    @Override
     protected HeaderHolder getHeaderHolder(View view) {
         return new HeaderViewHolder(view);
     }
@@ -58,7 +67,7 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachSearchDetailFragment(searchResults.get(position).getResult());
+                attachSearchDetailFragment(searchResults.get(position));
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -91,6 +100,11 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
+    }
+
+    @Override
     protected int getFooterLayoutId() {
         return 0;
     }
@@ -112,14 +126,20 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(SearchResult searchResult) {
-            searchResultText.setText(searchResult.getResult());
+            if (searchResult.getId() == 0) {
+                searchResultText.setText(searchResult.getResult());
+            } else {
+                SpannableStringBuilder str = new SpannableStringBuilder("See All " + searchResult.getResult());
+                str.setSpan(new android.text.style.StyleSpan(Typeface.ITALIC), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                searchResultText.setText(str);
+            }
         }
     }
 
-    private void attachSearchDetailFragment(String query) {
+    private void attachSearchDetailFragment(SearchResult query) {
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
         FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
         fragmentTransaction.commit();
     }
 }

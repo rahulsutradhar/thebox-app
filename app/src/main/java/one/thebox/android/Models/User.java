@@ -103,22 +103,49 @@ public class User implements Serializable {
     public static class Address {
         public static final String ADDRESS_TYPE_HOME = "Home";
         public static final String ADDRESS_TYPE_OFFICE = "Office";
-        public static final String ADDRESS_TYPE_OTHER = "other";
-        public final String[] ADDRESS_TYPES = {ADDRESS_TYPE_HOME, ADDRESS_TYPE_OFFICE, ADDRESS_TYPE_OTHER};
+        public static final String ADDRESS_TYPE_OTHER = "Other";
+        public static final String[] ADDRESS_TYPES = {ADDRESS_TYPE_HOME, ADDRESS_TYPE_OFFICE, ADDRESS_TYPE_OTHER};
+        private int id;
         private int type;
-        private String label;
+        @SerializedName("society")
+        private String society;
+        @SerializedName("flatno")
         private String flat;
+        @SerializedName("street")
         private String street;
+        @SerializedName("locality")
         private Locality locality;
         private boolean isCurrentAddress;
+        @SerializedName("get_label")
+        private String label;
+        @SerializedName("code")
+        private int code;
 
-        public Address(int type, String label, String flat, String street, Locality locality, boolean isCurrentAddress) {
+        public Address(int id, int type, String society, String flat, String street, Locality locality, boolean isCurrentAddress, String label) {
+            this.id = id;
             this.type = type;
-            this.label = label;
+            this.society = society;
             this.flat = flat;
             this.street = street;
             this.locality = locality;
             this.isCurrentAddress = isCurrentAddress;
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
         }
 
         public int getType() {
@@ -129,12 +156,12 @@ public class User implements Serializable {
             this.type = type;
         }
 
-        public String getLabel() {
-            return label;
+        public String getSociety() {
+            return society;
         }
 
-        public void setLabel(String label) {
-            this.label = label;
+        public void setSociety(String society) {
+            this.society = society;
         }
 
         public String getFlat() {
@@ -169,8 +196,17 @@ public class User implements Serializable {
             isCurrentAddress = currentAddress;
         }
 
-        public String getAddressTypeName(int type){
+        public static String getAddressTypeName(int type) {
             return ADDRESS_TYPES[type];
+        }
+
+        public static int getTypeFromLabel(String label) {
+            for (int i = 0; i < ADDRESS_TYPES.length; i++) {
+                if (ADDRESS_TYPES[i].equals(label)) {
+                    return i;
+                }
+            }
+            return 0;
         }
     }
 }

@@ -18,12 +18,12 @@ import one.thebox.android.Models.User;
  */
 public class PrefUtils {
     // Param keys
-    public final static String KEY_EMAIL="KEY_EMAIL";
+    public final static String KEY_EMAIL = "KEY_EMAIL";
     public final static String KEY_SCROLL_POSITION_CHAT = "KEY_SCROLL_POSITION_CHAT";
-    public final static String KEY_NAME="KEY_NAME";
-    public final static String KEY_OBJECT="KEY_OBJECT";
-    public final static String KEY_IMAGE="KEY_IMAGE";
-    public final static String KEY_ID="KEY_ID";
+    public final static String KEY_NAME = "KEY_NAME";
+    public final static String KEY_OBJECT = "KEY_OBJECT";
+    public final static String KEY_IMAGE = "KEY_IMAGE";
+    public final static String KEY_ID = "KEY_ID";
     final static String KEY_TOKEN = "token";
     final static String KEY_USERID = "userid";
     public static final String PREF_KEY_USER_ID = "pref_key_user_id";
@@ -56,8 +56,9 @@ public class PrefUtils {
 
     /**
      * convenience method to add preference listener
+     *
      * @param listener preference listener
-     * @param context context
+     * @param context  context
      */
     public static void addOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener, Context context) {
         getSharedPreferences(context).registerOnSharedPreferenceChangeListener(listener);
@@ -65,8 +66,9 @@ public class PrefUtils {
 
     /**
      * convenience method to remove preference listener
+     *
      * @param listener preference listener
-     * @param context context
+     * @param context  context
      */
     public static void removeOnSharedPreferenceChangeListener(SharedPreferences.OnSharedPreferenceChangeListener listener, Context context) {
         getSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(listener);
@@ -104,12 +106,12 @@ public class PrefUtils {
         return preferences.getInt(PREF_KEY_USER_ID, 0);
     }
 
-    public static Boolean deleteRequired(Context context){
+    public static Boolean deleteRequired(Context context) {
         SharedPreferences preferences = getSharedPreferences(context);
         return preferences.getBoolean(PREF_KEY_REQUIRED_DELETE, true);
     }
 
-    public static void setDeleteRequired(Context context, boolean b){
+    public static void setDeleteRequired(Context context, boolean b) {
         SharedPreferences.Editor editor = getSharedPreferences(context).edit();
         editor.putBoolean(PREF_KEY_REQUIRED_DELETE, b);
         editor.apply();
@@ -120,7 +122,7 @@ public class PrefUtils {
         return preferences.getInt(KEY_SCROLL_POSITION_CHAT, 0);
     }
 
-    public static void setScrollViewPosition(Context context, int mScrollY){
+    public static void setScrollViewPosition(Context context, int mScrollY) {
         SharedPreferences.Editor editor = getSharedPreferences(context).edit();
         editor.putInt(KEY_SCROLL_POSITION_CHAT, mScrollY);
         editor.apply();
@@ -323,11 +325,15 @@ public class PrefUtils {
         getSharedPreferences(context).edit().remove(key).apply();
     }
 
-    public static void saveUser(Context context, User user){
-        saveObjectToPrefs(PREF_USER,user,context);
+    public static void saveUser(Context context, User user) {
+        saveObjectToPrefs(PREF_USER, user, context);
     }
 
     public static User getUser(Context context) {
-        return getObjectFromPrefs(PREF_USER,User.class,context);
+        return getObjectFromPrefs(PREF_USER, User.class, context);
+    }
+
+    public static boolean removeAll(Context context) {
+        return getSharedPreferences(context).edit().clear().commit();
     }
 }

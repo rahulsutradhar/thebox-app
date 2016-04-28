@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.activity.ExploreItemDetailActivity;
+import one.thebox.android.util.CoreGsonUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
@@ -41,6 +42,11 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
     }
 
     @Override
@@ -85,6 +91,11 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
+    }
+
+    @Override
     protected int getFooterLayoutId() {
         return 0;
     }
@@ -105,11 +116,12 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViewHolder(ExploreItem exploreItem) {
+        public void setViewHolder(final ExploreItem exploreItem) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class));
+                    String exploreItemString = CoreGsonUtils.toJson(exploreItem);
+                    mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class).putExtra(ExploreItemDetailActivity.EXTRA_CATEGORY, exploreItemString));
                 }
             });
             title.setText(exploreItem.getTitle());

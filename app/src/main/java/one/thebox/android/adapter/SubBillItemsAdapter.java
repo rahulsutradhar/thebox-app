@@ -45,6 +45,11 @@ public class SubBillItemsAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
+    }
+
+    @Override
     protected HeaderHolder getHeaderHolder(View view) {
         return new HeaderViewHolder(view);
     }
@@ -91,6 +96,11 @@ public class SubBillItemsAdapter extends BaseRecyclerAdapter {
     @Override
     protected int getHeaderLayoutId() {
         return R.layout.header_item_item_bill;
+    }
+
+    @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
     }
 
     @Override

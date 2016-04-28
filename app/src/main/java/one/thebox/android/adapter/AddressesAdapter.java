@@ -46,6 +46,11 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
+    }
+
+    @Override
     protected HeaderHolder getHeaderHolder(View view) {
         return null;
     }
@@ -93,6 +98,11 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
+    }
+
+    @Override
     protected int getFooterLayoutId() {
         return 0;
     }
@@ -109,8 +119,14 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
         }
 
         public void setView(User.Address address) {
-            typeNameTextView.setText(address.getAddressTypeName(address.getType()));
-            addressTextView.setText(address.getFlat() + ", " + address.getStreet());
+            if (address.isCurrentAddress()) {
+                typeNameTextView.setText(address.getAddressTypeName(address.getType()) + " (primary)");
+                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
+            } else {
+                typeNameTextView.setText(address.getAddressTypeName(address.getType()));
+                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
+            }
+
         }
     }
 
@@ -118,6 +134,14 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
         new AddEditAddressViewHelper((Activity) mContext, new AddEditAddressViewHelper.OnAddressAdded() {
             @Override
             public void onAddressAdded(User.Address address) {
+                if (address.isCurrentAddress()) {
+                    for (int i = 0; i < addresses.size(); i++) {
+                        if (addresses.get(i).isCurrentAddress() && i != position) {
+                            addresses.get(i).setCurrentAddress(false);
+                            notifyItemChanged(i);
+                        }
+                    }
+                }
                 addresses.set(position, address);
                 User user = PrefUtils.getUser(mContext);
                 user.setAddresses(addresses);

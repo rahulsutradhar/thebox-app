@@ -10,21 +10,26 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.Category;
 import one.thebox.android.Models.DeliverySlot;
-import one.thebox.android.Models.SizeAndFrequency;
+import one.thebox.android.Models.UserCategory;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
 import one.thebox.android.util.DisplayUtil;
+import one.thebox.android.util.NumberWordConverter;
 
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.
@@ -32,6 +37,7 @@ import one.thebox.android.util.DisplayUtil;
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.OnClickListener {
 
     private ArrayList<Box> boxes;
+
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -52,6 +58,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
+    }
+
+    @Override
+    protected ItemHolder getItemHolder(View view, int position) {
+        return null;
     }
 
     @Override
@@ -104,6 +115,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
     }
 
     @Override
+    protected int getItemLayoutId(int position) {
+        return 0;
+    }
+
+    @Override
     protected int getFooterLayoutId() {
         return 0;
     }
@@ -113,26 +129,31 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
     }
 
-    public static class SavingsAdapter extends BaseRecyclerAdapter {
+    public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
-        ArrayList<Box.SmartItem> smartItems;
+        ArrayList<Category> categories;
 
-        public SavingsAdapter(Context context, ArrayList<Box.SmartItem> smartItems) {
+        public RemainingCategoryAdapter(Context context, ArrayList<Category> categories) {
             super(context);
-            this.smartItems = smartItems;
+            this.categories = categories;
         }
 
-        public ArrayList<Box.SmartItem> getSmartItems() {
-            return smartItems;
+        public ArrayList<Category> getCategories() {
+            return categories;
         }
 
-        public void setSmartItems(ArrayList<Box.SmartItem> smartItems) {
-            this.smartItems = smartItems;
+        public void setCategories(ArrayList<Category> categories) {
+            this.categories = categories;
         }
 
         @Override
         protected ItemHolder getItemHolder(View view) {
             return new ItemViewHolder(view);
+        }
+
+        @Override
+        protected ItemHolder getItemHolder(View view, int position) {
+            return null;
         }
 
         @Override
@@ -162,7 +183,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
         @Override
         public int getItemsCount() {
-            return smartItems.size();
+            return categories.size();
         }
 
         @Override
@@ -176,6 +197,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         }
 
         @Override
+        protected int getItemLayoutId(int position) {
+            return 0;
+        }
+
+        @Override
         protected int getFooterLayoutId() {
             return 0;
         }
@@ -200,251 +226,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         public class ItemViewHolder extends ItemHolder {
             public ItemViewHolder(View itemView) {
                 super(itemView);
-            }
-        }
-    }
-
-    public static class ExpandedListAdapter extends BaseRecyclerAdapter implements View.OnClickListener {
-
-        ArrayList<Box.BoxItem> boxItems;
-
-        public ExpandedListAdapter(Context context, ArrayList<Box.BoxItem> boxItems) {
-            super(context);
-            this.boxItems = boxItems;
-        }
-
-        @Override
-        protected ItemHolder getItemHolder(View view) {
-            return new ItemViewHolder(view);
-        }
-
-        @Override
-        protected HeaderHolder getHeaderHolder(View view) {
-            return new ItemHeaderHolder(view);
-        }
-
-        @Override
-        protected FooterHolder getFooterHolder(View view) {
-            return null;
-        }
-
-        @Override
-        public void onBindViewItemHolder(ItemHolder holder, int position) {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            itemViewHolder.setViews(boxItems.get(position));
-        }
-
-        @Override
-        public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-
-        }
-
-        @Override
-        public void onBindViewFooterHolder(FooterHolder holder, int position) {
-
-        }
-
-        @Override
-        public int getItemsCount() {
-            return boxItems.size();
-        }
-
-        @Override
-        protected int getItemLayoutId() {
-            return R.layout.item_expanded_list;
-        }
-
-        @Override
-        protected int getHeaderLayoutId() {
-            return R.layout.empty_space_header;
-        }
-
-        @Override
-        protected int getFooterLayoutId() {
-            return 0;
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            new BottomSheet.Builder((Activity) mContext).sheet(R.menu.menu_adjust).listener(new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case R.id.change_size: {
-                            openChangeSizeDialog();
-                            break;
-                        }
-                        case R.id.change_quantity: {
-                            break;
-                        }
-                        case R.id.change_frequency: {
-                            break;
-                        }
-                        case R.id.swap_with_similar_product: {
-                            openSwipeBottomSheet();
-                            break;
-                        }
-                        case R.id.delay_delivery: {
-                            openDelayDeliveryDialog();
-                            break;
-                        }
-                    }
-                }
-
-            }).show();
-        }
-
-        private void openDelayDeliveryDialog() {
-            View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            DeliverySlotsAdapter deliverySlotsAdapter = new DeliverySlotsAdapter(mContext);
-            for (int i = 0; i < 10; i++)
-                deliverySlotsAdapter.addDeliveryItems(new DeliverySlot());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            recyclerView.setAdapter(deliverySlotsAdapter);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
-        }
-
-        private void openSwipeBottomSheet() {
-            View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            SwapAdapter swapAdapter = new SwapAdapter(mContext);
-            for (int i = 0; i < 10; i++)
-                swapAdapter.addBoxItems(new Box.BoxItem());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            recyclerView.setAdapter(swapAdapter);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
-        }
-
-        private void openChangeSizeDialog() {
-            MaterialDialog dialog = new MaterialDialog.Builder(mContext)
-                    .title("Change Size and Frequency")
-                    .customView(R.layout.layout_change_size_and_frequency, false)
-                    .build();
-            View customView = dialog.getCustomView();
-            if (customView != null) {
-                customView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-
-                    }
-                });
-                final int colorDimGray = mContext.getResources().getColor(R.color.dim_gray);
-                final int colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
-                final TextView buttonMonthly = (TextView) customView.findViewById(R.id.button_monthly);
-                final TextView buttonTwiceAMonth = (TextView) customView.findViewById(R.id.button_twice_a_month);
-                final TextView buttonWeekly = (TextView) customView.findViewById(R.id.button_weekly);
-                View.OnClickListener onClickListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int id = v.getId();
-                        switch (id) {
-                            case R.id.button_monthly: {
-                                buttonMonthly.setTextColor(colorRose);
-                                buttonTwiceAMonth.setTextColor(colorDimGray);
-                                buttonWeekly.setTextColor(colorDimGray);
-                                break;
-                            }
-                            case R.id.button_twice_a_month: {
-                                buttonMonthly.setTextColor(colorDimGray);
-                                buttonTwiceAMonth.setTextColor(colorRose);
-                                buttonWeekly.setTextColor(colorDimGray);
-                                break;
-                            }
-                            case R.id.button_weekly: {
-                                buttonMonthly.setTextColor(colorDimGray);
-                                buttonTwiceAMonth.setTextColor(colorDimGray);
-                                buttonWeekly.setTextColor(colorRose);
-                                break;
-                            }
-                        }
-                    }
-                };
-                buttonMonthly.setOnClickListener(onClickListener);
-                buttonTwiceAMonth.setOnClickListener(onClickListener);
-                buttonWeekly.setOnClickListener(onClickListener);
-                RecyclerView recyclerView = (RecyclerView) customView.findViewById(R.id.recycler_view);
-                SizeAndFrequencyAdapter sizeAndFrequencyAdapter = new SizeAndFrequencyAdapter(mContext);
-                for (int i = 0; i < 10; i++) {
-                    sizeAndFrequencyAdapter.addSizeAndFrequency(new SizeAndFrequency());
-                }
-                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                recyclerView.setAdapter(sizeAndFrequencyAdapter);
-                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                dialog.show();
-            }
-        }
-
-
-        class ViewPagerAdapter extends FragmentPagerAdapter {
-            private final List<Fragment> mFragmentList = new ArrayList<>();
-            private final List<String> mFragmentTitleList = new ArrayList<>();
-
-            public ViewPagerAdapter(FragmentManager manager) {
-                super(manager);
-            }
-
-            @Override
-            public Fragment getItem(int position) {
-                return mFragmentList.get(position);
-            }
-
-            @Override
-            public int getCount() {
-                return mFragmentList.size();
-            }
-
-            public void addFragment(Fragment fragment, String title) {
-                mFragmentList.add(fragment);
-                mFragmentTitleList.add(title);
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return mFragmentTitleList.get(position);
-            }
-
-            @Override
-            public int getItemPosition(Object object) {
-                return mFragmentList.indexOf(object);
-            }
-        }
-
-
-        public class ItemHeaderHolder extends BaseRecyclerAdapter.HeaderHolder {
-
-            private LinearLayout linearLayout;
-
-            public ItemHeaderHolder(View itemView) {
-                super(itemView);
-                linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
-            }
-
-            public void setHeight(int heightInDp) {
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
-                layoutParams.height = DisplayUtil.dpToPx(mContext, heightInDp);
-                linearLayout.setLayoutParams(layoutParams);
-
-            }
-        }
-
-        public class ItemViewHolder extends ItemHolder {
-            private TextView adjustButton;
-
-            public ItemViewHolder(View itemView) {
-                super(itemView);
-                adjustButton = (TextView) itemView.findViewById(R.id.adjust);
-            }
-
-            public void setViews(Box.BoxItem boxItem) {
-                adjustButton.setOnClickListener(ExpandedListAdapter.this);
             }
         }
     }
@@ -467,32 +248,41 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
     }
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
-        private SavingsAdapter savingsAdapter;
-        private MyBoxRecyclerAdapter.ExpandedListAdapter expandedListAdapter;
-        private RecyclerView recyclerViewSmartItems;
-        private RecyclerView recyclerViewExpandedList;
+        private RemainingCategoryAdapter remainingCategoryAdapter;
+        private UserItemRecyclerAdapter userItemRecyclerAdapter;
+        private RecyclerView recyclerViewCategories;
+        private RecyclerView recyclerViewUserItems;
+        private TextView title, subTitle, savings;
+        private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            this.recyclerViewSmartItems = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
-            this.recyclerViewExpandedList = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
+            this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
+            this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
+            this.title = (TextView) itemView.findViewById(R.id.title);
+            this.subTitle = (TextView) itemView.findViewById(R.id.sub_title);
+            this.savings = (TextView) itemView.findViewById(R.id.saving_text_view);
+            this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
         }
 
         public void setViews(Box box) {
-            this.recyclerViewSmartItems.setLayoutManager(horizontalLinearLayoutManager);
-            this.savingsAdapter = new SavingsAdapter(mContext, box.getSmartItems());
-            this.recyclerViewSmartItems.setAdapter(savingsAdapter);
+            this.title.setText(box.getBoxDetail().getTitle());
+            this.subTitle.setText(box.getSubTitle());
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
+            this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
+            this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, new ArrayList<>(box.getRemainingCategories()));
+            this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             if (box.isExpandedListVisible()) {
-                recyclerViewExpandedList.setVisibility(View.VISIBLE);
-                this.recyclerViewExpandedList.setLayoutManager(verticalLinearLayoutManager);
-                this.expandedListAdapter = new ExpandedListAdapter(mContext, box.getBoxItems());
-                this.recyclerViewExpandedList.setAdapter(expandedListAdapter);
+                recyclerViewUserItems.setVisibility(View.VISIBLE);
+                this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
+                this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox());
+                this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
             } else {
-                recyclerViewExpandedList.setVisibility(View.GONE);
+                recyclerViewUserItems.setVisibility(View.GONE);
             }
         }
     }

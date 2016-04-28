@@ -63,23 +63,6 @@
         android:textColorHint="@color/dim_gray">
 
         <EditText
-            android:id="@+id/label_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/black_underline_edit_text"
-            android:hint="Label"
-            android:inputType="text"
-            android:padding="8dp"
-            android:textColor="@color/dim_gray" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textColorHint="@color/dim_gray">
-
-        <EditText
             android:id="@+id/flat_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +84,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/black_underline_edit_text"
-            android:hint="Street/Society/Office Name"
+            android:hint="Street/Office Name"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textColor="@color/dim_gray" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColorHint="@color/dim_gray">
+
+        <EditText
+            android:id="@+id/society_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/black_underline_edit_text"
+            android:hint="Society"
             android:inputType="text"
             android:padding="8dp"
             android:textColor="@color/dim_gray" />
@@ -118,8 +118,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
             android:layout_marginBottom="22dp"
-            android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:padding="8dp" />
 
         <android.support.design.widget.TextInputLayout
@@ -145,16 +145,17 @@
     </FrameLayout>
 
     <CheckBox
+        android:id="@+id/check_box_primary_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Make as primary address"
         android:layout_marginLeft="8dp"
-        android:textColor="@color/dim_gray"
         android:buttonTint="@color/dim_gray"
-        android:id="@+id/check_box_primary_address"
-        android:checked="false" />
+        android:checked="false"
+        android:text="Make as primary address"
+        android:textColor="@color/dim_gray" />
 
     <TextView
+        android:id="@+id/button_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -166,8 +167,7 @@
         android:paddingTop="8dp"
         android:text="Add"
         android:textColor="@color/dim_gray"
-        android:textSize="16sp"
-        android:id="@+id/button_add" />
+        android:textSize="16sp" />
 
 
 </LinearLayout>

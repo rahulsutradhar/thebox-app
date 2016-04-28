@@ -15,7 +15,8 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginRight="12dp"
-            android:background="@color/dim_gray" />
+            android:background="@color/dim_gray"
+            android:id="@+id/box_image_view" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -26,20 +27,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hygeine Box"
-                android:textColor="@color/dim_gray" />
+                android:textColor="@color/dim_gray"
+                android:id="@+id/title" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hygeine Box"
-                android:textColor="@color/dim_gray" />
+                android:text="sub_title"
+                android:textColor="@color/dim_gray"
+                android:id="@+id/sub_title" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hygeine Box"
-            android:textColor="@color/dim_gray" />
     </LinearLayout>
 
     <LinearLayout
@@ -58,7 +56,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Savings upto 800 per month waiting for you"
-            android:textColor="@color/brilliant_rose" />
+            android:textColor="@color/brilliant_rose"
+            android:id="@+id/saving_text_view" />
 
     </LinearLayout>
 

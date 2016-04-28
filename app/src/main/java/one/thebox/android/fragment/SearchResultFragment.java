@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 
 
 public class SearchResultFragment extends Fragment {
@@ -42,9 +43,11 @@ public class SearchResultFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_search_result, container, false);
-        initViews();
-        setupViewPagerAndTabs();
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_search_result, container, false);
+            initViews();
+            setupViewPagerAndTabs();
+        }
         return rootView;
     }
 
@@ -104,5 +107,17 @@ public class SearchResultFragment extends Fragment {
         public int getItemPosition(Object object) {
             return mFragmentList.indexOf(object);
         }
+    }
+
+    @Override
+    public void onStart() {
+        MainActivity.isSearchFragmentIsAttached = true;
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        MainActivity.isSearchFragmentIsAttached = false;
+        super.onStop();
     }
 }

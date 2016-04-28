@@ -88,6 +88,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 0) {
+                    codeSelected = 0;
                     progressBar.setVisibility(View.VISIBLE);
                     if (callHasBeenCompleted) {
                         callHasBeenCompleted = false;
@@ -191,6 +192,10 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         }
         if (localityAutoCompleteTextView.getText().toString().isEmpty()) {
             localityAutoCompleteTextView.setError("Locality could not be empty");
+            return false;
+        }
+        if(codeSelected == 0){
+            localityAutoCompleteTextView.setError("Locality don't exist");
             return false;
         }
         name = nameEditText.getText().toString().trim();

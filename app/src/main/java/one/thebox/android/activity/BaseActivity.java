@@ -21,15 +21,13 @@ import one.thebox.android.app.MyApplication;
 /**
  * Created by harsh on 10/12/15.
  */
-abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener {
+abstract class BaseActivity extends AppCompatActivity {
 
     boolean isLoginActivity = false;
     private Toolbar toolbar;
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;
     private boolean shouldHandleDrawer;
-
-    abstract void onClick(int id);
 
     @Override
     protected void onPostResume() {
@@ -47,6 +45,10 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeButtonEnabled(true);
+            }
 
             if (hasTransparentTitle) {
                 toolbar.setTitleTextColor(Color.argb(0, 255, 255, 255));
@@ -112,12 +114,6 @@ abstract class BaseActivity extends AppCompatActivity implements View.OnClickLis
 
     public void shouldHandleDrawer() {
         this.shouldHandleDrawer = true;
-    }
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        onClick(id);
     }
 
     public void setToolbar(Toolbar toolbar) {
