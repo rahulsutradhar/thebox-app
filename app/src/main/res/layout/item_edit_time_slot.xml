@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_view_item_names"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Milk, Gillete Razor, Harpic ... 21 items"
+        android:textColor="@color/dim_gray" />
+
+    <TextView
+        android:id="@+id/text_view_order_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="4dp"
+        android:text="Order No. 1110"
+        android:textColor="@color/manatee" />
+
+
+    <LinearLayout
+        android:id="@+id/holder_time_slot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/grey_borders"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/text_view_time_slot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:text="7:30 - 9:00, 13 Feb, Wednesday "
+            android:textColor="@color/dim_gray" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:src="@drawable/ic_down_arrow" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

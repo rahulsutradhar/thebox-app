@@ -5,6 +5,7 @@ import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.RequestBodies.SignUpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
@@ -120,6 +121,10 @@ public interface APIService {
 
     @GET("/getmyorders")
     Call<OrdersApiResponse> getMyOrders(@Header("authtoken") String authToken);
+
+    @POST("/payfortheseorders")
+    Call<ApiResponse> payOrders(@Header("authtoken") String authToken,
+                                @Body PaymentRequestBody paymentRequestBody);
 
 
 }

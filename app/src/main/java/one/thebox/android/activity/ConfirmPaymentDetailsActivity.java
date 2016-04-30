@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
@@ -15,8 +18,14 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.adapter.PaymentDetailAdapter;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.RequestBodies.PaymentRequestBody;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private RecyclerView recyclerViewPaymentDetail;
@@ -24,7 +33,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private CheckBox checkBox;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
-    private TextView selectDeliveryAddress;
+    private TextView payButton;
     private User user;
 
     @Override
@@ -62,5 +71,29 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
     private void initViews() {
         recyclerViewPaymentDetail = (RecyclerView) findViewById(R.id.recycler_view_payment_detail);
+        payButton = (TextView) findViewById(R.id.button_pay);
+        payButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pay();
+            }
+        });
     }
+
+    private void pay() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this),new PaymentRequestBody(addressAndOrders))
+                .enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
 }

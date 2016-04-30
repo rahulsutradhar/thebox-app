@@ -16,9 +16,15 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
 
     ArrayList<String> timeStrings = new ArrayList<>();
     private int currentSelection;
+    private OnTimeSlotSelected onTimeSlotSelected;
 
     public TimeSlotAdapter(Context context) {
         super(context);
+    }
+
+    public TimeSlotAdapter(Context context, OnTimeSlotSelected onTimeSlotSelected) {
+        super(context);
+        this.onTimeSlotSelected = onTimeSlotSelected;
     }
 
     public ArrayList<String> getTimeStrings() {
@@ -66,6 +72,9 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
                 currentSelection = position;
                 notifyItemChanged(currentSelection);
                 notifyItemChanged(temp);
+                if (onTimeSlotSelected != null) {
+                    onTimeSlotSelected.onTimeSlotSelected(timeStrings.get(position));
+                }
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -126,5 +135,9 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
                 timeTextView.setTypeface(null, Typeface.NORMAL);
             }
         }
+    }
+
+    public interface OnTimeSlotSelected {
+        void onTimeSlotSelected(String timeSlot);
     }
 }
