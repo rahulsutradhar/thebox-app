@@ -1,34 +1,21 @@
 package one.thebox.android.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
+import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.activity.AddressesActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.SplashActivity;
@@ -130,7 +117,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                 startActivity(new Intent(getActivity(), OrderDetailActivity.class));
                 break;
             }
-            case R.id.button_sign_out:{
+            case R.id.button_sign_out: {
                 final MaterialDialog dialog = new MaterialDialog.Builder(getActivity()).progressIndeterminateStyle(true).progress(true, 0).show();
                 MyApplication.getAPIService().signOut(PrefUtils.getToken(getActivity()))
                         .enqueue(new Callback<ApiResponse>() {
@@ -138,7 +125,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                                 dialog.dismiss();
                                 PrefUtils.removeAll(getActivity());
-                                startActivity(new Intent(getActivity(),SplashActivity.class));
+                                startActivity(new Intent(getActivity(), SplashActivity.class));
                                 getActivity().finish();
                             }
 
@@ -152,7 +139,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     }
 
     private void openAddAddressBottomSheet() {
-        new AddEditAddressViewHelper(getActivity(), new AddEditAddressViewHelper.OnAddressAdded() {
+        new AddressBottomSheet(getActivity(), new AddressBottomSheet.OnAddressAdded() {
             @Override
             public void onAddressAdded(User.Address address) {
                 User user = PrefUtils.getUser(getActivity());

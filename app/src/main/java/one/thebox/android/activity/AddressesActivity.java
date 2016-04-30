@@ -1,8 +1,5 @@
 package one.thebox.android.activity;
 
-import android.app.Activity;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,13 +8,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
+import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.adapter.AddressesAdapter;
-import one.thebox.android.adapter.ChangeAddressAdapter;
-import one.thebox.android.adapter.EditDeliveryAddressAdapter;
 import one.thebox.android.util.PrefUtils;
 
 public class AddressesActivity extends BaseActivity implements View.OnClickListener{
@@ -67,7 +61,7 @@ public class AddressesActivity extends BaseActivity implements View.OnClickListe
     }
 
     private void openAddAddressBottomSheet() {
-        new AddEditAddressViewHelper(this, new AddEditAddressViewHelper.OnAddressAdded() {
+        new AddressBottomSheet(this, new AddressBottomSheet.OnAddressAdded() {
             @Override
             public void onAddressAdded(User.Address address) {
                 User user = PrefUtils.getUser(AddressesActivity.this);

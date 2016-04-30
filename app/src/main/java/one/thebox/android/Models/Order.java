@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Ajeet Kumar Meena on 25-04-2016.
@@ -31,8 +32,12 @@ public class Order implements Serializable {
     private String tax;
     @SerializedName("cart")
     private boolean cart;
+    @SerializedName("useritems")
+    private ArrayList<UserItem> userItems;
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, String totalPrice, String deliveryCharges, String tax, boolean cart) {
+    private boolean isSelected;
+
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, String totalPrice, String deliveryCharges, String tax, boolean cart, ArrayList<UserItem> userItems) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -44,6 +49,23 @@ public class Order implements Serializable {
         this.deliveryCharges = deliveryCharges;
         this.tax = tax;
         this.cart = cart;
+        this.userItems = userItems;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public ArrayList<UserItem> getUserItems() {
+        return userItems;
+    }
+
+    public void setUserItems(ArrayList<UserItem> userItems) {
+        this.userItems = userItems;
     }
 
     public int getId() {
@@ -122,6 +144,7 @@ public class Order implements Serializable {
         return tax;
     }
 
+
     public void setTax(String tax) {
         this.tax = tax;
     }
@@ -132,5 +155,19 @@ public class Order implements Serializable {
 
     public void setCart(boolean cart) {
         this.cart = cart;
+    }
+
+    public String getItemString() {
+        String itemString = "";
+        for (int i = 0; i < userItems.size(); i++) {
+            if (i == 3) {
+                itemString = itemString.substring(0, itemString.length() - 2);
+                itemString = itemString + "...+ " + userItems.size() + " items";
+                return itemString;
+            }
+            itemString = userItems.get(i).getBoxItem().getTitle() + ", " + itemString;
+        }
+        itemString = itemString.substring(0, itemString.length() - 2);
+        return itemString;
     }
 }

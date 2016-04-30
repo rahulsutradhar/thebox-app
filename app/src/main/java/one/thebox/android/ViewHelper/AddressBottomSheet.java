@@ -32,12 +32,11 @@ import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Header;
 
 /**
  * Created by Ajeet Kumar Meena on 22-04-2016.
  */
-public class AddEditAddressViewHelper {
+public class AddressBottomSheet {
     private Activity context;
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheet;
@@ -88,12 +87,12 @@ public class AddEditAddressViewHelper {
     };
     Call<LocalitiesResponse> call;
 
-    public AddEditAddressViewHelper(Activity context, OnAddressAdded onAddressAdded) {
+    public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
     }
 
-    public AddEditAddressViewHelper(Activity context, OnAddressAdded onAddressAdded, User.Address address) {
+    public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded, User.Address address) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
         this.address = address;
@@ -161,7 +160,7 @@ public class AddEditAddressViewHelper {
                         primaryAddress.isChecked(), User.Address.getAddressTypeName(type)
                 );
 
-                if (AddEditAddressViewHelper.this.address != null) {
+                if (AddressBottomSheet.this.address != null) {
                     updateAddress(address);
                 } else {
                     addAddress(address);
@@ -299,6 +298,6 @@ public class AddEditAddressViewHelper {
     }
 
     public interface OnAddressAdded {
-        public void onAddressAdded(User.Address address);
+        void onAddressAdded(User.Address address);
     }
 }

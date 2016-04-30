@@ -19,6 +19,7 @@ import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
+import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -116,4 +117,9 @@ public interface APIService {
 
     @GET("/getmyaddresses")
     Call<GetAllAddressResponse> getAllAddresses(@Header("authtoken") String authToken);
+
+    @GET("/getmyorders")
+    Call<OrdersApiResponse> getMyOrders(@Header("authtoken") String authToken);
+
+
 }

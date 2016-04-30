@@ -2,19 +2,15 @@ package one.thebox.android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AddEditAddressViewHelper;
+import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -131,7 +127,7 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
     }
 
     private void openAddAddressBottomSheet(User.Address address, final int position) {
-        new AddEditAddressViewHelper((Activity) mContext, new AddEditAddressViewHelper.OnAddressAdded() {
+        new AddressBottomSheet((Activity) mContext, new AddressBottomSheet.OnAddressAdded() {
             @Override
             public void onAddressAdded(User.Address address) {
                 if (address.isCurrentAddress()) {

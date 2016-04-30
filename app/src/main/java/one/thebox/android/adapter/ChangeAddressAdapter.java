@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 
 /**
@@ -17,22 +17,22 @@ import one.thebox.android.R;
  */
 public class ChangeAddressAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Address> addresses = new ArrayList<>();
+    private ArrayList<User.Address> addresses = new ArrayList<>();
 
     public ChangeAddressAdapter(Context context) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
     }
 
-    public void addAddress(Address address) {
+    public void addAddress(User.Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<Address> getAddresses() {
+    public ArrayList<User.Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<Address> addresses) {
+    public void setAddresses(ArrayList<User.Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -58,21 +58,21 @@ public class ChangeAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
-        if(position<0) {
+        if (position < 0) {
             return;
         }
         ItemAddressViewHolder itemAddressViewHolder = (ItemAddressViewHolder) holder;
         itemAddressViewHolder.getRadioButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addresses.get(position).setSelected(true);
+              /*  addresses.get(position).setSelected(true);
                 notifyItemChanged(position);
                 for (int i = 0; i < addresses.size(); i++) {
                     if (addresses.get(i).isSelected() && i != position) {
                         addresses.get(i).setSelected(false);
                         notifyItemChanged(i);
                     }
-                }
+                }*/
             }
         });
         itemAddressViewHolder.setViews(addresses.get(position));
@@ -131,12 +131,12 @@ public class ChangeAddressAdapter extends BaseRecyclerAdapter {
             this.radioButton = radioButton;
         }
 
-        public void setViews(Address address) {
-            if (address.isSelected()) {
+        public void setViews(User.Address address) {
+         /*   if (address.isSelected()) {
                 radioButton.setChecked(true);
             } else {
                 radioButton.setChecked(false);
-            }
+            }*/
         }
     }
 

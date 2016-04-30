@@ -27,7 +27,8 @@
                 android:layout_marginRight="16dp"
                 android:text="Next delivery in 3 days"
                 android:textColor="@color/dim_gray"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:id="@+id/text_next_delivery" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -36,7 +37,8 @@
                 android:layout_marginRight="16dp"
                 android:text="2000 Rs to be paid"
                 android:textColor="@color/lavender_indigo"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:id="@+id/text_amount_to_be_paid" />
         </LinearLayout>
 
         <TextView
@@ -49,7 +51,8 @@
             android:paddingRight="32dp"
             android:paddingTop="8dp"
             android:text="Pay"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/dim_gray"
+            android:id="@+id/button_pay" />
     </LinearLayout>
 
     <LinearLayout

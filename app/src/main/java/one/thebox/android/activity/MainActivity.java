@@ -25,26 +25,21 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
-
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
-import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.fragment.BillsFragment;
+import one.thebox.android.fragment.MyOrderFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
-import one.thebox.android.fragment.MyOrdersFragment;
 import one.thebox.android.fragment.SearchResultFragment;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Header;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
@@ -91,7 +86,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupSearchView();
         setupNavigationDrawer();
         attachExploreBoxes();
-        boolean isFirstLogin = true;
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
@@ -218,7 +212,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
         getToolbar().setTitle("My Orders");
-        BillsFragment fragment = new BillsFragment();
+        MyOrderFragment fragment = new MyOrderFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
@@ -322,7 +316,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.getBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
+                                PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
                                 User user = PrefUtils.getUser(MainActivity.this);
                                 user.setAddresses(response.body().getUserAddresses());
                                 PrefUtils.saveUser(MainActivity.this, user);

@@ -20,10 +20,11 @@
             android:textColor="@color/dim_gray" />
 
         <TextView
+            android:id="@+id/delivery_charges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="30 Rs"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/accent" />
     </LinearLayout>
 
     <LinearLayout
@@ -41,10 +42,11 @@
             android:textColor="@color/dim_gray" />
 
         <TextView
+            android:id="@+id/tax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="30 Rs"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/accent" />
     </LinearLayout>
 
     <LinearLayout
@@ -62,15 +64,17 @@
             android:textColor="@color/dim_gray" />
 
         <TextView
+            android:id="@+id/amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1630 Rs"
-            android:textColor="@color/dim_gray" />
+            android:textStyle="bold"
+            android:textColor="@color/accent" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/manatee"/>
+        android:background="@color/manatee" />
 
 </LinearLayout>

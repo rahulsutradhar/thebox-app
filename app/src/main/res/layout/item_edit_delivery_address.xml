@@ -17,20 +17,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Milk, Gillete Razor, Harpic ... 21 items"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/dim_gray"
+            android:id="@+id/text_view_item" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="order No. 1110"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/dim_gray"
+            android:id="@+id/text_view_order_no" />
 
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="c2603, Oberoi splendor, JVLR"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/dim_gray"
+            android:id="@+id/text_view_address" />
     </LinearLayout>
 
     <TextView

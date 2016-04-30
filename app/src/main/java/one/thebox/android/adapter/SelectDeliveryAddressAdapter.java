@@ -1,34 +1,71 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AddressBottomSheet;
+import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 15-04-2016.
  */
 public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Address> addresses = new ArrayList<>();
+    private int currentSelection;
 
-    public SelectDeliveryAddressAdapter(Context context) {
+    private ArrayList<User.Address> addresses = new ArrayList<>();
+
+    private OnAddressSelectListener onAddressSelectListener;
+
+    public SelectDeliveryAddressAdapter(Context context, ArrayList<User.Address> addresses) {
         super(context);
+        mViewType = RECYCLER_VIEW_TYPE_FOOTER;
+        this.addresses = addresses;
+        for (int i = 0; i < addresses.size(); i++) {
+            if (addresses.get(i).isCurrentAddress()) {
+                currentSelection = i;
+                break;
+            }
+        }
     }
 
-    public void addAddress(Address address) {
+    public int getCurrentSelection() {
+        return currentSelection;
+    }
+
+    public void setCurrentSelection(int currentSelection) {
+        this.currentSelection = currentSelection;
+    }
+
+    public SelectDeliveryAddressAdapter(Context context, ArrayList<User.Address> addresses, OnAddressSelectListener onAddressSelectListener) {
+        super(context);
+        mViewType = RECYCLER_VIEW_TYPE_FOOTER;
+        this.addresses = addresses;
+        for (int i = 0; i < addresses.size(); i++) {
+            if (addresses.get(i).isCurrentAddress()) {
+                currentSelection = i;
+                break;
+            }
+        }
+        this.onAddressSelectListener = onAddressSelectListener;
+    }
+
+    public void addAddress(User.Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<Address> getAddresses() {
+    public ArrayList<User.Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<Address> addresses) {
+    public void setAddresses(ArrayList<User.Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -49,23 +86,21 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected FooterHolder getFooterHolder(View view) {
-        return null;
+        return new FooterViewHolder(view);
     }
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemAddressViewHolder itemAddressViewHolder = (ItemAddressViewHolder) holder;
-        itemAddressViewHolder.getRadioButton().setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addresses.get(position).setSelected(true);
+                int temp = currentSelection;
+                currentSelection = position;
                 notifyItemChanged(position);
-                for (int i = 0; i < addresses.size(); i++) {
-                    if (addresses.get(i).isSelected() && i != position) {
-                        addresses.get(i).setSelected(false);
-                        notifyItemChanged(i);
-                    }
-                }
+                notifyItemChanged(temp);
+                if (onAddressSelectListener != null)
+                    onAddressSelectListener.onAddressSelect(addresses.get(position));
             }
         });
         itemAddressViewHolder.setViews(addresses.get(position));
@@ -88,7 +123,7 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_select_delivery_address;
+        return R.layout.item_change_address;
     }
 
     @Override
@@ -101,19 +136,16 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    @Override
-    protected int getFooterLayoutId() {
-        return 0;
-    }
-
     class ItemAddressViewHolder extends ItemHolder {
 
         private RadioButton radioButton;
-
+        private TextView label, address;
 
         public ItemAddressViewHolder(View itemView) {
             super(itemView);
             radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
+            label = (TextView) itemView.findViewById(R.id.text_view_address_label);
+            address = (TextView) itemView.findViewById(R.id.text_view_address);
         }
 
         public RadioButton getRadioButton() {
@@ -124,12 +156,56 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
             this.radioButton = radioButton;
         }
 
-        public void setViews(Address address) {
-            if (address.isSelected()) {
+        public void setViews(User.Address address) {
+            this.address.setText(address.getFlat() + ", " + address.getStreet() + ", " + address.getSociety());
+            if (address.isCurrentAddress()) {
+                label.setText(address.getLabel() + " (primary)");
+            } else {
+                label.setText(address.getLabel());
+            }
+            if (getAdapterPosition() == currentSelection) {
                 radioButton.setChecked(true);
             } else {
                 radioButton.setChecked(false);
             }
         }
+    }
+
+    @Override
+    protected int getFooterLayoutId() {
+        return R.layout.footer_change_address;
+    }
+
+    class FooterViewHolder extends FooterHolder {
+        private TextView editAddressButton;
+
+        public FooterViewHolder(View itemView) {
+            super(itemView);
+            editAddressButton = (TextView) itemView.findViewById(R.id.create_new_button);
+            editAddressButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AddressBottomSheet((Activity) mContext, new AddressBottomSheet.OnAddressAdded() {
+                        @Override
+                        public void onAddressAdded(User.Address address) {
+                            User user = PrefUtils.getUser(mContext);
+                            ArrayList<User.Address> addresses = user.getAddresses();
+                            if (addresses == null || addresses.isEmpty()) {
+                                addresses = new ArrayList<>();
+                            }
+                            addresses.add(address);
+                            user.setAddresses(addresses);
+                            SelectDeliveryAddressAdapter.this.setAddresses(addresses);
+                            notifyDataSetChanged();
+                            PrefUtils.saveUser(mContext, user);
+                        }
+                    }).show();
+                }
+            });
+        }
+    }
+
+    public interface OnAddressSelectListener {
+        void onAddressSelect(User.Address address);
     }
 }

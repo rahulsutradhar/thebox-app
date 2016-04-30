@@ -21,16 +21,25 @@
         app:contentInsetRight="6dp"
         app:contentInsetStart="6dp" />
 
+    <CheckBox
+        android:id="@+id/check_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:buttonTint="@color/dim_gray"
+        android:text="I want different addresses for my orders"
+        android:textColor="@color/dim_gray" />
+
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_payment_detail"
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
 
     <TextView
-        android:id="@+id/button_select_and_pay"
+        android:id="@+id/button_select_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"

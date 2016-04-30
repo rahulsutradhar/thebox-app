@@ -71,7 +71,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         Log.d("Test OnBindViewHolder", String.valueOf(adapterCurrentPosition));
         if (getItemViewType(position) == RECYCLER_ADAPTER_ITEM) {
             int itemPos = position;
-            if (mViewType != RECYCLER_VIEW_TYPE_NORMAL) {
+            if (mViewType != RECYCLER_VIEW_TYPE_NORMAL && mViewType!= RECYCLER_VIEW_TYPE_FOOTER) {
                 itemPos = position - 1;
             }
             onBindViewItemHolder((ItemHolder) holder, itemPos);
@@ -104,7 +104,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
                 itemCount = getItemsCount();
                 break;
             case RECYCLER_VIEW_TYPE_FOOTER:
-                itemCount = getItemsCount();
+                itemCount = getItemsCount() +1;
                 break;
             case RECYCLER_VIEW_TYPE_HEADER:
                 itemCount = getItemsCount() + 1;

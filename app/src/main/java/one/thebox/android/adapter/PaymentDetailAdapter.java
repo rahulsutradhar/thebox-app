@@ -2,31 +2,28 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.BillItem;
+import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<BillItem.SubBillItem> subBillItems = new ArrayList<>();
+    private ArrayList<Order> orders = new ArrayList<>();
 
     public PaymentDetailAdapter(Context context) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
     }
 
-    public void addSubBillItem(BillItem.SubBillItem subBillItem) {
-        subBillItems.add(subBillItem);
+    public ArrayList<Order> getOrders() {
+        return orders;
     }
 
-    public ArrayList<BillItem.SubBillItem> getSubBillItems() {
-        return subBillItems;
-    }
-
-    public void setSubBillItems(ArrayList<BillItem.SubBillItem> subBillItems) {
-        this.subBillItems = subBillItems;
+    public void setOrders(ArrayList<Order> orders) {
+        this.orders.addAll(orders);
     }
 
     @Override
@@ -51,7 +48,8 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
-
+        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        itemViewHolder.setViewHolder(orders.get(position));
     }
 
     @Override
@@ -66,7 +64,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return subBillItems.size();
+        return orders.size();
     }
 
     @Override
@@ -90,16 +88,57 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     class ItemViewHolder extends ItemHolder {
+        private TextView itemText, amountText;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
+            itemText = (TextView) itemView.findViewById(R.id.item_text);
+            amountText = (TextView) itemView.findViewById(R.id.amount_text);
+        }
+
+        public void setViewHolder(Order order) {
+            itemText.setText(order.getItemString() + " Rs");
+            amountText.setText(order.getTotalPrice() + " Rs");
         }
     }
 
     class FooterViewHolder extends FooterHolder {
 
+        private TextView deliveryCharge, tax, amount;
+
         public FooterViewHolder(View itemView) {
             super(itemView);
+            deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
+            tax = (TextView) itemView.findViewById(R.id.tax);
+            amount = (TextView) itemView.findViewById(R.id.amount);
+            deliveryCharge.setText("0" + " Rs");
+            tax.setText(getTotalTax() + " Rs");
+            amount.setText(getTotalPrice() + " Rs");
+
         }
+    }
+
+    public float getTotalDeliverCharges() {
+        float total = 0;
+        for (Order order : orders) {
+            total = Float.valueOf(order.getDeliveryCharges()) + total;
+        }
+        return total;
+    }
+
+    public float getTotalTax() {
+        float total = 0;
+        for (Order order : orders) {
+            total = Float.valueOf(order.getTax()) + total;
+        }
+        return total;
+    }
+
+    public float getTotalPrice() {
+        float total = 0;
+        for (Order order : orders) {
+            total = Float.valueOf(order.getTotalPrice()) + total;
+        }
+        return total;
     }
 }
