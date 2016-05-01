@@ -1,12 +1,6 @@
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,22 +8,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import one.thebox.android.Models.Box;
-import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.DeliverySlot;
-import one.thebox.android.Models.UserCategory;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
+import one.thebox.android.activity.ExploreItemDetailActivity;
 import one.thebox.android.util.DisplayUtil;
-import one.thebox.android.util.NumberWordConverter;
 
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.
@@ -167,13 +154,19 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         }
 
         @Override
-        public void onBindViewItemHolder(ItemHolder holder, int position) {
-
+        public void onBindViewItemHolder(ItemHolder holder, final int position) {
+            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            itemViewHolder.setViewHolder(categories.get(position));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, categories.get(position).getId(), null));
+                }
+            });
         }
 
         @Override
         public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-
         }
 
         @Override
@@ -224,8 +217,15 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         }
 
         public class ItemViewHolder extends ItemHolder {
+            private TextView categoryNameTextView;
+
             public ItemViewHolder(View itemView) {
                 super(itemView);
+                categoryNameTextView = (TextView) itemView.findViewById(R.id.text_view_category_name);
+            }
+
+            public void setViewHolder(Category category) {
+                categoryNameTextView.setText(category.getTitle());
             }
         }
     }

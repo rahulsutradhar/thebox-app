@@ -2,7 +2,6 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.view.menu.MenuView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -121,7 +120,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onClick(View v) {
                     String exploreItemString = CoreGsonUtils.toJson(exploreItem);
-                    mContext.startActivity(new Intent(mContext, ExploreItemDetailActivity.class).putExtra(ExploreItemDetailActivity.EXTRA_CATEGORY, exploreItemString));
+                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, 0, exploreItemString));
                 }
             });
             title.setText(exploreItem.getTitle());
