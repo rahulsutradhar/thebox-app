@@ -7,7 +7,6 @@ import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
-import one.thebox.android.api.RequestBodies.SignUpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
@@ -43,10 +42,6 @@ public interface APIService {
             @Body OtpRequestBody otpRequestBody
     );
 
-    @POST("/sign_up/store_user_details")
-    Call<ApiResponse> signUpUser(
-            @Body SignUpRequestBody signUpRequestBody
-    );
 
     @POST("/users/sign_in")
     Call<UserSignInSignUpResponse> signIn(
