@@ -31,6 +31,7 @@ import one.thebox.android.R;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.AllItemsFragment;
 import one.thebox.android.fragment.MyOrderFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
@@ -275,7 +276,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!isSearchFragmentIsAttached) {
             isSearchFragmentIsAttached = true;
             getToolbar().setTitle("Search");
-            SearchResultFragment fragment = new SearchResultFragment();
+            AllItemsFragment fragment = new AllItemsFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
             fragmentTransaction.commit();

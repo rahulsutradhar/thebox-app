@@ -69,7 +69,9 @@ public class SearchResultFragment extends Fragment {
     private void setupViewPagerAndTabs() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(new AllItemsFragment(), "All Items");
+/*
         adapter.addFragment(new MyItemsFragment(), "My Items");
+*/
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }
