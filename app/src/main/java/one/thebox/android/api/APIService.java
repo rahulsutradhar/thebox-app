@@ -121,5 +121,4 @@ public interface APIService {
     Call<ApiResponse> payOrders(@Header("authtoken") String authToken,
                                 @Body PaymentRequestBody paymentRequestBody);
 
-
 }
