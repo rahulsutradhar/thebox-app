@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.squareup.picasso.Picasso;
 
@@ -21,8 +22,15 @@ import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.NumberWordConverter;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
@@ -111,6 +119,23 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
         }
     }
 
+    public void changeConfig(final int position, final int itemConfigId) {
+        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
+                (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
+                .enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        dialog.cancel();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        dialog.cancel();
+                    }
+                });
+    }
+
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private TextView adjustButton, productName, brand, deliveryTime, arrivingTime, config, savings;
         private ImageView productImageView;
@@ -142,21 +167,29 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
-
+                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getItemConfigId(frequency, priceAndSize));
                                         }
                                     }).show(boxItem.getBoxItem());
                                     break;
                                 }
-                                case R.id.change_quantity: {
+                               /* case R.id.change_quantity: {
                                     break;
-                                }
+                                }*/
                                 case R.id.change_frequency: {
+                                    boxItem.getBoxItem().setSelectedFrequency(itemConfig.getSubscriptionType());
+                                    boxItem.getBoxItem().setSelectedPriceAndSize(new BoxItem.PriceAndSize(itemConfig.getPrice(), itemConfig.getSize(), itemConfig.getSizeUnit()));
+                                    new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
+                                        @Override
+                                        public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
+                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getItemConfigId(frequency, priceAndSize));
+                                        }
+                                    }).show(boxItem.getBoxItem());
                                     break;
                                 }
-                                case R.id.swap_with_similar_product: {
+                               /* case R.id.swap_with_similar_product: {
                                     openSwipeBottomSheet();
                                     break;
-                                }
+                                }*/
                                 case R.id.delay_delivery: {
                                     openDelayDeliveryDialog();
                                     break;
@@ -167,6 +200,8 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                     }).show();
                 }
             });
+
+
             productName.setText(boxItem.getBoxItem().getTitle());
             config.setText(NumberWordConverter.convert(boxItem.getQuantity()) + " " +
                     itemConfig.getSize() + itemConfig.getSizeUnit() + ", " + itemConfig.getPrice() + " Rs " + itemConfig.getSubscriptionType());

@@ -3,15 +3,11 @@
     <item
         android:id="@+id/change_size"
         android:title="@string/change_size" />
-    <item
-        android:id="@+id/change_quantity"
-        android:title="@string/change_quantity" />
+
     <item
         android:id="@+id/change_frequency"
         android:title="@string/change_frequency" />
-    <item
-        android:id="@+id/swap_with_similar_product"
-        android:title="@string/swap_with_similar_product" />
+
     <item
         android:id="@+id/delay_delivery"
         android:title="@string/delay_delivery" />

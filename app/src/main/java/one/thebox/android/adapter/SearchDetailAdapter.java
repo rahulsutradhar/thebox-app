@@ -467,16 +467,16 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                     }).show(boxItem.getBoxItem());
                                     break;
                                 }
-                                case R.id.change_quantity: {
+                              /*  case R.id.change_quantity: {
                                     break;
-                                }
+                                }*/
                                 case R.id.change_frequency: {
                                     break;
                                 }
-                                case R.id.swap_with_similar_product: {
+                               /* case R.id.swap_with_similar_product: {
                                     openSwipeBottomSheet();
                                     break;
-                                }
+                                }*/
                                 case R.id.delay_delivery: {
                                     openDelayDeliveryDialog();
                                     break;
