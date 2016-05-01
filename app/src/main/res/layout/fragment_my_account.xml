@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     tools:context=".fragment.MyBoxesFragment">
 
@@ -23,10 +23,11 @@
                 android:padding="16dp">
 
                 <ImageView
+                    android:id="@+id/user_pic_image_view"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
                     android:background="@color/dim_gray"
-                    android:id="@+id/user_pic_image_view" />
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -36,28 +37,19 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/button_sign_out"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/dim_gray"
-                        android:text="Sign Out"
-                        android:layout_marginLeft="16dp"
-                        android:layout_gravity="right" />
-
-                    <TextView
+                        android:id="@+id/user_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Name"
                         android:textColor="@color/manatee"
-                        android:textSize="22dp"
-                        android:id="@+id/user_name_text_view" />
+                        android:textSize="32dp" />
 
                     <TextView
+                        android:id="@+id/email_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="name@xyz.com"
-                        android:textColor="@color/dim_gray"
-                        android:id="@+id/email_text_view" />
+                        android:textColor="@color/dim_gray" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -70,9 +62,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@color/dim_gray" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_phone_24dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -89,11 +81,11 @@
                         android:textSize="18dp" />
 
                     <TextView
+                        android:id="@+id/phone_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="7715900078"
-                        android:textColor="@color/dim_gray"
-                        android:id="@+id/phone_text_view" />
+                        android:textColor="@color/dim_gray" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -107,7 +99,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@color/dim_gray" />
+                    android:src="@drawable/ic_location" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -130,21 +122,23 @@
                             android:textSize="18dp" />
 
                         <TextView
+                            android:id="@+id/button_show_all_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Show All"
                             android:textColor="@color/red_orange"
-                            android:textSize="14dp"
-                            android:id="@+id/button_show_all_address" />
+                            android:textSize="14dp" />
 
                     </LinearLayout>
+
                     <TextView
+                        android:id="@+id/address_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="c2603, Oberoi splendor, JVLR"
-                        android:textColor="@color/dim_gray"
-                        android:id="@+id/address_text_view" />
+                        android:textColor="@color/dim_gray" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -152,7 +146,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="48dp"
@@ -180,29 +175,41 @@
                             android:textSize="18dp" />
 
                         <TextView
+                            android:id="@+id/button_show_all_orders"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Show All"
                             android:textColor="@color/red_orange"
-                            android:textSize="14dp"
-                            android:id="@+id/button_show_all_orders" />
+                            android:textSize="14dp" />
 
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/last_order_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Last Box Deliver on 10th Feb 2016"
-                        android:textColor="@color/dim_gray"
-                        android:id="@+id/last_order_text_view" />
+                        android:textColor="@color/dim_gray" />
                 </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/button_sign_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|bottom"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="Sign Out"
+                android:textColor="@color/dim_gray" />
+
 
         </LinearLayout>
     </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"

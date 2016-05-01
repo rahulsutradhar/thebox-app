@@ -1,10 +1,12 @@
 package one.thebox.android.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -12,6 +14,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
+import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -24,8 +27,8 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
     private EditText nameEditText, emailEditText;
     private EditText editMobileNumberActivity;
     private ImageView editMobileNumberButton;
-    String name, email, mobile;
-    User user;
+    private String name, email, mobile;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +46,6 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
         editMobileNumberActivity.setText(user.getPhoneNumber());
     }
 
-
     private void initViews() {
         submitButton = (Button) findViewById(R.id.button_submit);
         submitButton.setOnClickListener(this);
@@ -59,38 +61,49 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
         int id = v.getId();
         switch (id) {
             case R.id.button_submit: {
+
                 if (isValidInfo() && hasChanges()) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
                     MyApplication.getAPIService().updateProfile(
                             PrefUtils.getToken(this), new StoreUserInfoRequestBody(
                                     new StoreUserInfoRequestBody.User
                                             (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getLocalityCode())))
-                            .enqueue(new Callback<ApiResponse>() {
+                            .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
-                                public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-
+                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                                    dialog.dismiss();
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            Toast.makeText(UpdateProfileActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            PrefUtils.saveUser(UpdateProfileActivity.this, response.body().getUser());
+                                        } else {
+                                            Toast.makeText(UpdateProfileActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 }
 
                                 @Override
-                                public void onFailure(Call<ApiResponse> call, Throwable t) {
-
+                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                                    dialog.dismiss();
                                 }
                             });
 
+                } else {
+                    if (!hasChanges()) {
+                        Toast.makeText(this, "You have made no changes", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
                 break;
             }
             case R.id.image_view_update_mobile_number: {
-
+                startActivity(UpdatePhoneNumberActivity.getInstance(this, mobile));
             }
         }
     }
 
     private boolean hasChanges() {
-        if (name.equals(user.getName())) {
-            return false;
-        }
-        if (email.equals(user.getEmail())) {
+        if (name.equals(user.getName()) && email.equals(user.getEmail())) {
             return false;
         }
         return true;
@@ -103,7 +116,6 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
     }
-
 
     public boolean isValidInfo() {
         if (nameEditText.getText().toString().isEmpty()) {

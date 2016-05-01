@@ -77,7 +77,7 @@ public interface APIService {
     Call<ApiResponse> signOut(@Header("authtoken") String authToken);
 
     @POST("/updatemyprofile")
-    Call<ApiResponse> updateProfile(@Header("authtoken") String authtoken,
+    Call<UserSignInSignUpResponse> updateProfile(@Header("authtoken") String authtoken,
                                     @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
 
     @POST("/addtomybox")

@@ -88,18 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:id="@+id/image_view_update_mobile_number"
-                        style="?android:attr/android:progressBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right|bottom"
-                        android:background="@color/dim_gray"
-                        android:layout_marginBottom="22dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:padding="8dp" />
-
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/locality_text_input"
                         android:layout_width="match_parent"
@@ -112,21 +100,31 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/black_underline_edit_text"
-                            android:hint="Mobile"
                             android:clickable="false"
                             android:cursorVisible="false"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
+                            android:hint="Mobile"
                             android:inputType="text"
                             android:padding="8dp"
                             android:textColor="@color/dim_gray"
                             android:textColorHint="@color/dim_gray" />
                     </android.support.design.widget.TextInputLayout>
 
+                    <ImageView
+                        android:id="@+id/image_view_update_mobile_number"
+                        style="?android:attr/android:progressBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right|bottom"
+                        android:layout_marginBottom="22dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_edit_grey" />
 
                 </FrameLayout>
             </LinearLayout>
-
 
 
         </LinearLayout>
