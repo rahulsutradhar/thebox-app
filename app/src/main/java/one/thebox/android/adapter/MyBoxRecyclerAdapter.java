@@ -274,11 +274,21 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
 
         public void setViews(Box box) {
             this.title.setText(box.getBoxDetail().getTitle());
-            this.subTitle.setText(box.getSubTitle());
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                this.subTitle.setText("Empty box, Add some items from categories below");
+            } else {
+                this.subTitle.setText(box.getSubTitle());
+            }
             Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
-            this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
-            this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, new ArrayList<>(box.getRemainingCategories()));
-            this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
+            if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
+                this.recyclerViewCategories.setVisibility(View.GONE);
+            } else {
+                this.recyclerViewCategories.setVisibility(View.VISIBLE);
+                this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, new ArrayList<>(box.getRemainingCategories()));
+                this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
+            }
+
             if (box.isExpandedListVisible()) {
                 if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                     recyclerViewUserItems.setVisibility(View.GONE);

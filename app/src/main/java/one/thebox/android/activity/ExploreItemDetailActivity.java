@@ -3,6 +3,7 @@ package one.thebox.android.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,6 +16,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import one.thebox.android.Events.ItemAddEvent;
+import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
@@ -39,6 +41,7 @@ public class ExploreItemDetailActivity extends BaseActivity {
     private ProgressBar progressBar;
     private String categoryItem;
     private Category category;
+    private FloatingActionButton floatingActionButton;
 
     public static Intent getInstance(Context context, String categoryItem, String exploreItem) {
         return new Intent(context, ExploreItemDetailActivity.class)
@@ -67,7 +70,15 @@ public class ExploreItemDetailActivity extends BaseActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         noOfItemSelectedTextView = (TextView) findViewById(R.id.no_of_item_selected);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         noOfItemSelectedTextView.bringToFront();
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new TabEvent(1));
+                finish();
+            }
+        });
     }
 
     @Subscribe

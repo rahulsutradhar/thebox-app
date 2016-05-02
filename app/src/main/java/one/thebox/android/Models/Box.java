@@ -31,6 +31,20 @@ public class Box implements Serializable {
         this.box = box;
     }
 
+    public String getSubTitle() {
+        String itemString = "";
+        for (int i = 0; i < getAllItemInTheBox().size(); i++) {
+            if (i == 3) {
+                itemString = itemString.substring(0, itemString.length() - 2);
+                itemString = itemString + "...+ " + getAllItemInTheBox().size() + " items";
+                return itemString;
+            }
+            itemString = getAllItemInTheBox().get(i).getBoxItem().getTitle() + ", " + itemString;
+        }
+        itemString = itemString.substring(0, itemString.length() - 2);
+        return itemString;
+    }
+
     public int getId() {
         return id;
     }
@@ -93,16 +107,5 @@ public class Box implements Serializable {
             userItems.addAll(userCategory.getUserItems());
         }
         return userItems;
-    }
-
-    public String getSubTitle() {
-        String subTitle = "";
-        for (UserCategory userCategory : userCategories) {
-            subTitle = userCategory.getCategory().getTitle() + ", " + subTitle;
-        }
-        if (subTitle != null && !subTitle.isEmpty()) {
-            subTitle = subTitle.substring(0, subTitle.length() - 2);
-        }
-        return subTitle;
     }
 }

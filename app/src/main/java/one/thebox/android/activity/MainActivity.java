@@ -24,8 +24,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SearchEvent;
+import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
@@ -334,8 +336,40 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
+    @Subscribe
+    public void onTabEvent(TabEvent tabEvent) {
+        switch (tabEvent.getTabNo()) {
+            case 1: {
+                navigationView.setCheckedItem(R.id.my_boxes);
+                break;
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    private boolean isRegistered;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        // EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 }
