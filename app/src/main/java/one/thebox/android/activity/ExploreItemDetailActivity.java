@@ -15,10 +15,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import one.thebox.android.Events.ItemAddEvent;
-import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
@@ -36,14 +34,15 @@ public class ExploreItemDetailActivity extends BaseActivity {
     private SearchDetailAdapter searchDetailAdapter;
     private TextView noOfItemSelectedTextView;
     public static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
-    public static final String EXTRA_CATEGORY_ID = "extra_category_id";
+    public static final String EXTRA_CATEGORY_ITEM = "extra_category_item";
     private ExploreItem exploreItem;
     private ProgressBar progressBar;
-    private int categoryId;
+    private String categoryItem;
+    private Category category;
 
-    public static Intent getInstance(Context context, int categoryId, String exploreItem) {
+    public static Intent getInstance(Context context, String categoryItem, String exploreItem) {
         return new Intent(context, ExploreItemDetailActivity.class)
-                .putExtra(EXTRA_CATEGORY_ID, categoryId)
+                .putExtra(EXTRA_CATEGORY_ITEM, categoryItem)
                 .putExtra(EXTRA_EXPLORE_ITEM, exploreItem);
     }
 
@@ -51,12 +50,16 @@ public class ExploreItemDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore_item_detail);
-        exploreItem = CoreGsonUtils.fromJson(getIntent().getStringExtra(EXTRA_EXPLORE_ITEM), ExploreItem.class);
         initViews();
-        setTitle(exploreItem.getTitle());
-        if (categoryId == 0) {
-            getData();
+        categoryItem = getIntent().getStringExtra(EXTRA_CATEGORY_ITEM);
+        if (categoryItem == null || categoryItem.isEmpty()) {
+            exploreItem = CoreGsonUtils.fromJson(getIntent().getStringExtra(EXTRA_EXPLORE_ITEM), ExploreItem.class);
+            getExploreData();
+            setTitle(exploreItem.getTitle());
         } else {
+            category = CoreGsonUtils.fromJson(getIntent().getStringExtra(EXTRA_CATEGORY_ITEM), Category.class);
+            getCategoryData();
+            setTitle(category.getTitle());
         }
     }
 
@@ -89,7 +92,7 @@ public class ExploreItemDetailActivity extends BaseActivity {
         super.onStop();
     }
 
-    public void getData() {
+    public void getExploreData() {
         MyApplication.getAPIService().getExploreBox(PrefUtils.getToken(this), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override
@@ -113,9 +116,9 @@ public class ExploreItemDetailActivity extends BaseActivity {
                 });
     }
 
-    public void getCategoryItem() {
+    public void getCategoryData() {
         MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(this),
-                categoryId)
+                category.getId())
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {

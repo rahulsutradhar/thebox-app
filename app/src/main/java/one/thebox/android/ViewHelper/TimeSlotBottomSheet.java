@@ -106,7 +106,7 @@ public class TimeSlotBottomSheet {
         int minute = Integer.parseInt(timeSlot.substring(3, 5));
         String am_pm = timeSlot.substring(6, 7);
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.HOUR, hour);
         cal.set(Calendar.MINUTE, minute);
         if (am_pm.equals("A")) {
             cal.set(Calendar.AM_PM, Calendar.AM);

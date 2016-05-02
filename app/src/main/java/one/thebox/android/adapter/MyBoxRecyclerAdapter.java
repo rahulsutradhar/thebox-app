@@ -16,6 +16,7 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.R;
 import one.thebox.android.activity.ExploreItemDetailActivity;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
 
 /**
@@ -160,7 +161,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, categories.get(position).getId(), null));
+                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, CoreGsonUtils.toJson(categories.get(position)), null));
                 }
             });
         }
@@ -256,6 +257,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
+        private LinearLayout emptyBoxLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -267,6 +269,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
+            this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
         }
 
         public void setViews(Box box) {
@@ -277,12 +280,20 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
             this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, new ArrayList<>(box.getRemainingCategories()));
             this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             if (box.isExpandedListVisible()) {
-                recyclerViewUserItems.setVisibility(View.VISIBLE);
-                this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-                this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox());
-                this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
+                if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                    recyclerViewUserItems.setVisibility(View.GONE);
+                    emptyBoxLayout.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerViewUserItems.setVisibility(View.VISIBLE);
+                    emptyBoxLayout.setVisibility(View.GONE);
+                    this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
+                    this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox());
+                    this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
+                }
+
             } else {
                 recyclerViewUserItems.setVisibility(View.GONE);
+                emptyBoxLayout.setVisibility(View.GONE);
             }
         }
     }

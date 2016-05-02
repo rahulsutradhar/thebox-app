@@ -120,7 +120,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onClick(View v) {
                     String exploreItemString = CoreGsonUtils.toJson(exploreItem);
-                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, 0, exploreItemString));
+                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, null, exploreItemString));
                 }
             });
             title.setText(exploreItem.getTitle());

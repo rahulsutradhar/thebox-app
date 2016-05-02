@@ -188,7 +188,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 boxItems.get(position - 1).setUserItemId(response.body().getUserItem().getId());
                                 boxItems.get(position - 1).setQuantity(boxItems.get(position - 1).getQuantity() + 1);
-                                CustomToast.show(mContext, "Total Savings: 300 Rs per month");
+                               // CustomToast.show(mContext, "Total Savings: 300 Rs per month");
                                 notifyItemChanged(position);
                                 int count = 0;
                                 for (int i = 0; i < boxItems.size(); i++) {
@@ -399,15 +399,15 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViews(BoxItem boxItem) {
             Picasso.with(mContext).load(boxItem.getPhotoUrl()).into(productImage);
-            setupRecyclerViewSavings();
+            //setupRecyclerViewSavings();
             if (boxItem.getSelectedPriceAndSize() != null)
                 setupRecyclerViewFrequency(boxItem);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-            if (boxItem.getQuantity() > 0) {
+           /* if (boxItem.getQuantity() > 0) {
                 savingHolder.setVisibility(View.VISIBLE);
             } else {
                 savingHolder.setVisibility(View.GONE);
-            }
+            }*/
             productName.setText(boxItem.getTitle());
             productBrand.setText(boxItem.getBrand());
             if (boxItem.getSavings() == 0) {
