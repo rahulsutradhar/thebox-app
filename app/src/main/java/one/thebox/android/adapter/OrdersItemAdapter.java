@@ -8,8 +8,10 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.util.ArrayList;
 
+import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.util.DateTimeUtil;
 
 
 /**
@@ -25,11 +27,11 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     public OrdersItemAdapter(Context context, ArrayList<Order> orders) {
         super(context);
         this.orders = orders;
-        if (shouldHaveOrders()) {
+      /*  if (shouldHaveOrders()) {
             mViewType = RECYCLER_VIEW_TYPE_HEADER;
-        } else {
-            mViewType = RECYCLER_VIEW_TYPE_NORMAL;
-        }
+        } else {*/
+        mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+       /* }*/
     }
 
     private boolean shouldHaveOrders() {
@@ -167,7 +169,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 dateTextView.setVisibility(View.VISIBLE);
                 timeTextView.setVisibility(View.GONE);
                 try {
-                    dateTextView.setText(order.getDeliveryScheduleDate().toString());
+                    dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

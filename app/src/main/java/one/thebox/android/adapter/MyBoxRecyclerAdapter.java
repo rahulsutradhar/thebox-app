@@ -276,7 +276,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
             if (box.getBoxDetail().getTitle() != null)
                 this.title.setText(box.getBoxDetail().getTitle());
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                this.subTitle.setText("Empty ic_box, Add some items from categories below");
+                this.subTitle.setText("Empty Box");
             } else {
                 this.subTitle.setText(box.getSubTitle());
             }

@@ -25,5 +25,6 @@
   <color name="lavender_indigo">#a64dff</color>
   <color name="light_white">#EFEFEF</color>
   <color name="isabelline">#ededed</color>
+  <color name="transparent">#00000000</color>
 </resources>
 

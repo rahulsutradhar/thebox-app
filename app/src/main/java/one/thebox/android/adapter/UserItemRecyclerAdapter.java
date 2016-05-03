@@ -15,16 +15,21 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
+import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.NumberWordConverter;
 import one.thebox.android.util.PrefUtils;
@@ -208,8 +213,15 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             brand.setText(boxItem.getBoxItem().getBrand());
             savings.setText(boxItem.getBoxItem().getSavings() + " Rs saved per month");
             if (boxItem.getNextDeliveryScheduledAt() == null || boxItem.getNextDeliveryScheduledAt().isEmpty()) {
-                deliveryTime.setText("Deliver to you on frequency of every " + itemConfig.getSubscriptionType());
+                deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
                 arrivingTime.setText("Item has added to your cart");
+            } else {
+                deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
+                try {
+                    arrivingTime.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(boxItem.getNextDeliveryScheduledAt())) + " days");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             Picasso.with(mContext).load(boxItem.getBoxItem().getPhotoUrl()).into(productImageView);
         }
@@ -226,6 +238,12 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             recyclerView.setAdapter(deliverySlotsAdapter);
             bottomSheetDialog.setContentView(bottomSheet);
             bottomSheetDialog.show();
+           /* new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
+                @Override
+                public void onTimePicked(Date date) {
+
+                }
+            }).show();*/
         }
 
         private void openSwipeBottomSheet() {

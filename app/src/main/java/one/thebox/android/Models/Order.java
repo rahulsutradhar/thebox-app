@@ -175,13 +175,5 @@ public class Order implements Serializable {
         return itemString;
     }
 
-    public Date getDeliveryScheduleDate() throws ParseException {
-        if (deliveryScheduleAt != null && !deliveryScheduleAt.isEmpty()) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss");
-            return formatter.parse(deliveryScheduleAt);
-        } else {
-            return Calendar.getInstance().getTime();
-        }
 
-    }
 }

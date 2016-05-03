@@ -36,7 +36,7 @@ public class Box implements Serializable {
         for (int i = 0; i < getAllItemInTheBox().size(); i++) {
             if (i == 3) {
                 itemString = itemString.substring(0, itemString.length() - 2);
-                itemString = itemString + "...+ " + getAllItemInTheBox().size() + " items";
+                itemString = itemString + "...+ " + (getAllItemInTheBox().size()-4) + " items";
                 return itemString;
             }
             itemString = getAllItemInTheBox().get(i).getBoxItem().getTitle() + ", " + itemString;

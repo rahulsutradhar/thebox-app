@@ -3,8 +3,7 @@
     android:id="@+id/linear_layout"
     android:layout_width="match_parent"
     android:layout_height="226dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_margin="8dp"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -12,29 +11,29 @@
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="146dp"
-        android:scaleType="centerCrop"
-        android:background="@color/white" />
+        android:background="@color/white"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:id="@+id/holder_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/davy_grey"
+        android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
 
-            <TextView
-                android:id="@+id/title_text_view"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="4dp"
-                android:text="Shahnaz Beauty Box"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Shahnaz Beauty Box"
+            android:textColor="@color/dim_gray"
+            android:textSize="18sp" />
 
 
         <LinearLayout
@@ -52,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Nutrigrain biscuits, Eat Natural bar..."
-                android:textColor="@color/white"
+                android:textColor="@color/dim_gray"
                 android:textSize="14sp" />
 
             <TextView
@@ -60,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="6 items"
-                android:textColor="@color/white"
+                android:textColor="@color/dim_gray"
                 android:textSize="14dp" />
 
         </LinearLayout>

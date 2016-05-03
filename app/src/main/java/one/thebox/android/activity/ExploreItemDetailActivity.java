@@ -84,12 +84,12 @@ public class ExploreItemDetailActivity extends BaseActivity {
 
     @Subscribe
     public void onItemAddEvent(ItemAddEvent itemAddEvent) {
-        if (itemAddEvent.getNoOfItems() <= 0) {
+      /*  if (itemAddEvent.getNoOfItems() <= 0) {
             noOfItemSelectedTextView.setVisibility(View.GONE);
         } else {
             noOfItemSelectedTextView.setVisibility(View.VISIBLE);
             noOfItemSelectedTextView.setText(String.valueOf(itemAddEvent.getNoOfItems()));
-        }
+        }*/
     }
 
     @Override

@@ -18,6 +18,7 @@
         android:textColor="@color/dim_gray" />
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
