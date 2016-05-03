@@ -273,9 +273,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
         }
 
         public void setViews(Box box) {
-            this.title.setText(box.getBoxDetail().getTitle());
+            if (box.getBoxDetail().getTitle() != null)
+                this.title.setText(box.getBoxDetail().getTitle());
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                this.subTitle.setText("Empty box, Add some items from categories below");
+                this.subTitle.setText("Empty ic_box, Add some items from categories below");
             } else {
                 this.subTitle.setText(box.getSubTitle());
             }

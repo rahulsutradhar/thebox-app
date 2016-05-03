@@ -3,7 +3,11 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Ajeet Kumar Meena on 25-04-2016.
@@ -16,7 +20,7 @@ public class Order implements Serializable {
     private int userId;
     @SerializedName("address_id")
     private int addressId;
-    @SerializedName("delivery_schedule_at")
+    @SerializedName("delivery_scheduled_at")
     private String deliveryScheduleAt;
     @SerializedName("paid")
     private String paid;
@@ -169,5 +173,15 @@ public class Order implements Serializable {
         }
         itemString = itemString.substring(0, itemString.length() - 2);
         return itemString;
+    }
+
+    public Date getDeliveryScheduleDate() throws ParseException {
+        if (deliveryScheduleAt != null && !deliveryScheduleAt.isEmpty()) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss");
+            return formatter.parse(deliveryScheduleAt);
+        } else {
+            return Calendar.getInstance().getTime();
+        }
+
     }
 }

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * Represents the model of any expected response from API server
- *
+ * <p/>
  * Created by Ajeet Kumar Meena on 30.08.15.
  */
 public class ApiResponse implements Serializable {

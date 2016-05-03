@@ -57,6 +57,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="8dp"
+            android:src="@drawable/ic_box"
             app:backgroundTint="@color/primary"
             app:elevation="0dp"
             app:layout_anchorGravity="bottom|right|end" />

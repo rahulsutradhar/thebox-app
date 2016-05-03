@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -20,6 +21,7 @@ import one.thebox.android.R;
 import one.thebox.android.adapter.PaymentDetailAdapter;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
+import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -82,15 +84,24 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
     private void pay() {
         final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this),new PaymentRequestBody(addressAndOrders))
-                .enqueue(new Callback<ApiResponse>() {
+        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
+                .enqueue(new Callback<PaymentResponse>() {
                     @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 3));
+                                finish();
+                            } else {
+                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
                         dialog.dismiss();
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
                     }
                 });

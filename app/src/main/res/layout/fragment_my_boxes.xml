@@ -28,7 +28,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
-            app:backgroundTint="@color/neon_carrot"
+            android:src="@drawable/ic_shopping_cart"
+            app:backgroundTint="@color/primary"
             app:layout_anchorGravity="bottom|right|end" />
 
     </FrameLayout>

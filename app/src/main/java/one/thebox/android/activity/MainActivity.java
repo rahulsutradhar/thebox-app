@@ -38,7 +38,7 @@ import one.thebox.android.fragment.MyOrderFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
-import one.thebox.android.fragment.SearchResultFragment;
+import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +51,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public static boolean isSearchFragmentIsAttached = false;
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
+    public static final String EXTRA_TAB_NO = "extra_tab_no";
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
@@ -187,9 +188,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                attachBillsFragment();
+                attachOrderFragment();
                 return true;
-
             case R.id.explore_boxes: {
                 setTitle("");
                 attachExploreBoxes();
@@ -210,12 +210,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         fragmentTransaction.commit();
     }
 
-    private void attachBillsFragment() {
+    private void attachOrderFragment() {
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
         getToolbar().setTitle("My Orders");
-        MyOrderFragment fragment = new MyOrderFragment();
+        OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
@@ -371,5 +371,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        switch (intent.getIntExtra(EXTRA_TAB_NO, 0)) {
+            case 1: {
+                attachMyBoxesFragment();
+                break;
+            }
+            case 3: {
+                attachOrderFragment();
+                break;
+            }
+        }
     }
 }

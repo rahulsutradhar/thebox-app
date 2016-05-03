@@ -75,7 +75,8 @@ public class ExploreItemDetailActivity extends BaseActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new TabEvent(1));
+                //EventBus.getDefault().post(new TabEvent(1));
+                startActivity(new Intent(ExploreItemDetailActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO,1));
                 finish();
             }
         });

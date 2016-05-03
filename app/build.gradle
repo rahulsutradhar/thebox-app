@@ -31,6 +31,8 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
         transitive = true
     }
+    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
+
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:design:23.2.1'
@@ -47,6 +49,4 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.hotchemi:permissionsdispatcher:2.1.2'
-    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
-
 }

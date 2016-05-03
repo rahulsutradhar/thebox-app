@@ -37,9 +37,9 @@
 
         <ImageView
             android:id="@+id/edit_address_button"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:background="@color/dim_gray" />
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_edit_grey" />
 
     </LinearLayout>
 

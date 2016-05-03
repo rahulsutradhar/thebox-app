@@ -24,6 +24,7 @@ import one.thebox.android.activity.ConfirmPaymentDetailsActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,16 +39,24 @@ public class MyOrderFragment extends Fragment implements View.OnClickListener {
     private LinearLayout buttonAddressLinear;
     private TextView buttonSelectAndPay;
     private ArrayList<Order> orders = new ArrayList<>();
-    private FrameLayout frameLayout;
-    private ProgressBar progressBar;
     private TextView emptyOrderText;
+    private static final String EXTRA_ORDER_ARRAY = "extra_order_array";
 
     public MyOrderFragment() {
     }
 
-    public static MyOrderFragment newInstance(String param1, String param2) {
+    public static MyOrderFragment newInstance(ArrayList<Order> orders) {
+        String orderString = CoreGsonUtils.toJson(orders);
+        Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_ORDER_ARRAY, orderString);
         MyOrderFragment fragment = new MyOrderFragment();
+        fragment.setArguments(bundle);
         return fragment;
+    }
+
+    private ArrayList<Order> gerOrders() {
+        String orderString = getArguments().getString(EXTRA_ORDER_ARRAY);
+        return CoreGsonUtils.fromJsontoArrayList(orderString, Order.class);
     }
 
     @Override
@@ -60,26 +69,31 @@ public class MyOrderFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_my_orders, container, false);
         initViews();
-        getAllOrders();
+        orders = gerOrders();
+        setupRecyclerView();
         return rootView;
     }
 
     private void setupRecyclerView() {
-        ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(ordersItemAdapter);
+        if(orders == null || orders.isEmpty()) {
+            emptyOrderText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+            buttonSelectAndPay.setVisibility(View.GONE);
+        } else {
+            emptyOrderText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            buttonSelectAndPay.setVisibility(View.VISIBLE);
+            ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(ordersItemAdapter);
+        }
     }
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         buttonAddressLinear = (LinearLayout) rootView.findViewById(R.id.button_address);
         buttonSelectAndPay = (TextView) rootView.findViewById(R.id.button_select_and_pay);
-        frameLayout = (FrameLayout) rootView.findViewById(R.id.holder_layout);
         emptyOrderText = (TextView) rootView.findViewById(R.id.empty_order_text_view);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        emptyOrderText.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
-        buttonSelectAndPay.setVisibility(View.GONE);
         buttonAddressLinear.setOnClickListener(this);
         buttonSelectAndPay.setOnClickListener(this);
 
@@ -120,7 +134,6 @@ public class MyOrderFragment extends Fragment implements View.OnClickListener {
 
     private void openSelectAddressActivity() {
         startActivity(ConfirmAddressActivity.getInstance(getActivity(), ordersItemAdapter.getSelectedOrders()));
-        // startActivity(ConfirmPaymentDetailsActivity.getInstance(getActivity(), ordersItemAdapter.getSelectedOrders()));
     }
 
     public void setButtonState(boolean isSelectAndPay) {
@@ -133,34 +146,5 @@ public class MyOrderFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void getAllOrders() {
-        MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(getActivity()))
-                .enqueue(new Callback<OrdersApiResponse>() {
-                    @Override
-                    public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
-                        progressBar.setVisibility(View.GONE);
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                if (response.body().getOrders() == null || response.body().getOrders().isEmpty()) {
-                                    emptyOrderText.setVisibility(View.VISIBLE);
-                                    recyclerView.setVisibility(View.GONE);
-                                    buttonSelectAndPay.setVisibility(View.GONE);
-                                } else {
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    buttonSelectAndPay.setVisibility(View.VISIBLE);
-                                    orders.addAll(response.body().getOrders());
-                                    setupRecyclerView();
-                                }
-                            } else {
 
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
-    }
 }

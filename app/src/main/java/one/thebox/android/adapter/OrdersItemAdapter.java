@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.Order;
@@ -163,7 +164,13 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 dateTextView.setVisibility(View.GONE);
                 timeTextView.setVisibility(View.GONE);
             } else {
-
+                dateTextView.setVisibility(View.VISIBLE);
+                timeTextView.setVisibility(View.GONE);
+                try {
+                    dateTextView.setText(order.getDeliveryScheduleDate().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             itemsNameTextView.setText(order.getItemString());
             amountTobePaidTextView.setText(order.getTotalPrice() + " Rs");

@@ -1,7 +1,9 @@
 package one.thebox.android.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
@@ -40,6 +43,7 @@ public class SearchDetailFragment extends Fragment {
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
     private ArrayList<Category> categories = new ArrayList<>();
+    private FloatingActionButton floatingActionButton;
 
     public SearchDetailFragment() {
     }
@@ -85,6 +89,13 @@ public class SearchDetailFragment extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder_linear_layout);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 1));
+            }
+        });
     }
 
     private void setupRecyclerView() {

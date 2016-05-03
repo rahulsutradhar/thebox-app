@@ -2,10 +2,12 @@ package one.thebox.android.fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import one.thebox.android.Events.SwapEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.adapter.SwapAdapter;
 import one.thebox.android.api.ApiResponse;
@@ -42,6 +45,7 @@ public class MyBoxesFragment extends Fragment {
     private BottomSheetBehavior bottomSheetBehavior;
     private BottomSheetDialog bottomSheetDialog;
     private SwapAdapter swapAdapter;
+    private FloatingActionButton floatingActionButton;
 
     private ArrayList<Box> boxes = new ArrayList<>();
 
@@ -69,6 +73,13 @@ public class MyBoxesFragment extends Fragment {
     private void initViews() {
         this.progressBar = (ProgressBar) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
+        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 3));
+            }
+        });
     }
 
     @Override

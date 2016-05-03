@@ -9,6 +9,7 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -63,11 +64,13 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, final int position) {
+    public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 attachSearchDetailFragment(searchResults.get(position));
+                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(holder.itemView.getWindowToken(), 0);
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;

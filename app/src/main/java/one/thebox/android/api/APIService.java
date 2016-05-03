@@ -20,6 +20,7 @@ import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.OrdersApiResponse;
+import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -78,7 +79,7 @@ public interface APIService {
 
     @POST("/updatemyprofile")
     Call<UserSignInSignUpResponse> updateProfile(@Header("authtoken") String authtoken,
-                                    @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
+                                                 @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
 
     @POST("/addtomybox")
     Call<AddToMyBoxResponse> addToMyBox(@Header("authtoken") String authToken,
@@ -118,7 +119,7 @@ public interface APIService {
     Call<OrdersApiResponse> getMyOrders(@Header("authtoken") String authToken);
 
     @POST("/payfortheseorders")
-    Call<ApiResponse> payOrders(@Header("authtoken") String authToken,
-                                @Body PaymentRequestBody paymentRequestBody);
+    Call<PaymentResponse> payOrders(@Header("authtoken") String authToken,
+                                    @Body PaymentRequestBody paymentRequestBody);
 
 }
