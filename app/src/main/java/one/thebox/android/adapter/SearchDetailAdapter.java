@@ -397,6 +397,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             });
             frequencyAndPriceAdapter.setItemConfigs(itemConfigs);
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
+            recyclerViewFrequency.scrollToPosition(currentSelection);
         }
 
         public void setViews(BoxItem boxItem, int position) {
