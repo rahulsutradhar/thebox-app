@@ -7,7 +7,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.BoxItem;
-import one.thebox.android.Models.SizeAndFrequency;
 import one.thebox.android.R;
 
 /**
@@ -15,13 +14,13 @@ import one.thebox.android.R;
  */
 public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<BoxItem.PriceAndSize> priceAndSizes;
+    ArrayList<BoxItem.ItemConfig> itemConfigs;
     int currentItemSelected = 0;
     int prevItemSelected = 0;
 
     public SizeAndFrequencyAdapter(Context context) {
         super(context);
-        priceAndSizes = new ArrayList<>();
+        itemConfigs = new ArrayList<>();
     }
 
     public int getCurrentItemSelected() {
@@ -32,12 +31,21 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         this.currentItemSelected = currentItemSelected;
     }
 
-    public ArrayList<BoxItem.PriceAndSize> getPriceAndSizes() {
-        return priceAndSizes;
+    public ArrayList<BoxItem.ItemConfig> getItemConfigs() {
+        return itemConfigs;
     }
 
-    public void setPriceAndSizes(ArrayList<BoxItem.PriceAndSize> priceAndSizes) {
-        this.priceAndSizes = priceAndSizes;
+
+    public void setItemConfigs(ArrayList<BoxItem.ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
+    }
+
+    public int getPrevItemSelected() {
+        return prevItemSelected;
+    }
+
+    public void setPrevItemSelected(int prevItemSelected) {
+        this.prevItemSelected = prevItemSelected;
     }
 
     @Override
@@ -72,7 +80,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                 notifyItemChanged(currentItemSelected);
             }
         });
-        itemViewHolder.setViewHolder(priceAndSizes.get(position));
+        itemViewHolder.setViewHolder(itemConfigs.get(position));
     }
 
     @Override
@@ -87,7 +95,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return priceAndSizes.size();
+        return itemConfigs.size();
     }
 
     @Override
@@ -124,9 +132,9 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 
-        public void setViewHolder(BoxItem.PriceAndSize priceAndSize) {
-            sizeTextView.setText(priceAndSize.getSize() + " " + priceAndSize.getSizeUnit());
-            costTextView.setText(priceAndSize.getPrice() + " Rs");
+        public void setViewHolder(BoxItem.ItemConfig itemConfig) {
+            sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+            costTextView.setText(itemConfig.getPrice() + " Rs");
             if (getAdapterPosition() == currentItemSelected) {
                 sizeTextView.setTextColor(colorRose);
                 costTextView.setTextColor(colorRose);

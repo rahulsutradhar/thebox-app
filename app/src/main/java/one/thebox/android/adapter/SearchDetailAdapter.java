@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import one.thebox.android.Events.ItemAddEvent;
-import one.thebox.android.Models.Box;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.DeliverySlot;
@@ -38,7 +37,6 @@ import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.CustomToast;
 import one.thebox.android.util.NumberWordConverter;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -124,13 +122,8 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
 
     private void bindSearchViewHolder(final ItemHolder holder, final int position) {
         SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-        if (boxItems.get(position).getSelectedPriceAndSize() == null) {
-            int price = boxItems.get(position).getItemConfigs().get(0).getPrice();
-            int size = boxItems.get(position).getItemConfigs().get(0).getSize();
-            String sizeUnit = boxItems.get(position).getItemConfigs().get(0).getSizeUnit();
-            String frequency = boxItems.get(position).getItemConfigs().get(0).getSubscriptionType();
-            boxItems.get(position).setSelectedFrequency(frequency);
-            boxItems.get(position).setSelectedPriceAndSize(new BoxItem.PriceAndSize(price, size, sizeUnit));
+        if (boxItems.get(position).getSelectedItemConfig() == null) {
+            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getItemConfigById(0));
         }
         searchedItemViewHolder.setViews(boxItems.get(position));
         searchedItemViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
@@ -159,13 +152,12 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             public void onClick(View v) {
                 new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                     @Override
-                    public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
+                    public void onSizeAndFrequencySelected(BoxItem.ItemConfig itemConfig) {
                         if (boxItems.get(position).getUserItemId() == 0) {
-                            boxItems.get(position).setSelectedPriceAndSize(priceAndSize);
-                            boxItems.get(position).setSelectedFrequency(frequency);
+                            boxItems.get(position).setSelectedItemConfig(itemConfig);
                             notifyItemChanged(holder.getAdapterPosition());
                         } else {
-                            changeConfig(position, boxItems.get(position).getItemConfigId(frequency, priceAndSize));
+                            changeConfig(position, boxItems.get(position).getSelectedItemConfig().getId());
                         }
                     }
                 }).show(boxItems.get(position));
@@ -178,7 +170,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                 new AddToMyBoxRequestBody(
                         new AddToMyBoxRequestBody.Item(boxItems.get(position - 1).getId()),
-                        new AddToMyBoxRequestBody.ItemConfig(boxItems.get(position - 1).getItemConfigId())))
+                        new AddToMyBoxRequestBody.ItemConfig(boxItems.get(position - 1).getSelectedItemConfig().getId())))
                 .enqueue(new Callback<AddToMyBoxResponse>() {
                     @Override
                     public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
@@ -188,7 +180,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 boxItems.get(position - 1).setUserItemId(response.body().getUserItem().getId());
                                 boxItems.get(position - 1).setQuantity(boxItems.get(position - 1).getQuantity() + 1);
-                               // CustomToast.show(mContext, "Total Savings: 300 Rs per month");
+                                // CustomToast.show(mContext, "Total Savings: 300 Rs per month");
                                 notifyItemChanged(position);
                                 int count = 0;
                                 for (int i = 0; i < boxItems.size(); i++) {
@@ -387,21 +379,17 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         }
 
         private void setupRecyclerViewFrequency(BoxItem boxItem) {
-            HashMap<String, ArrayList<BoxItem.PriceAndSize>> priceAndSizeHashMap = boxItem.getPriceAndSizeHashMap();
+            // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             recyclerViewFrequency.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(mContext);
-            frequencyAndPriceAdapter.setPriceSizeFrequencies(boxItem.getPriceSizeFrequencies(
-                    boxItem.getSelectedPriceAndSize().getSize(), boxItem.getSelectedPriceAndSize().getSizeUnit()
-                    , priceAndSizeHashMap
-            ));
+            frequencyAndPriceAdapter.setItemConfigs(boxItem.getItemConfigsBySelectedItemConfig());
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
         }
 
         public void setViews(BoxItem boxItem) {
             Picasso.with(mContext).load(boxItem.getPhotoUrl()).into(productImage);
             //setupRecyclerViewSavings();
-            if (boxItem.getSelectedPriceAndSize() != null)
-                setupRecyclerViewFrequency(boxItem);
+            setupRecyclerViewFrequency(boxItem);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
            /* if (boxItem.getQuantity() > 0) {
                 savingHolder.setVisibility(View.VISIBLE);
@@ -457,11 +445,10 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.change_size: {
-                                    boxItem.getBoxItem().setSelectedFrequency(itemConfig.getSubscriptionType());
-                                    boxItem.getBoxItem().setSelectedPriceAndSize(new BoxItem.PriceAndSize(itemConfig.getPrice(), itemConfig.getSize(), itemConfig.getSizeUnit()));
+
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
+                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
 
                                         }
                                     }).show(boxItem.getBoxItem());

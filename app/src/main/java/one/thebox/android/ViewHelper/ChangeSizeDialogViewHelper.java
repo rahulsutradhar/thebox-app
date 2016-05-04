@@ -28,13 +28,13 @@ public class ChangeSizeDialogViewHelper {
 
     private Context mContext;
     private OnSizeAndFrequencySelected onSizeAndFrequencySelected;
-    private String frequencySelected;
     private SizeAndFrequencyAdapter sizeAndFrequencyAdapter;
+    private BoxItem.ItemConfig selectedItemConfig;
+    private String frequencySelected;
 
     public ChangeSizeDialogViewHelper(Context mContext, OnSizeAndFrequencySelected onSizeAndFrequencySelected) {
         this.mContext = mContext;
         this.onSizeAndFrequencySelected = onSizeAndFrequencySelected;
-
     }
 
     public void show(final BoxItem boxItem) {
@@ -43,7 +43,7 @@ public class ChangeSizeDialogViewHelper {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        onSizeAndFrequencySelected.onSizeAndFrequencySelected(frequencySelected, sizeAndFrequencyAdapter.getPriceAndSizes().get(sizeAndFrequencyAdapter.getCurrentItemSelected()));
+                        onSizeAndFrequencySelected.onSizeAndFrequencySelected(selectedItemConfig);
                     }
                 })
                 .customView(R.layout.layout_change_size_and_frequency, false)
@@ -54,7 +54,7 @@ public class ChangeSizeDialogViewHelper {
         sizeAndFrequencyAdapter = new SizeAndFrequencyAdapter(mContext);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         recyclerView.setAdapter(sizeAndFrequencyAdapter);
-        final HashMap<String, ArrayList<BoxItem.PriceAndSize>> hashMap = boxItem.getPriceAndSizeHashMap();
+        final HashMap<String, ArrayList<BoxItem.ItemConfig>> hashMap = boxItem.getFrequencyItemConfigHashMap();
         Set<String> keySet = hashMap.keySet();
         int radioGroupSize = hashMap.size();
         CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -62,15 +62,9 @@ public class ChangeSizeDialogViewHelper {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     frequencySelected = buttonView.getText().toString();
-                    sizeAndFrequencyAdapter.setPriceAndSizes(hashMap.get(frequencySelected));
-                    ArrayList<BoxItem.PriceAndSize> priceAndSizes = new ArrayList<>();
-                    priceAndSizes = hashMap.get(frequencySelected);
+                    sizeAndFrequencyAdapter.setItemConfigs(hashMap.get(frequencySelected));
                     int adapterCurrentItemPosition = 0;
-                    for(int i=0; i<priceAndSizes.size(); i++) {
-                        if(priceAndSizes.get(i) == boxItem.getSelectedPriceAndSize()) {
-                            adapterCurrentItemPosition = i;
-                        }
-                    }
+                    //TODO initialize selectedPosition
                     sizeAndFrequencyAdapter.setCurrentItemSelected(adapterCurrentItemPosition);
                     recyclerView.setAdapter(sizeAndFrequencyAdapter);
                 }
@@ -88,7 +82,7 @@ public class ChangeSizeDialogViewHelper {
                 rdbtn.setText(key);
                 rdbtn.setTextColor(mContext.getResources().getColor(R.color.dim_gray));
                 rdbtn.setOnCheckedChangeListener(onCheckedChangeListener);
-                if (boxItem.getSelectedFrequency().equals(key)) {
+                if (boxItem.getSelectedItemConfig().getSubscriptionType().equals(key)) {
                     rdbtn.setChecked(true);
                 }
 
@@ -103,7 +97,7 @@ public class ChangeSizeDialogViewHelper {
     }
 
     public interface OnSizeAndFrequencySelected {
-        void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize);
+        void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig);
     }
 
 

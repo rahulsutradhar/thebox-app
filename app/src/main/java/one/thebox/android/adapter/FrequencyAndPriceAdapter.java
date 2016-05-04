@@ -5,26 +5,31 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.R;
 
 class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<BoxItem.PriceSizeFrequency> priceSizeFrequencies = new ArrayList<>();
+    ArrayList<BoxItem.ItemConfig> itemConfigs = new ArrayList<>();
     int currentSelectedPosition = 0;
 
     public FrequencyAndPriceAdapter(Context context) {
         super(context);
     }
 
-    public ArrayList<BoxItem.PriceSizeFrequency> getPriceSizeFrequencies() {
-        return priceSizeFrequencies;
+    public FrequencyAndPriceAdapter(Context context, ArrayList<BoxItem.ItemConfig> itemConfigs, int currentSelectedPosition) {
+        super(context);
+        this.itemConfigs = itemConfigs;
+        this.currentSelectedPosition = currentSelectedPosition;
     }
 
-    public void setPriceSizeFrequencies(ArrayList<BoxItem.PriceSizeFrequency> priceSizeFrequencies) {
-        this.priceSizeFrequencies = priceSizeFrequencies;
+    public ArrayList<BoxItem.ItemConfig> getItemConfigs() {
+        return itemConfigs;
+    }
+
+    public void setItemConfigs(ArrayList<BoxItem.ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
     }
 
     @Override
@@ -50,7 +55,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemFrequencyViewHolder itemFrequencyViewHolder = (ItemFrequencyViewHolder) holder;
-        itemFrequencyViewHolder.setView(priceSizeFrequencies.get(position));
+        itemFrequencyViewHolder.setView(itemConfigs.get(position));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +79,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return priceSizeFrequencies.size();
+        return itemConfigs.size();
     }
 
     @Override
@@ -109,9 +114,9 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
             selector = itemView.findViewById(R.id.selector);
         }
 
-        public void setView(BoxItem.PriceSizeFrequency priceSizeFrequency) {
-            textViewPrice.setText("Rs " + priceSizeFrequency.getPrice());
-            textViewSize.setText(priceSizeFrequency.getFrequency());
+        public void setView(BoxItem.ItemConfig itemConfig) {
+            textViewPrice.setText("Rs " + itemConfig.getPrice());
+            textViewSize.setText(itemConfig.getSubscriptionType());
             if (getAdapterPosition() == currentSelectedPosition) {
                 textViewPrice.setTextColor(mContext.getResources().getColor(R.color.black));
                 textViewSize.setTextColor(mContext.getResources().getColor(R.color.black));

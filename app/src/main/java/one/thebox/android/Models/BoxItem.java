@@ -35,8 +35,15 @@ public class BoxItem implements Serializable {
     private List<ItemConfig> itemConfigs;
     @SerializedName("photo_url")
     private String photoUrl;
-    private PriceAndSize selectedPriceAndSize;
-    private String selectedFrequency;
+    private ItemConfig selectedItemConfig;
+
+    public ItemConfig getSelectedItemConfig() {
+        return selectedItemConfig;
+    }
+
+    public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
+        this.selectedItemConfig = selectedItemConfig;
+    }
 
     public int getUserItemId() {
         return userItemId;
@@ -142,22 +149,6 @@ public class BoxItem implements Serializable {
         this.photoContentType = photoContentType;
     }
 
-    public PriceAndSize getSelectedPriceAndSize() {
-        return selectedPriceAndSize;
-    }
-
-    public void setSelectedPriceAndSize(PriceAndSize selectedPriceAndSize) {
-        this.selectedPriceAndSize = selectedPriceAndSize;
-    }
-
-    public String getSelectedFrequency() {
-        return selectedFrequency;
-    }
-
-    public void setSelectedFrequency(String selectedFrequency) {
-        this.selectedFrequency = selectedFrequency;
-    }
-
     public List<ItemConfig> getItemConfigs() {
         return itemConfigs;
     }
@@ -229,144 +220,6 @@ public class BoxItem implements Serializable {
         }
     }
 
-    public HashMap<String, ArrayList<PriceAndSize>> getPriceAndSizeHashMap() {
-        HashMap<String, ArrayList<PriceAndSize>> frequencyHashMap = new HashMap<>();
-        for (int i = 0; i < itemConfigs.size(); i++) {
-            if (frequencyHashMap.containsKey(itemConfigs.get(i).subscriptionType)) {
-                ArrayList<PriceAndSize> priceAndSizes = frequencyHashMap.get(itemConfigs.get(i).subscriptionType);
-                priceAndSizes.add(new PriceAndSize(itemConfigs.get(i).getPrice(), itemConfigs.get(i).getSize(), itemConfigs.get(i).getSizeUnit()));
-                frequencyHashMap.put(itemConfigs.get(i).subscriptionType, priceAndSizes);
-            } else {
-                ArrayList<PriceAndSize> priceAndSizes = new ArrayList<>();
-                priceAndSizes.add(new PriceAndSize(itemConfigs.get(i).getPrice(), itemConfigs.get(i).getSize(), itemConfigs.get(i).getSizeUnit()));
-                frequencyHashMap.put(itemConfigs.get(i).subscriptionType, priceAndSizes);
-            }
-        }
-        return frequencyHashMap;
-    }
-
-    public ArrayList<PriceSizeFrequency> getPriceSizeFrequencies(int size, String sizeUnit, HashMap<String, ArrayList<PriceAndSize>> hashMap) {
-        ArrayList<PriceSizeFrequency> priceSizeFrequencies = new ArrayList<>();
-
-        for (String key : hashMap.keySet()) {
-            ArrayList<PriceAndSize> priceAndSizes = hashMap.get(key);
-            String frequency = key;
-            for (PriceAndSize priceAndSize : priceAndSizes) {
-                if (priceAndSize.getSize() == size && priceAndSize.getSizeUnit().equals(sizeUnit)) {
-                    priceSizeFrequencies.add(new PriceSizeFrequency(priceAndSize.getPrice(), priceAndSize.getSize(), priceAndSize.getSizeUnit(), frequency));
-                }
-            }
-        }
-        return priceSizeFrequencies;
-    }
-
-    public int getItemConfigId() {
-        for (ItemConfig itemConfig : itemConfigs) {
-            if (itemConfig.getSubscriptionType().equals(selectedFrequency)
-                    && itemConfig.getSizeUnit().equals(selectedPriceAndSize.getSizeUnit())
-                    && itemConfig.getSize() == selectedPriceAndSize.getSize()
-                    && itemConfig.getPrice() == selectedPriceAndSize.getPrice()) {
-                return itemConfig.getId();
-            }
-        }
-        return 0;
-    }
-
-    public int getItemConfigId(String selectedFrequency, PriceAndSize selectedPriceAndSize) {
-        for (ItemConfig itemConfig : itemConfigs) {
-            if (itemConfig.getSubscriptionType().equals(selectedFrequency)
-                    && itemConfig.getSizeUnit().equals(selectedPriceAndSize.getSizeUnit())
-                    && itemConfig.getSize() == selectedPriceAndSize.getSize()
-                    && itemConfig.getPrice() == selectedPriceAndSize.getPrice()) {
-                return itemConfig.getId();
-            }
-        }
-        return 0;
-    }
-
-    public static class PriceAndSize {
-        private int price;
-        private int size;
-        private String sizeUnit;
-
-        public PriceAndSize(int price, int size, String sizeUnit) {
-            this.price = price;
-            this.size = size;
-            this.sizeUnit = sizeUnit;
-        }
-
-        public int getPrice() {
-            return price;
-        }
-
-        public void setPrice(int price) {
-            this.price = price;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public String getSizeUnit() {
-            return sizeUnit;
-        }
-
-        public void setSizeUnit(String sizeUnit) {
-            this.sizeUnit = sizeUnit;
-        }
-    }
-
-    public static class PriceSizeFrequency {
-        private int price;
-        private int size;
-        private String sizeUnit;
-        private String frequency;
-
-        public PriceSizeFrequency(int price, int size, String sizeUnit, String frequency) {
-            this.price = price;
-            this.size = size;
-            this.sizeUnit = sizeUnit;
-            this.frequency = frequency;
-        }
-
-
-        public int getPrice() {
-            return price;
-        }
-
-        public void setPrice(int price) {
-            this.price = price;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public String getSizeUnit() {
-            return sizeUnit;
-        }
-
-        public void setSizeUnit(String sizeUnit) {
-            this.sizeUnit = sizeUnit;
-        }
-
-        public String getFrequency() {
-            return frequency;
-        }
-
-        public void setFrequency(String frequency) {
-            this.frequency = frequency;
-        }
-    }
-
     public ItemConfig getItemConfigById(int id) {
         for (ItemConfig itemConfig : itemConfigs) {
             if (itemConfig.getId() == id) {
@@ -374,5 +227,35 @@ public class BoxItem implements Serializable {
             }
         }
         return null;
+    }
+
+    public HashMap<String, ArrayList<ItemConfig>> getFrequencyItemConfigHashMap(){
+        HashMap<String, ArrayList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
+        for(int i=0; i<itemConfigs.size(); i++) {
+            String key = itemConfigs.get(i).getSubscriptionType();
+            if(frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
+                ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
+                tempItemConfigs.add(itemConfigs.get(i));
+                frequencyItemConfigHashMap.put(key,tempItemConfigs);
+            } else {
+                ArrayList<ItemConfig> tempItemConfig = frequencyItemConfigHashMap.get(key);
+                tempItemConfig.add(itemConfigs.get(i));
+                frequencyItemConfigHashMap.put(key,tempItemConfig);
+            }
+        }
+        return frequencyItemConfigHashMap;
+    }
+
+    public ArrayList<ItemConfig> getItemConfigsBySelectedItemConfig(){
+        if(selectedItemConfig == null) {
+            selectedItemConfig = itemConfigs.get(0);
+        }
+        ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
+        for(int i = 0 ; i < itemConfigs.size() ; i++ ) {
+            if(itemConfigs.get(i).getSize() == selectedItemConfig.getSize() && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())) {
+                tempItemConfigs.add(itemConfigs.get(i));
+            }
+        }
+        return tempItemConfigs;
     }
 }

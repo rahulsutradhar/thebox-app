@@ -87,7 +87,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                         PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                             finish();
                                         } else {
                                             startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
@@ -140,7 +140,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                                     finish();
                                                 } else {
                                                     startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));

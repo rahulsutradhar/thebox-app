@@ -18,14 +18,12 @@ import com.squareup.picasso.Picasso;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
-import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.app.MyApplication;
@@ -69,6 +67,9 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        boxItems.get(position).getBoxItem().setSelectedItemConfig(
+                boxItems.get(position).getBoxItem().getItemConfigById(boxItems.get(position).getSelectedConfigId()
+                ));
         itemViewHolder.setViews(boxItems.get(position));
     }
 
@@ -158,7 +159,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(final UserItem boxItem) {
-            final BoxItem.ItemConfig itemConfig = boxItem.getBoxItem().getItemConfigById(boxItem.getSelectedConfigId());
+            BoxItem.ItemConfig itemConfig = boxItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -167,12 +168,11 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.change_size: {
-                                    boxItem.getBoxItem().setSelectedFrequency(itemConfig.getSubscriptionType());
-                                    boxItem.getBoxItem().setSelectedPriceAndSize(new BoxItem.PriceAndSize(itemConfig.getPrice(), itemConfig.getSize(), itemConfig.getSizeUnit()));
+
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
-                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getItemConfigId(frequency, priceAndSize));
+                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getSelectedItemConfig().getId());
                                         }
                                     }).show(boxItem.getBoxItem());
                                     break;
@@ -181,12 +181,10 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     break;
                                 }*/
                                 case R.id.change_frequency: {
-                                    boxItem.getBoxItem().setSelectedFrequency(itemConfig.getSubscriptionType());
-                                    boxItem.getBoxItem().setSelectedPriceAndSize(new BoxItem.PriceAndSize(itemConfig.getPrice(), itemConfig.getSize(), itemConfig.getSizeUnit()));
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(String frequency, BoxItem.PriceAndSize priceAndSize) {
-                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getItemConfigId(frequency, priceAndSize));
+                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getSelectedItemConfig().getId());
                                         }
                                     }).show(boxItem.getBoxItem());
                                     break;
