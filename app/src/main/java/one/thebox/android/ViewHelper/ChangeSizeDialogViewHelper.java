@@ -43,6 +43,8 @@ public class ChangeSizeDialogViewHelper {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        selectedItemConfig = boxItem.getItemConfigs().get(sizeAndFrequencyAdapter.getCurrentPositionSelected());
+                        selectedItemConfig = boxItem.getItemConfigByFrequencyAndItemConfig(selectedItemConfig,frequencySelected);
                         onSizeAndFrequencySelected.onSizeAndFrequencySelected(selectedItemConfig);
                     }
                 })

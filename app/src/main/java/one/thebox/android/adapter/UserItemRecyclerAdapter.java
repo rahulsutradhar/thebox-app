@@ -37,11 +37,11 @@ import retrofit2.Response;
 
 public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<UserItem> boxItems;
+    ArrayList<UserItem> userItems;
 
-    public UserItemRecyclerAdapter(Context context, ArrayList<UserItem> boxItems) {
+    public UserItemRecyclerAdapter(Context context, ArrayList<UserItem> userItems) {
         super(context);
-        this.boxItems = boxItems;
+        this.userItems = userItems;
     }
 
     @Override
@@ -67,10 +67,10 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        boxItems.get(position).getBoxItem().setSelectedItemConfig(
-                boxItems.get(position).getBoxItem().getItemConfigById(boxItems.get(position).getSelectedConfigId()
+        userItems.get(position).getBoxItem().setSelectedItemConfig(
+                userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
                 ));
-        itemViewHolder.setViews(boxItems.get(position));
+        itemViewHolder.setViews(userItems.get(position));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return boxItems.size();
+        return userItems.size();
     }
 
     @Override
@@ -126,13 +126,20 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
     }
 
     public void changeConfig(final int position, final int itemConfigId) {
+        final BoxItem.ItemConfig itemConfig = userItems.get(position).getBoxItem().getItemConfigById(
+                itemConfigId
+        );
         final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
         MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
-                (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
+                (new UpdateItemConfigurationRequest.UserItem(userItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                         dialog.cancel();
+                        userItems.get(position).setSelectedConfigId(itemConfigId);
+                        userItems.get(position).getBoxItem().setSelectedItemConfig(itemConfig);
+
+                        notifyItemChanged(position);
                     }
 
                     @Override
@@ -172,7 +179,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
-                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getSelectedItemConfig().getId());
+                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
                                     }).show(boxItem.getBoxItem());
                                     break;
@@ -184,7 +191,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
-                                            changeConfig(getAdapterPosition(), boxItems.get(getAdapterPosition()).getBoxItem().getSelectedItemConfig().getId());
+                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
                                     }).show(boxItem.getBoxItem());
                                     break;

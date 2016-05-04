@@ -23,7 +23,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         itemConfigs = new ArrayList<>();
     }
 
-    public int getCurrentItemSelected() {
+    public int getCurrentPositionSelected() {
         return currentItemSelected;
     }
 

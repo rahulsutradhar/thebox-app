@@ -229,33 +229,45 @@ public class BoxItem implements Serializable {
         return null;
     }
 
-    public HashMap<String, ArrayList<ItemConfig>> getFrequencyItemConfigHashMap(){
+    public HashMap<String, ArrayList<ItemConfig>> getFrequencyItemConfigHashMap() {
         HashMap<String, ArrayList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
-        for(int i=0; i<itemConfigs.size(); i++) {
+        for (int i = 0; i < itemConfigs.size(); i++) {
             String key = itemConfigs.get(i).getSubscriptionType();
-            if(frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
+            if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
                 ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
                 tempItemConfigs.add(itemConfigs.get(i));
-                frequencyItemConfigHashMap.put(key,tempItemConfigs);
+                frequencyItemConfigHashMap.put(key, tempItemConfigs);
             } else {
                 ArrayList<ItemConfig> tempItemConfig = frequencyItemConfigHashMap.get(key);
                 tempItemConfig.add(itemConfigs.get(i));
-                frequencyItemConfigHashMap.put(key,tempItemConfig);
+                frequencyItemConfigHashMap.put(key, tempItemConfig);
             }
         }
         return frequencyItemConfigHashMap;
     }
 
-    public ArrayList<ItemConfig> getItemConfigsBySelectedItemConfig(){
-        if(selectedItemConfig == null) {
+    public ArrayList<ItemConfig> getItemConfigsBySelectedItemConfig() {
+        if (selectedItemConfig == null) {
             selectedItemConfig = itemConfigs.get(0);
         }
         ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
-        for(int i = 0 ; i < itemConfigs.size() ; i++ ) {
-            if(itemConfigs.get(i).getSize() == selectedItemConfig.getSize() && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())) {
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize() && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())) {
                 tempItemConfigs.add(itemConfigs.get(i));
             }
         }
         return tempItemConfigs;
+    }
+
+    public ItemConfig getItemConfigByFrequencyAndItemConfig(ItemConfig itemConfig, String frequency) {
+        for (ItemConfig tempItemConfig : itemConfigs) {
+            if (tempItemConfig.getSubscriptionType().equals(frequency)
+                    && itemConfig.getSize() == tempItemConfig.getSize()
+                    && itemConfig.getSizeUnit().equals(tempItemConfig.getSizeUnit())
+                    && itemConfig.getPrice() == itemConfig.getPrice()) {
+                return tempItemConfig;
+            }
+        }
+        return null;
     }
 }
