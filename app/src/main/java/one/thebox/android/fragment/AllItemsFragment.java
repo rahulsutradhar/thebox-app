@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchResultAllItemAdapter;
 
 
@@ -86,5 +87,17 @@ public class AllItemsFragment extends Fragment {
         }
         searchResultAllItemAdapter.setSearchResults(searchResults);
         recyclerView.setAdapter(searchResultAllItemAdapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        MainActivity.isSearchFragmentIsAttached = true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        MainActivity.isSearchFragmentIsAttached = false;
     }
 }
