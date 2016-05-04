@@ -18,12 +18,15 @@ import com.squareup.picasso.Picasso;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
+import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.app.MyApplication;
@@ -165,8 +168,8 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
         }
 
-        public void setViews(final UserItem boxItem) {
-            BoxItem.ItemConfig itemConfig = boxItem.getBoxItem().getSelectedItemConfig();
+        public void setViews(final UserItem userItem) {
+            BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -181,7 +184,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
-                                    }).show(boxItem.getBoxItem());
+                                    }).show(userItem.getBoxItem());
                                     break;
                                 }
                                /* case R.id.change_quantity: {
@@ -193,7 +196,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
-                                    }).show(boxItem.getBoxItem());
+                                    }).show(userItem.getBoxItem());
                                     break;
                                 }
                                /* case R.id.swap_with_similar_product: {
@@ -201,7 +204,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     break;
                                 }*/
                                 case R.id.delay_delivery: {
-                                    openDelayDeliveryDialog();
+                                    new DelayDeliveryBottomSheet((Activity) mContext).show(userItem);
                                     break;
                                 }
                             }
@@ -212,27 +215,27 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             });
 
 
-            productName.setText(boxItem.getBoxItem().getTitle());
-            config.setText(NumberWordConverter.convert(boxItem.getQuantity()) + " " +
+            productName.setText(userItem.getBoxItem().getTitle());
+            config.setText(NumberWordConverter.convert(userItem.getQuantity()) + " " +
                     itemConfig.getSize() + itemConfig.getSizeUnit() + ", " + itemConfig.getPrice() + " Rs " + itemConfig.getSubscriptionType());
-            brand.setText(boxItem.getBoxItem().getBrand());
-            savings.setText(boxItem.getBoxItem().getSavings() + " Rs saved per month");
-            if (boxItem.getNextDeliveryScheduledAt() == null || boxItem.getNextDeliveryScheduledAt().isEmpty()) {
+            brand.setText(userItem.getBoxItem().getBrand());
+            savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
                 deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
                 arrivingTime.setText("Item has added to your cart");
             } else {
                 deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
                 try {
-                    arrivingTime.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(boxItem.getNextDeliveryScheduledAt())) + " days");
+                    arrivingTime.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt())) + " days");
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
-            Picasso.with(mContext).load(boxItem.getBoxItem().getPhotoUrl()).into(productImageView);
+            Picasso.with(mContext).load(userItem.getBoxItem().getPhotoUrl()).into(productImageView);
         }
 
         private void openDelayDeliveryDialog() {
-            View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
+          /*  View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
             DeliverySlotsAdapter deliverySlotsAdapter = new DeliverySlotsAdapter(mContext);
             for (int i = 0; i < 10; i++)
                 deliverySlotsAdapter.addDeliveryItems(new DeliverySlot());
@@ -242,13 +245,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             recyclerView.setAdapter(deliverySlotsAdapter);
             bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
-           /* new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
-                @Override
-                public void onTimePicked(Date date) {
-
-                }
-            }).show();*/
+            bottomSheetDialog.show();*/
         }
 
         private void openSwipeBottomSheet() {

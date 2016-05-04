@@ -20,6 +20,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/time_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -29,6 +30,7 @@
             android:textColor="@color/dim_gray" />
 
         <TextView
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -38,6 +40,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/arriving_time_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Arriving in 6 days"

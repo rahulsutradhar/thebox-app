@@ -40,6 +40,9 @@ public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
                 break;
             }
         }
+        if(primaryAddress == null) {
+            primaryAddress = addresses.get(0);
+        }
         this.orders = orders;
         for (Order order : orders) {
             addressAndOrders.add(new AddressAndOrder(primaryAddress, order));

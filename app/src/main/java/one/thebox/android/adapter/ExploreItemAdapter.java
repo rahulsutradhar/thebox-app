@@ -11,6 +11,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.activity.ExploreItemDetailActivity;
 import one.thebox.android.util.CoreGsonUtils;
@@ -135,5 +136,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
         public HeaderViewHolder(View itemView) {
             super(itemView);
         }
+
+
     }
 }

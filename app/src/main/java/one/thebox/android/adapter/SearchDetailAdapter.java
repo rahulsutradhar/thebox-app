@@ -507,7 +507,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         }
 
         private void openDelayDeliveryDialog() {
-            View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
+          /*  View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
             DeliverySlotsAdapter deliverySlotsAdapter = new DeliverySlotsAdapter(mContext);
             for (int i = 0; i < 10; i++)
                 deliverySlotsAdapter.addDeliveryItems(new DeliverySlot());
@@ -517,7 +517,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             recyclerView.setAdapter(deliverySlotsAdapter);
             bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
+            bottomSheetDialog.show();*/
         }
 
         private void openSwipeBottomSheet() {

@@ -22,7 +22,7 @@ import one.thebox.android.util.DisplayUtil;
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.
  */
-public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.OnClickListener {
+public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<Box> boxes;
 
@@ -110,11 +110,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
     @Override
     protected int getFooterLayoutId() {
         return 0;
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 
     public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
@@ -295,8 +290,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter implements View.On
                     recyclerViewUserItems.setVisibility(View.GONE);
                     emptyBoxLayout.setVisibility(View.VISIBLE);
                 } else {
-                    recyclerViewUserItems.setVisibility(View.VISIBLE);
-                    emptyBoxLayout.setVisibility(View.GONE);
+                    this.recyclerViewUserItems.setVisibility(View.VISIBLE);
+                    this.emptyBoxLayout.setVisibility(View.GONE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
                     this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox());
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
