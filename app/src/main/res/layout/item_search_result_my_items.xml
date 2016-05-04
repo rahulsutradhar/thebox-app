@@ -146,7 +146,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/saving_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -169,7 +168,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saving increased on these categories"
+                android:text="Suggested Categories"
                 android:textColor="@color/black"
                 android:textSize="14sp" />
 

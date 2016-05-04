@@ -2,16 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
+    android:layout_margin="8dp"
     android:background="@drawable/curve_grey_border"
-    android:padding="16dp">
+    android:padding="8dp">
 
-    <TextView
+    <one.thebox.android.ViewHelper.AutoScaleTextView
         android:id="@+id/text_view_category_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:maxLines="1"
         android:text="Body Wash"
         android:textColor="@color/dim_gray" />
 
@@ -21,9 +22,9 @@
         android:layout_below="@+id/text_view_category_name"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="2dp"
-        android:visibility="gone"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/imageView2"

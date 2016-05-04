@@ -36,6 +36,7 @@ public class BoxItem implements Serializable {
     @SerializedName("photo_url")
     private String photoUrl;
     private ItemConfig selectedItemConfig;
+    private ArrayList<Category> suggestedCategory = new ArrayList<>();
 
     public ItemConfig getSelectedItemConfig() {
         return selectedItemConfig;
@@ -43,6 +44,14 @@ public class BoxItem implements Serializable {
 
     public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
         this.selectedItemConfig = selectedItemConfig;
+    }
+
+    public ArrayList<Category> getSuggestedCategory() {
+        return suggestedCategory;
+    }
+
+    public void setSuggestedCategory(ArrayList<Category> suggestedCategory) {
+        this.suggestedCategory = suggestedCategory;
     }
 
     public int getUserItemId() {

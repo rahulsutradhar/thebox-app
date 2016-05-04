@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import one.thebox.android.Events.ItemAddEvent;
+import one.thebox.android.Models.Box;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.DeliverySlot;
@@ -180,6 +182,10 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 boxItems.get(position - 1).setUserItemId(response.body().getUserItem().getId());
                                 boxItems.get(position - 1).setQuantity(boxItems.get(position - 1).getQuantity() + 1);
+                                ArrayList<Category> suggestedCategories = new ArrayList<>();
+                                suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
+                                suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
+                                boxItems.get(position - 1).setSuggestedCategory(suggestedCategories);
                                 // CustomToast.show(mContext, "Total Savings: 300 Rs per month");
                                 notifyItemChanged(position);
                                 int count = 0;
@@ -353,7 +359,6 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         private RecyclerView recyclerViewSavings;
         private RecyclerView recyclerViewFrequency;
         private MyBoxRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
-        //  private ArrayList<Box.SmartItem> smartItems = new ArrayList<>();
         private TextView addButton, subtractButton;
         private TextView changeButton, noOfItemSelected;
         private LinearLayout savingHolder, savingAmountHolder;
@@ -394,8 +399,8 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig) {
                     boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-                    if(boxItems.get(position).getUserItemId()!=0){
-                        changeConfig(position,selectedItemConfig.getId());
+                    if (boxItems.get(position).getUserItemId() != 0) {
+                        changeConfig(position, selectedItemConfig.getId());
                     }
                 }
             });
@@ -406,14 +411,14 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViews(BoxItem boxItem, int position) {
             Picasso.with(mContext).load(boxItem.getPhotoUrl()).into(productImage);
-            //setupRecyclerViewSavings();
             setupRecyclerViewFrequency(boxItem, position);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-           /* if (boxItem.getQuantity() > 0) {
+            if (boxItem.getQuantity() > 0) {
+                setupRecyclerViewSavings(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
             } else {
                 savingHolder.setVisibility(View.GONE);
-            }*/
+            }
             productName.setText(boxItem.getTitle());
             productBrand.setText(boxItem.getBrand());
             if (boxItem.getSavings() == 0) {
@@ -427,13 +432,10 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             }
         }
 
-        private void setupRecyclerViewSavings() {
-          /*  for (int i = 0; i < 6; i++) {
-                smartItems.add(new Box.SmartItem());
-            }
-            remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, smartItems);
+        private void setupRecyclerViewSavings(ArrayList<Category> suggestedCategories) {
+            remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, suggestedCategories);
             recyclerViewSavings.setLayoutManager(new GridLayoutManager(mContext, 3));
-            recyclerViewSavings.setAdapter(remainingCategoryAdapter);*/
+            recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
     }
 

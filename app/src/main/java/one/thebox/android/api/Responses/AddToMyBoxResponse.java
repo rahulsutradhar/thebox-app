@@ -21,9 +21,9 @@ public class AddToMyBoxResponse extends ApiResponse implements Serializable {
     private String info;
     @SerializedName("useritem")
     private UserItem userItem;
-    @SerializedName("rest_of_the_categories_in_the_box")
+    @SerializedName("rest_of_the_categories_in_box")
     private ArrayList<Category> restOfTheCategoriesInTheBox;
-    @SerializedName("rest_of_the_categories_in_other_box")
+    @SerializedName("rest_of_the_categories_in_other_boxes")
     private ArrayList<Category> restOfTheCategoriesInOtherBox;
 
     public boolean isSuccess() {
