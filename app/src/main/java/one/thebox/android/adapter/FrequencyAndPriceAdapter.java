@@ -17,7 +17,6 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
     public FrequencyAndPriceAdapter(Context context, int currentSelectedPosition, OnItemConfigChange onItemConfigChange) {
         super(context);
-        this.itemConfigs = itemConfigs;
         this.currentSelectedPosition = currentSelectedPosition;
         this.onItemConfigChange = onItemConfigChange;
     }

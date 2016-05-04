@@ -378,7 +378,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
         }
 
-        private void setupRecyclerViewFrequency(BoxItem boxItem, final int position) {
+        private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             ArrayList<BoxItem.ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
             int currentSelection = 0;
@@ -393,6 +393,9 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig) {
                     boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                    if(boxItems.get(position).getUserItemId()!=0){
+                        changeConfig(position,selectedItemConfig.getId());
+                    }
                 }
             });
             frequencyAndPriceAdapter.setItemConfigs(itemConfigs);
