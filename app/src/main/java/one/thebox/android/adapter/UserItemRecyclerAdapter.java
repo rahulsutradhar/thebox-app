@@ -234,20 +234,6 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             Picasso.with(mContext).load(userItem.getBoxItem().getPhotoUrl()).into(productImageView);
         }
 
-        private void openDelayDeliveryDialog() {
-          /*  View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            DeliverySlotsAdapter deliverySlotsAdapter = new DeliverySlotsAdapter(mContext);
-            for (int i = 0; i < 10; i++)
-                deliverySlotsAdapter.addDeliveryItems(new DeliverySlot());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            recyclerView.setAdapter(deliverySlotsAdapter);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();*/
-        }
-
         private void openSwipeBottomSheet() {
            /* View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
             SwapAdapter swapAdapter = new SwapAdapter(mContext);

@@ -337,6 +337,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
+
     public void onTabEvent(TabEvent tabEvent) {
         switch (tabEvent.getTabNo()) {
             case 1: {

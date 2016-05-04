@@ -37,6 +37,7 @@ public class BoxItem implements Serializable {
     private String photoUrl;
     private ItemConfig selectedItemConfig;
     private ArrayList<Category> suggestedCategory = new ArrayList<>();
+    private int horizontalOffsetOfRecyclerView;
 
     public ItemConfig getSelectedItemConfig() {
         return selectedItemConfig;
@@ -44,6 +45,14 @@ public class BoxItem implements Serializable {
 
     public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
         this.selectedItemConfig = selectedItemConfig;
+    }
+
+    public int getHorizontalOffsetOfRecyclerView() {
+        return horizontalOffsetOfRecyclerView;
+    }
+
+    public void setHorizontalOffsetOfRecyclerView(int horizontalOffsetOfRecyclerView) {
+        this.horizontalOffsetOfRecyclerView = horizontalOffsetOfRecyclerView;
     }
 
     public ArrayList<Category> getSuggestedCategory() {

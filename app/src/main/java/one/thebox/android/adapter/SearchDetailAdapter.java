@@ -53,6 +53,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
     private int currentSelectedHeaderPosition = 0;
     private ArrayList<UserItem> userItems = new ArrayList<>();
     private ArrayList<UserItem> tempUserItems = new ArrayList<>();
+    private int horizontalScrollOffset = 0;
 
     public SearchDetailAdapter(Context context) {
         super(context);
@@ -117,7 +118,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    private void bindMyItemViewHolder(ItemHolder holder, int position) {
+    private void bindMyItemViewHolder(final ItemHolder holder, int position) {
         MyItemViewHolder itemViewHolder = (MyItemViewHolder) holder;
         itemViewHolder.setViews(userItems.get(position));
     }
@@ -348,9 +349,18 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                 }
             });
             searchCategoryAdapter.setCategories(categories);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            linearLayoutManager.scrollToPositionWithOffset(0, -horizontalScrollOffset);
+            recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(searchCategoryAdapter);
-            recyclerView.scrollToPosition(currentSelectedHeaderPosition);
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    horizontalScrollOffset = horizontalScrollOffset + dx;
+                    Log.d("scroll", "dx: " + dx + "dy: " + dy + "xOffset: " + horizontalScrollOffset);
+                }
+            });
         }
     }
 
@@ -394,7 +404,9 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                     break;
                 }
             }
-            recyclerViewFrequency.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
+            recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(mContext, currentSelection, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
                 public void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig) {
@@ -406,7 +418,15 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             });
             frequencyAndPriceAdapter.setItemConfigs(itemConfigs);
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
-            recyclerViewFrequency.scrollToPosition(currentSelection);
+            recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    int temp = boxItems.get(position).getHorizontalOffsetOfRecyclerView();
+                    temp = temp + dx;
+                    boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
+                }
+            });
         }
 
         public void setViews(BoxItem boxItem, int position) {

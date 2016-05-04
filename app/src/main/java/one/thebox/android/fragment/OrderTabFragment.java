@@ -75,6 +75,9 @@ public class OrderTabFragment extends Fragment {
     }
 
     private void setupViewPagerAndTabs() {
+        if (getActivity() == null) {
+            return;
+        }
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
         adapter.addFragment(MyOrderFragment.newInstance(cartOrders), "Cart");
         adapter.addFragment(MyOrderFragment.newInstance(subscriptionOrders), "Subscriptions");
