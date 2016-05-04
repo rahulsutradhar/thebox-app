@@ -11,17 +11,15 @@ import one.thebox.android.R;
 
 class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<BoxItem.ItemConfig> itemConfigs = new ArrayList<>();
-    int currentSelectedPosition = 0;
+    private ArrayList<BoxItem.ItemConfig> itemConfigs = new ArrayList<>();
+    private int currentSelectedPosition = 0;
+    private OnItemConfigChange onItemConfigChange;
 
-    public FrequencyAndPriceAdapter(Context context) {
-        super(context);
-    }
-
-    public FrequencyAndPriceAdapter(Context context, ArrayList<BoxItem.ItemConfig> itemConfigs, int currentSelectedPosition) {
+    public FrequencyAndPriceAdapter(Context context, int currentSelectedPosition, OnItemConfigChange onItemConfigChange) {
         super(context);
         this.itemConfigs = itemConfigs;
         this.currentSelectedPosition = currentSelectedPosition;
+        this.onItemConfigChange = onItemConfigChange;
     }
 
     public ArrayList<BoxItem.ItemConfig> getItemConfigs() {
@@ -61,6 +59,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
             public void onClick(View v) {
                 int temp = currentSelectedPosition;
                 currentSelectedPosition = position;
+                onItemConfigChange.onItemConfigItemChange(itemConfigs.get(currentSelectedPosition));
                 notifyItemChanged(temp);
                 notifyItemChanged(position);
             }
@@ -127,5 +126,9 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
                 selector.setVisibility(View.INVISIBLE);
             }
         }
+    }
+
+    interface OnItemConfigChange {
+        void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig);
     }
 }

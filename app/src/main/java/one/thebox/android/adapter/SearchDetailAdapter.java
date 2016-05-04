@@ -125,7 +125,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
         if (boxItems.get(position).getSelectedItemConfig() == null) {
             boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getItemConfigById(0));
         }
-        searchedItemViewHolder.setViews(boxItems.get(position));
+        searchedItemViewHolder.setViews(boxItems.get(position), position);
         searchedItemViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -378,18 +378,31 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
         }
 
-        private void setupRecyclerViewFrequency(BoxItem boxItem) {
+        private void setupRecyclerViewFrequency(BoxItem boxItem, final int position) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
+            ArrayList<BoxItem.ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
+            int currentSelection = 0;
+            for (int i = 0; i < itemConfigs.size(); i++) {
+                if (boxItem.getSelectedItemConfig() == itemConfigs.get(i)) {
+                    currentSelection = i;
+                    break;
+                }
+            }
             recyclerViewFrequency.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
-            frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(mContext);
-            frequencyAndPriceAdapter.setItemConfigs(boxItem.getItemConfigsBySelectedItemConfig());
+            frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(mContext, currentSelection, new FrequencyAndPriceAdapter.OnItemConfigChange() {
+                @Override
+                public void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig) {
+                    boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                }
+            });
+            frequencyAndPriceAdapter.setItemConfigs(itemConfigs);
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
         }
 
-        public void setViews(BoxItem boxItem) {
+        public void setViews(BoxItem boxItem, int position) {
             Picasso.with(mContext).load(boxItem.getPhotoUrl()).into(productImage);
             //setupRecyclerViewSavings();
-            setupRecyclerViewFrequency(boxItem);
+            setupRecyclerViewFrequency(boxItem, position);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
            /* if (boxItem.getQuantity() > 0) {
                 savingHolder.setVisibility(View.VISIBLE);
