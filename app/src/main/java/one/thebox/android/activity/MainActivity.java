@@ -238,7 +238,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachMyBoxesFragment() {
-        searchViewHolder.setVisibility(View.GONE);
+        searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
         getToolbar().setTitle("My Boxes");
