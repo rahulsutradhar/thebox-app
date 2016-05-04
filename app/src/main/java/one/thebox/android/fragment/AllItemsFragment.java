@@ -70,7 +70,7 @@ public class AllItemsFragment extends Fragment {
         for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
             String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
             int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
-            SearchResult searchResult = new SearchResult(categoryId,categoryName);
+            SearchResult searchResult = new SearchResult(categoryId, categoryName);
             searchResults.add(searchResult);
         }
         for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {

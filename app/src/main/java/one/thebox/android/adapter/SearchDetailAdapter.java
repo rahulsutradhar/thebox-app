@@ -344,6 +344,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             searchCategoryAdapter.setCategories(categories);
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             recyclerView.setAdapter(searchCategoryAdapter);
+            recyclerView.scrollToPosition(currentSelectedHeaderPosition);
         }
     }
 
