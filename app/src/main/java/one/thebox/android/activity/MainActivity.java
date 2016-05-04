@@ -90,6 +90,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupSearchView();
         setupNavigationDrawer();
         attachExploreBoxes();
+        setStatusBarTranslucent(true);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }

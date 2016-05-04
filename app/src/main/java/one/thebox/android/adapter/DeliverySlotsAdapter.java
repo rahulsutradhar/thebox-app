@@ -2,8 +2,12 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -19,20 +23,31 @@ import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
+import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
+import one.thebox.android.api.Responses.CancelSubscriptionResponse;
+import one.thebox.android.api.Responses.MergeSubscriptionResponse;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.DateTimeUtil;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 12-04-2016.
  */
 public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<Order> orders = new ArrayList<>();
+    private ArrayList<Order> orders = new ArrayList<>();
     private UserItem userItem;
+    private BottomSheetDialog bottomSheetDialog;
 
-    public DeliverySlotsAdapter(Context context, UserItem userItem) {
+    public DeliverySlotsAdapter(Context context, UserItem userItem, BottomSheetDialog bottomSheetDialog) {
         super(context);
         this.userItem = userItem;
         mViewType = RECYCLER_VIEW_TYPE_HEADER_FOOTER;
+        this.bottomSheetDialog = bottomSheetDialog;
     }
 
     public ArrayList<Order> getOrders() {
@@ -64,9 +79,31 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, int position) {
+    public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(orders.get(position));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                MyApplication.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(mContext),
+                        new MergeSubscriptionRequest(userItem.getId(), orders.get(position).getId()))
+                        .enqueue(new Callback<MergeSubscriptionResponse>() {
+                            @Override
+                            public void onResponse(Call<MergeSubscriptionResponse> call, Response<MergeSubscriptionResponse> response) {
+                                loader.dismiss();
+                                if (response.body() != null) {
+                                    bottomSheetDialog.dismiss();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<MergeSubscriptionResponse> call, Throwable t) {
+                                loader.dismiss();
+                            }
+                        });
+            }
+        });
     }
 
     @Override
@@ -196,8 +233,40 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
                     customView(R.layout.layout_skip_delivery, true).
                     positiveText("Submit").onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                    View customView = dialog.getCustomView();
+                    RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
+                    int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                    View radioButton = radioGroup.findViewById(radioButtonID);
+                    int idx = radioGroup.indexOfChild(radioButton);
+                    RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                    if (r == null) {
+                        Toast.makeText(mContext, "Select at least one option", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String selectedtext = r.getText().toString();
 
+                    final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
+                            , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                            .enqueue(new Callback<CancelSubscriptionResponse>() {
+                                @Override
+                                public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
+                                    loader.dismiss();
+                                    if (response.body() != null) {
+                                        Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        if (response.body().isSuccess()) {
+                                            bottomSheetDialog.dismiss();
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
+                                    loader.cancel();
+                                }
+                            });
                 }
             }).build();
             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -210,10 +279,44 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
                     customView(R.layout.layout_cancel_subscription, true).
                     positiveText("Submit").onPositive(new MaterialDialog.SingleButtonCallback() {
                 @Override
-                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                    View customView = dialog.getCustomView();
+                    RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
+                    int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                    View radioButton = radioGroup.findViewById(radioButtonID);
+                    int idx = radioGroup.indexOfChild(radioButton);
+                    RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                    if (r == null) {
+                        Toast.makeText(mContext, "Select at least one option", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String selectedtext = r.getText().toString();
 
+                    final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                    MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
+                            , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                            .enqueue(new Callback<CancelSubscriptionResponse>() {
+                                @Override
+                                public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
+                                    loader.dismiss();
+                                    if (response.body() != null) {
+                                        Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        if (response.body().isSuccess()) {
+                                            bottomSheetDialog.dismiss();
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
+                                    loader.cancel();
+                                }
+                            });
                 }
-            }).build();
+            }).autoDismiss(false).build();
+
+
             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
             dialog.show();
         }

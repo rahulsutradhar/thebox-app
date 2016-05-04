@@ -1,9 +1,13 @@
 package one.thebox.android.api;
 
 
+import java.util.Calendar;
+
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
+import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
+import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -13,11 +17,13 @@ import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.AddressesApiResponse;
+import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
+import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.api.Responses.PaymentResponse;
@@ -122,4 +128,15 @@ public interface APIService {
     Call<PaymentResponse> payOrders(@Header("authtoken") String authToken,
                                     @Body PaymentRequestBody paymentRequestBody);
 
+    @POST("/cancel_subscription")
+    Call<CancelSubscriptionResponse> cancelSubscription(@Header("authtoken") String authToken,
+                                                        @Body CancelSubscriptionRequest cancelSubscriptionRequest);
+
+    @POST("/delay_delivery")
+    Call<CancelSubscriptionResponse> delayDeliveryByOneCycle(@Header("authtoken") String authToken,
+                                                             @Body CancelSubscriptionRequest cancelSubscriptionRequest);
+
+    @POST("/update_item_delivery_time")
+    Call<MergeSubscriptionResponse> mergeUserItemWithOrder(@Header("authtoken") String authToken,
+                                                           @Body MergeSubscriptionRequest mergeSubscriptionRequest);
 }

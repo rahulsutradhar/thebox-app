@@ -57,7 +57,7 @@ public class DelayDeliveryBottomSheet {
     }
 
     public void setupRecyclerView() {
-        deliverySlotsAdapter = new DeliverySlotsAdapter(context,userItem);
+        deliverySlotsAdapter = new DeliverySlotsAdapter(context, userItem,bottomSheetDialog);
         deliverySlotsAdapter.setOrders(orders);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -73,7 +73,11 @@ public class DelayDeliveryBottomSheet {
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 setupRecyclerView();
-                                orders.addAll(response.body().getOrders());
+                                for (Order tempOrder : response.body().getOrders()) {
+                                    if (!tempOrder.isCart()) {
+                                        orders.add(tempOrder);
+                                    }
+                                }
                             } else {
                                 Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
@@ -86,4 +90,6 @@ public class DelayDeliveryBottomSheet {
                     }
                 });
     }
+
+
 }
