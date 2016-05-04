@@ -11,9 +11,6 @@ import android.view.ViewGroup;
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
 public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
-    protected Context mContext;
-
-
     public static final int RECYCLER_ADAPTER_ITEM = 200;
     public static final int RECYCLER_ADAPTER_HEADER = 201;
     public static final int RECYCLER_ADAPTER_FOOTER = 202;
@@ -21,10 +18,10 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
     public static final int RECYCLER_VIEW_TYPE_HEADER_FOOTER = 303;
-    private boolean isManyItemViewTypeAdapter;
     public int adapterCurrentPosition;
-
+    protected Context mContext;
     protected int mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+    private boolean isManyItemViewTypeAdapter;
     private OnItemClickListener itemClickListener;
 
     public BaseRecyclerAdapter(Context context) {
@@ -178,6 +175,10 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     protected abstract int getFooterLayoutId();
 
+    public interface OnItemClickListener {
+        void onItemClicked(int position);
+    }
+
     protected abstract class ItemHolder extends RecyclerView.ViewHolder {
 
         public ItemHolder(View itemView) {
@@ -199,9 +200,5 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         public FooterHolder(View itemView) {
             super(itemView);
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClicked(int position);
     }
 }

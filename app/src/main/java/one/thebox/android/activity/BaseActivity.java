@@ -1,22 +1,17 @@
 package one.thebox.android.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.SurfaceTexture;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
 
 /**
  * Created by harsh on 10/12/15.
@@ -39,6 +34,10 @@ abstract class BaseActivity extends AppCompatActivity {
         return toolbar;
     }
 
+    public void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -57,11 +56,6 @@ abstract class BaseActivity extends AppCompatActivity {
         //setToolbarFont();
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     /*private void setToolbarFont() {
         for (int i = 0; i < toolbar.getChildCount(); ++i) {
             View child = toolbar.getChildAt(i);
@@ -76,6 +70,11 @@ abstract class BaseActivity extends AppCompatActivity {
         if (toolbarTitle != null)
             toolbarTitle.setTypeface(Montserrat.getRoboto(this, Montserrat.MONTSERRAT_REGULAR));
     }*/
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     public TextView getToolbarTitle() {
         return toolbarTitle;
@@ -116,7 +115,15 @@ abstract class BaseActivity extends AppCompatActivity {
         this.shouldHandleDrawer = true;
     }
 
-    public void setToolbar(Toolbar toolbar) {
-        this.toolbar = toolbar;
+    public void setStatusBarColor(int color) {
+        Window window = getWindow();
+// clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+// finally change the color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(color);
+        }
     }
 }
