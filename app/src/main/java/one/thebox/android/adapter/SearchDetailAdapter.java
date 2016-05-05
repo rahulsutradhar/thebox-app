@@ -3,7 +3,6 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,17 +19,17 @@ import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Calendar;
 
 import one.thebox.android.Events.ItemAddEvent;
-import one.thebox.android.Models.Box;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.DeliverySlot;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
+import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
@@ -39,6 +38,7 @@ import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.NumberWordConverter;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -460,7 +460,8 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
     }
 
     public class MyItemViewHolder extends ItemHolder {
-        private TextView adjustButton, productName, brand, deliveryTime, arrivingTime, config, savings;
+        private TextView adjustButton, productName, brand, deliveryTime,
+                arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected;
         private ImageView productImageView;
 
         public MyItemViewHolder(View itemView) {
@@ -473,10 +474,35 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
             config = (TextView) itemView.findViewById(R.id.config);
             savings = (TextView) itemView.findViewById(R.id.savings);
             productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
+            addButton = (TextView) itemView.findViewById(R.id.button_add);
+            subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
+            noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
         }
 
-        public void setViews(final UserItem boxItem) {
-            final BoxItem.ItemConfig itemConfig = boxItem.getBoxItem().getItemConfigById(boxItem.getSelectedConfigId());
+        public void setViews(final UserItem userItem) {
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (userItem.getQuantity() == 0) {
+                        addItemToBox(getAdapterPosition());
+                    } else {
+                        updateQuantity(getAdapterPosition(), userItems.get(getAdapterPosition()).getQuantity() + 1);
+                    }
+                }
+            });
+            subtractButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (userItems.get(getAdapterPosition()).getQuantity() > 0) {
+                        updateQuantity(getAdapterPosition(), userItems.get(getAdapterPosition()).getQuantity() - 1);
+                    } else {
+                        Toast.makeText(mContext, "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+            noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
+            BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -489,15 +515,21 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                     new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
-
+                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
-                                    }).show(boxItem.getBoxItem());
+                                    }).show(userItem.getBoxItem());
                                     break;
                                 }
-                              /*  case R.id.change_quantity: {
+                               /* case R.id.change_quantity: {
                                     break;
                                 }*/
                                 case R.id.change_frequency: {
+                                    new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
+                                        @Override
+                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+                                        }
+                                    }).show(userItem.getBoxItem());
                                     break;
                                 }
                                /* case R.id.swap_with_similar_product: {
@@ -505,7 +537,7 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                                     break;
                                 }*/
                                 case R.id.delay_delivery: {
-                                    openDelayDeliveryDialog();
+                                    new DelayDeliveryBottomSheet((Activity) mContext).show(userItem);
                                     break;
                                 }
                             }
@@ -514,44 +546,85 @@ public class SearchDetailAdapter extends BaseRecyclerAdapter {
                     }).show();
                 }
             });
-            productName.setText(boxItem.getBoxItem().getTitle());
-            config.setText(NumberWordConverter.convert(boxItem.getQuantity()) + " " +
+
+
+            productName.setText(userItem.getBoxItem().getTitle());
+            config.setText(NumberWordConverter.convert(userItem.getQuantity()) + " " +
                     itemConfig.getSize() + itemConfig.getSizeUnit() + ", " + itemConfig.getPrice() + " Rs " + itemConfig.getSubscriptionType());
-            brand.setText(boxItem.getBoxItem().getBrand());
-            savings.setText(boxItem.getBoxItem().getSavings() + " Rs saved per month");
-            if (boxItem.getNextDeliveryScheduledAt() == null || boxItem.getNextDeliveryScheduledAt().isEmpty()) {
-                deliveryTime.setText("Deliver to you on frequency of every " + itemConfig.getSubscriptionType());
+            brand.setText(userItem.getBoxItem().getBrand());
+            savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
+                deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
                 arrivingTime.setText("Item has added to your cart");
+            } else {
+                deliveryTime.setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
+                try {
+                    arrivingTime.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt())) + " days");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
-            Picasso.with(mContext).load(boxItem.getBoxItem().getPhotoUrl()).into(productImageView);
+            Picasso.with(mContext).load(userItem.getBoxItem().getPhotoUrl()).into(productImageView);
         }
 
-        private void openDelayDeliveryDialog() {
-          /*  View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            DeliverySlotsAdapter deliverySlotsAdapter = new DeliverySlotsAdapter(mContext);
-            for (int i = 0; i < 10; i++)
-                deliverySlotsAdapter.addDeliveryItems(new DeliverySlot());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            recyclerView.setAdapter(deliverySlotsAdapter);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();*/
+        public void addItemToBox(final int position) {
+            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
+                    new AddToMyBoxRequestBody(
+                            new AddToMyBoxRequestBody.Item(userItems.get(position).getId()),
+                            new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
+                    .enqueue(new Callback<AddToMyBoxResponse>() {
+                        @Override
+                        public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
+                            dialog.dismiss();
+                            if (response.body() != null) {
+                                if (response.body().isSuccess()) {
+                                    Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    notifyItemChanged(position);
+                                } else {
+                                    Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<AddToMyBoxResponse> call, Throwable t) {
+                            dialog.dismiss();
+                        }
+                    });
+
         }
 
-        private void openSwipeBottomSheet() {
-           /* View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            SwapAdapter swapAdapter = new SwapAdapter(mContext);
-            for (int i = 0; i < 10; i++)
-                swapAdapter.addUserItem(new Box.BoxItem());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-            RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-            recyclerView.setAdapter(swapAdapter);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();*/
+        public void updateQuantity(final int position, final int quantity) {
+            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getUserId(), quantity)))
+                    .enqueue(new Callback<UpdateItemConfigResponse>() {
+                        @Override
+                        public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
+                            dialog.cancel();
+                            if (response.body() != null) {
+                                if (response.body().isSuccess()) {
+                                    userItems.get(position).setQuantity(quantity);
+                                    notifyItemChanged(position + 1);
+                                    int count = 0;
+                                    for (int i = 0; i < userItems.size(); i++) {
+                                        if (userItems.get(i).getQuantity() > 0) {
+                                            count++;
+                                        }
+                                    }
+                                    EventBus.getDefault().post(new ItemAddEvent(count));
+                                    Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
+                            dialog.cancel();
+                        }
+                    });
         }
     }
 }

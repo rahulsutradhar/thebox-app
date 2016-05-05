@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
     android:layout_marginTop="8dp"
     android:background="@color/white"
     android:orientation="vertical">
@@ -97,8 +99,9 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/expanded_list_recycler_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/light_white"
         android:visibility="gone" />
 
 
@@ -106,9 +109,10 @@
         android:id="@+id/smart_item_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp" />
+        android:paddingRight="16dp"
+        android:paddingTop="8dp" />
 
 
 </LinearLayout>
