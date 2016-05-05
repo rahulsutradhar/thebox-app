@@ -9,4 +9,12 @@
         <item name="md_negative_color">@color/dim_gray</item>
         <item name="md_content_color">@color/dim_gray</item>
     </style>
+
+    <style name="MyLaunchActivityTheme" parent="AppTheme">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--<item name="android:navigationBarColor">@android:color/transparent</item>-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
 </resources>
