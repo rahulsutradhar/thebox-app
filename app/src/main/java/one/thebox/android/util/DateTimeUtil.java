@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -45,5 +44,9 @@ public class DateTimeUtil {
     public static Date convertStringToDate(String date) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss");
         return formatter.parse(date);
+    }
+
+    public static boolean checkIsLieBetweenDates(Date date, Date dateStart, Date dateEnd) {
+        return date.after(dateStart) && date.before(dateEnd);
     }
 }
