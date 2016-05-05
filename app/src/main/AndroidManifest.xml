@@ -57,8 +57,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Green" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OnBoardingActivity"
             android:label="@string/on_boarding_activity"

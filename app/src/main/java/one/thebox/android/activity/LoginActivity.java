@@ -9,6 +9,7 @@ import android.widget.TextView;
 import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,6 +42,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        if (!PrefUtils.getToken(this).isEmpty()) {
+            finish();
+        }
     }
 
     @Override
@@ -74,5 +78,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     }
-
 }

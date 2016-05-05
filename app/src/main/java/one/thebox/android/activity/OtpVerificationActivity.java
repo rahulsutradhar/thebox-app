@@ -15,7 +15,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.R;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -30,13 +29,20 @@ import retrofit2.Response;
  */
 public class OtpVerificationActivity extends BaseActivity implements View.OnClickListener {
 
+    private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
+    private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
     EditText otpVerificationEditText;
     TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
     String phoneNumber;
     private int otp;
-    private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
-    private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
     private boolean isSignUpActivity;
+
+    public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
+        return new Intent(context, OtpVerificationActivity.class)
+                .putExtra(EXTRA_PHONE_NUMBER, "+91" + phoneNumber)
+                .putExtra(EXTRA_IS_SIGN_UP_ACTIVITY, isSignUpActivity);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +55,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     private void initVariables() {
         phoneNumber = getIntent().getStringExtra(EXTRA_PHONE_NUMBER);
         isSignUpActivity = getIntent().getBooleanExtra(EXTRA_IS_SIGN_UP_ACTIVITY, false);
-    }
-
-    public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
-        return new Intent(context, OtpVerificationActivity.class)
-                .putExtra(EXTRA_PHONE_NUMBER, "+91" + phoneNumber)
-                .putExtra(EXTRA_IS_SIGN_UP_ACTIVITY, isSignUpActivity);
-
     }
 
     private void initViews() {
@@ -87,7 +86,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                         PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
                                             finish();
                                         } else {
                                             startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
@@ -140,7 +139,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
                                                     finish();
                                                 } else {
                                                     startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));

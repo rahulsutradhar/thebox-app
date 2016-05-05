@@ -1,9 +1,9 @@
 package one.thebox.android.activity;
 
 import android.Manifest;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,6 +15,7 @@ import one.thebox.android.R;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.PrefUtils;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -68,7 +69,7 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        MobileNumberActivityPermissionsDispatcher.onRequestPermissionsResult(this,requestCode,grantResults);
+        MobileNumberActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
 
     }
 
@@ -80,11 +81,11 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
                         dialog.dismiss();
-                        if(response.body()!=null) {
-                            if(response.body().isSuccess()) {
-                                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this,phoneNumber,true));
-                            }else {
-                                Toast.makeText(MobileNumberActivity.this,response.body().getInfo(),Toast.LENGTH_SHORT).show();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this, phoneNumber, true));
+                            } else {
+                                Toast.makeText(MobileNumberActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -108,6 +109,14 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!PrefUtils.getToken(this).isEmpty()) {
+            finish();
+        }
     }
 
     @OnPermissionDenied({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})

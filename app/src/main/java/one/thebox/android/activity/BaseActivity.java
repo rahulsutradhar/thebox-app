@@ -1,11 +1,13 @@
 package one.thebox.android.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,6 +25,11 @@ abstract class BaseActivity extends AppCompatActivity {
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;
     private boolean shouldHandleDrawer;
+    private boolean shouldCloseActivityOnBackPress;
+
+    public void closeActivityOnBackPress(boolean shouldCloseActivityOnBackPress) {
+        this.shouldCloseActivityOnBackPress = true;
+    }
 
     @Override
     protected void onPostResume() {
@@ -125,5 +132,17 @@ abstract class BaseActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(color);
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && shouldCloseActivityOnBackPress) {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

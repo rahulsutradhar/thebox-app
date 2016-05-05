@@ -34,7 +34,6 @@ import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.AllItemsFragment;
-import one.thebox.android.fragment.MyOrderFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
@@ -49,9 +48,10 @@ import retrofit2.Response;
  */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
-    public static boolean isSearchFragmentIsAttached = false;
-    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static final String EXTRA_TAB_NO = "extra_tab_no";
+    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
+    public static boolean isSearchFragmentIsAttached = false;
+    Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
@@ -59,9 +59,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private String query;
     private boolean callHasBeenCompleted = true;
     private ProgressBar progressBar;
-    private FrameLayout searchViewHolder;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    Call<SearchAutoCompleteResponse> call;
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
@@ -78,7 +75,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             callHasBeenCompleted = true;
         }
     };
+    private FrameLayout searchViewHolder;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
     private User user;
+    private boolean isRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         user = PrefUtils.getUser(this);
         shouldHandleDrawer();
+        closeActivityOnBackPress(true);
         initViews();
         setupSearchView();
         setupNavigationDrawer();
@@ -352,8 +353,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onResume() {
         super.onResume();
     }
-
-    private boolean isRegistered;
 
     @Override
     protected void onStart() {
