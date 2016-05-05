@@ -1,9 +1,9 @@
 package one.thebox.android.activity;
 
 import android.Manifest;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,9 +11,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
@@ -112,5 +110,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         SignInActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!PrefUtils.getToken(this).isEmpty()) {
+            finish();
+        }
     }
 }

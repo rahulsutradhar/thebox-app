@@ -19,7 +19,6 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.adapter.PaymentDetailAdapter;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.app.MyApplication;
@@ -30,13 +29,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
+    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailAdapter paymentDetailAdapter;
     private CheckBox checkBox;
     private ArrayList<AddressAndOrder> addressAndOrders;
-    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private TextView payButton;
     private User user;
+
+    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
+        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +57,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private void initVariables() {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
-    }
-
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
-        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        return intent;
     }
 
     private void setupRecyclerAdapter() {
@@ -91,7 +90,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 3));
+                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 1));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
