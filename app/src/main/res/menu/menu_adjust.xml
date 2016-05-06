@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/change_size"
+        android:title="@string/change_size" />
+
+    <item
+        android:id="@+id/change_frequency"
+        android:title="@string/change_frequency" />
+
+    <item
+        android:id="@+id/delay_delivery"
+        android:title="@string/delay_delivery" />
+
+</menu>

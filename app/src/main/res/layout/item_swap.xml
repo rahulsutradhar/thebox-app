@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/davy_grey" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="12dp"
+            android:text="Purifying Neem"
+            android:textColor="@color/dim_gray"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/product_brand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/product_name"
+            android:text="by Himalaya"
+            android:textColor="@color/dim_gray"
+            android:textSize="12dp" />
+
+        <TextView
+            android:id="@+id/change_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="Arriving in 6 days"
+            android:textColor="@color/brilliant_rose"
+            android:textSize="10dp"
+            android:layout_below="@+id/delivery_time"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/text_view_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="One 55ml Tube, 50 Rs Monthly"
+            android:textColor="@color/black"
+            android:textSize="14dp"
+            android:layout_alignBottom="@+id/savings"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="9dp" />
+
+        <TextView
+            android:id="@+id/savings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="5 Rs saved per month"
+            android:textColor="@color/brilliant_rose"
+            android:textSize="10dp"
+            android:layout_marginTop="46dp"
+            android:layout_below="@+id/delivery_time"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/delivery_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delivered to you on 2nd of every month"
+            android:textColor="@color/dim_gray"
+            android:textSize="12dp"
+            android:layout_below="@+id/product_brand"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="11dp" />
+
+
+        <TextView
+            android:id="@+id/adjust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Swap"
+            android:textColor="@color/dim_gray"
+            android:textSize="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="24dp"
+            android:paddingLeft="24dp"
+            android:background="@drawable/grey_borders"
+            android:layout_below="@+id/text_view_size"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="18dp" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>

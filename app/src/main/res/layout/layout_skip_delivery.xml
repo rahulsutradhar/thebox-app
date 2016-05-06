@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="&quot;Great customer service is our pride&quot;"
+        android:textColor="@color/brilliant_rose" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Help us improve by selecting one or many of"
+        android:textColor="@color/dim_gray" />
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Found a cheaper option"
+            android:textColor="@color/dim_gray"
+            android:checked="false" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Product is not finished"
+            android:textColor="@color/dim_gray" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Trying out a new product"
+            android:textColor="@color/dim_gray"
+            android:checked="false" />
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:buttonTint="@color/dim_gray"
+            android:text="Product quality was bad"
+            android:textColor="@color/dim_gray"
+            android:checked="false" />
+
+
+    </RadioGroup>
+
+</LinearLayout>

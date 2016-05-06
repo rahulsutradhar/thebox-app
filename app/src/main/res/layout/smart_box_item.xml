@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="@drawable/curve_grey_border"
+    android:padding="8dp">
+
+    <one.thebox.android.ViewHelper.AutoScaleTextView
+        android:id="@+id/text_view_category_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:maxLines="1"
+        android:text="Body Wash"
+        android:textColor="@color/dim_gray" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view_category_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginRight="4dp"
+            android:background="@color/brilliant_rose" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10 items"
+            android:textColor="@color/brilliant_rose" />
+
+    </LinearLayout>
+
+</RelativeLayout>

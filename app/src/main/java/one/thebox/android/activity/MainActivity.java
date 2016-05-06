@@ -1,103 +1,414 @@
 package one.thebox.android.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+
+import one.thebox.android.Events.SearchEvent;
+import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.fragment.HomeFragment;
+import one.thebox.android.Services.MyInstanceIDListenerService;
+import one.thebox.android.Services.RegistrationIntentService;
+import one.thebox.android.api.Responses.GetAllAddressResponse;
+import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
+import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.AllItemsFragment;
+import one.thebox.android.fragment.ExploreBoxesFragment;
+import one.thebox.android.fragment.MyAccountFragment;
+import one.thebox.android.fragment.MyBoxesFragment;
+import one.thebox.android.fragment.OrderTabFragment;
+import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.NotificationHelper;
+import one.thebox.android.util.NotificationInfo;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+/**
+ * Created by Ajeet Kumar Meena on 8/10/15.
+ */
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
-    private Toolbar toolbar;
+    public static final String EXTRA_TAB_NO = "extra_tab_no";
+    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
+    public static boolean isSearchFragmentIsAttached = false;
+    Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private ImageView buttonSpecialAction;
+    private EditText searchView;
+    private String query;
+    private boolean callHasBeenCompleted = true;
+    private ProgressBar progressBar;
+    Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
+        @Override
+        public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
+            progressBar.setVisibility(View.GONE);
+            callHasBeenCompleted = true;
+            if (response.body() != null) {
+                EventBus.getDefault().post(new SearchEvent(query, response.body()));
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SearchAutoCompleteResponse> call, Throwable t) {
+            progressBar.setVisibility(View.GONE);
+            callHasBeenCompleted = true;
+        }
+    };
+    private FrameLayout searchViewHolder;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private User user;
+    private boolean isRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startService(new Intent(this, RegistrationIntentService.class));
+        startService(new Intent(this, MyInstanceIDListenerService.class));
+        user = PrefUtils.getUser(this);
+        shouldHandleDrawer();
+        closeActivityOnBackPress(true);
+        initViews();
+        setupSearchView();
+        setupNavigationDrawer();
+        attachExploreBoxes();
+        setStatusBarTranslucent(true);
+        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
+            getAllAddresses();
+        }
+    }
 
-        // Initializing Toolbar and setting it as the actionbar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        //Initializing NavigationView
-        navigationView = (NavigationView) findViewById(R.id.navigation_view);
-
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+    private void setupNavigationDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
-
-        // Initializing Drawer Layout and ActionBarToggle
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
+        View headerView = navigationView.getHeaderView(0);
+        TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
+        userNameTextView.setText(user.getName());
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-
                 super.onDrawerOpened(drawerView);
             }
         };
-
-        //Setting the actionbarToggle to drawer layout
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-        //calling sync state is necessary or else your hamburger icon wont show up
+        setSupportActionBar(getToolbar());
         actionBarDrawerToggle.syncState();
+        navigationView.setCheckedItem(R.id.explore_boxes);
+        setTitle("Explore Boxes");
+        searchView.setVisibility(View.VISIBLE);
 
-        //launch HomeFragment
-        launchHomeFragment();
     }
 
-    // This method will trigger on item Click of navigation menu
+    private void setupSearchView() {
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+    }
+
+    private void initViews() {
+        searchView = (EditText) findViewById(R.id.search);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(this);
+        searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
+
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                query = s.toString();
+                attachSearchResultFragment();
+                if (s.length() > 0) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (callHasBeenCompleted) {
+                        callHasBeenCompleted = false;
+                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call.enqueue(searchAutoCompleteResponseCallback);
+                    } else {
+                        call.cancel();
+                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call.enqueue(searchAutoCompleteResponseCallback);
+                    }
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
+        if (menuItem.isChecked()) {
+            menuItem.setChecked(false);
+            //menuItem.getActionView();
+        } else {
+            menuItem.setChecked(true);
+        }
 
-        //Checking if the item is in checked state or not, if not make it in checked state
-        if (menuItem.isChecked()) menuItem.setChecked(false);
-        else menuItem.setChecked(true);
-
-        //Closing drawer on item click
         drawerLayout.closeDrawers();
-
-        //Check to see which item was being clicked and perform appropriate action
         switch (menuItem.getItemId()) {
+            case R.id.my_boxes:
+                attachMyBoxesFragment();
+                return true;
+            case R.id.my_account:
+                attachMyAccountFragment();
+                return true;
+            case R.id.view_bill:
+                attachOrderFragment();
+                return true;
+            case R.id.explore_boxes: {
+                setTitle("");
+                attachExploreBoxes();
+                return true;
+            }
+        }
+        return true;
+    }
 
-            case R.id.option_1:
-                Toast.makeText(getApplicationContext(), "Option 1 Selected", Toast.LENGTH_SHORT).show();
-                launchHomeFragment();
-                return true;
+    private void attachExploreBoxes() {
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("Explore Boxes");
+        ExploreBoxesFragment fragment = new ExploreBoxesFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
+        fragmentTransaction.commit();
+    }
 
-            case R.id.option_2:
-                Toast.makeText(getApplicationContext(), "Option 2 Selected", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.option_3:
-                Toast.makeText(getApplicationContext(), "Option 3 Selected", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
-                return true;
+    private void attachOrderFragment() {
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("My Orders");
+        OrderTabFragment fragment = new OrderTabFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "Bills");
+        fragmentTransaction.commit();
+    }
 
+    private void attachMyAccountFragment() {
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
+            }
+        });
+        getToolbar().setTitle("My Account");
+        MyAccountFragment fragment = new MyAccountFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "My Account");
+        fragmentTransaction.commit();
+    }
+
+    private void attachMyBoxesFragment() {
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.GONE);
+        buttonSpecialAction.setOnClickListener(null);
+        getToolbar().setTitle("My Boxes");
+        MyBoxesFragment fragment = new MyBoxesFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.search: {
+                break;
+            }
         }
     }
 
-    private void launchHomeFragment() {
-        HomeFragment fragment = new HomeFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
-        fragmentTransaction.commit();
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        openSearchResultActivity(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        searchFor(newText);
+        return true;
+    }
+
+    private void searchFor(String newText) {
+        attachSearchResultFragment();
+    }
+
+    private void attachSearchResultFragment() {
+        if (!isSearchFragmentIsAttached) {
+            isSearchFragmentIsAttached = true;
+            getToolbar().setTitle("Search");
+            AllItemsFragment fragment = new AllItemsFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.commit();
+        }
+    }
+
+    private void openSearchResultActivity(String query) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public String getActiveFragmentTag() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            return null;
+        }
+        return getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return actionBarDrawerToggle.onOptionsItemSelected(item);
+    }
+
+    public void getAllAddresses() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
+                .enqueue(new Callback<GetAllAddressResponse>() {
+                    @Override
+                    public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
+                                User user = PrefUtils.getUser(MainActivity.this);
+                                user.setAddresses(response.body().getUserAddresses());
+                                PrefUtils.saveUser(MainActivity.this, user);
+                            } else {
+                                Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<GetAllAddressResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+    @Subscribe
+
+    public void onTabEvent(TabEvent tabEvent) {
+        switch (tabEvent.getTabNo()) {
+            case 1: {
+                navigationView.setCheckedItem(R.id.my_boxes);
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayList<NotificationInfo.NotificationAction> notificationActions = new ArrayList<>();
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        NotificationInfo notificationInfo = new NotificationInfo();
+        notificationInfo.setContentImageUrl("http://longspark.org/wp-content/uploads/2015/11/art-therapy-career2.jpg");
+        notificationInfo.setContentText("content");
+        notificationInfo.setContentTitle("title");
+        notificationInfo.setLargeIcon("http://icons.iconarchive.com/icons/iconsmind/outline/512/Box-Open-icon.png");
+        notificationInfo.setNegativeButtonIconId(0);
+        notificationInfo.setNotificationActions(notificationActions);
+        notificationInfo.setNegativeButtonText("Negative Button");
+        notificationInfo.setPositiveButtonIconId(0);
+        notificationInfo.setPositiveButtonText("Positive Button");
+        notificationInfo.setNotificationId(1);
+        new NotificationHelper(this, notificationInfo).show();
+        Log.d("Notification Info", CoreGsonUtils.toJson(notificationInfo));
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        // EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        switch (intent.getIntExtra(EXTRA_TAB_NO, 0)) {
+            case 1: {
+                attachMyBoxesFragment();
+                break;
+            }
+            case 3: {
+                attachOrderFragment();
+                break;
+            }
+        }
     }
 }

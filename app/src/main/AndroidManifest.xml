@@ -10,6 +10,16 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="one.thebox.android.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="one.thebox.android.permission.C2D_MESSAGE" />
+
 
     <application
         android:name=".app.MyApplication"
@@ -45,25 +55,112 @@
                 android:resource="@xml/sync" />
         </service>
 
+        <receiver android:name=".Services.SmsReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="one.thebox.android" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".Services.MyGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".Services.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".Services.RegistrationIntentService"
+            android:exported="false" />
+
+
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OnBoardingActivity"
+            android:label="@string/on_boarding_activity"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Green" />
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoAnimation" />
+
         <activity
-            android:name=".activity.MobileActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.Green">
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyLaunchActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.FillUserInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MobileNumberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OtpVerificationActivity"
+            android:screenOrientation="portrait" />
+        <!--<activity android:name=".activity.SearchResultActivity" />-->
+        <activity
+            android:name=".activity.ExploreItemDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ConfirmPaymentDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.OrderDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.AddressesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ConfirmOtpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.UpdateProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.UpdatePhoneNumberActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SignInActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LocalitiesAutoCompleteActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ConfirmAddressActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ConfirmTimeSlotActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

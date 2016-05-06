@@ -3,6 +3,13 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="AppTheme.Base">
         <!-- Customize your theme here. -->
+        <item name="md_dark_theme">false</item>
+        <item name="md_title_color">@color/brilliant_rose</item>
+        <item name="md_positive_color">@color/brilliant_rose</item>
+        <item name="md_negative_color">@color/dim_gray</item>
+        <item name="md_content_color">@color/dim_gray</item>
+        <item name="android:windowContentOverlay">@null</item>
+
     </style>
 
     <style name="AppTheme.NoAnimation" parent="AppTheme">
@@ -13,14 +20,32 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-        <!--<item name="windowNoTitle">true</item>
+
+        <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="windowActionModeOverlay">true</item>-->
+        <item name="windowActionModeOverlay">true</item>
     </style>
 
     <style name="AppTheme.Green" parent="AppTheme">
-        <item name="colorPrimary">@color/green</item>
-        <item name="colorPrimaryDark">@color/green</item>
+        <item name="colorPrimary">@color/manatee</item>
+        <item name="colorPrimaryDark">@color/manatee</item>
         <item name="colorAccent">@color/white</item>
     </style>
+
+    <style name="MyAnimation.Window" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/abc_slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/abc_slide_out_bottom</item>
+    </style>
+
+    <style name="SearchViewTheme">
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
+
+    <style name="MyLaunchActivityTheme" parent="AppTheme">
+
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
 </resources>
