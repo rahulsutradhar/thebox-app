@@ -1,38 +1,29 @@
 {
   "project_info": {
-    "project_id": "android-boilerplate",
-    "project_number": "1065953209147",
-    "name": "android-boilerplate"
+    "project_number": "381748823068",
+    "project_id": "thebox-cc903"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1065953209147:android:3d9fefbb2b651ec2",
-        "client_id": "android:com.bhikadia.boilerplate",
-        "client_type": 1,
+        "mobilesdk_app_id": "1:381748823068:android:b8e7d5e29b4281d0",
         "android_client_info": {
-          "package_name": "com.bhikadia.boilerplate"
+          "package_name": "one.thebox.android"
         }
       },
       "oauth_client": [],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJfX5H7-N9pHtA9q4EGfSdd9FymZ25dKo"
+        }
+      ],
       "services": {
         "analytics_service": {
-          "status": 2,
-          "analytics_property": {
-            "tracking_id": "UA-71375683-1"
-          }
-        },
-        "cloud_messaging_service": {
-          "status": 1,
-          "apns_config": []
+          "status": 1
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
-        },
-        "google_signin_service": {
-          "status": 1
         },
         "ads_service": {
           "status": 1
@@ -40,6 +31,5 @@
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

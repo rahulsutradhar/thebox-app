@@ -12,6 +12,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -26,10 +27,14 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.Services.MyInstanceIDListenerService;
+import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -38,6 +43,9 @@ import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
+import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.NotificationHelper;
+import one.thebox.android.util.NotificationInfo;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -84,6 +92,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startService(new Intent(this, RegistrationIntentService.class));
+        startService(new Intent(this, MyInstanceIDListenerService.class));
         user = PrefUtils.getUser(this);
         shouldHandleDrawer();
         closeActivityOnBackPress(true);
@@ -352,6 +362,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onResume() {
         super.onResume();
+        ArrayList<NotificationInfo.NotificationAction> notificationActions = new ArrayList<>();
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
+        NotificationInfo notificationInfo = new NotificationInfo();
+        notificationInfo.setContentImageUrl("http://longspark.org/wp-content/uploads/2015/11/art-therapy-career2.jpg");
+        notificationInfo.setContentText("content");
+        notificationInfo.setContentTitle("title");
+        notificationInfo.setLargeIcon("http://icons.iconarchive.com/icons/iconsmind/outline/512/Box-Open-icon.png");
+        notificationInfo.setNegativeButtonIconId(0);
+        notificationInfo.setNotificationActions(notificationActions);
+        notificationInfo.setNegativeButtonText("Negative Button");
+        notificationInfo.setPositiveButtonIconId(0);
+        notificationInfo.setPositiveButtonText("Positive Button");
+        notificationInfo.setNotificationId(1);
+        new NotificationHelper(this, notificationInfo).show();
+        Log.d("Notification Info", CoreGsonUtils.toJson(notificationInfo));
+
     }
 
     @Override
