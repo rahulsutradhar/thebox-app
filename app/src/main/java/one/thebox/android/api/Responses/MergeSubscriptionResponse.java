@@ -14,8 +14,20 @@ public class MergeSubscriptionResponse extends ApiResponse implements Serializab
 
     @SerializedName("useritem")
     UserItem userItem;
+    @SerializedName("success")
+    private boolean success;
+    @SerializedName("info")
+    private String info;
 
     public UserItem getUserItem() {
         return userItem;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String getInfo() {
+        return info;
     }
 }

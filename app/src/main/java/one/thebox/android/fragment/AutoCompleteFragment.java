@@ -9,9 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.annotations.SerializedName;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -25,7 +22,7 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchResultAllItemAdapter;
 
 
-public class AllItemsFragment extends Fragment {
+public class AutoCompleteFragment extends Fragment {
 
     private View rootView;
     private RecyclerView recyclerView;
@@ -33,7 +30,7 @@ public class AllItemsFragment extends Fragment {
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
     private TextView noItemFoundTextView;
 
-    public AllItemsFragment() {
+    public AutoCompleteFragment() {
     }
 
 
@@ -46,6 +43,7 @@ public class AllItemsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).getToolbar().setTitle("Search");
         rootView = inflater.inflate(R.layout.fragment_all_items, container, false);
         initViews();
         setupRecyclerView();
@@ -88,6 +86,7 @@ public class AllItemsFragment extends Fragment {
         searchResultAllItemAdapter.setSearchResults(searchResults);
         recyclerView.setAdapter(searchResultAllItemAdapter);
     }
+
 
     @Override
     public void onStart() {

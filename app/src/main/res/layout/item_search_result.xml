@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <View
         android:layout_width="match_parent"
@@ -25,11 +25,11 @@
         <TextView
             android:id="@+id/text_search_result"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
+            android:layout_weight="1"
             android:text="Mach 3 Turbo"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="16dp" />
 
         <ImageView

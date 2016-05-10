@@ -24,7 +24,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginTop="12dp"
             android:text="Purifying Neem"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="14dp" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/product_name"
             android:text="by Himalaya"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="12dp" />
 
         <TextView
@@ -65,6 +65,7 @@
             android:textSize="10dp" />
 
         <android.support.v7.widget.RecyclerView
+            android:id="@+id/android.support.v7.widget.RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentLeft="true"
@@ -72,44 +73,43 @@
             android:layout_below="@+id/quantity"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="12dp"
-            android:background="@color/davy_grey"
-            android:id="@+id/android.support.v7.widget.RecyclerView" />
+            android:background="@color/davy_grey" />
 
         <TextView
             android:id="@+id/text_view_size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/android.support.v7.widget.RecyclerView"
             android:text="Add"
             android:textColor="@color/black"
-            android:textSize="14dp"
-            android:layout_below="@+id/android.support.v7.widget.RecyclerView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:textSize="14dp" />
 
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginLeft="4dp"
-            android:background="@color/brilliant_rose"
             android:layout_alignBottom="@+id/text_view_size"
-            android:layout_toRightOf="@+id/text_view_size"
-            android:layout_toEndOf="@+id/text_view_size"
             android:layout_alignTop="@+id/savings"
-            android:id="@+id/imageView" />
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_toEndOf="@+id/text_view_size"
+            android:layout_toRightOf="@+id/text_view_size"
+            android:background="@color/brilliant_rose" />
 
         <TextView
             android:id="@+id/savings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/text_view_size"
+            android:layout_alignTop="@+id/text_view_size"
+            android:layout_toEndOf="@+id/imageView"
+            android:layout_toRightOf="@+id/imageView"
             android:gravity="center_vertical"
             android:text="5 Rs Saving"
             android:textColor="@color/brilliant_rose"
-            android:textSize="10dp"
-            android:layout_alignTop="@+id/text_view_size"
-            android:layout_toRightOf="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView"
-            android:layout_alignBottom="@+id/text_view_size" />
+            android:textSize="10dp" />
 
 
     </RelativeLayout>

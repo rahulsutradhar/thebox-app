@@ -18,7 +18,7 @@
             app:tabGravity="fill"
             app:tabMaxWidth="0dp"
             app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/dim_gray"
+            app:tabSelectedTextColor="@color/primary_text_color"
             app:tabTextColor="@color/manatee" />
 
         <android.support.v4.view.ViewPager

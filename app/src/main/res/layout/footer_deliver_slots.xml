@@ -4,10 +4,10 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical"
+    android:paddingBottom="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="16dp">
 
     <TextView
         android:id="@+id/button_deliver_in_next_cycle"
@@ -15,17 +15,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/grey_borders"
-        android:text="Deliver in next cycle"
         android:padding="12dp"
-        android:textColor="@color/dim_gray" />
+        android:text="Deliver in next cycle"
+        android:textColor="@color/primary_text_color" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Will ve delivered on"
         android:layout_marginTop="6dp"
-        android:textColor="@color/dim_gray" />
+        android:text="Will ve delivered on"
+        android:textColor="@color/primary_text_color" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
         android:text="Cancel"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 
 </LinearLayout>

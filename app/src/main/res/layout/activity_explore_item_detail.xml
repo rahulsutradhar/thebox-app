@@ -2,14 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/light_white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/light_white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context="one.thebox.android.fragment.SearchDetailFragment">
+        tools:context=".fragment.SearchDetailItemsFragment">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -19,11 +19,17 @@
             android:background="@color/primary"
             android:backgroundTint="@color/primary"
             android:elevation="6dp"
-            android:gravity="center_vertical"
-            app:contentInsetEnd="6dp"
-            app:contentInsetLeft="6dp"
-            app:contentInsetRight="6dp"
-            app:contentInsetStart="6dp" />
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/box_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:padding="16dp"
+                android:src="@drawable/ic_box" />
+
+        </android.support.v7.widget.Toolbar>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -45,10 +51,10 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="67dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_margin="8dp">
+        android:layout_margin="16dp">
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -56,10 +62,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_margin="8dp"
-            android:src="@drawable/ic_box"
+            android:src="@drawable/ic_cart"
             app:backgroundTint="@color/primary"
             app:elevation="0dp"
+            app:fabSize="normal"
             app:layout_anchorGravity="bottom|right|end" />
 
         <TextView
@@ -74,7 +80,6 @@
             android:text="0"
             android:textColor="@color/white"
             android:visibility="gone" />
-
 
     </RelativeLayout>
 </FrameLayout>

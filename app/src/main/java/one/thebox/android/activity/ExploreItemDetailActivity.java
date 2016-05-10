@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -16,7 +16,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import one.thebox.android.Events.ItemAddEvent;
-import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
@@ -32,11 +31,12 @@ import retrofit2.Response;
 
 public class ExploreItemDetailActivity extends BaseActivity {
 
-    private RecyclerView recyclerView;
-    private SearchDetailAdapter searchDetailAdapter;
-    private TextView noOfItemSelectedTextView;
     public static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
     public static final String EXTRA_CATEGORY_ITEM = "extra_category_item";
+    private RecyclerView recyclerView;
+    private ImageView boxImageView;
+    private SearchDetailAdapter searchDetailAdapter;
+    private TextView noOfItemSelectedTextView;
     private ExploreItem exploreItem;
     private ProgressBar progressBar;
     private String categoryItem;
@@ -70,13 +70,21 @@ public class ExploreItemDetailActivity extends BaseActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         noOfItemSelectedTextView = (TextView) findViewById(R.id.no_of_item_selected);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        boxImageView = (ImageView) findViewById(R.id.box_image_view);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         noOfItemSelectedTextView.bringToFront();
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //EventBus.getDefault().post(new TabEvent(1));
-                startActivity(new Intent(ExploreItemDetailActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO,1));
+                startActivity(new Intent(ExploreItemDetailActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                finish();
+            }
+        });
+        boxImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ExploreItemDetailActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                 finish();
             }
         });
@@ -114,10 +122,10 @@ public class ExploreItemDetailActivity extends BaseActivity {
                             ArrayList<Category> categories = new ArrayList<>();
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
-                            searchDetailAdapter = new SearchDetailAdapter(ExploreItemDetailActivity.this);
-                            searchDetailAdapter.setBoxItems(response.body().getNormalItems(), response.body().getMyItems(), categories);
+                          /*  searchDetailAdapter = new SearchDetailAdapter(ExploreItemDetailActivity.this, getChildFragmentManager());
+                            searchDetailAdapter.setBoxItems(response.body().getNormalItems(), response.body().getMyItems());
                             recyclerView.setLayoutManager(new LinearLayoutManager(ExploreItemDetailActivity.this));
-                            recyclerView.setAdapter(searchDetailAdapter);
+                            recyclerView.setAdapter(searchDetailAdapter);*/
                         }
                     }
 
@@ -139,10 +147,10 @@ public class ExploreItemDetailActivity extends BaseActivity {
                             ArrayList<Category> categories = new ArrayList<>();
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
-                            searchDetailAdapter = new SearchDetailAdapter(ExploreItemDetailActivity.this);
-                            searchDetailAdapter.setBoxItems(response.body().getNormalBoxItems(), response.body().getMyBoxItems(), categories);
+                          /*  searchDetailAdapter = new SearchDetailAdapter(ExploreItemDetailActivity.this);
+                            searchDetailAdapter.setBoxItems(response.body().getNormalBoxItems(), response.body().getMyBoxItems());
                             recyclerView.setLayoutManager(new LinearLayoutManager(ExploreItemDetailActivity.this));
-                            recyclerView.setAdapter(searchDetailAdapter);
+                            recyclerView.setAdapter(searchDetailAdapter);*/
                         }
                     }
 

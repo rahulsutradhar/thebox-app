@@ -61,8 +61,8 @@
                         android:hint="Name"
                         android:inputType="text"
                         android:padding="8dp"
-                        android:textColor="@color/dim_gray"
-                        android:textColorHint="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color"
+                        android:textColorHint="@color/primary_text_color" />
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -80,8 +80,8 @@
                         android:hint="Email"
                         android:inputType="textEmailAddress"
                         android:padding="8dp"
-                        android:textColor="@color/dim_gray"
-                        android:textColorHint="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color"
+                        android:textColorHint="@color/primary_text_color" />
                 </android.support.design.widget.TextInputLayout>
 
                 <FrameLayout
@@ -107,8 +107,8 @@
                             android:hint="Mobile"
                             android:inputType="text"
                             android:padding="8dp"
-                            android:textColor="@color/dim_gray"
-                            android:textColorHint="@color/dim_gray" />
+                            android:textColor="@color/primary_text_color"
+                            android:textColorHint="@color/primary_text_color" />
                     </android.support.design.widget.TextInputLayout>
 
                     <ImageView

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -16,6 +17,12 @@ public class CancelSubscriptionResponse extends ApiResponse implements Serializa
     private String info;
     @SerializedName("cancel_subscription_reason")
     private CancelReason cancelReason;
+    @SerializedName("useritem")
+    private UserItem userItem;
+
+    public UserItem getUserItem() {
+        return userItem;
+    }
 
     public boolean isSuccess() {
         return success;

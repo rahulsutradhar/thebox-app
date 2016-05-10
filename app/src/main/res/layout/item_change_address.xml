@@ -10,7 +10,7 @@
         android:id="@+id/radio_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/dim_gray"
+        android:buttonTint="@color/primary_text_color"
         android:checked="false" />
 
     <LinearLayout
@@ -21,18 +21,18 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/text_view_address_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Home"
-            android:textColor="@color/manatee"
-            android:id="@+id/text_view_address_label" />
+            android:textColor="@color/manatee" />
 
         <TextView
+            android:id="@+id/text_view_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="C2603, Oberoi splendor, JVLR"
-            android:textColor="@color/dim_gray"
-            android:id="@+id/text_view_address" />
+            android:textColor="@color/primary_text_color" />
     </LinearLayout>
 
 

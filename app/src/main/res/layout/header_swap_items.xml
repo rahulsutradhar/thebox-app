@@ -11,7 +11,7 @@
         android:gravity="center_horizontal"
         android:padding="16dp"
         android:text="Swap with"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
     <View
         android:layout_width="match_parent"

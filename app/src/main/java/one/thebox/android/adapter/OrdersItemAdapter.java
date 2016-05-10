@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.util.DateTimeUtil;
 
 
@@ -104,6 +105,12 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 notifyItemChanged(holder.getAdapterPosition());
             }
         });
+        itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getUserItems()));
+            }
+        });
     }
 
     @Override
@@ -144,7 +151,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, timeTextView, itemsNameTextView, amountTobePaidTextView;
+        private TextView dateTextView, timeTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
         private LinearLayout linearLayout;
 
         public ItemViewHolder(View itemView) {
@@ -154,6 +161,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
+            viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
         }
 
         public void setViewHolder(Order order) {

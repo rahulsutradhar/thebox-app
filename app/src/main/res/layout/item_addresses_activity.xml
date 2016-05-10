@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="C2603, Oberoi splendor, JVLR"
-                android:textColor="@color/dim_gray" />
+                android:textColor="@color/primary_text_color" />
         </LinearLayout>
 
         <ImageView

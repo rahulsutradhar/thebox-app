@@ -17,6 +17,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.activity.AddressesActivity;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.api.ApiResponse;
@@ -47,9 +48,12 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
-        initViews();
-        setupViews();
+        ((MainActivity) getActivity()).getToolbar().setTitle("My Account");
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
+            initViews();
+            setupViews();
+        }
         return rootView;
     }
 

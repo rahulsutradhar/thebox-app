@@ -7,9 +7,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 
 public class SearchCategoryAdapter extends BaseRecyclerAdapter {
@@ -103,6 +101,10 @@ public class SearchCategoryAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
+    public interface OnHeaderCategoryChange {
+        void onHeaderCategoryChange(Category category, int positionSelected);
+    }
+
     class ItemViewHolder extends ItemHolder {
         private LinearLayout parentLinearLayout;
         private TextView textView;
@@ -120,13 +122,9 @@ public class SearchCategoryAdapter extends BaseRecyclerAdapter {
                 textView.setTextColor(mContext.getResources().getColor(R.color.black));
             } else {
                 textView.setTextSize(16);
-                textView.setTextColor(mContext.getResources().getColor(R.color.dim_gray));
+                textView.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
             }
         }
-    }
-
-    public interface OnHeaderCategoryChange {
-        void onHeaderCategoryChange(Category category, int positionSelected);
     }
 
 }

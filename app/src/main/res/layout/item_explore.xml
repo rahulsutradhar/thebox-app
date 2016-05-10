@@ -43,7 +43,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:text="Shahnaz Beauty Box"
-                android:textColor="@color/dim_gray"
+                android:textColor="@color/primary_text_color"
                 android:textSize="18sp" />
 
 
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Nutrigrain biscuits, Eat Natural bar..."
-                    android:textColor="@color/dim_gray"
+                    android:textColor="@color/primary_text_color"
                     android:textSize="14sp" />
 
                 <TextView
@@ -70,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="6 items"
-                    android:textColor="@color/dim_gray"
+                    android:textColor="@color/primary_text_color"
                     android:textSize="14dp" />
 
             </LinearLayout>

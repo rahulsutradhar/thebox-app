@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Delivery Charges"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
             android:id="@+id/delivery_charges"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Tax"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
             android:id="@+id/tax"
@@ -61,15 +61,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Amount"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
             android:id="@+id/amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1630 Rs"
-            android:textStyle="bold"
-            android:textColor="@color/accent" />
+            android:textColor="@color/accent"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View

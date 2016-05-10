@@ -15,3 +15,13 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
+
+-dontwarn com.squareup.picasso.**
+-dontwarn com.squareup.okhttp.**
+-keep class * extends java.util.ListResourceBundle {
+    protected Object[][] getContents();
+}
+-dontnote **ILicensingService
+

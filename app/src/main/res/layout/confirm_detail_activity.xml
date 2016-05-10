@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:text="Monthly Beauty Box"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -45,14 +45,14 @@
                 android:layout_height="18dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="8dp"
-                android:background="@color/dim_gray" />
+                android:background="@color/primary_text_color" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Home \n C2603, Oberoi Splendor"
-                android:textColor="@color/dim_gray"
+                android:textColor="@color/primary_text_color"
                 android:textSize="14sp" />
 
             <TextView
@@ -66,7 +66,7 @@
                 android:paddingRight="16dp"
                 android:paddingTop="8dp"
                 android:text="Edit"
-                android:textColor="@color/dim_gray"
+                android:textColor="@color/primary_text_color"
                 android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
@@ -93,16 +93,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time Slot"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="16sp" />
 
         <CheckBox
             android:id="@+id/checkBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/dim_gray"
+            android:buttonTint="@color/primary_text_color"
             android:text="Same for all boxes"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="14sp" />
 
         <TextView
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Weekly Hygeine Box"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="16sp" />
 
         <Spinner
@@ -123,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Monthly Hygeine Box"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
             android:textSize="16sp" />
 
         <Spinner

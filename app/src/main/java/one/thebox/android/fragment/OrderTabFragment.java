@@ -1,12 +1,9 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.MyApplication;
@@ -49,6 +46,7 @@ public class OrderTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ((MainActivity) getActivity()).getToolbar().setTitle("My Orders");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_order_tab, container, false);
             initViews();
@@ -78,46 +76,12 @@ public class OrderTabFragment extends Fragment {
         if (getActivity() == null) {
             return;
         }
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(MyOrderFragment.newInstance(cartOrders), "Cart");
-        adapter.addFragment(MyOrderFragment.newInstance(subscriptionOrders), "Subscriptions");
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
+        adapter.addFragment(CartFragment.newInstance(cartOrders), "Cart");
+        adapter.addFragment(UpComingOrderFragment.newInstance(subscriptionOrders), "Upcoming Order");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-    }
-
-
-    class ViewPagerAdapter extends FragmentStatePagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return mFragmentList.indexOf(object);
-        }
+        tabLayout.setSelectedTabIndicatorHeight(0);
     }
 
     @Override

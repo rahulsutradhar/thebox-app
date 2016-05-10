@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/curve_grey_border"
-        android:padding="8dp"
+        android:padding="16dp"
         android:text="Create New"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 </LinearLayout>

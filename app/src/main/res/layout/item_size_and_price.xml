@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Monthly"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
     <TextView
         android:id="@+id/text_view_price"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:text="Rs 52"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
     <View
         android:id="@+id/selector"

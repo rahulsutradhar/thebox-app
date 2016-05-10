@@ -14,26 +14,26 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/text_view_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Milk, Gillete Razor, Harpic ... 21 items"
-            android:textColor="@color/dim_gray"
-            android:id="@+id/text_view_item" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
+            android:id="@+id/text_view_order_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="order No. 1110"
-            android:textColor="@color/dim_gray"
-            android:id="@+id/text_view_order_no" />
+            android:textColor="@color/primary_text_color" />
 
 
         <TextView
+            android:id="@+id/text_view_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="c2603, Oberoi splendor, JVLR"
-            android:textColor="@color/dim_gray"
-            android:id="@+id/text_view_address" />
+            android:textColor="@color/primary_text_color" />
     </LinearLayout>
 
     <TextView
@@ -47,6 +47,6 @@
         android:paddingRight="16dp"
         android:paddingTop="8dp"
         android:text="Change"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 </LinearLayout>

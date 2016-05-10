@@ -14,7 +14,6 @@ import java.util.Date;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
-import one.thebox.android.activity.ConfirmTimeSlotActivity;
 
 /**
  * Created by Ajeet Kumar Meena on 30-04-2016.
@@ -22,8 +21,9 @@ import one.thebox.android.activity.ConfirmTimeSlotActivity;
 public class EditTimeSlotAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<AddressAndOrder> addressAndOrders;
+    private boolean isCart;
 
-    public EditTimeSlotAdapter(Context context) {
+    public EditTimeSlotAdapter(Context context, boolean isCart) {
         super(context);
     }
 
@@ -59,19 +59,23 @@ public class EditTimeSlotAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(addressAndOrders.get(position));
-        itemViewHolder.timeSlotHolderTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
-                    @Override
-                    public void onTimePicked(Date date) {
-                        addressAndOrders.get(position).setOderDate(date);
-                        notifyItemChanged(position);
-                        Toast.makeText(mContext, date.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }).show();
-            }
-        });
+        if (isCart) {
+            itemViewHolder.timeSlotHolderTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
+                        @Override
+                        public void onTimePicked(Date date) {
+                            addressAndOrders.get(position).setOderDate(date);
+                            notifyItemChanged(position);
+                            Toast.makeText(mContext, date.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+                }
+            });
+        } else {
+            itemViewHolder.timeSlotHolderTextView.setOnClickListener(null);
+        }
     }
 
     @Override

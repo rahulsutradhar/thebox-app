@@ -1,23 +1,19 @@
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
-import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.fragment.SearchResultFragment;
+import one.thebox.android.activity.MainActivity;
+import one.thebox.android.util.CoreGsonUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
@@ -68,9 +64,9 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachSearchDetailFragment(searchResults.get(position));
-                InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(holder.itemView.getWindowToken(), 0);
+                mContext.startActivity(new Intent(mContext, MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(searchResults.get(position))));
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -137,12 +133,5 @@ public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
                 searchResultText.setText(str);
             }
         }
-    }
-
-    private void attachSearchDetailFragment(SearchResult query) {
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
-        FragmentTransaction fragmentTransaction = ((AppCompatActivity) mContext).getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
-        fragmentTransaction.commit();
     }
 }

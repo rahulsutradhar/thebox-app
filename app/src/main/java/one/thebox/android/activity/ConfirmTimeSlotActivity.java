@@ -27,6 +27,7 @@ import one.thebox.android.util.DateTimeUtil;
 public class ConfirmTimeSlotActivity extends BaseActivity {
 
     public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
+    boolean isCart;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private CheckBox checkBox;
     private TextView proceedToPayment;
@@ -56,12 +57,16 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
         for (int i = 0; i < addressAndOrders.size(); i++) {
             addressAndOrders.get(i).setOderDate(nextSlotDate);
+            if (addressAndOrders.get(i).getOrder().isCart()) {
+                isCart = true;
+            }
         }
     }
 
     private void initViews() {
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
         timeSlotTextView.setText(AddressAndOrder.getDateString(nextSlotDate));
+
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         checkBox = (CheckBox) findViewById(R.id.check_box);
@@ -80,19 +85,24 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
             }
         });
-        timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
-                    @Override
-                    public void onTimePicked(Date date) {
-                        currentSelectedDate = date;
-                        timeSlotTextView.setText(AddressAndOrder.getDateString(date));
-                        Toast.makeText(ConfirmTimeSlotActivity.this, date.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }).show();
-            }
-        });
+        if (isCart) {
+            timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
+                        @Override
+                        public void onTimePicked(Date date) {
+                            currentSelectedDate = date;
+                            timeSlotTextView.setText(AddressAndOrder.getDateString(date));
+                            Toast.makeText(ConfirmTimeSlotActivity.this, date.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+                }
+            });
+        } else {
+            timeHolderLinearLayout.setOnClickListener(null);
+        }
+
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,11 +118,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //Log.d("Next Slot Date", getNextSlotDate(Calendar.getInstance().getTime()).toString());
     }
 
     private void setupRecyclerView() {
-        editTimeSlotAdapter = new EditTimeSlotAdapter(this);
+        editTimeSlotAdapter = new EditTimeSlotAdapter(this, isCart);
         editTimeSlotAdapter.setAddressAndOrders(addressAndOrders);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(editTimeSlotAdapter);

@@ -3,6 +3,7 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +24,6 @@ import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ChangeSizeDialogViewHelper;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -32,6 +32,7 @@ import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.NumberWordConverter;
@@ -42,11 +43,13 @@ import retrofit2.Response;
 
 public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<UserItem> userItems;
+    private ArrayList<UserItem> userItems;
+    private boolean isUpComingOrderAdapter;
 
-    public UserItemRecyclerAdapter(Context context, ArrayList<UserItem> userItems) {
+    public UserItemRecyclerAdapter(Context context, ArrayList<UserItem> userItems, boolean isUpComingOrderAdapter) {
         super(context);
         this.userItems = userItems;
+        this.isUpComingOrderAdapter = isUpComingOrderAdapter;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_expanded_list;
+        return R.layout.item_user_item;
     }
 
     @Override
@@ -159,6 +162,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
         private TextView adjustButton, productName, brand, deliveryTime,
                 arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected;
         private ImageView productImageView;
+        private LinearLayout quantityHolder;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -173,9 +177,17 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
+            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
         }
 
         public void setViews(final UserItem userItem) {
+            if (isUpComingOrderAdapter) {
+                quantityHolder.setVisibility(View.GONE);
+                adjustButton.setVisibility(View.GONE);
+            } else {
+                quantityHolder.setVisibility(View.VISIBLE);
+                adjustButton.setVisibility(View.VISIBLE);
+            }
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -208,24 +220,38 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                             switch (which) {
                                 case R.id.change_size: {
 
-                                    new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
+
+                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                            dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+
                                         }
-                                    }).show(userItem.getBoxItem());
+                                    });
                                     break;
                                 }
+
                                /* case R.id.change_quantity: {
                                     break;
                                 }*/
                                 case R.id.change_frequency: {
-                                    new ChangeSizeDialogViewHelper(mContext, new ChangeSizeDialogViewHelper.OnSizeAndFrequencySelected() {
+
+
+                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
                                         public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                            dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+
                                         }
-                                    }).show(userItem.getBoxItem());
+                                    });
                                     break;
                                 }
                                /* case R.id.swap_with_similar_product: {
@@ -233,7 +259,18 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                     break;
                                 }*/
                                 case R.id.delay_delivery: {
-                                    new DelayDeliveryBottomSheet((Activity) mContext).show(userItem);
+                                    new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
+                                        @Override
+                                        public void onDelayActionCompleted(UserItem userItem) {
+                                            if (userItem == null) {
+                                                userItems.remove(getAdapterPosition());
+                                                notifyItemRemoved(getAdapterPosition());
+                                            } else {
+                                                userItems.set(getAdapterPosition(), userItem);
+                                                notifyItemChanged(getAdapterPosition());
+                                            }
+                                        }
+                                    }).show(userItem);
                                     break;
                                 }
                             }
@@ -293,7 +330,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
         public void updateQuantity(final int position, final int quantity) {
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
-            MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getUserId(), quantity)))
+            MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
@@ -301,7 +338,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     userItems.get(position).setQuantity(quantity);
-                                    notifyItemChanged(position + 1);
+                                    notifyItemChanged(getAdapterPosition());
                                     int count = 0;
                                     for (int i = 0; i < userItems.size(); i++) {
                                         if (userItems.get(i).getQuantity() > 0) {

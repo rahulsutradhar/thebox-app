@@ -116,6 +116,10 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
+    public interface OnTimeSlotSelected {
+        void onTimeSlotSelected(String timeSlot);
+    }
+
     class ItemViewHolder extends ItemHolder {
 
         TextView timeTextView;
@@ -131,13 +135,9 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
                 timeTextView.setTextColor(mContext.getResources().getColor(R.color.accent));
                 timeTextView.setTypeface(null, Typeface.BOLD);
             } else {
-                timeTextView.setTextColor(mContext.getResources().getColor(R.color.dim_gray));
+                timeTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
                 timeTextView.setTypeface(null, Typeface.NORMAL);
             }
         }
-    }
-
-    public interface OnTimeSlotSelected {
-        void onTimeSlotSelected(String timeSlot);
     }
 }

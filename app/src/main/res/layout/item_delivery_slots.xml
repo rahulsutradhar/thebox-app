@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Combine from upcoming delivery slots"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,15 +28,15 @@
             android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:text="7:30 - 9:00, 13 Feb, Wednesday"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="view items"
-            android:textColor="@color/brilliant_rose" />
+            android:textColor="@color/brilliant_rose"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -51,6 +52,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="@color/manatee" />
+        android:background="@color/light_white" />
 
 </LinearLayout>

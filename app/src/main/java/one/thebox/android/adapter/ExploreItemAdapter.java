@@ -11,9 +11,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.activity.ExploreItemDetailActivity;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
@@ -121,7 +120,9 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onClick(View v) {
                     String exploreItemString = CoreGsonUtils.toJson(exploreItem);
-                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, null, exploreItemString));
+                    mContext.startActivity(new Intent(mContext, MainActivity.class)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
                 }
             });
             title.setText(exploreItem.getTitle());

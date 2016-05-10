@@ -15,6 +15,7 @@ public class Category implements Serializable {
     private String title;
     @SerializedName("box_id")
     private int boxId;
+    @SerializedName("no_of_items")
     private int noOfItems;
 
     public Category(int id, String title) {

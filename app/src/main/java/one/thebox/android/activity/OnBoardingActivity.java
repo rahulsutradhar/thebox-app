@@ -4,8 +4,6 @@ package one.thebox.android.activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,7 +22,7 @@ public class OnBoardingActivity extends AppIntro {
     @Override
     public void init(Bundle savedInstanceState) {
         showSkipButton(false);
-        ((Button) doneButton).setTextColor(getResources().getColor(R.color.dim_gray));
+        ((Button) doneButton).setTextColor(getResources().getColor(R.color.primary_text_color));
         //doneButton.setVisibility(View.GONE);
         setImageNextButton(null);
         addSlide(IntroSlide.newInstance(R.layout.intro_slide1));

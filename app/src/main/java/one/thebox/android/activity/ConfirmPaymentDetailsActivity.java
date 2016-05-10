@@ -88,15 +88,15 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
                         if (response.body() != null) {
+                            dialog.dismiss();
                             if (response.body().isSuccess()) {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_TAB_NO, 1));
+                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
                         }
-                        dialog.dismiss();
                     }
 
                     @Override

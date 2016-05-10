@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
                         android:text="Filter"
-                        android:textColor="@color/dim_gray"
+                        android:textColor="@color/primary_text_color"
                         android:textSize="10dp" />
 
                 </LinearLayout>
@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
                         android:text="Sort"
-                        android:textColor="@color/dim_gray"
+                        android:textColor="@color/primary_text_color"
                         android:textSize="10dp" />
 
                 </LinearLayout>

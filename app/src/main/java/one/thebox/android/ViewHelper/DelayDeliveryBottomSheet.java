@@ -1,24 +1,37 @@
 package one.thebox.android.ViewHelper;
 
 import android.app.Activity;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cocosw.bottomsheet.BottomSheet;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-import one.thebox.android.Models.DeliverySlot;
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.adapter.BaseRecyclerAdapter;
 import one.thebox.android.adapter.DeliverySlotsAdapter;
-import one.thebox.android.api.Responses.OrdersApiResponse;
+import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
+import one.thebox.android.api.Responses.AdjustDeliveryResponse;
+import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,23 +45,26 @@ public class DelayDeliveryBottomSheet {
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheet;
     private RecyclerView recyclerView;
-    private DeliverySlotsAdapter deliverySlotsAdapter;
     private ProgressBar progressBar;
-    private ArrayList<Order> orders = new ArrayList<>();
+    private AdjustDeliverySlotAdapter adjustDeliverySlotAdapter;
+    private ArrayList<Order> nextOrder = new ArrayList<>();
+    private ArrayList<Order> beforeNextDeliveryOrders = new ArrayList<>();
     private UserItem userItem;
+    private OnDelayActionCompleted onDelayActionCompleted;
 
-    public DelayDeliveryBottomSheet(Activity context) {
+    public DelayDeliveryBottomSheet(Activity context, OnDelayActionCompleted onDelayActionCompleted) {
         this.context = context;
         bottomSheetDialog = new BottomSheetDialog(context);
+        this.onDelayActionCompleted = onDelayActionCompleted;
     }
 
     public void show(UserItem userItem) {
+        this.userItem = userItem;
         bottomSheet = (context).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
         bottomSheetDialog.setContentView(bottomSheet);
         bottomSheetDialog.show();
         initViews();
         getAllOrders();
-        this.userItem = userItem;
     }
 
     public void initViews() {
@@ -57,39 +73,317 @@ public class DelayDeliveryBottomSheet {
     }
 
     public void setupRecyclerView() {
-        deliverySlotsAdapter = new DeliverySlotsAdapter(context, userItem,bottomSheetDialog);
-        deliverySlotsAdapter.setOrders(orders);
+        ArrayList<String> reasonString = new ArrayList<>();
+        reasonString.add("In case you want this item early, Combine with the following deliveries:");
+        reasonString.add("In case you want delay delivery for this item, Combine with following deliveries:");
+        adjustDeliverySlotAdapter = new AdjustDeliverySlotAdapter(context, reasonString);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(deliverySlotsAdapter);
+        recyclerView.setAdapter(adjustDeliverySlotAdapter);
     }
 
     public void getAllOrders() {
-        MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(context))
-                .enqueue(new Callback<OrdersApiResponse>() {
-                    @Override
-                    public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
-                        progressBar.setVisibility(View.GONE);
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                setupRecyclerView();
-                                for (Order tempOrder : response.body().getOrders()) {
-                                    if (!tempOrder.isCart()) {
-                                        orders.add(tempOrder);
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
+        MyApplication.getAPIService().getAdjustDeliveryOrders(PrefUtils.getToken(context), userItem.getId())
+                .enqueue(new Callback<AdjustDeliveryResponse>() {
+                             @Override
+                             public void onResponse(Call<AdjustDeliveryResponse> call, Response<AdjustDeliveryResponse> response) {
+                                 progressBar.setVisibility(View.GONE);
+                                 if (response.body() != null) {
+                                     if (response.body().isSuccess()) {
+                                         nextOrder.addAll(response.body().getNextOrder());
+                                         beforeNextDeliveryOrders.addAll(response.body().getOrdersBeforeNextOrder());
+                                         setupRecyclerView();
+                                     }
+                                 } else {
+                                     Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                 }
+                             }
 
-                    @Override
-                    public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                    }
-                });
+
+                             @Override
+                             public void onFailure(Call<AdjustDeliveryResponse> call, Throwable t) {
+                                 progressBar.setVisibility(View.GONE);
+                             }
+                         }
+
+                );
     }
 
+    public interface OnDelayActionCompleted {
+        void onDelayActionCompleted(UserItem userItem);
+    }
+
+    class AdjustDeliverySlotAdapter extends BaseRecyclerAdapter {
+
+        private ArrayList<String> reasonString = new ArrayList<>();
+        private int currentSelection = -1;
+
+        public AdjustDeliverySlotAdapter(Context context, ArrayList<String> reasonString) {
+            super(context);
+            this.reasonString = reasonString;
+            mViewType = RECYCLER_VIEW_TYPE_HEADER_FOOTER;
+        }
+
+        @Override
+        protected ItemHolder getItemHolder(View view) {
+            return new ItemViewHolder(view);
+        }
+
+        @Override
+        protected ItemHolder getItemHolder(View view, int position) {
+            return null;
+        }
+
+
+        @Override
+        public void onBindViewItemHolder(ItemHolder holder, final int position) {
+            final ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            itemViewHolder.radioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int temp = currentSelection;
+                    currentSelection = position;
+                    notifyItemChanged(temp + 1);
+                    notifyItemChanged(currentSelection + 1);
+                }
+            });
+            itemViewHolder.setupViews(position == 0 ? beforeNextDeliveryOrders : nextOrder, reasonString.get(0));
+        }
+
+        @Override
+        public int getItemsCount() {
+            return reasonString.size();
+        }
+
+        @Override
+        protected int getItemLayoutId() {
+            return R.layout.item_adjust_dilevery;
+        }
+
+        @Override
+        protected int getItemLayoutId(int position) {
+            return 0;
+        }
+
+        @Override
+        protected HeaderHolder getHeaderHolder(View view) {
+            return new HeaderViewHolder(view);
+        }
+
+        @Override
+        protected FooterHolder getFooterHolder(View view) {
+            return new FooterViewHolder(view);
+        }
+
+        @Override
+        protected int getFooterLayoutId() {
+            return R.layout.footer_deliver_slots;
+        }
+
+        @Override
+        protected int getHeaderLayoutId() {
+            return R.layout.header_delay_delivery;
+        }
+
+        @Override
+        public void onBindViewFooterHolder(FooterHolder holder, int position) {
+            FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
+            footerViewHolder.setViews();
+        }
+
+        @Override
+        public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
+            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+            headerViewHolder.setViewHolder(userItem);
+        }
+
+        class ItemViewHolder extends ItemHolder {
+
+            private RadioButton radioButton;
+            private RecyclerView recyclerView;
+            private DeliverySlotsAdapter deliverySlotsAdapter;
+
+            public ItemViewHolder(View itemView) {
+                super(itemView);
+                radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
+                recyclerView = (RecyclerView) itemView.findViewById(R.id.recycler_view);
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+            }
+
+            public void setupViews(ArrayList<Order> orders, String reasonString) {
+                radioButton.setText(reasonString);
+                if (getAdapterPosition() - 1 == currentSelection) {
+                    radioButton.setChecked(true);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    setupRecyclerView(orders);
+                } else {
+                    radioButton.setChecked(false);
+                    recyclerView.setVisibility(View.GONE);
+                }
+            }
+
+            public void setupRecyclerView(ArrayList<Order> orders) {
+                deliverySlotsAdapter = new DeliverySlotsAdapter(mContext, userItem, bottomSheetDialog, onDelayActionCompleted);
+                deliverySlotsAdapter.setOrders(orders);
+                recyclerView.setAdapter(deliverySlotsAdapter);
+            }
+        }
+
+        public class HeaderViewHolder extends HeaderHolder {
+            TextView deliveryTextView, arrivingTextView;
+
+            public HeaderViewHolder(View itemView) {
+                super(itemView);
+                deliveryTextView = (TextView) itemView.findViewById(R.id.delivery_schedule_text_view);
+                arrivingTextView = (TextView) itemView.findViewById(R.id.arriving_text_view);
+            }
+
+            public void setViewHolder(UserItem userItem) {
+                Date orderDate = null;
+                try {
+                    orderDate = DateTimeUtil.convertStringToDate
+                            (userItem.getNextDeliveryScheduledAt());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (userItem.getNextDeliveryScheduledAt() == null) {
+                    arrivingTextView.setText("This item is in cart. Order this item now.");
+                } else {
+                    arrivingTextView.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(
+                            Calendar.getInstance().getTime(), orderDate
+                    ) + " days");
+                }
+                BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+                deliveryTextView
+                        .setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
+
+            }
+
+        }
+
+        public class FooterViewHolder extends FooterHolder {
+            private TextView buttonCancel;
+            private TextView buttonDeliverInNextCycle;
+
+            public FooterViewHolder(View itemView) {
+                super(itemView);
+                buttonCancel = (TextView) itemView.findViewById(R.id.button_cancel);
+                buttonDeliverInNextCycle = (TextView) itemView.findViewById(R.id.button_deliver_in_next_cycle);
+            }
+
+
+            public void setViews() {
+                buttonCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openCancelDialog();
+                    }
+                });
+                buttonDeliverInNextCycle.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openDeliverInNextCycleDialog();
+                    }
+                });
+
+            }
+
+            private void openDeliverInNextCycleDialog() {
+                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                        title("Skip Delivery").
+                        customView(R.layout.layout_skip_delivery, true).
+                        positiveText("Submit").onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                        View customView = dialog.getCustomView();
+                        RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
+                        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                        View radioButton = radioGroup.findViewById(radioButtonID);
+                        int idx = radioGroup.indexOfChild(radioButton);
+                        RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                        if (r == null) {
+                            Toast.makeText(mContext, "Select at least one option", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String selectedtext = r.getText().toString();
+
+                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
+                                , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                                .enqueue(new Callback<CancelSubscriptionResponse>() {
+                                    @Override
+                                    public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
+                                        loader.dismiss();
+                                        if (response.body() != null) {
+                                            Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            if (response.body().isSuccess()) {
+                                                bottomSheetDialog.dismiss();
+                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
+                                        loader.cancel();
+                                    }
+                                });
+                    }
+                }).build();
+                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                dialog.show();
+            }
+
+            private void openCancelDialog() {
+                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                        title("Cancel Subscription").
+                        customView(R.layout.layout_cancel_subscription, true).
+                        positiveText("Submit").onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                        View customView = dialog.getCustomView();
+                        RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
+                        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                        View radioButton = radioGroup.findViewById(radioButtonID);
+                        int idx = radioGroup.indexOfChild(radioButton);
+                        RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                        if (r == null) {
+                            Toast.makeText(mContext, "Select at least one option", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String selectedtext = r.getText().toString();
+
+                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
+                                , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                                .enqueue(new Callback<CancelSubscriptionResponse>() {
+                                    @Override
+                                    public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
+                                        loader.dismiss();
+                                        if (response.body() != null) {
+                                            Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            if (response.body().isSuccess()) {
+                                                bottomSheetDialog.dismiss();
+                                                onDelayActionCompleted.onDelayActionCompleted(null);
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
+                                        loader.cancel();
+                                    }
+                                });
+                    }
+                }).autoDismiss(false).build();
+
+
+                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                dialog.show();
+            }
+        }
+    }
 
 }

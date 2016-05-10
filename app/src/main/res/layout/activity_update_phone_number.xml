@@ -31,7 +31,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:text="Please enter your new mobile no."
-        android:textColor="@color/dim_gray"
+        android:textColor="@color/primary_text_color"
         android:textSize="14sp" />
 
     <TextView
@@ -64,6 +64,6 @@
         android:inputType="number"
         android:maxLength="10"
         android:padding="16dp"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 </RelativeLayout>

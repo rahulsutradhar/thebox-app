@@ -24,16 +24,21 @@ import one.thebox.android.util.PrefUtils;
 
 public class ConfirmAddressActivity extends BaseActivity {
 
+    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private TextView selectAddress;
     private RecyclerView recyclerView;
     private SelectDeliveryAddressAdapter selectDeliveryAddressAdapter;
     private EditDeliveryAddressAdapter editDeliveryAddressAdapter;
     private User user;
-    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private CheckBox checkBox;
     private ArrayList<Order> orders;
     private boolean haveDifferentAddresses;
 
+    public static Intent getInstance(Context context, ArrayList<Order> orders) {
+        Intent intent = new Intent(context, ConfirmAddressActivity.class);
+        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,6 @@ public class ConfirmAddressActivity extends BaseActivity {
             setupRecyclerView(false);
         }
     }
-
 
     private void initVariables() {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
@@ -68,13 +72,6 @@ public class ConfirmAddressActivity extends BaseActivity {
         }
     }
 
-    public static Intent getInstance(Context context, ArrayList<Order> orders) {
-        Intent intent = new Intent(context, ConfirmAddressActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orders));
-        return intent;
-    }
-
-
     private void initViews() {
         selectAddress = (TextView) findViewById(R.id.button_select_address);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -89,7 +86,7 @@ public class ConfirmAddressActivity extends BaseActivity {
             });
             checkBox.setVisibility(View.GONE);
         } else {
-            selectAddress.setText("Select Address");
+            selectAddress.setText("Proceed to Time Slots");
             selectAddress.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

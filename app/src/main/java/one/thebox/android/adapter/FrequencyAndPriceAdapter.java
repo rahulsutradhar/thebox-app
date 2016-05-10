@@ -100,10 +100,14 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
+    interface OnItemConfigChange {
+        void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig);
+    }
+
     class ItemFrequencyViewHolder extends ItemHolder {
 
-        private TextView textViewSize, textViewPrice;
         View selector;
+        private TextView textViewSize, textViewPrice;
 
         public ItemFrequencyViewHolder(View itemView) {
             super(itemView);
@@ -120,14 +124,10 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
                 textViewSize.setTextColor(mContext.getResources().getColor(R.color.black));
                 selector.setVisibility(View.VISIBLE);
             } else {
-                textViewSize.setTextColor(mContext.getResources().getColor(R.color.dim_gray));
-                textViewPrice.setTextColor(mContext.getResources().getColor(R.color.dim_gray));
+                textViewSize.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                textViewPrice.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
                 selector.setVisibility(View.INVISIBLE);
             }
         }
-    }
-
-    interface OnItemConfigChange {
-        void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig);
     }
 }

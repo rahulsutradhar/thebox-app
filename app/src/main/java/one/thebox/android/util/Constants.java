@@ -9,4 +9,5 @@ public class Constants {
             , "03:00 P.M - 04:30 P.M", "04:30 P.M - 06:00 P.M", "06:00 P.M - 07:30 P.M"};
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
+    public static final String PREF_SHOULD_OPEN_EXPLORE_BOXES = "should_open_explore_boxes";
 }

@@ -26,9 +26,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:buttonTint="@color/dim_gray"
+        android:buttonTint="@color/primary_text_color"
         android:text="I want different addresses for my orders"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 
     <android.support.v7.widget.RecyclerView

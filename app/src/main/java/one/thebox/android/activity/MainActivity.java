@@ -12,9 +12,9 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -27,10 +27,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
@@ -38,14 +38,14 @@ import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.fragment.AllItemsFragment;
+import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
+import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.NotificationHelper;
-import one.thebox.android.util.NotificationInfo;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,7 +56,8 @@ import retrofit2.Response;
  */
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, View.OnClickListener {
 
-    public static final String EXTRA_TAB_NO = "extra_tab_no";
+    public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
+    public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
     Call<SearchAutoCompleteResponse> call;
@@ -96,12 +97,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startService(new Intent(this, MyInstanceIDListenerService.class));
         user = PrefUtils.getUser(this);
         shouldHandleDrawer();
-        closeActivityOnBackPress(true);
         initViews();
         setupSearchView();
         setupNavigationDrawer();
-        attachExploreBoxes();
         setStatusBarTranslucent(true);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        if (PrefUtils.getBoolean(this, Constants.PREF_SHOULD_OPEN_EXPLORE_BOXES)) {
+            attachExploreBoxes();
+        } else {
+            attachMyBoxesFragment();
+        }
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
@@ -129,9 +135,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setSupportActionBar(getToolbar());
         actionBarDrawerToggle.syncState();
         navigationView.setCheckedItem(R.id.explore_boxes);
-        setTitle("Explore Boxes");
-        searchView.setVisibility(View.VISIBLE);
-
     }
 
     private void setupSearchView() {
@@ -148,7 +151,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
         searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
-
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -203,7 +205,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 attachOrderFragment();
                 return true;
             case R.id.explore_boxes: {
-                setTitle("");
                 attachExploreBoxes();
                 return true;
             }
@@ -212,10 +213,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void attachExploreBoxes() {
+        searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
-        getToolbar().setTitle("Explore Boxes");
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
@@ -226,7 +227,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
-        getToolbar().setTitle("My Orders");
         OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
@@ -236,13 +236,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void attachMyAccountFragment() {
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_edit);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
             }
         });
-        getToolbar().setTitle("My Account");
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
@@ -253,12 +253,64 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(null);
-        getToolbar().setTitle("My Boxes");
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
         fragmentTransaction.commit();
     }
+
+    private void attachSearchResultFragment() {
+        if (!isSearchFragmentIsAttached) {
+            searchViewHolder.setVisibility(View.VISIBLE);
+            buttonSpecialAction.setVisibility(View.GONE);
+            buttonSpecialAction.setOnClickListener(null);
+            isSearchFragmentIsAttached = true;
+            getToolbar().setTitle("Search");
+            AutoCompleteFragment fragment = new AutoCompleteFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.commit();
+        }
+    }
+
+    private void attachSearchDetailFragment(SearchResult query) {
+        searchView.getText().clear();
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_box);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachMyBoxesFragment();
+            }
+        });
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.commit();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+    }
+
+    private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
+        searchView.getText().clear();
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_box);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachMyBoxesFragment();
+            }
+        });
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.commit();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -284,17 +336,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void searchFor(String newText) {
         attachSearchResultFragment();
-    }
-
-    private void attachSearchResultFragment() {
-        if (!isSearchFragmentIsAttached) {
-            isSearchFragmentIsAttached = true;
-            getToolbar().setTitle("Search");
-            AllItemsFragment fragment = new AllItemsFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
-            fragmentTransaction.commit();
-        }
     }
 
     private void openSearchResultActivity(String query) {
@@ -362,7 +403,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onResume() {
         super.onResume();
-        ArrayList<NotificationInfo.NotificationAction> notificationActions = new ArrayList<>();
+   /*     ArrayList<NotificationInfo.NotificationAction> notificationActions = new ArrayList<>();
         notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
         notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
         notificationActions.add(new NotificationInfo.NotificationAction(0, ""));
@@ -378,7 +419,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         notificationInfo.setPositiveButtonText("Positive Button");
         notificationInfo.setNotificationId(1);
         new NotificationHelper(this, notificationInfo).show();
-        Log.d("Notification Info", CoreGsonUtils.toJson(notificationInfo));
+        Log.d("Notification Info", CoreGsonUtils.toJson(notificationInfo));*/
 
     }
 
@@ -400,13 +441,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        switch (intent.getIntExtra(EXTRA_TAB_NO, 0)) {
+        switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
+            case 0: {
+                attachExploreBoxes();
+                break;
+            }
             case 1: {
                 attachMyBoxesFragment();
                 break;
             }
             case 3: {
                 attachOrderFragment();
+                break;
+            }
+            case 4: {
+                attachSearchDetailFragment
+                        (CoreGsonUtils.fromJson
+                                (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), SearchResult.class));
+                break;
+            }
+            case 5: {
+                attachExploreItemDetailFragment(CoreGsonUtils.fromJson
+                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));
                 break;
             }
         }

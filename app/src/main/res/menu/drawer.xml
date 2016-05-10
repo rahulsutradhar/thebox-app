@@ -3,14 +3,15 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/my_boxes"
+            android:checked="false"
+            android:title="My Boxes" />
+
+        <item
             android:id="@+id/explore_boxes"
             android:checked="false"
             android:title="Explore Boxes" />
 
-        <item
-            android:id="@+id/my_boxes"
-            android:checked="false"
-            android:title="My Boxes" />
 
         <item
             android:id="@+id/my_account"

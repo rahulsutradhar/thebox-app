@@ -36,7 +36,7 @@
         android:background="@color/primary"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:text="Proceed to Payment"
+        android:text="Pay"
         android:textColor="@color/white"
         android:visibility="visible" />
 

@@ -19,23 +19,13 @@ import one.thebox.android.api.RestClient;
  */
 public class MyApplication extends Application {
 
-    public final String TAG = MyApplication.class.getSimpleName();
-
+    private static final int READ_TIMEOUT = 60 * 1000;
+    private static final int CONNECTION_TIMEOUT = 60 * 1000;
     private static MyApplication myApplication;
-
     private static RestClient restClient;
     private static OkHttpClient okHttpClient;
     private static Context mContext;
-    private static final int READ_TIMEOUT = 60 * 1000;
-    private static final int CONNECTION_TIMEOUT = 60 * 1000;
-
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        myApplication = this;
-        mContext = getApplicationContext();
-    }
+    public final String TAG = MyApplication.class.getSimpleName();
 
     private static RestClient getRestClient() {
         if (restClient == null) {
@@ -48,12 +38,11 @@ public class MyApplication extends Application {
         return myApplication;
     }
 
-
     public static OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
             HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
             logger.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-            okHttpClient = new OkHttpClient.Builder().cache(getCache(4)).retryOnConnectionFailure(false).readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+            okHttpClient = new OkHttpClient.Builder().cache(getCache(4)).retryOnConnectionFailure(true).readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
                     .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).addInterceptor(logger).addInterceptor(new Interceptor() {
                         @Override
                         public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -76,5 +65,12 @@ public class MyApplication extends Application {
 
     public static APIService getAPIService() {
         return getRestClient().getApiService();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        myApplication = this;
+        mContext = getApplicationContext();
     }
 }

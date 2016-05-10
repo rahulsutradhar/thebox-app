@@ -6,8 +6,8 @@
         <item name="md_dark_theme">false</item>
         <item name="md_title_color">@color/brilliant_rose</item>
         <item name="md_positive_color">@color/brilliant_rose</item>
-        <item name="md_negative_color">@color/dim_gray</item>
-        <item name="md_content_color">@color/dim_gray</item>
+        <item name="md_negative_color">@color/primary_text_color</item>
+        <item name="md_content_color">@color/primary_text_color</item>
         <item name="android:windowContentOverlay">@null</item>
 
     </style>

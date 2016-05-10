@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:id="@+id/linear_layout"
     android:background="@drawable/curve_grey_border"
     android:orientation="vertical"
     android:padding="24dp">
@@ -14,17 +14,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Facewash"
-        android:textSize="16dp"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color"
+        android:textSize="16dp" />
 
     <LinearLayout
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="4dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="12dp"

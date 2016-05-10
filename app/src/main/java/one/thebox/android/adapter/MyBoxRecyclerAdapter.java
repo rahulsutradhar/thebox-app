@@ -1,6 +1,7 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,8 +15,9 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
-import one.thebox.android.activity.ExploreItemDetailActivity;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
 
@@ -156,7 +158,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.startActivity(ExploreItemDetailActivity.getInstance(mContext, CoreGsonUtils.toJson(categories.get(position)), null));
+                    mContext.startActivity(new Intent(mContext, MainActivity.class)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
+                                    new SearchResult(categories.get(position).getId(), categories.get(position).getTitle()))));
                 }
             });
         }
@@ -256,7 +261,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
+            this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
             this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.subTitle = (TextView) itemView.findViewById(R.id.sub_title);
@@ -287,19 +292,19 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
             if (box.isExpandedListVisible()) {
                 if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                    recyclerViewUserItems.setVisibility(View.GONE);
-                    emptyBoxLayout.setVisibility(View.VISIBLE);
+                    this.recyclerViewUserItems.setVisibility(View.GONE);
+                    this.emptyBoxLayout.setVisibility(View.VISIBLE);
                 } else {
                     this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                     this.emptyBoxLayout.setVisibility(View.GONE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-                    this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox());
+                    this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox(), false);
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
                 }
 
             } else {
-                recyclerViewUserItems.setVisibility(View.GONE);
-                emptyBoxLayout.setVisibility(View.GONE);
+                this.recyclerViewUserItems.setVisibility(View.GONE);
+                this.emptyBoxLayout.setVisibility(View.GONE);
             }
         }
     }

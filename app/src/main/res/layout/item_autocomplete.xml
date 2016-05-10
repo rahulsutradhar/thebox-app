@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvAutocompleteListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:textColor="@color/dim_gray"
-    android:textSize="14sp"
-    android:paddingTop="10dp"
     android:paddingBottom="10dp"
-    android:id="@+id/tvAutocompleteListItem"/>
+    android:paddingTop="10dp"
+    android:textColor="@color/primary_text_color"
+    android:textSize="14sp" />

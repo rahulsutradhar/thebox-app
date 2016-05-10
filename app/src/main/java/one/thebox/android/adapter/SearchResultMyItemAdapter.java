@@ -1,7 +1,6 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -74,7 +73,7 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_search_result_my_items;
+        return R.layout.item_search_detail_items;
     }
 
     @Override
@@ -118,7 +117,7 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            recyclerView = (RecyclerView) itemView.findViewById(R.id.smart_item_recycler_view);
+            recyclerView = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
             setupRecyclerView();
         }
 

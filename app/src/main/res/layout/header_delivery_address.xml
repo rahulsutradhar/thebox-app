@@ -13,7 +13,7 @@
         android:gravity="center_horizontal"
         android:padding="16dp"
         android:text="Select Delivery address"
-        android:textColor="@color/dim_gray"
+        android:textColor="@color/primary_text_color"
         android:textSize="16dp" />
 
     <CheckBox
@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:buttonTint="@color/dim_gray"
+        android:buttonTint="@color/primary_text_color"
         android:text="I want different addresses for my orders"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color" />
 
 </LinearLayout>

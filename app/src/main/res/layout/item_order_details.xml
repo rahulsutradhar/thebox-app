@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:background="@color/dim_gray" />
+        android:background="@color/primary_text_color" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Purifying Neem"
-            android:textColor="@color/dim_gray"
+            android:textColor="@color/primary_text_color"
 
             />
 
@@ -36,6 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="One 55ml Tube, 50 Rs Monthly"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
     </LinearLayout>
 </LinearLayout>

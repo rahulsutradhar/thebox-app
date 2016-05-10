@@ -40,13 +40,10 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d("Test OnCreateViewHolder", String.valueOf(adapterCurrentPosition));
         if (viewType == RECYCLER_ADAPTER_ITEM) {
-            if (isManyItemViewTypeAdapter) {
-                View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(adapterCurrentPosition), parent, false);
-                return getItemHolder(itemView, adapterCurrentPosition);
-            } else {
-                View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(), parent, false);
-                return getItemHolder(itemView);
-            }
+
+            View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(), parent, false);
+            return getItemHolder(itemView);
+
 
         } else if (viewType == RECYCLER_ADAPTER_HEADER) {
             if (getHeaderLayoutId() != -1) {
@@ -68,7 +65,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         Log.d("Test OnBindViewHolder", String.valueOf(adapterCurrentPosition));
         if (getItemViewType(position) == RECYCLER_ADAPTER_ITEM) {
             int itemPos = position;
-            if (mViewType != RECYCLER_VIEW_TYPE_NORMAL && mViewType!= RECYCLER_VIEW_TYPE_FOOTER) {
+            if (mViewType != RECYCLER_VIEW_TYPE_NORMAL && mViewType != RECYCLER_VIEW_TYPE_FOOTER) {
                 itemPos = position - 1;
             }
             onBindViewItemHolder((ItemHolder) holder, itemPos);
@@ -101,7 +98,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
                 itemCount = getItemsCount();
                 break;
             case RECYCLER_VIEW_TYPE_FOOTER:
-                itemCount = getItemsCount() +1;
+                itemCount = getItemsCount() + 1;
                 break;
             case RECYCLER_VIEW_TYPE_HEADER:
                 itemCount = getItemsCount() + 1;

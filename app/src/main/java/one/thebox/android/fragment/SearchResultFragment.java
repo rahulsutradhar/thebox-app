@@ -1,21 +1,15 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +62,7 @@ public class SearchResultFragment extends Fragment {
 
     private void setupViewPagerAndTabs() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(new AllItemsFragment(), "All Items");
+        adapter.addFragment(new AutoCompleteFragment(), "All Items");
 /*
         adapter.addFragment(new MyItemsFragment(), "My Items");
 */
@@ -76,6 +70,17 @@ public class SearchResultFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    @Override
+    public void onStart() {
+        MainActivity.isSearchFragmentIsAttached = true;
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        MainActivity.isSearchFragmentIsAttached = false;
+        super.onStop();
+    }
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -109,17 +114,5 @@ public class SearchResultFragment extends Fragment {
         public int getItemPosition(Object object) {
             return mFragmentList.indexOf(object);
         }
-    }
-
-    @Override
-    public void onStart() {
-        MainActivity.isSearchFragmentIsAttached = true;
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        MainActivity.isSearchFragmentIsAttached = false;
-        super.onStop();
     }
 }

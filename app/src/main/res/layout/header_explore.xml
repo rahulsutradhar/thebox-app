@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:textSize="16dp"
         android:text="Explore"
-        android:textColor="@color/dim_gray" />
+        android:textColor="@color/primary_text_color"
+        android:textSize="16dp" />
 
 </LinearLayout>

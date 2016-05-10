@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Milk, Gillete, Razor, Harpic ... 21 items"
-            android:textColor="@color/dim_gray" />
+            android:textColor="@color/primary_text_color" />
 
         <TextView
             android:layout_width="match_parent"

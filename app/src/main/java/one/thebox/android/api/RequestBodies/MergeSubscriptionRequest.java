@@ -9,7 +9,9 @@ import java.io.Serializable;
  */
 public class MergeSubscriptionRequest implements Serializable {
 
+    @SerializedName("useritem")
     private UserItem userItem;
+    @SerializedName("order")
     private Order order;
 
     public MergeSubscriptionRequest(int userItemId, int orderId) {

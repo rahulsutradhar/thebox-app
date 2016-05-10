@@ -1,12 +1,10 @@
 package one.thebox.android.fragment;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +14,8 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.ExploreItemAdapter;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -44,10 +42,13 @@ public class ExploreBoxesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_explore_boxes, container, false);
-        initViews();
-        setupRecyclerView();
-        getAllBoxes();
+        ((MainActivity) getActivity()).getToolbar().setTitle("Explore Boxes");
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_explore_boxes, container, false);
+            initViews();
+            setupRecyclerView();
+            getAllBoxes();
+        }
         return rootView;
     }
 

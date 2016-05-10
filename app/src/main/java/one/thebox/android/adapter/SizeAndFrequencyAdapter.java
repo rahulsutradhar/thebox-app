@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.R;
+import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
 /**
  * Created by Ajeet Kumar Meena on 12-04-2016.
@@ -15,12 +16,14 @@ import one.thebox.android.R;
 public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
     ArrayList<BoxItem.ItemConfig> itemConfigs;
-    int currentItemSelected = 0;
-    int prevItemSelected = 0;
+    int currentItemSelected = -1;
+    int prevItemSelected = -1;
+    private SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected;
 
-    public SizeAndFrequencyAdapter(Context context) {
+    public SizeAndFrequencyAdapter(Context context, SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected) {
         super(context);
         itemConfigs = new ArrayList<>();
+        this.onSizeAndFrequencySelected = onSizeAndFrequencySelected;
     }
 
     public int getCurrentPositionSelected() {
@@ -37,7 +40,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
 
     public void setItemConfigs(ArrayList<BoxItem.ItemConfig> itemConfigs) {
-        this.itemConfigs = itemConfigs;
+        this.itemConfigs.addAll(itemConfigs);
     }
 
     public int getPrevItemSelected() {
@@ -78,6 +81,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                 currentItemSelected = position;
                 notifyItemChanged(prevItemSelected);
                 notifyItemChanged(currentItemSelected);
+                onSizeAndFrequencySelected.onSizeAndFrequencySelected(itemConfigs.get(currentItemSelected));
             }
         });
         itemViewHolder.setViewHolder(itemConfigs.get(position));
@@ -128,7 +132,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             super(itemView);
             sizeTextView = (TextView) itemView.findViewById(R.id.size_text_view);
             costTextView = (TextView) itemView.findViewById(R.id.cost_text_view);
-            colorDimGray = mContext.getResources().getColor(R.color.dim_gray);
+            colorDimGray = mContext.getResources().getColor(R.color.primary_text_color);
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 

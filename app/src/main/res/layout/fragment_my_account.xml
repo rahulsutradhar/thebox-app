@@ -26,7 +26,7 @@
                     android:id="@+id/user_pic_image_view"
                     android:layout_width="96dp"
                     android:layout_height="96dp"
-                    android:background="@color/dim_gray"
+                    android:background="@color/primary_text_color"
                     android:visibility="gone" />
 
                 <LinearLayout
@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="name@xyz.com"
-                        android:textColor="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -85,7 +85,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="7715900078"
-                        android:textColor="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -136,7 +136,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="c2603, Oberoi splendor, JVLR"
-                        android:textColor="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -152,7 +152,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@color/dim_gray" />
+                    android:background="@color/primary_text_color" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -189,7 +189,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Last Box Deliver on 10th Feb 2016"
-                        android:textColor="@color/dim_gray" />
+                        android:textColor="@color/primary_text_color" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -201,7 +201,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:text="Sign Out"
-                android:textColor="@color/dim_gray" />
+                android:textColor="@color/primary_text_color" />
 
 
         </LinearLayout>
