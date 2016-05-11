@@ -159,5 +159,10 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         }).show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+    }
 
 }

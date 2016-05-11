@@ -23,6 +23,7 @@
 
     <application
         android:name=".app.MyApplication"
+        android:debuggable="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -77,7 +78,8 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoAnimation" />
+            android:theme="@style/AppTheme.NoAnimation"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="portrait"
@@ -97,10 +99,7 @@
         <activity
             android:name=".activity.OtpVerificationActivity"
             android:screenOrientation="portrait" />
-        <!-- <activity android:name=".activity.SearchResultActivity" /> -->
-        <activity
-            android:name=".activity.ExploreItemDetailActivity"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activity.ConfirmPaymentDetailsActivity"
             android:screenOrientation="portrait" />
@@ -122,9 +121,7 @@
         <activity
             android:name=".activity.SignInActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.LocalitiesAutoCompleteActivity"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activity.ConfirmAddressActivity"
             android:screenOrientation="portrait" />

@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -23,6 +22,12 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
     private Category category;
     @SerializedName("rest_of_the_categories_in_box")
     private ArrayList<Category> categories;
+    @SerializedName("box_name")
+    private String boxName;
+
+    public String getBoxName() {
+        return boxName;
+    }
 
     public ArrayList<UserItem> getMyBoxItems() {
         return myBoxItems;
@@ -44,23 +49,23 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
         return category;
     }
 
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public ArrayList<Category> getCategories() {
         return categories;
+    }
+
+    public void setCategories(ArrayList<Category> categories) {
+        this.categories = categories;
     }
 
     public Category getSelectedCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public ArrayList<Category> getRestCategories() {
         return categories;
-    }
-
-    public void setCategories(ArrayList<Category> categories) {
-        this.categories = categories;
     }
 }

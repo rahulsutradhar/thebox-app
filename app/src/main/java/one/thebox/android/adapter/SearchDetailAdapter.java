@@ -53,9 +53,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
     private ArrayList<UserItem> userItems = new ArrayList<>();
     private Context mContext;
+    private boolean isSearchDetailItemFragment;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
+    }
+
+    public boolean isSearchDetailItemFragment() {
+        return isSearchDetailItemFragment;
+    }
+
+    public void setSearchDetailItemFragment(boolean searchDetailItemFragment) {
+        isSearchDetailItemFragment = searchDetailItemFragment;
     }
 
     public void setBoxItems(ArrayList<BoxItem> boxItems, ArrayList<UserItem> userItems) {
@@ -258,7 +267,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
 
-
         public SearchedItemViewHolder(View itemView) {
             super(itemView);
             recyclerViewSavings = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
@@ -317,8 +325,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        private void setupRecyclerViewSavings(ArrayList<Category> suggestedCategories) {
+        private void setupRecyclerViewSuggestedCategories(ArrayList<Category> suggestedCategories) {
             remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, suggestedCategories);
+            remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new GridLayoutManager(mContext, 3));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
@@ -328,7 +337,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
             if (boxItem.getQuantity() > 0) {
-                setupRecyclerViewSavings(boxItem.getSuggestedCategory());
+                setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
             } else {
                 savingHolder.setVisibility(View.GONE);
@@ -345,6 +354,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 size.setText(boxItem.getItemConfigs().get(0).getSize() + " " + boxItem.getItemConfigs().get(0).getSizeUnit());
             }
         }
+
     }
 
     public class MyItemViewHolder extends RecyclerView.ViewHolder {

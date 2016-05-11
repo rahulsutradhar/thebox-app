@@ -65,7 +65,7 @@ public class CartFragment extends Fragment {
         for (Order order : orders) {
             userItems.addAll(order.getUserItems());
         }
-        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), userItems, true);
+        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), userItems, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

@@ -64,7 +64,7 @@ abstract class BaseActivity extends AppCompatActivity {
         //setToolbarFont();
     }
 
-    /*private void setToolbarFont() {
+   /* private void setToolbarFont() {
         for (int i = 0; i < toolbar.getChildCount(); ++i) {
             View child = toolbar.getChildAt(i);
 
@@ -93,7 +93,6 @@ abstract class BaseActivity extends AppCompatActivity {
         if (toolbar != null) {
             toolbar.setTitleTextColor(Color.argb(0, 255, 255, 255));
         }
-
     }
 
     @Override

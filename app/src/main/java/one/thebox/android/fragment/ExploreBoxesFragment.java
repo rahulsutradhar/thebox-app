@@ -94,4 +94,9 @@ public class ExploreBoxesFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+    }
 }

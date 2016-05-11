@@ -11,8 +11,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
+import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
@@ -116,11 +119,20 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
-        ArrayList<Category> categories;
+        private ArrayList<Category> categories;
+        private boolean isSearchDetailItemFragment;
 
         public RemainingCategoryAdapter(Context context, ArrayList<Category> categories) {
             super(context);
             this.categories = categories;
+        }
+
+        public boolean isSearchDetailItemFragment() {
+            return isSearchDetailItemFragment;
+        }
+
+        public void setSearchDetailItemFragment(boolean searchDetailItemFragment) {
+            isSearchDetailItemFragment = searchDetailItemFragment;
         }
 
         public ArrayList<Category> getCategories() {
@@ -158,10 +170,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContext.startActivity(new Intent(mContext, MainActivity.class)
-                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
-                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
-                                    new SearchResult(categories.get(position).getId(), categories.get(position).getTitle()))));
+                    if (isSearchDetailItemFragment) {
+                        EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
+                    } else {
+                        mContext.startActivity(new Intent(mContext, MainActivity.class)
+                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
+                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
+                                        new SearchResult(categories.get(position).getId(), categories.get(position).getTitle()))));
+                    }
                 }
             });
         }
@@ -286,7 +302,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.recyclerViewCategories.setVisibility(View.VISIBLE);
                 this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
-                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, new ArrayList<>(box.getRemainingCategories()));
+                ArrayList<Category> categories = new ArrayList<>(box.getRemainingCategories());
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories);
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }
 

@@ -94,6 +94,7 @@ public class MyBoxesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
     }
 
     @Override

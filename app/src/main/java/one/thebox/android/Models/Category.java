@@ -61,4 +61,12 @@ public class Category implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (getClass() != o.getClass())
+            return false;
+        Category category = (Category) o;
+        return this.id == category.getId();
+    }
 }

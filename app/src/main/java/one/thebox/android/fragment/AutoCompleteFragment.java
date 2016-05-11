@@ -19,14 +19,14 @@ import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.SearchResultAllItemAdapter;
+import one.thebox.android.adapter.SearchAutoCompleteAdapter;
 
 
 public class AutoCompleteFragment extends Fragment {
 
     private View rootView;
     private RecyclerView recyclerView;
-    private SearchResultAllItemAdapter searchResultAllItemAdapter;
+    private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
     private TextView noItemFoundTextView;
 
@@ -51,10 +51,10 @@ public class AutoCompleteFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        searchResultAllItemAdapter = new SearchResultAllItemAdapter(getActivity());
-        searchResultAllItemAdapter.setSearchResults(searchResults);
+        searchAutoCompleteAdapter = new SearchAutoCompleteAdapter(getActivity());
+        searchAutoCompleteAdapter.setSearchResults(searchResults);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(searchResultAllItemAdapter);
+        recyclerView.setAdapter(searchAutoCompleteAdapter);
     }
 
     private void initViews() {
@@ -83,8 +83,8 @@ public class AutoCompleteFragment extends Fragment {
             noItemFoundTextView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
-        searchResultAllItemAdapter.setSearchResults(searchResults);
-        recyclerView.setAdapter(searchResultAllItemAdapter);
+        searchAutoCompleteAdapter.setSearchResults(searchResults);
+        recyclerView.setAdapter(searchAutoCompleteAdapter);
     }
 
 

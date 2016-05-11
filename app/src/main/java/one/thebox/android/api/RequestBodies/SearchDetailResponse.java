@@ -25,6 +25,16 @@ public class SearchDetailResponse extends ApiResponse implements Serializable {
     private Category searchedCategory;
     @SerializedName("rest_of_the_categories_in_box")
     private List<Category> restCategories;
+    @SerializedName("box_name")
+    private String boxName;
+
+    public String getBoxName() {
+        return boxName;
+    }
+
+    public void setBoxName(String boxName) {
+        this.boxName = boxName;
+    }
 
     public List<BoxItem> getSearchedItems() {
         return searchedItems;

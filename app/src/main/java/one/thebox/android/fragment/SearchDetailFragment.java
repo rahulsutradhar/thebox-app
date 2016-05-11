@@ -13,8 +13,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
+import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
@@ -36,11 +40,12 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SearchDetailFragment extends Fragment {
+public class SearchDetailFragment extends BaseFragment {
 
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
     private static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
+    String boxName;
     private String query;
     private int catId;
     private View rootView;
@@ -95,7 +100,6 @@ public class SearchDetailFragment extends Fragment {
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -127,6 +131,7 @@ public class SearchDetailFragment extends Fragment {
         if (getActivity() == null) {
             return;
         }
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
         adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems), categories.get(0).getTitle());
         for (int i = 1; i < categories.size(); i++) {
@@ -139,7 +144,7 @@ public class SearchDetailFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), true));
-
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
@@ -159,14 +164,6 @@ public class SearchDetailFragment extends Fragment {
                 tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
             }
         }
-
-      /*  for (int i = 0; i < length; i++) {
-            if (i == 1) {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
-            } else {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
-            }
-        }*/
     }
 
     public void getSearchDetails() {
@@ -179,6 +176,7 @@ public class SearchDetailFragment extends Fragment {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
+                            boxName = response.body().getBoxName();
                             userItems.addAll(response.body().getMySearchItems());
                             userItems.addAll(response.body().getMyNonSearchedItems());
                             boxItems.addAll(response.body().getSearchedItems());
@@ -206,6 +204,7 @@ public class SearchDetailFragment extends Fragment {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
+                            boxName = response.body().getBoxName();
                             userItems.addAll(response.body().getMyBoxItems());
                             boxItems.addAll(response.body().getNormalBoxItems());
                             categories.add(response.body().getSelectedCategory());
@@ -242,5 +241,45 @@ public class SearchDetailFragment extends Fragment {
                         progressBar.setVisibility(View.GONE);
                     }
                 });
+    }
+
+    @Subscribe
+    public void OnCategorySelectEvent(OnCategorySelectEvent onCategorySelectEvent) {
+        int tabPosition = getTabPosition(onCategorySelectEvent.getCategory());
+        if (tabPosition != -1) {
+            viewPager.setCurrentItem(tabPosition);
+        } else {
+            startActivity(new Intent(getActivity(), MainActivity.class)
+                    .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
+                    .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
+                            new SearchResult(onCategorySelectEvent.getCategory().getId(), onCategorySelectEvent.getCategory().getTitle()))));
+        }
+    }
+
+    public int getTabPosition(Category category) {
+        for (int i = 0; i < categories.size(); i++) {
+            if (category.equals(categories.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
     }
 }

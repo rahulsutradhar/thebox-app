@@ -18,11 +18,11 @@ import one.thebox.android.util.CoreGsonUtils;
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
  */
-public class SearchResultAllItemAdapter extends BaseRecyclerAdapter {
+public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
 
-    public SearchResultAllItemAdapter(Context context) {
+    public SearchAutoCompleteAdapter(Context context) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_HEADER;
     }

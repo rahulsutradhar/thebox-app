@@ -25,4 +25,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="No items found"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium2"
+        android:visibility="gone" />
+
 </FrameLayout>
