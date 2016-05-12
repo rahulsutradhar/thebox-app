@@ -6,41 +6,45 @@
     android:background="@drawable/curve_grey_border"
     android:padding="8dp">
 
-    <one.thebox.android.ViewHelper.AutoScaleTextView
-        android:id="@+id/text_view_category_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:maxLines="1"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="Body Wash"
-        android:textColor="@color/primary_text_color" />
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/text_view_category_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="2dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_toRightOf="@+id/icon"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_marginRight="4dp"
-            android:background="@color/brilliant_rose" />
+        <one.thebox.android.ViewHelper.AutoScaleTextView
+            android:id="@+id/text_view_category_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+
+            android:text="Body Wash"
+            android:textColor="@color/primary_text_color"
+            android:textSize="@dimen/text_small3" />
+
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/number_of_item"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:text="10 items"
-            android:textColor="@color/brilliant_rose" />
+            android:textColor="@color/brilliant_rose"
+            android:textSize="@dimen/text_small2" />
 
     </LinearLayout>
+
 
 </RelativeLayout>

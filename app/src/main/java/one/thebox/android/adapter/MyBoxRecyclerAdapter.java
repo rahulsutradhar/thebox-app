@@ -31,7 +31,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<Box> boxes;
 
-
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
     }
@@ -234,15 +233,20 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public class ItemViewHolder extends ItemHolder {
-            private TextView categoryNameTextView;
+            private TextView categoryNameTextView, noOfItems;
+            private ImageView categoryIcon;
 
             public ItemViewHolder(View itemView) {
                 super(itemView);
                 categoryNameTextView = (TextView) itemView.findViewById(R.id.text_view_category_name);
+                noOfItems = (TextView) itemView.findViewById(R.id.number_of_item);
+                categoryIcon = (ImageView) itemView.findViewById(R.id.icon);
             }
 
             public void setViewHolder(Category category) {
                 categoryNameTextView.setText(category.getTitle());
+                noOfItems.setText(category.getNoOfItems() + " Items");
+                Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
             }
         }
     }

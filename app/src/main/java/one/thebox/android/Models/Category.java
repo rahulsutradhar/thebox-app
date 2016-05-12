@@ -17,6 +17,8 @@ public class Category implements Serializable {
     private int boxId;
     @SerializedName("no_of_items")
     private int noOfItems;
+    @SerializedName("icon_url")
+    private String iconUrl;
 
     public Category(int id, String title) {
         this.id = id;
@@ -28,6 +30,10 @@ public class Category implements Serializable {
         this.title = title;
         this.boxId = boxId;
         this.noOfItems = noOfItems;
+    }
+
+    public String getIconUrl() {
+        return iconUrl;
     }
 
     public int getBoxId() {
