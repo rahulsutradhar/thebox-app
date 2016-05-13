@@ -9,14 +9,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.util.AccountUtil;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -24,17 +23,17 @@ import one.thebox.android.util.PrefUtils;
  */
 public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Order> orders = new ArrayList<>();
+    private RealmList<Order> orders = new RealmList<>();
     private ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<>();
-    private User.Address primaryAddress;
+    private Address primaryAddress;
     private User user;
-    private ArrayList<User.Address> addresses;
+    private RealmList<Address> addresses;
 
-    public EditDeliveryAddressAdapter(Context context, ArrayList<Order> orders) {
+    public EditDeliveryAddressAdapter(Context context, RealmList<Order> orders) {
         super(context);
         user = PrefUtils.getUser(mContext);
         addresses = user.getAddresses();
-        for (User.Address address : addresses) {
+        for (Address address : addresses) {
             if (address.isCurrentAddress()) {
                 primaryAddress = address;
                 break;
@@ -45,15 +44,15 @@ public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
         }
         this.orders = orders;
         for (Order order : orders) {
-            addressAndOrders.add(new AddressAndOrder(primaryAddress, order));
+            addressAndOrders.add(new AddressAndOrder(primaryAddress.getId(), order.getId()));
         }
     }
 
-    public ArrayList<Order> getOrders() {
+    public RealmList<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(ArrayList<Order> orders) {
+    public void setOrders(RealmList<Order> orders) {
         this.orders = orders;
     }
 
@@ -118,6 +117,32 @@ public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
+    private void openAddressChangeBottomSheet(final int position) {
+        final View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_change_address, null);
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
+        bottomSheetDialog.setContentView(bottomSheet);
+        bottomSheetDialog.show();
+        RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
+        SelectDeliveryAddressAdapter selectDeliveryAddressAdapter = new SelectDeliveryAddressAdapter(mContext, addresses, new SelectDeliveryAddressAdapter.OnAddressSelectListener() {
+            @Override
+            public void onAddressSelect(Address address) {
+                bottomSheetDialog.dismiss();
+                addressAndOrders.get(position).setAddressId(address.getId());
+                notifyItemChanged(position);
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.setAdapter(selectDeliveryAddressAdapter);
+    }
+
+    public ArrayList<AddressAndOrder> getAddressAndOrders() {
+        return addressAndOrders;
+    }
+
+    public void setAddressAndOrders(ArrayList<AddressAndOrder> addressAndOrders) {
+        this.addressAndOrders = addressAndOrders;
+    }
+
     class ItemAddressViewHolder extends ItemHolder {
 
         private TextView changeAddressButton, itemText, orderNoText, addressText;
@@ -136,7 +161,7 @@ public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
             });
         }
 
-        public void setViews(Order order, User.Address address) {
+        public void setViews(Order order, Address address) {
             itemText.setText(order.getItemString());
             orderNoText.setVisibility(View.GONE);
             if (address.isCurrentAddress()) {
@@ -145,31 +170,5 @@ public class EditDeliveryAddressAdapter extends BaseRecyclerAdapter {
                 addressText.setText(address.getFlat() + ", " + address.getStreet() + ", " + address.getSociety());
             }
         }
-    }
-
-    private void openAddressChangeBottomSheet(final int position) {
-        final View bottomSheet = ((Activity) mContext).getLayoutInflater().inflate(R.layout.layout_change_address, null);
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(mContext);
-        bottomSheetDialog.setContentView(bottomSheet);
-        bottomSheetDialog.show();
-        RecyclerView recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-        SelectDeliveryAddressAdapter selectDeliveryAddressAdapter = new SelectDeliveryAddressAdapter(mContext, addresses, new SelectDeliveryAddressAdapter.OnAddressSelectListener() {
-            @Override
-            public void onAddressSelect(User.Address address) {
-                bottomSheetDialog.dismiss();
-                addressAndOrders.get(position).setAddress(address);
-                notifyItemChanged(position);
-            }
-        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        recyclerView.setAdapter(selectDeliveryAddressAdapter);
-    }
-
-    public ArrayList<AddressAndOrder> getAddressAndOrders() {
-        return addressAndOrders;
-    }
-
-    public void setAddressAndOrders(ArrayList<AddressAndOrder> addressAndOrders) {
-        this.addressAndOrders = addressAndOrders;
     }
 }

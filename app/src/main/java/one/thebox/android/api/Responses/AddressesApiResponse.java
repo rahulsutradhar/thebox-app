@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.Address;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -16,7 +16,7 @@ public class AddressesApiResponse extends ApiResponse implements Serializable {
     @SerializedName("info")
     private String info;
     @SerializedName("address")
-    private User.Address address;
+    private Address address;
 
     public boolean isSuccess() {
         return success;
@@ -34,11 +34,11 @@ public class AddressesApiResponse extends ApiResponse implements Serializable {
         this.info = info;
     }
 
-    public User.Address getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(User.Address address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 }

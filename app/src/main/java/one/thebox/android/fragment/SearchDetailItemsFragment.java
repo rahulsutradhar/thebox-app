@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
@@ -48,9 +49,9 @@ public class SearchDetailItemsFragment extends Fragment {
     private ProgressBar progressBar;
     private String query;
     private int catId;
-    private ArrayList<Category> categories = new ArrayList<>();
-    private ArrayList<UserItem> userItems = new ArrayList<>();
-    private ArrayList<BoxItem> boxItems = new ArrayList<>();
+    private RealmList<Category> categories = new RealmList<>();
+    private RealmList<UserItem> userItems = new RealmList<>();
+    private RealmList<BoxItem> boxItems = new RealmList<>();
     private int source;
     private TextView emptyText;
 
@@ -117,8 +118,8 @@ public class SearchDetailItemsFragment extends Fragment {
         source = getArguments().getInt(EXTRA_SOURCE);
         query = getArguments().getString(EXTRA_QUERY);
         catId = getArguments().getInt(EXTRA_CAT_ID);
-        userItems = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
-        boxItems = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
+        userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
+        boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
     }
 
     private void initViews() {

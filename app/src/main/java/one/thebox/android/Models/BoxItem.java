@@ -3,17 +3,21 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
 /**
  * Created by Ajeet Kumar Meena on 22-04-2016.
  */
-public class BoxItem implements Serializable {
-    private int size;
-    private int frequency;
+public class BoxItem extends RealmObject implements Serializable {
+
+    @Ignore
     private int quantity;
+    @Ignore
     private int userItemId;
     @SerializedName("id")
     private int id;
@@ -32,12 +36,17 @@ public class BoxItem implements Serializable {
     @SerializedName("photo_content_type")
     private String photoContentType;
     @SerializedName("itemconfigs")
-    private List<ItemConfig> itemConfigs;
+    private RealmList<ItemConfig> itemConfigs;
     @SerializedName("photo_url")
     private String photoUrl;
+    @Ignore
     private ItemConfig selectedItemConfig;
-    private ArrayList<Category> suggestedCategory = new ArrayList<>();
+    private RealmList<Category> suggestedCategory = new RealmList<>();
+    @Ignore
     private int horizontalOffsetOfRecyclerView;
+
+    public BoxItem() {
+    }
 
     public ItemConfig getSelectedItemConfig() {
         return selectedItemConfig;
@@ -55,11 +64,11 @@ public class BoxItem implements Serializable {
         this.horizontalOffsetOfRecyclerView = horizontalOffsetOfRecyclerView;
     }
 
-    public ArrayList<Category> getSuggestedCategory() {
+    public RealmList<Category> getSuggestedCategory() {
         return suggestedCategory;
     }
 
-    public void setSuggestedCategory(ArrayList<Category> suggestedCategory) {
+    public void setSuggestedCategory(RealmList<Category> suggestedCategory) {
         this.suggestedCategory = suggestedCategory;
     }
 
@@ -85,22 +94,6 @@ public class BoxItem implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public int getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
     }
 
     public int getId() {
@@ -171,7 +164,7 @@ public class BoxItem implements Serializable {
         return itemConfigs;
     }
 
-    public void setItemConfigs(List<ItemConfig> itemConfigs) {
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs = itemConfigs;
     }
 
@@ -184,16 +177,16 @@ public class BoxItem implements Serializable {
         return null;
     }
 
-    public HashMap<String, ArrayList<ItemConfig>> getFrequencyItemConfigHashMap() {
-        HashMap<String, ArrayList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
+    public HashMap<String, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
+        HashMap<String, RealmList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
             String key = itemConfigs.get(i).getSubscriptionType();
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
-                ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
+                RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
                 tempItemConfigs.add(itemConfigs.get(i));
                 frequencyItemConfigHashMap.put(key, tempItemConfigs);
             } else {
-                ArrayList<ItemConfig> tempItemConfig = frequencyItemConfigHashMap.get(key);
+                RealmList<ItemConfig> tempItemConfig = frequencyItemConfigHashMap.get(key);
                 tempItemConfig.add(itemConfigs.get(i));
                 frequencyItemConfigHashMap.put(key, tempItemConfig);
             }
@@ -201,11 +194,11 @@ public class BoxItem implements Serializable {
         return frequencyItemConfigHashMap;
     }
 
-    public ArrayList<ItemConfig> getItemConfigsBySelectedItemConfig() {
+    public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {
         if (selectedItemConfig == null) {
             selectedItemConfig = itemConfigs.get(0);
         }
-        ArrayList<ItemConfig> tempItemConfigs = new ArrayList<>();
+        RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize() && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())) {
                 tempItemConfigs.add(itemConfigs.get(i));
@@ -233,74 +226,5 @@ public class BoxItem implements Serializable {
             }
         }
         return 0;
-    }
-
-    public class ItemConfig {
-        @SerializedName("id")
-        private int id;
-        @SerializedName("size")
-        private int size;
-        @SerializedName("size_unit")
-        private String sizeUnit;
-        @SerializedName("itemtype")
-        private int itemType;
-        @SerializedName("price")
-        private int price;
-        @SerializedName("subscription_type")
-        private String subscriptionType;
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public String getSizeUnit() {
-            return sizeUnit;
-        }
-
-        public void setSizeUnit(String sizeUnit) {
-            this.sizeUnit = sizeUnit;
-        }
-
-        public int getItemType() {
-            return itemType;
-        }
-
-        public void setItemType(int itemType) {
-            this.itemType = itemType;
-        }
-
-        public int getPrice() {
-            return price;
-        }
-
-        public void setPrice(int price) {
-            this.price = price;
-        }
-
-        public String getSubscriptionType() {
-            return subscriptionType;
-        }
-
-        public void setSubscriptionType(String subscriptionType) {
-            this.subscriptionType = subscriptionType;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            ItemConfig itemConfig = (ItemConfig) object;
-            return this.id == itemConfig.getId();
-        }
     }
 }

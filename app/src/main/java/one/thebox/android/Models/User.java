@@ -3,12 +3,34 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Ajeet Kumar Meena on 19-04-2016.
  */
-public class User implements Serializable {
+public class User extends RealmObject implements Serializable {
+    @Ignore
+    public static final String FIELD_USER_ID = "userId";
+    @Ignore
+    public static final String FIELD_EMAIL = "userId";
+    @Ignore
+    public static final String FIELD_PHONE_NUMBER = "userId";
+    @Ignore
+    public static final String FIELD_IS_OTP_CONFIRMED = "userId";
+    @Ignore
+    public static final String FIELD_NAME = "userId";
+    @Ignore
+    public static final String FIELD_LOCALITY_CODE = "userId";
+    @Ignore
+    public static final String FIELD_AUTH_TOKEN = "userId";
+    @Ignore
+    public static final String FIELD_ADDRESSES = "addresses";
+
+    @PrimaryKey
     @SerializedName("id")
     private int userId;
     @SerializedName("email")
@@ -24,7 +46,24 @@ public class User implements Serializable {
     @SerializedName("auth_token")
     private String authToken;
 
-    private ArrayList<Address> addresses;
+    private RealmList<Address> addresses;
+
+    public User() {
+    }
+
+    public User(User user) {
+        this.userId = user.getUserId();
+        this.email = user.getEmail();
+        this.phoneNumber = user.getPhoneNumber();
+        this.isOtpConfirmed = user.isOtpConfirmed();
+        this.name = user.getName();
+        this.localityCode = user.getLocalityCode();
+        this.authToken = user.getAuthToken();
+        this.addresses = new RealmList<>();
+        if (user.getAddresses() != null) {
+            this.addresses.addAll(user.getAddresses());
+        }
+    }
 
     public User(int userId, String email, String phoneNumber, boolean isOtpConfirmed, String name, String localityCode, String authToken) {
         this.userId = userId;
@@ -88,125 +127,15 @@ public class User implements Serializable {
         return authToken;
     }
 
-    public ArrayList<Address> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(ArrayList<Address> addresses) {
-        this.addresses = addresses;
-    }
-
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 
-    public static class Address {
-        public static final String ADDRESS_TYPE_HOME = "Home";
-        public static final String ADDRESS_TYPE_OFFICE = "Office";
-        public static final String ADDRESS_TYPE_OTHER = "Other";
-        public static final String[] ADDRESS_TYPES = {ADDRESS_TYPE_HOME, ADDRESS_TYPE_OFFICE, ADDRESS_TYPE_OTHER};
-        private int id;
-        private int type;
-        @SerializedName("society")
-        private String society;
-        @SerializedName("flatno")
-        private String flat;
-        @SerializedName("street")
-        private String street;
-        @SerializedName("locality")
-        private Locality locality;
-        private boolean isCurrentAddress;
-        @SerializedName("get_label")
-        private String label;
-        @SerializedName("code")
-        private int code;
+    public RealmList<Address> getAddresses() {
+        return addresses;
+    }
 
-        public Address(int id, int type, String society, String flat, String street, Locality locality, boolean isCurrentAddress, String label) {
-            this.id = id;
-            this.type = type;
-            this.society = society;
-            this.flat = flat;
-            this.street = street;
-            this.locality = locality;
-            this.isCurrentAddress = isCurrentAddress;
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        public void setType(int type) {
-            this.type = type;
-        }
-
-        public String getSociety() {
-            return society;
-        }
-
-        public void setSociety(String society) {
-            this.society = society;
-        }
-
-        public String getFlat() {
-            return flat;
-        }
-
-        public void setFlat(String flat) {
-            this.flat = flat;
-        }
-
-        public String getStreet() {
-            return street;
-        }
-
-        public void setStreet(String street) {
-            this.street = street;
-        }
-
-        public Locality getLocality() {
-            return locality;
-        }
-
-        public void setLocality(Locality locality) {
-            this.locality = locality;
-        }
-
-        public boolean isCurrentAddress() {
-            return isCurrentAddress;
-        }
-
-        public void setCurrentAddress(boolean currentAddress) {
-            isCurrentAddress = currentAddress;
-        }
-
-        public static String getAddressTypeName(int type) {
-            return ADDRESS_TYPES[type];
-        }
-
-        public static int getTypeFromLabel(String label) {
-            for (int i = 0; i < ADDRESS_TYPES.length; i++) {
-                if (ADDRESS_TYPES[i].equals(label)) {
-                    return i;
-                }
-            }
-            return 0;
-        }
+    public void setAddresses(RealmList<Address> addresses) {
+        this.addresses = addresses;
     }
 }

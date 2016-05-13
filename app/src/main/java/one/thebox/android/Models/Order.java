@@ -3,17 +3,23 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Ajeet Kumar Meena on 25-04-2016.
  */
-public class Order implements Serializable {
+public class Order extends RealmObject implements Serializable {
 
+    @Ignore
+    public static final String FIELD_ID = "id";
+    @Ignore
+    public static final String FIELD_IS_CART = "cart";
+
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("user_id")
@@ -37,11 +43,32 @@ public class Order implements Serializable {
     @SerializedName("cart")
     private boolean cart;
     @SerializedName("useritems")
-    private ArrayList<UserItem> userItems;
-
+    private RealmList<UserItem> userItems;
+    @Ignore
     private boolean isSelected;
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, String totalPrice, String deliveryCharges, String tax, boolean cart, ArrayList<UserItem> userItems) {
+    public Order() {
+    }
+
+    public Order(Order order) {
+        this.id = order.getId();
+        this.userId = order.getUserId();
+        this.addressId = order.getAddressId();
+        this.deliveryScheduleAt = order.getDeliveryScheduleAt();
+        this.paid = order.getPaid();
+        this.delivered = order.getDelivered();
+        this.open = order.getOpen();
+        this.totalPrice = order.getTotalPrice();
+        this.deliveryCharges = order.getDeliveryCharges();
+        this.tax = order.getDeliveryCharges();
+        this.cart = order.isCart();
+        if (order.getUserItems() != null) {
+            this.userItems = new RealmList<>();
+            this.userItems.addAll(order.getUserItems());
+        }
+    }
+
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, String totalPrice, String deliveryCharges, String tax, boolean cart, RealmList<UserItem> userItems) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -64,11 +91,11 @@ public class Order implements Serializable {
         isSelected = selected;
     }
 
-    public ArrayList<UserItem> getUserItems() {
+    public RealmList<UserItem> getUserItems() {
         return userItems;
     }
 
-    public void setUserItems(ArrayList<UserItem> userItems) {
+    public void setUserItems(RealmList<UserItem> userItems) {
         this.userItems = userItems;
     }
 

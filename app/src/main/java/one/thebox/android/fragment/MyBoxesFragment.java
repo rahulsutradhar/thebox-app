@@ -13,10 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
@@ -40,7 +41,7 @@ public class MyBoxesFragment extends Fragment {
     private SwapAdapter swapAdapter;
     private FloatingActionButton floatingActionButton;
 
-    private ArrayList<Box> boxes = new ArrayList<>();
+    private RealmList<Box> boxes = new RealmList<>();
 
     public MyBoxesFragment() {
 
@@ -52,10 +53,22 @@ public class MyBoxesFragment extends Fragment {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Boxes");
         if (rootLayout == null) {
             this.rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+            initVariables();
             initViews();
+            if (!boxes.isEmpty()) {
+                setupRecyclerView();
+            }
             getMyBoxes();
         }
         return rootLayout;
+    }
+
+    private void initVariables() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Box> query = realm.where(Box.class);
+        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+        boxes.addAll(realmResults.subList(0, realmResults.size()));
+
     }
 
     private void setupRecyclerView() {
@@ -119,16 +132,42 @@ public class MyBoxesFragment extends Fragment {
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
-                            boxes.addAll(new ArrayList<>(response.body().getBoxes()));
-                            setupRecyclerView();
+                            if (!(boxes.equals(response.body().getBoxes()))) {
+                                boxes.clear();
+                                boxes.addAll(response.body().getBoxes());
+                                setupRecyclerView();
+                                storeToRealm();
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<MyBoxResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void storeToRealm() {
+        final Realm superRealm = MyApplication.getRealm();
+        for (final Box box : boxes) {
+            superRealm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.copyToRealmOrUpdate(box);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
 }

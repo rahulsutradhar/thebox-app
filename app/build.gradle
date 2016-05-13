@@ -21,7 +21,10 @@ android {
         }
     }
     repositories {
-        maven { url "https://jitpack.io" }
+        maven {
+            url "https://jitpack.io"
+        }
+
     }
 }
 
@@ -53,4 +56,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'realm-android'
 

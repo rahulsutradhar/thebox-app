@@ -24,6 +24,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Locality;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
@@ -42,6 +43,7 @@ import retrofit2.Response;
  * Created by Ajeet Kumar Meena on 22-04-2016.
  */
 public class AddressBottomSheet {
+    Call<LocalitiesResponse> call;
     private Activity context;
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheet;
@@ -54,22 +56,6 @@ public class AddressBottomSheet {
     private boolean callHasBeenCompleted = true;
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
-    private int codeSelected;
-    private Locality localitySelected;
-    private OnAddressAdded onAddressAdded;
-    private User.Address address;
-    private boolean isKeyboardVisible = true;
-
-    private void setupViews() {
-        label.setText(address.getSociety());
-        flat.setText(address.getSociety());
-        street.setText(address.getStreet());
-        ((RadioButton) radioGroup.getChildAt(address.getType())).setChecked(true);
-        localityAutoCompleteTextView.setText(address.getLocality().getName());
-        primaryAddress.setChecked(address.isCurrentAddress());
-        addButton.setText("Save");
-    }
-
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
         @Override
         public void onResponse(Call<LocalitiesResponse> call, Response<LocalitiesResponse> response) {
@@ -79,7 +65,7 @@ public class AddressBottomSheet {
                 localities = new ArrayList<>(response.body().getLocalities());
                 localitiesSuggestions = new String[localities.size()];
                 for (int i = 0; i < localities.size(); i++) {
-                    localitiesSuggestions[i] = localities.get(0).getName();
+                    localitiesSuggestions[i] = localities.get(i).getName();
                 }
                 setAutoCompleteAdapter();
             }
@@ -91,17 +77,30 @@ public class AddressBottomSheet {
             callHasBeenCompleted = true;
         }
     };
-    Call<LocalitiesResponse> call;
-
+    private int codeSelected;
+    private Locality localitySelected;
+    private OnAddressAdded onAddressAdded;
+    private Address address;
+    private boolean isKeyboardVisible = true;
     public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
     }
 
-    public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded, User.Address address) {
+    public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded, Address address) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
         this.address = address;
+    }
+
+    private void setupViews() {
+        label.setText(address.getSociety());
+        flat.setText(address.getSociety());
+        street.setText(address.getStreet());
+        ((RadioButton) radioGroup.getChildAt(address.getType())).setChecked(true);
+        localityAutoCompleteTextView.setText(address.getLocality().getName());
+        primaryAddress.setChecked(address.isCurrentAddress());
+        addButton.setText("Save");
     }
 
     public void show() {
@@ -158,12 +157,12 @@ public class AddressBottomSheet {
                 } else {
                     id = 0;
                 }
-                User.Address address = new User.Address(id, type,
+                Address address = new Address(id, type,
                         label.getText().toString(),
                         flat.getText().toString(),
                         street.getText().toString(),
                         localitySelected,
-                        primaryAddress.isChecked(), User.Address.getAddressTypeName(type)
+                        primaryAddress.isChecked(), Address.getAddressTypeName(type)
                 );
 
                 if (AddressBottomSheet.this.address != null) {
@@ -176,7 +175,7 @@ public class AddressBottomSheet {
         });
     }
 
-    private void addAddress(final User.Address address) {
+    private void addAddress(final Address address) {
         final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
         MyApplication.getAPIService().addAddress(PrefUtils.getToken(context),
                 new AddAddressRequestBody(
@@ -210,7 +209,7 @@ public class AddressBottomSheet {
                 });
     }
 
-    private void updateAddress(final User.Address address) {
+    private void updateAddress(final Address address) {
         final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
         MyApplication.getAPIService().updateAddress(PrefUtils.getToken(context),
                 new UpdateAddressRequestBody(
@@ -328,10 +327,6 @@ public class AddressBottomSheet {
         localityAutoCompleteTextView.setAdapter(arrayAdapter);
     }
 
-    public interface OnAddressAdded {
-        void onAddressAdded(User.Address address);
-    }
-
     public void setKeyboardVisibilityListener(Activity activity, final KeyboardVisibilityListener keyboardVisibilityListener) {
         final View contentView = activity.findViewById(android.R.id.content);
         contentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -354,5 +349,9 @@ public class AddressBottomSheet {
                 mPreviousHeight = newHeight;
             }
         });
+    }
+
+    public interface OnAddressAdded {
+        void onAddressAdded(Address address);
     }
 }

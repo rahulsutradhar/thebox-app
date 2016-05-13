@@ -6,8 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
@@ -63,9 +63,9 @@ public class AddressesActivity extends BaseActivity implements View.OnClickListe
     private void openAddAddressBottomSheet() {
         new AddressBottomSheet(this, new AddressBottomSheet.OnAddressAdded() {
             @Override
-            public void onAddressAdded(User.Address address) {
+            public void onAddressAdded(Address address) {
                 User user = PrefUtils.getUser(AddressesActivity.this);
-                ArrayList<User.Address> addresses = user.getAddresses();
+                RealmList<Address> addresses = user.getAddresses();
 
                 addresses.add(address);
                 user.setAddresses(addresses);

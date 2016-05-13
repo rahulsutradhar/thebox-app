@@ -11,17 +11,23 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.UserItemRecyclerAdapter;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 
 public class CartFragment extends Fragment {
 
     private static final String EXTRA_USER_ITEMS_ARRAY_LIST = "user_items_array_list";
-    private ArrayList<Order> orders;
+    ArrayList<Integer> orderIds = new ArrayList<>();
+    private RealmList<Order> orders = new RealmList<>();
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
     private UserItemRecyclerAdapter userItemRecyclerAdapter;
@@ -30,13 +36,35 @@ public class CartFragment extends Fragment {
     public CartFragment() {
     }
 
-
     public static CartFragment newInstance(ArrayList<Order> orders) {
         CartFragment fragment = new CartFragment();
         Bundle args = new Bundle();
-        args.putString(EXTRA_USER_ITEMS_ARRAY_LIST, CoreGsonUtils.toJson(orders));
+        ArrayList<Integer> orderIds = new ArrayList<>();
+        for (Order order : orders) {
+            orderIds.add(order.getId());
+        }
+        args.putString(EXTRA_USER_ITEMS_ARRAY_LIST, CoreGsonUtils.toJson(orderIds));
         fragment.setArguments(args);
         return fragment;
+    }
+
+    private void initVariables() {
+        orderIds = CoreGsonUtils.fromJsontoArrayList(
+                getArguments().getString(EXTRA_USER_ITEMS_ARRAY_LIST), Integer.class);
+        if (orderIds.isEmpty()) {
+            return;
+        }
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class)
+                .notEqualTo(Order.FIELD_ID, 0)
+                .equalTo(Order.FIELD_IS_CART, true);
+        for (int i = 0; i < orderIds.size(); i++) {
+            query.equalTo(Order.FIELD_ID, orderIds.get(i));
+        }
+        RealmResults<Order> realmResults = query.findAll();
+        for (Order order : realmResults) {
+            orders.add(order);
+        }
     }
 
     @Override
@@ -45,11 +73,6 @@ public class CartFragment extends Fragment {
         initVariables();
     }
 
-    private void initVariables() {
-        orders = CoreGsonUtils.fromJsontoArrayList(
-                getArguments().getString(EXTRA_USER_ITEMS_ARRAY_LIST), Order.class);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,7 +84,7 @@ public class CartFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        ArrayList<UserItem> userItems = new ArrayList<>();
+        RealmList<UserItem> userItems = new RealmList<>();
         for (Order order : orders) {
             userItems.addAll(order.getUserItems());
         }

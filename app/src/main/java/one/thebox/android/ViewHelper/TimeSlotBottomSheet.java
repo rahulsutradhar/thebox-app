@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import one.thebox.android.Models.TimeSlot;
 import one.thebox.android.R;
 import one.thebox.android.adapter.TimeSlotAdapter;
 import one.thebox.android.util.Constants;
@@ -97,10 +96,6 @@ public class TimeSlotBottomSheet {
         recyclerViewTimeSlot.setAdapter(timeSlotAdapterSlots);
     }
 
-    public interface OnTimePicked {
-        void onTimePicked(Date date);
-    }
-
     public Date getDateWithTimeSlot(Date date, String timeSlot) {
         int hour = Integer.parseInt(timeSlot.substring(0, 2));
         int minute = Integer.parseInt(timeSlot.substring(3, 5));
@@ -149,5 +144,9 @@ public class TimeSlotBottomSheet {
             stringArrayList.add(date + ", " + month_name);
         }
         return stringArrayList;
+    }
+
+    public interface OnTimePicked {
+        void onTimePicked(Date date);
     }
 }

@@ -13,6 +13,10 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
@@ -33,6 +37,7 @@ public class OrderTabFragment extends Fragment {
     private LinearLayout holder;
     private ArrayList<Order> cartOrders = new ArrayList<>();
     private ArrayList<Order> subscriptionOrders = new ArrayList<>();
+    private RealmList<Order> subscriptionAndCart = new RealmList<>();
 
     public OrderTabFragment() {
 
@@ -49,10 +54,23 @@ public class OrderTabFragment extends Fragment {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Orders");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_order_tab, container, false);
+            initVariables();
             initViews();
+            if (!subscriptionAndCart.isEmpty()) {
+                setupViewPagerAndTabs();
+            }
             getAllOrders();
         }
         return rootView;
+    }
+
+    private void initVariables() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class);
+        RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).findAll();
+        for (int i = 0; i < realmResults.size(); i++) {
+            subscriptionAndCart.add(realmResults.get(i));
+        }
     }
 
     private void initViews() {
@@ -76,12 +94,20 @@ public class OrderTabFragment extends Fragment {
         if (getActivity() == null) {
             return;
         }
+        progressBar.setVisibility(View.GONE);
+        holder.setVisibility(View.VISIBLE);
+        for (Order order : subscriptionAndCart) {
+            if (order.isCart()) {
+                cartOrders.add(order);
+            } else {
+                subscriptionOrders.add(order);
+            }
+        }
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
         adapter.addFragment(CartFragment.newInstance(cartOrders), "Cart");
         adapter.addFragment(UpComingOrderFragment.newInstance(subscriptionOrders), "Upcoming Order");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setSelectedTabIndicatorHeight(0);
     }
 
     @Override
@@ -97,38 +123,53 @@ public class OrderTabFragment extends Fragment {
     }
 
     public void getAllOrders() {
-        holder.setVisibility(View.GONE);
         MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<OrdersApiResponse>() {
-                    @Override
-                    public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
-                        progressBar.setVisibility(View.GONE);
-                        holder.setVisibility(View.VISIBLE);
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                if (response.body().getOrders() == null || response.body().getOrders().isEmpty()) {
-                                } else {
-                                    for (Order order : response.body().getOrders()) {
-                                        if (order.isCart()) {
-                                            cartOrders.add(order);
-                                        } else {
-                                            subscriptionOrders.add(order);
-                                        }
-                                    }
-                                    setupViewPagerAndTabs();
-                                }
-                            } else {
+                             @Override
+                             public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
+                                 if (response.body() != null) {
+                                     if (response.body().isSuccess()) {
+                                         if (!subscriptionAndCart.equals(response.body().getOrders())) {
+                                             subscriptionAndCart.clear();
+                                             subscriptionAndCart.addAll(response.body().getOrders());
+                                             storeToRealm();
+                                             setupViewPagerAndTabs();
+                                         }
+                                     }
+                                 }
+                             }
 
-                            }
-                        }
-                    }
+                             @Override
+                             public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+                                 progressBar.setVisibility(View.GONE);
+                                 holder.setVisibility(View.VISIBLE);
+                             }
+                         }
 
-                    @Override
-                    public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        holder.setVisibility(View.VISIBLE);
-                    }
-                });
+                );
+    }
+
+    private void storeToRealm() {
+        final Realm superRealm = MyApplication.getRealm();
+        for (final Order order : subscriptionAndCart) {
+            superRealm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.copyToRealmOrUpdate(order);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
 
     @Override

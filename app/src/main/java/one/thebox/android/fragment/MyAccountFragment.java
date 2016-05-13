@@ -11,8 +11,9 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.ArrayList;
-
+import io.realm.Realm;
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
@@ -131,6 +132,10 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                                 PrefUtils.removeAll(getActivity());
                                 startActivity(new Intent(getActivity(), SplashActivity.class));
                                 getActivity().finish();
+                                MyApplication.getRealm().close();
+                                Realm.deleteRealm(MyApplication.getRealmConfiguration());
+
+
                             }
 
                             @Override
@@ -145,11 +150,11 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     private void openAddAddressBottomSheet() {
         new AddressBottomSheet(getActivity(), new AddressBottomSheet.OnAddressAdded() {
             @Override
-            public void onAddressAdded(User.Address address) {
+            public void onAddressAdded(Address address) {
                 User user = PrefUtils.getUser(getActivity());
-                ArrayList<User.Address> addresses = user.getAddresses();
+                RealmList<Address> addresses = user.getAddresses();
                 if (addresses == null || addresses.isEmpty()) {
-                    addresses = new ArrayList<>();
+                    addresses = new RealmList<Address>();
                 }
                 addresses.add(address);
                 user.setAddresses(addresses);

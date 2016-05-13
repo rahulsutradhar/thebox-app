@@ -4,7 +4,15 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class UserItem implements Serializable {
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
+
+public class UserItem extends RealmObject implements Serializable {
+    @Ignore
+    public static final String FIELD_ID = "id";
+
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("usercategory_id")
@@ -24,6 +32,9 @@ public class UserItem implements Serializable {
     @SerializedName("item")
     private BoxItem boxItem;
 
+    public UserItem() {
+    }
+
     public UserItem(int id, int userCategoryId, int itemId, int userId, int quantity, String nextDeliveryScheduledAt, String stillSubscribed, int selectedConfigId, BoxItem boxItem) {
         this.id = id;
         this.userCategoryId = userCategoryId;
@@ -34,6 +45,11 @@ public class UserItem implements Serializable {
         this.stillSubscribed = stillSubscribed;
         this.selectedConfigId = selectedConfigId;
         this.boxItem = boxItem;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
     public int getId() {

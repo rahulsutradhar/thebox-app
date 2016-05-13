@@ -6,8 +6,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
@@ -20,12 +20,12 @@ import one.thebox.android.util.DateTimeUtil;
  */
 public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Order> orders = new ArrayList<>();
+    private RealmList<Order> orders = new RealmList<>();
     private String nextDeliveryDate;
     private String nextDeliveryDayPayment;
     private boolean shouldHaveHeader;
 
-    public OrdersItemAdapter(Context context, ArrayList<Order> orders) {
+    public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
         this.orders = orders;
       /*  if (shouldHaveOrders()) {
@@ -53,8 +53,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         return false;
     }
 
-    public ArrayList<Order> getSelectedOrders() {
-        ArrayList<Order> selectedOrders = new ArrayList<>();
+    public RealmList<Order> getSelectedOrders() {
+        RealmList<Order> selectedOrders = new RealmList<>();
         for (Order order : orders) {
             if (order.isSelected())
                 selectedOrders.add(order);
@@ -66,11 +66,11 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         orders.add(order);
     }
 
-    public ArrayList<Order> getOrders() {
+    public RealmList<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(ArrayList<Order> orders) {
+    public void setOrders(RealmList<Order> orders) {
         this.orders = orders;
     }
 
@@ -108,7 +108,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getUserItems()));
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
             }
         });
     }

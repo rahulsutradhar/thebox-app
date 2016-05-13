@@ -4,14 +4,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import one.thebox.android.Models.BoxItem;
+import io.realm.RealmList;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 
 class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<BoxItem.ItemConfig> itemConfigs = new ArrayList<>();
+    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private int currentSelectedPosition = 0;
     private OnItemConfigChange onItemConfigChange;
 
@@ -21,11 +20,11 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         this.onItemConfigChange = onItemConfigChange;
     }
 
-    public ArrayList<BoxItem.ItemConfig> getItemConfigs() {
+    public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
     }
 
-    public void setItemConfigs(ArrayList<BoxItem.ItemConfig> itemConfigs) {
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs = itemConfigs;
     }
 
@@ -101,7 +100,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
     }
 
     interface OnItemConfigChange {
-        void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig);
+        void onItemConfigItemChange(ItemConfig selectedItemConfig);
     }
 
     class ItemFrequencyViewHolder extends ItemHolder {
@@ -116,7 +115,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
             selector = itemView.findViewById(R.id.selector);
         }
 
-        public void setView(BoxItem.ItemConfig itemConfig) {
+        public void setView(ItemConfig itemConfig) {
             textViewPrice.setText("Rs " + itemConfig.getPrice());
             textViewSize.setText(itemConfig.getSubscriptionType());
             if (getAdapterPosition() == currentSelectedPosition) {

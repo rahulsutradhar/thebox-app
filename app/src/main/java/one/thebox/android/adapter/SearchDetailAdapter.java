@@ -22,12 +22,13 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 
+import io.realm.RealmList;
 import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
@@ -50,8 +51,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int VIEW_TYPE_SEARCH_ITEM = 0;
     private static final int VIEW_TYPE_MY_ITEM = 1;
-    private ArrayList<BoxItem> boxItems = new ArrayList<>();
-    private ArrayList<UserItem> userItems = new ArrayList<>();
+    private RealmList<BoxItem> boxItems = new RealmList<>();
+    private RealmList<UserItem> userItems = new RealmList<>();
     private Context mContext;
     private boolean isSearchDetailItemFragment;
 
@@ -67,7 +68,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         isSearchDetailItemFragment = searchDetailItemFragment;
     }
 
-    public void setBoxItems(ArrayList<BoxItem> boxItems, ArrayList<UserItem> userItems) {
+    public void setBoxItems(RealmList<BoxItem> boxItems, RealmList<UserItem> userItems) {
         this.boxItems = boxItems;
         this.userItems = userItems;
     }
@@ -87,7 +88,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                 boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
-                                ArrayList<Category> suggestedCategories = new ArrayList<>();
+                                RealmList<Category> suggestedCategories = new RealmList<Category>();
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                 boxItems.get(position).setSuggestedCategory(suggestedCategories);
@@ -231,7 +232,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                 dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                     @Override
-                    public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                         dialogFragment.dismiss();
                         if (boxItems.get(position).getUserItemId() == 0) {
                             boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
@@ -286,7 +287,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
-            ArrayList<BoxItem.ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
+            RealmList<ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
             int selectedPosition = 0;
             for (int i = 0; i < itemConfigs.size(); i++) {
                 if (boxItem.getSelectedItemConfig().equals(itemConfigs.get(i))) {
@@ -302,7 +303,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(mContext, selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
-                public void onItemConfigItemChange(BoxItem.ItemConfig selectedItemConfig) {
+                public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
                     boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
                     if (boxItems.get(position).getUserItemId() != 0) {
                         changeConfig(position, selectedItemConfig.getId());
@@ -325,7 +326,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        private void setupRecyclerViewSuggestedCategories(ArrayList<Category> suggestedCategories) {
+        private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
             remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, suggestedCategories);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new GridLayoutManager(mContext, 3));
@@ -400,7 +401,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-            BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
+            ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -414,7 +415,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                                     dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
@@ -429,7 +430,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                                     dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }

@@ -8,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
-import one.thebox.android.Models.BoxItem;
+import io.realm.RealmList;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SizeAndFrequencyAdapter;
 import one.thebox.android.util.CoreGsonUtils;
@@ -20,16 +19,16 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
     private final static String EXTRA_ITEM_CONFIG_ARRAY_LIST = "item_config_array_list";
     private View rootView;
-    private ArrayList<BoxItem.ItemConfig> itemConfigs = new ArrayList<>();
+    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private RecyclerView recyclerView;
-    private BoxItem.ItemConfig selectedItemConfig;
+    private ItemConfig selectedItemConfig;
     private SizeAndFrequencyAdapter sizeAndFrequencyAdapter;
     private SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected;
 
     public PriceAndSizeFragment() {
     }
 
-    public static PriceAndSizeFragment newInstance(ArrayList<BoxItem.ItemConfig> itemConfigs) {
+    public static PriceAndSizeFragment newInstance(RealmList<ItemConfig> itemConfigs) {
         PriceAndSizeFragment fragment = new PriceAndSizeFragment();
         Bundle args = new Bundle();
         args.putString(EXTRA_ITEM_CONFIG_ARRAY_LIST, CoreGsonUtils.toJson(itemConfigs));
@@ -37,7 +36,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
         return fragment;
     }
 
-    public void setSelectedItemConfig(BoxItem.ItemConfig itemConfig) {
+    public void setSelectedItemConfig(ItemConfig itemConfig) {
         this.selectedItemConfig = itemConfig;
     }
 
@@ -63,8 +62,8 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
     }
 
     private void initVariable() {
-        itemConfigs = CoreGsonUtils.fromJsontoArrayList(
-                getArguments().getString(EXTRA_ITEM_CONFIG_ARRAY_LIST), BoxItem.ItemConfig.class
+        itemConfigs = CoreGsonUtils.fromJsontoRealmList(
+                getArguments().getString(EXTRA_ITEM_CONFIG_ARRAY_LIST), ItemConfig.class
         );
     }
 

@@ -6,6 +6,8 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -24,7 +26,9 @@ public class MyApplication extends Application {
     private static MyApplication myApplication;
     private static RestClient restClient;
     private static OkHttpClient okHttpClient;
+    private static Realm realm;
     private static Context mContext;
+    private static RealmConfiguration realmConfiguration;
     public final String TAG = MyApplication.class.getSimpleName();
 
     private static RestClient getRestClient() {
@@ -32,6 +36,23 @@ public class MyApplication extends Application {
             restClient = new RestClient();
         }
         return restClient;
+    }
+
+    public static Realm getRealm() {
+        if (realm == null) {
+            realm = Realm.getInstance(getRealmConfiguration());
+            return realm;
+        }
+        return realm;
+    }
+
+    public static RealmConfiguration getRealmConfiguration() {
+        if (realmConfiguration == null) {
+            realmConfiguration = new RealmConfiguration.Builder(getInstance())
+                    .deleteRealmIfMigrationNeeded().schemaVersion(1).build();
+            return realmConfiguration;
+        }
+        return realmConfiguration;
     }
 
     public static synchronized MyApplication getInstance() {

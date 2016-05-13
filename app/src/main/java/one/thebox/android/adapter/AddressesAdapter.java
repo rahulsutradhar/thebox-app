@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
@@ -18,21 +18,21 @@ import one.thebox.android.util.PrefUtils;
  */
 public class AddressesAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<User.Address> addresses = new ArrayList<>();
+    private RealmList<Address> addresses = new RealmList<>();
 
     public AddressesAdapter(Context context) {
         super(context);
     }
 
-    public void addAddress(User.Address address) {
+    public void addAddress(Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<User.Address> getAddresses() {
+    public RealmList<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<User.Address> addresses) {
+    public void setAddresses(RealmList<Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -103,33 +103,10 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    class ItemAddressViewHolder extends ItemHolder {
-        private TextView typeNameTextView, addressTextView;
-        private ImageView editAddressButton;
-
-        public ItemAddressViewHolder(View itemView) {
-            super(itemView);
-            editAddressButton = (ImageView) itemView.findViewById(R.id.edit_address_button);
-            typeNameTextView = (TextView) itemView.findViewById(R.id.type_name_text_view);
-            addressTextView = (TextView) itemView.findViewById(R.id.address_text_view);
-        }
-
-        public void setView(User.Address address) {
-            if (address.isCurrentAddress()) {
-                typeNameTextView.setText(address.getAddressTypeName(address.getType()) + " (primary)");
-                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
-            } else {
-                typeNameTextView.setText(address.getAddressTypeName(address.getType()));
-                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
-            }
-
-        }
-    }
-
-    private void openAddAddressBottomSheet(User.Address address, final int position) {
+    private void openAddAddressBottomSheet(Address address, final int position) {
         new AddressBottomSheet((Activity) mContext, new AddressBottomSheet.OnAddressAdded() {
             @Override
-            public void onAddressAdded(User.Address address) {
+            public void onAddressAdded(Address address) {
                 if (address.isCurrentAddress()) {
                     for (int i = 0; i < addresses.size(); i++) {
                         if (addresses.get(i).isCurrentAddress() && i != position) {
@@ -145,5 +122,28 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
                 notifyItemChanged(position);
             }
         }, address).show();
+    }
+
+    class ItemAddressViewHolder extends ItemHolder {
+        private TextView typeNameTextView, addressTextView;
+        private ImageView editAddressButton;
+
+        public ItemAddressViewHolder(View itemView) {
+            super(itemView);
+            editAddressButton = (ImageView) itemView.findViewById(R.id.edit_address_button);
+            typeNameTextView = (TextView) itemView.findViewById(R.id.type_name_text_view);
+            addressTextView = (TextView) itemView.findViewById(R.id.address_text_view);
+        }
+
+        public void setView(Address address) {
+            if (address.isCurrentAddress()) {
+                typeNameTextView.setText(Address.getAddressTypeName(address.getType()) + " (primary)");
+                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
+            } else {
+                typeNameTextView.setText(Address.getAddressTypeName(address.getType()));
+                addressTextView.setText(address.getFlat() + ", " + address.getStreet());
+            }
+
+        }
     }
 }

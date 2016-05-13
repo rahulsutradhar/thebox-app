@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
@@ -20,11 +20,11 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     private int currentSelection;
 
-    private ArrayList<User.Address> addresses = new ArrayList<>();
+    private RealmList<Address> addresses = new RealmList<>();
 
     private OnAddressSelectListener onAddressSelectListener;
 
-    public SelectDeliveryAddressAdapter(Context context, ArrayList<User.Address> addresses) {
+    public SelectDeliveryAddressAdapter(Context context, RealmList<Address> addresses) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
         this.addresses = addresses;
@@ -36,15 +36,7 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    public int getCurrentSelection() {
-        return currentSelection;
-    }
-
-    public void setCurrentSelection(int currentSelection) {
-        this.currentSelection = currentSelection;
-    }
-
-    public SelectDeliveryAddressAdapter(Context context, ArrayList<User.Address> addresses, OnAddressSelectListener onAddressSelectListener) {
+    public SelectDeliveryAddressAdapter(Context context, RealmList<Address> addresses, OnAddressSelectListener onAddressSelectListener) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
         this.addresses = addresses;
@@ -57,15 +49,23 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
         this.onAddressSelectListener = onAddressSelectListener;
     }
 
-    public void addAddress(User.Address address) {
+    public int getCurrentSelection() {
+        return currentSelection;
+    }
+
+    public void setCurrentSelection(int currentSelection) {
+        this.currentSelection = currentSelection;
+    }
+
+    public void addAddress(Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<User.Address> getAddresses() {
+    public RealmList<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<User.Address> addresses) {
+    public void setAddresses(RealmList<Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -136,6 +136,15 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
+    @Override
+    protected int getFooterLayoutId() {
+        return R.layout.footer_change_address;
+    }
+
+    public interface OnAddressSelectListener {
+        void onAddressSelect(Address address);
+    }
+
     class ItemAddressViewHolder extends ItemHolder {
 
         private RadioButton radioButton;
@@ -156,7 +165,7 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
             this.radioButton = radioButton;
         }
 
-        public void setViews(User.Address address) {
+        public void setViews(Address address) {
             this.address.setText(address.getFlat() + ", " + address.getStreet() + ", " + address.getSociety());
             if (address.isCurrentAddress()) {
                 label.setText(address.getLabel() + " (primary)");
@@ -171,11 +180,6 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    @Override
-    protected int getFooterLayoutId() {
-        return R.layout.footer_change_address;
-    }
-
     class FooterViewHolder extends FooterHolder {
         private TextView editAddressButton;
 
@@ -187,11 +191,11 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
                 public void onClick(View v) {
                     new AddressBottomSheet((Activity) mContext, new AddressBottomSheet.OnAddressAdded() {
                         @Override
-                        public void onAddressAdded(User.Address address) {
+                        public void onAddressAdded(Address address) {
                             User user = PrefUtils.getUser(mContext);
-                            ArrayList<User.Address> addresses = user.getAddresses();
+                            RealmList<Address> addresses = user.getAddresses();
                             if (addresses == null || addresses.isEmpty()) {
-                                addresses = new ArrayList<>();
+                                addresses = new RealmList<Address>();
                             }
                             addresses.add(address);
                             user.setAddresses(addresses);
@@ -203,9 +207,5 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
                 }
             });
         }
-    }
-
-    public interface OnAddressSelectListener {
-        void onAddressSelect(User.Address address);
     }
 }

@@ -7,6 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
 
 /**
@@ -14,50 +18,18 @@ import one.thebox.android.util.Constants;
  */
 public class AddressAndOrder implements Serializable {
     @SerializedName("address")
-    private User.Address address;
+    private int addressId;
     @SerializedName("order")
-    private Order order;
+    private int orderId;
     @SerializedName("date")
     private Date oderDate;
 
-    public AddressAndOrder(User.Address address, Order order) {
-        this.address = address;
-        this.order = order;
-    }
+    private transient Address address;
+    private transient Order order;
 
-    public Date getOderDate() {
-        return oderDate;
-    }
-
-    public void setOderDate(Date oderDate) {
-        this.oderDate = oderDate;
-    }
-
-    public User.Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(User.Address address) {
-        this.address = address;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public String getDateString() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.oderDate);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        String monthName = new SimpleDateFormat("MMMM").format(calendar.getTime());
-        String dayName = new SimpleDateFormat("EEEE").format(calendar.getTime());
-        String hour = new SimpleDateFormat("hh").format(calendar.getTime());
-        String minute = new SimpleDateFormat("mm").format(calendar.getTime());
-        return getSlotString(hour) + ", " + dayOfMonth + " " + monthName + ", " + dayName;
+    public AddressAndOrder(int addressId, int orderId) {
+        this.addressId = addressId;
+        this.orderId = orderId;
     }
 
     public static String getDateString(Date date) {
@@ -82,8 +54,54 @@ public class AddressAndOrder implements Serializable {
         return "";
     }
 
-   /* public static Date getNextSlotDate(Date currentDate) {
-
+    public Date getOderDate() {
+        return oderDate;
     }
-*/
+
+    public void setOderDate(Date oderDate) {
+        this.oderDate = oderDate;
+    }
+
+    public int getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(int address) {
+        this.addressId = address;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getDateString() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.oderDate);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        String monthName = new SimpleDateFormat("MMMM").format(calendar.getTime());
+        String dayName = new SimpleDateFormat("EEEE").format(calendar.getTime());
+        String hour = new SimpleDateFormat("hh").format(calendar.getTime());
+        String minute = new SimpleDateFormat("mm").format(calendar.getTime());
+        return getSlotString(hour) + ", " + dayOfMonth + " " + monthName + ", " + dayName;
+    }
+
+    public Address getAddress() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Address> query = realm.where(Address.class)
+                .equalTo(Address.FIELD_ID, addressId);
+        RealmResults<Address> realmResults = query.findAll();
+        return realmResults.get(0);
+    }
+
+    public Order getOrder() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class)
+                .equalTo(Order.FIELD_ID, orderId);
+        RealmResults<Order> realmResults = query.findAll();
+        return realmResults.get(0);
+    }
 }

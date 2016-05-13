@@ -42,7 +42,7 @@ public class DateTimeUtil {
     }
 
     public static Date convertStringToDate(String date) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         return formatter.parse(date);
     }
 

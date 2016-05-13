@@ -9,11 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.util.CoreGsonUtils;
@@ -24,7 +25,7 @@ import one.thebox.android.util.CoreGsonUtils;
 public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     public static final String TAG = "Choose size and frequency";
     private static final String EXTRA_BOX_ITEM = "extra_box_item";
-    HashMap<String, ArrayList<BoxItem.ItemConfig>> hashMap = new HashMap<>();
+    HashMap<String, RealmList<ItemConfig>> hashMap = new HashMap<>();
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private View rootView;
@@ -88,6 +89,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     }
 
     public interface OnSizeAndFrequencySelected {
-        void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig);
+        void onSizeAndFrequencySelected(
+                ItemConfig selectedItemConfig);
     }
 }

@@ -4,11 +4,26 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by Ajeet Kumar Meena on 21-04-2016.
  */
-public class Category implements Serializable {
+public class Category extends RealmObject implements Serializable {
+    @Ignore
+    public static final String FIELD_ID = "id";
+    @Ignore
+    public static final String FIELD_TITLE = "title";
+    @Ignore
+    public static final String FIELD_BOX_ID = "box_id";
+    @Ignore
+    public static final String FIELD_NO_OF_ITEMS = "no_of_items";
+    @Ignore
+    public static final String FIELD_ICON_URL = "icon_url";
 
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("title")
@@ -19,6 +34,9 @@ public class Category implements Serializable {
     private int noOfItems;
     @SerializedName("icon_url")
     private String iconUrl;
+
+    public Category() {
+    }
 
     public Category(int id, String title) {
         this.id = id;
@@ -34,6 +52,10 @@ public class Category implements Serializable {
 
     public String getIconUrl() {
         return iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
     }
 
     public int getBoxId() {
@@ -73,6 +95,7 @@ public class Category implements Serializable {
         if (getClass() != o.getClass())
             return false;
         Category category = (Category) o;
-        return this.id == category.getId();
+        return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
+                && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
     }
 }

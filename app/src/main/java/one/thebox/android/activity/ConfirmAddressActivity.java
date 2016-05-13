@@ -12,6 +12,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
@@ -19,26 +24,54 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.adapter.EditDeliveryAddressAdapter;
 import one.thebox.android.adapter.SelectDeliveryAddressAdapter;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 
 public class ConfirmAddressActivity extends BaseActivity {
 
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
+    ArrayList<Integer> orderIds = new ArrayList<>();
     private TextView selectAddress;
     private RecyclerView recyclerView;
     private SelectDeliveryAddressAdapter selectDeliveryAddressAdapter;
     private EditDeliveryAddressAdapter editDeliveryAddressAdapter;
     private User user;
     private CheckBox checkBox;
-    private ArrayList<Order> orders;
+    private RealmList<Order> orders = new RealmList<>();
     private boolean haveDifferentAddresses;
 
-    public static Intent getInstance(Context context, ArrayList<Order> orders) {
-        Intent intent = new Intent(context, ConfirmAddressActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orders));
-        return intent;
+    public static Intent getInstance(Context context, RealmList<Order> orders) {
+        ArrayList<Integer> orderIds = new ArrayList<>();
+        for (Order order : orders) {
+            orderIds.add(order.getId());
+        }
+        return new Intent(context, ConfirmAddressActivity.class).putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orderIds));
     }
+
+    private void initVariables() {
+        this.user = PrefUtils.getUser(this);
+        orderIds = CoreGsonUtils.fromJsontoArrayList(
+                getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER), Integer.class);
+        if (orderIds.isEmpty()) {
+            return;
+        }
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class)
+                .notEqualTo(Order.FIELD_ID, 0);
+        for (int i = 0; i < orderIds.size(); i++) {
+            if (orderIds.size() - 1 == i) {
+                query.equalTo(Order.FIELD_ID, orderIds.get(i));
+            } else {
+                query.equalTo(Order.FIELD_ID, orderIds.get(i)).or();
+            }
+        }
+        RealmResults<Order> realmResults = query.findAll();
+        for (Order order : realmResults) {
+            orders.add(order);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +85,6 @@ public class ConfirmAddressActivity extends BaseActivity {
         } else {
             setupRecyclerView(false);
         }
-    }
-
-    private void initVariables() {
-        String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
-        orders = CoreGsonUtils.fromJsontoArrayList(ordersString, Order.class);
-        user = PrefUtils.getUser(ConfirmAddressActivity.this);
     }
 
     public void setupRecyclerView(boolean editAddressAdapter) {
@@ -95,7 +122,7 @@ public class ConfirmAddressActivity extends BaseActivity {
                     } else {
                         ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
                         for (Order order : orders) {
-                            addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()), order));
+                            addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
                         }
                         startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
                     }
@@ -115,16 +142,17 @@ public class ConfirmAddressActivity extends BaseActivity {
     public void addAddress() {
         new AddressBottomSheet(this, new AddressBottomSheet.OnAddressAdded() {
             @Override
-            public void onAddressAdded(User.Address address) {
+            public void onAddressAdded(Address address) {
                 User user = PrefUtils.getUser(ConfirmAddressActivity.this);
-                ArrayList<User.Address> addresses = user.getAddresses();
+                RealmList<Address> addresses = user.getAddresses();
                 if (addresses == null || addresses.isEmpty()) {
-                    addresses = new ArrayList<>();
+                    addresses = new RealmList<Address>();
                 }
                 addresses.add(address);
                 user.setAddresses(addresses);
                 PrefUtils.saveUser(ConfirmAddressActivity.this, user);
                 setupRecyclerView(false);
+                initViews();
             }
         }).show();
     }

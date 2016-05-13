@@ -20,7 +20,7 @@ public class PaymentRequestBody implements Serializable {
             this.addressAndOrders.add(new AddressOrderDate(
                     new AddressOrderDate.Address(addressAndOrder.getAddress().getId()),
                     new AddressOrderDate.Order(addressAndOrder.getOrder().getId()),
-                    addressAndOrder.getDateString()
+                    addressAndOrder.getOderDate().toString()
             ));
         }
     }

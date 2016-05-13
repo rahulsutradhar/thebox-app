@@ -164,7 +164,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
             case R.id.button_resend: {
                 if (isSignUpActivity) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
-                    MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
+                    MyApplication.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

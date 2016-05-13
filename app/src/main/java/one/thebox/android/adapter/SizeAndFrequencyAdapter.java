@@ -4,9 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import one.thebox.android.Models.BoxItem;
+import io.realm.RealmList;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
@@ -15,14 +14,14 @@ import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
  */
 public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<BoxItem.ItemConfig> itemConfigs;
-    int currentItemSelected = -1;
-    int prevItemSelected = -1;
+    private RealmList<ItemConfig> itemConfigs;
+    private int currentItemSelected = -1;
+    private int prevItemSelected = -1;
     private SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected;
 
     public SizeAndFrequencyAdapter(Context context, SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected) {
         super(context);
-        itemConfigs = new ArrayList<>();
+        itemConfigs = new RealmList<>();
         this.onSizeAndFrequencySelected = onSizeAndFrequencySelected;
     }
 
@@ -34,12 +33,12 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         this.currentItemSelected = currentItemSelected;
     }
 
-    public ArrayList<BoxItem.ItemConfig> getItemConfigs() {
+    public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
     }
 
 
-    public void setItemConfigs(ArrayList<BoxItem.ItemConfig> itemConfigs) {
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs.addAll(itemConfigs);
     }
 
@@ -136,7 +135,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 
-        public void setViewHolder(BoxItem.ItemConfig itemConfig) {
+        public void setViewHolder(ItemConfig itemConfig) {
             sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
             costTextView.setText(itemConfig.getPrice() + " Rs");
             if (getAdapterPosition() == currentItemSelected) {

@@ -3,9 +3,9 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
-import one.thebox.android.Models.User;
+import io.realm.RealmList;
+import one.thebox.android.Models.Address;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -17,7 +17,8 @@ public class GetAllAddressResponse extends ApiResponse implements Serializable {
     @SerializedName("info")
     private String info;
     @SerializedName("addresses")
-    private ArrayList<User.Address> userAddresses;
+
+    private RealmList<Address> userAddresses;
 
     public boolean isSuccess() {
         return success;
@@ -27,7 +28,7 @@ public class GetAllAddressResponse extends ApiResponse implements Serializable {
         return info;
     }
 
-    public ArrayList<User.Address> getUserAddresses() {
+    public RealmList<Address> getUserAddresses() {
         return userAddresses;
     }
 }

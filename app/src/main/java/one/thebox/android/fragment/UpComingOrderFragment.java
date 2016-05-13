@@ -13,38 +13,64 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 
 
 public class UpComingOrderFragment extends Fragment implements View.OnClickListener {
 
     private static final String EXTRA_ORDER_ARRAY = "extra_order_array";
+    ArrayList<Integer> orderIds = new ArrayList<>();
     private View rootView;
     private RecyclerView recyclerView;
     private OrdersItemAdapter ordersItemAdapter;
     private TextView buttonSelectAndPay;
-    private ArrayList<Order> orders = new ArrayList<>();
+    private RealmList<Order> orders = new RealmList<>();
     private TextView emptyOrderText;
 
     public UpComingOrderFragment() {
     }
 
     public static UpComingOrderFragment newInstance(ArrayList<Order> orders) {
-        String orderString = CoreGsonUtils.toJson(orders);
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_ORDER_ARRAY, orderString);
         UpComingOrderFragment fragment = new UpComingOrderFragment();
-        fragment.setArguments(bundle);
+        Bundle args = new Bundle();
+        ArrayList<Integer> orderIds = new ArrayList<>();
+        for (Order order : orders) {
+            orderIds.add(order.getId());
+        }
+        args.putString(EXTRA_ORDER_ARRAY, CoreGsonUtils.toJson(orderIds));
+        fragment.setArguments(args);
         return fragment;
     }
 
-    private ArrayList<Order> gerOrders() {
-        String orderString = getArguments().getString(EXTRA_ORDER_ARRAY);
-        return CoreGsonUtils.fromJsontoArrayList(orderString, Order.class);
+    private void initVariables() {
+        orderIds = CoreGsonUtils.fromJsontoArrayList(
+                getArguments().getString(EXTRA_ORDER_ARRAY), Integer.class);
+        if (orderIds.isEmpty()) {
+            return;
+        }
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class)
+                .notEqualTo(Order.FIELD_ID, 0);
+        for (int i = 0; i < orderIds.size(); i++) {
+            if (orderIds.size() - 1 == i) {
+                query.equalTo(Order.FIELD_ID, orderIds.get(i));
+            } else {
+                query.equalTo(Order.FIELD_ID, orderIds.get(i)).or();
+            }
+        }
+        RealmResults<Order> realmResults = query.findAll();
+        for (Order order : realmResults) {
+            orders.add(order);
+        }
     }
 
     @Override
@@ -57,7 +83,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_my_orders, container, false);
         initViews();
-        orders = gerOrders();
+        initVariables();
         setupRecyclerView();
         return rootView;
     }

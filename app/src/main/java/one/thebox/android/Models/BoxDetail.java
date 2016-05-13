@@ -4,13 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class BoxDetail implements Serializable {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class BoxDetail extends RealmObject implements Serializable {
+
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("title")
     private String title;
     @SerializedName("photo_url")
     private String photoUrl;
+
+    public BoxDetail() {
+    }
 
     public BoxDetail(int id, String title, String photoUrl) {
         this.id = id;

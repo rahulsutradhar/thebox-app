@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -253,7 +253,7 @@ public class DelayDeliveryBottomSheet {
                             Calendar.getInstance().getTime(), orderDate
                     ) + " days");
                 }
-                BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
                 deliveryTextView
                         .setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
 

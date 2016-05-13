@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.Address;
 import one.thebox.android.R;
 
 /**
@@ -17,22 +17,22 @@ import one.thebox.android.R;
  */
 public class ChangeAddressAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<User.Address> addresses = new ArrayList<>();
+    private ArrayList<Address> addresses = new ArrayList<>();
 
     public ChangeAddressAdapter(Context context) {
         super(context);
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
     }
 
-    public void addAddress(User.Address address) {
+    public void addAddress(Address address) {
         addresses.add(address);
     }
 
-    public ArrayList<User.Address> getAddresses() {
+    public ArrayList<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(ArrayList<User.Address> addresses) {
+    public void setAddresses(ArrayList<Address> addresses) {
         this.addresses = addresses;
     }
 
@@ -131,7 +131,7 @@ public class ChangeAddressAdapter extends BaseRecyclerAdapter {
             this.radioButton = radioButton;
         }
 
-        public void setViews(User.Address address) {
+        public void setViews(Address address) {
          /*   if (address.isSelected()) {
                 radioButton.setChecked(true);
             } else {

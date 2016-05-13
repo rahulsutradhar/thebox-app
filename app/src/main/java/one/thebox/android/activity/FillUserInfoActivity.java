@@ -1,8 +1,8 @@
 package one.thebox.android.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -31,15 +31,15 @@ import retrofit2.Response;
 
 public class FillUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
+    String name, email, locality;
+    Call<LocalitiesResponse> call;
     private Button submitButton;
     private EditText nameEditText, emailEditText;
     private AutoCompleteTextView localityAutoCompleteTextView;
     private ProgressBar progressBar;
-    String name, email, locality;
     private boolean callHasBeenCompleted = true;
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
-    private int codeSelected;
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
         @Override
         public void onResponse(Call<LocalitiesResponse> call, Response<LocalitiesResponse> response) {
@@ -49,7 +49,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
                 localities = new ArrayList<>(response.body().getLocalities());
                 localitiesSuggestions = new String[localities.size()];
                 for (int i = 0; i < localities.size(); i++) {
-                    localitiesSuggestions[i] = localities.get(0).getName();
+                    localitiesSuggestions[i] = localities.get(i).getName();
                 }
                 setAutoCompleteAdapter();
             }
@@ -61,7 +61,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
             callHasBeenCompleted = true;
         }
     };
-    Call<LocalitiesResponse> call;
+    private int codeSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

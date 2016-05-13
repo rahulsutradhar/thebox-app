@@ -3,8 +3,8 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.List;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Box;
 import one.thebox.android.api.ApiResponse;
 
@@ -14,17 +14,17 @@ import one.thebox.android.api.ApiResponse;
 public class MyBoxResponse extends ApiResponse implements Serializable {
 
     @SerializedName("userbox")
-    private List<Box> boxes;
+    private RealmList<Box> boxes;
 
-    public MyBoxResponse(List<Box> boxes) {
+    public MyBoxResponse(RealmList<Box> boxes) {
         this.boxes = boxes;
     }
 
-    public List<Box> getBoxes() {
+    public RealmList<Box> getBoxes() {
         return boxes;
     }
 
-    public void setBoxes(List<Box> boxes) {
+    public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
     }
 }

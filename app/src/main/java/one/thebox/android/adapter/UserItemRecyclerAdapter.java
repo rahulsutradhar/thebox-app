@@ -17,11 +17,11 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 
+import io.realm.RealmList;
 import one.thebox.android.Events.ItemAddEvent;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
@@ -43,10 +43,10 @@ import retrofit2.Response;
 
 public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<UserItem> userItems;
+    private RealmList<UserItem> userItems;
     private boolean isUpComingOrderAdapter;
 
-    public UserItemRecyclerAdapter(Context context, ArrayList<UserItem> userItems, boolean isUpComingOrderAdapter) {
+    public UserItemRecyclerAdapter(Context context, RealmList<UserItem> userItems, boolean isUpComingOrderAdapter) {
         super(context);
         this.userItems = userItems;
         this.isUpComingOrderAdapter = isUpComingOrderAdapter;
@@ -117,7 +117,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
     }
 
     public void changeConfig(final int position, final int itemConfigId) {
-        final BoxItem.ItemConfig itemConfig = userItems.get(position).getBoxItem().getItemConfigById(
+        final ItemConfig itemConfig = userItems.get(position).getBoxItem().getItemConfigById(
                 itemConfigId
         );
         final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
@@ -210,7 +210,8 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                 }
             });
             noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-            BoxItem.ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
+            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+            //userItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -226,7 +227,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                                     dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
 
@@ -246,7 +247,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                                     dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                                         @Override
-                                        public void onSizeAndFrequencySelected(BoxItem.ItemConfig selectedItemConfig) {
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
 

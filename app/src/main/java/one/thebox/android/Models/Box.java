@@ -3,10 +3,26 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Box implements Serializable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
+
+public class Box extends RealmObject implements Serializable {
+    @Ignore
+    public static final String FIELD_ID = "id";
+    @Ignore
+    public static final String FIELD_USER_ID = "userId";
+    @Ignore
+    public static final String FIELD_REMAINING_CATEGORIES = "remainingCategories";
+    @Ignore
+    public static final String FIELD_USER_CATEGORIES = "userCategories";
+    @Ignore
+    public static final String FIELD_BOX = "box";
+
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("user_id")
@@ -14,15 +30,19 @@ public class Box implements Serializable {
     @SerializedName("box_id")
     private int boxId;
     @SerializedName("remaining_categories")
-    private List<Category> remainingCategories;
+    private RealmList<Category> remainingCategories;
     @SerializedName("usercategories")
-    private List<UserCategory> userCategories;
+    private RealmList<UserCategory> userCategories;
     @SerializedName("box")
     private BoxDetail box;
+    @Ignore
     private boolean isExpandedListVisible;
 
 
-    public Box(int id, int userId, int boxId, List<Category> remainingCategories, List<UserCategory> userCategories, BoxDetail box) {
+    public Box() {
+    }
+
+    public Box(int id, int userId, int boxId, RealmList<Category> remainingCategories, RealmList<UserCategory> userCategories, BoxDetail box) {
         this.id = id;
         this.userId = userId;
         this.boxId = boxId;
@@ -31,12 +51,35 @@ public class Box implements Serializable {
         this.box = box;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!this.getClass().getSuperclass().getName().equals(o.getClass().getName())) {
+            return false;
+        }
+        Box box = (Box) o;
+        if (box.getId() != this.getId()) {
+            return false;
+        }
+        if (box.getUserId() != this.getUserId()) {
+            return false;
+        }
+        if (!box.getRemainingCategories().equals(this.getRemainingCategories())) {
+            return false;
+        }
+
+        if (!(box.getUserCategories().equals(this.getUserCategories()))) {
+            return false;
+        }
+
+        return box.getBoxDetail().equals(this.getBoxDetail());
+    }
+
     public String getSubTitle() {
         String itemString = "";
         for (int i = 0; i < getAllItemInTheBox().size(); i++) {
             if (i == 3) {
                 itemString = itemString.substring(0, itemString.length() - 2);
-                itemString = itemString + "...+ " + (getAllItemInTheBox().size()-4) + " items";
+                itemString = itemString + "...+ " + (getAllItemInTheBox().size() - 4) + " items";
                 return itemString;
             }
             itemString = getAllItemInTheBox().get(i).getBoxItem().getTitle() + ", " + itemString;
@@ -69,11 +112,11 @@ public class Box implements Serializable {
         this.boxId = boxId;
     }
 
-    public List<Category> getRemainingCategories() {
+    public RealmList<Category> getRemainingCategories() {
         return remainingCategories;
     }
 
-    public void setRemainingCategories(List<Category> remainingCategories) {
+    public void setRemainingCategories(RealmList<Category> remainingCategories) {
         this.remainingCategories = remainingCategories;
     }
 
@@ -81,16 +124,12 @@ public class Box implements Serializable {
         return userCategories;
     }
 
-    public void setUserCategories(List<UserCategory> userCategories) {
+    public void setUserCategories(RealmList<UserCategory> userCategories) {
         this.userCategories = userCategories;
     }
 
     public BoxDetail getBoxDetail() {
         return box;
-    }
-
-    public void setBox(BoxDetail box) {
-        this.box = box;
     }
 
     public boolean isExpandedListVisible() {
@@ -101,11 +140,19 @@ public class Box implements Serializable {
         isExpandedListVisible = expandedListVisible;
     }
 
-    public ArrayList<UserItem> getAllItemInTheBox() {
-        ArrayList<UserItem> userItems = new ArrayList<>();
+    public RealmList<UserItem> getAllItemInTheBox() {
+        RealmList<UserItem> userItems = new RealmList<>();
         for (UserCategory userCategory : userCategories) {
             userItems.addAll(userCategory.getUserItems());
         }
         return userItems;
+    }
+
+    public BoxDetail getBox() {
+        return box;
+    }
+
+    public void setBox(BoxDetail box) {
+        this.box = box;
     }
 }

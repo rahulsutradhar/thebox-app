@@ -13,8 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
-
+import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
@@ -29,7 +28,7 @@ import one.thebox.android.util.DisplayUtil;
  */
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Box> boxes;
+    private RealmList<Box> boxes;
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -39,11 +38,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         boxes.add(box);
     }
 
-    public ArrayList<Box> getBoxes() {
+    public RealmList<Box> getBoxes() {
         return boxes;
     }
 
-    public void setBoxes(ArrayList<Box> boxes) {
+    public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
     }
 
@@ -118,10 +117,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
-        private ArrayList<Category> categories;
+        private RealmList<Category> categories;
         private boolean isSearchDetailItemFragment;
 
-        public RemainingCategoryAdapter(Context context, ArrayList<Category> categories) {
+        public RemainingCategoryAdapter(Context context, RealmList<Category> categories) {
             super(context);
             this.categories = categories;
         }
@@ -134,11 +133,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             isSearchDetailItemFragment = searchDetailItemFragment;
         }
 
-        public ArrayList<Category> getCategories() {
+        public RealmList<Category> getCategories() {
             return categories;
         }
 
-        public void setCategories(ArrayList<Category> categories) {
+        public void setCategories(RealmList<Category> categories) {
             this.categories = categories;
         }
 
@@ -306,7 +305,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.recyclerViewCategories.setVisibility(View.VISIBLE);
                 this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
-                ArrayList<Category> categories = new ArrayList<>(box.getRemainingCategories());
+                RealmList<Category> categories = new RealmList<>();
+                categories.addAll(box.getRemainingCategories());
                 this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories);
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }
