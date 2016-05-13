@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -329,7 +328,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
             remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, suggestedCategories);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
-            recyclerViewSavings.setLayoutManager(new GridLayoutManager(mContext, 3));
+            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(mContext));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
