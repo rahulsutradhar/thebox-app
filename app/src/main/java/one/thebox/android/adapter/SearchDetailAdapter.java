@@ -328,7 +328,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
             remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, suggestedCategories);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
-            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(mContext));
+            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
