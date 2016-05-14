@@ -351,7 +351,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 savings.setText(boxItem.getSavings() + " Rs Savings");
             }
             if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                size.setText(boxItem.getItemConfigs().get(0).getSize() + " " + boxItem.getItemConfigs().get(0).getSizeUnit());
+                size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit());
             }
         }
 
