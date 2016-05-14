@@ -277,6 +277,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
         private LinearLayout emptyBoxLayout;
+        private LinearLayout linearLayoutHolder;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -289,6 +290,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
             this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
+            this.linearLayoutHolder = (LinearLayout) itemView.findViewById(R.id.holder);
         }
 
         public void setViews(Box box) {
@@ -299,6 +301,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.subTitle.setText(box.getSubTitle());
             }
+            boxImageView.getLayoutParams().height = linearLayoutHolder.getMeasuredHeight();
+            boxImageView.requestLayout();
             Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);

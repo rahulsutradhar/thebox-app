@@ -28,10 +28,11 @@
             <ImageView
                 android:id="@+id/box_image_view"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
                 android:scaleType="centerCrop" />
 
             <LinearLayout
+                android:id="@+id/holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/white_gradient"
