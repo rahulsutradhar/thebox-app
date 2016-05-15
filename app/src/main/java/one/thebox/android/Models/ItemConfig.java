@@ -21,6 +21,8 @@ public class ItemConfig extends RealmObject implements Serializable {
     private int price;
     @SerializedName("subscription_type")
     private String subscriptionType;
+    @SerializedName("photo_url")
+    private String photoUrl;
 
     public ItemConfig() {
     }
@@ -77,5 +79,13 @@ public class ItemConfig extends RealmObject implements Serializable {
     public boolean equals(Object object) {
         ItemConfig itemConfig = (ItemConfig) object;
         return this.id == itemConfig.getId();
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

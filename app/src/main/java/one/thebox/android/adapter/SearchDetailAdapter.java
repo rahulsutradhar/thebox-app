@@ -333,7 +333,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void setViews(BoxItem boxItem, int position, boolean shouldScrollToPosition) {
-            Picasso.with(mContext).load(boxItem.getPhotoUrl()).into(productImage);
             setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
             if (boxItem.getQuantity() > 0) {
@@ -353,14 +352,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
                 size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit());
             }
+            Picasso.with(mContext).load(boxItem.getSelectedItemConfig().getPhotoUrl()).into(productImage);
         }
 
     }
 
     public class MyItemViewHolder extends RecyclerView.ViewHolder {
+
         private TextView adjustButton, productName, brand, deliveryTime,
                 arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected;
         private ImageView productImageView;
+        private LinearLayout quantityHolder;
 
         public MyItemViewHolder(View itemView) {
             super(itemView);
@@ -375,9 +377,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
+            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
         }
 
         public void setViews(final UserItem userItem) {
+
+
+            quantityHolder.setVisibility(View.VISIBLE);
+            adjustButton.setVisibility(View.VISIBLE);
+
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -400,7 +408,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-            ItemConfig itemConfig = userItem.getBoxItem().getSelectedItemConfig();
+            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+            //userItem.getBoxItem().getSelectedItemConfig();
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -409,6 +418,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.change_size: {
+
+
                                     final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
                                     dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
@@ -417,13 +428,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+
                                         }
                                     });
+                                    break;
                                 }
+
                                /* case R.id.change_quantity: {
                                     break;
                                 }*/
                                 case R.id.change_frequency: {
+
+
                                     final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
                                     dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                                             , SizeAndFrequencyBottomSheetDialogFragment.TAG);
@@ -432,9 +448,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
                                             changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+
                                         }
                                     });
-
+                                    break;
                                 }
                                /* case R.id.swap_with_similar_product: {
                                     openSwipeBottomSheet();
@@ -479,7 +496,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     e.printStackTrace();
                 }
             }
-            Picasso.with(mContext).load(userItem.getBoxItem().getPhotoUrl()).into(productImageView);
+            Picasso.with(mContext).load(itemConfig.getPhotoUrl()).into(productImageView);
         }
 
         public void addItemToBox(final int position) {

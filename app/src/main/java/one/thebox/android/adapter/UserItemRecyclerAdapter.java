@@ -298,7 +298,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                     e.printStackTrace();
                 }
             }
-            Picasso.with(mContext).load(userItem.getBoxItem().getPhotoUrl()).into(productImageView);
+            Picasso.with(mContext).load(itemConfig.getPhotoUrl()).into(productImageView);
         }
 
         public void addItemToBox(final int position) {
