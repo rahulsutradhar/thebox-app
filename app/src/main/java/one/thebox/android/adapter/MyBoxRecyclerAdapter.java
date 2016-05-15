@@ -13,13 +13,15 @@ import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
+
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
 
@@ -119,10 +121,15 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         private RealmList<Category> categories;
         private boolean isSearchDetailItemFragment;
+        private Box box;
 
         public RemainingCategoryAdapter(Context context, RealmList<Category> categories) {
             super(context);
             this.categories = categories;
+        }
+
+        public void setBox(Box box) {
+            this.box = box;
         }
 
         public boolean isSearchDetailItemFragment() {
@@ -171,10 +178,16 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     if (isSearchDetailItemFragment) {
                         EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
                     } else {
-                        mContext.startActivity(new Intent(mContext, MainActivity.class)
-                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
-                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
-                                        new SearchResult(categories.get(position).getId(), categories.get(position).getTitle()))));
+                        ArrayList<Integer> catIds = new ArrayList<>();
+                        for (Category category : categories) {
+                            catIds.add(category.getId());
+                        }
+                        Intent intent = new Intent(mContext, MainActivity.class)
+                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                                .putExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(
+                                        catIds)).putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
+                                .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
+                        mContext.startActivity(intent);
                     }
                 }
             });
@@ -313,6 +326,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 RealmList<Category> categories = new RealmList<>();
                 categories.addAll(box.getRemainingCategories());
                 this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories);
+                this.remainingCategoryAdapter.setBox(boxes.get(getAdapterPosition()));
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }
 

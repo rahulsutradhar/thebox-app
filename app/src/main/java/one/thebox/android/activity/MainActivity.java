@@ -27,6 +27,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -477,7 +479,34 @@ public class MainActivity extends BaseActivity implements
                         (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));
                 break;
             }
+            case 6: {
+                attachCategoriesFragment(intent);
+                break;
+            }
         }
+    }
+
+    private void attachCategoriesFragment(Intent intent) {
+        getToolbar().setSubtitle(null);
+        searchView.getText().clear();
+        searchViewHolder.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_box);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachMyBoxesFragment();
+            }
+        });
+        ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
+        int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
+        String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, selectedPosition, boxName);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.commit();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
     }
 
     @Override

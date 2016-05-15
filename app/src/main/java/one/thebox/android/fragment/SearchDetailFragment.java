@@ -18,6 +18,9 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -42,6 +45,9 @@ import retrofit2.Response;
  */
 public class SearchDetailFragment extends BaseFragment {
 
+    public static final String EXTRA_MY_BOX_CATEGORIES_ID = "my_box_category_click_event";
+    public static final String EXTRA_CLICK_POSITION = "extra_click_position";
+    public static final String BOX_NAME = "box_name";
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
     private static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
@@ -58,9 +64,21 @@ public class SearchDetailFragment extends BaseFragment {
     private ArrayList<UserItem> userItems = new ArrayList<>();
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
     private ExploreItem exploreItem;
+    private ArrayList<Integer> catIds;
+    private int clickPosition;
 
     public SearchDetailFragment() {
         // Required empty public constructor
+    }
+
+    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, int clickPosition, String boxName) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
+        bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
+        bundle.putString(BOX_NAME, boxName);
+        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
+        searchDetailFragment.setArguments(bundle);
+        return searchDetailFragment;
     }
 
     public static SearchDetailFragment getInstance(SearchResult searchResult) {
@@ -84,6 +102,27 @@ public class SearchDetailFragment extends BaseFragment {
         query = getArguments().getString(EXTRA_QUERY);
         catId = getArguments().getInt(EXTRA_CAT_ID);
         exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
+        catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
+        clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
+        if (catIds != null && !catIds.isEmpty()) {
+            setCategories();
+        }
+    }
+
+    private void setCategories() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Category> query = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
+        for (int i = 0; i < catIds.size(); i++) {
+            if (catIds.size() - 1 == i) {
+                query.equalTo(Category.FIELD_ID, catIds.get(i));
+            } else {
+                query.equalTo(Category.FIELD_ID, catIds.get(i)).or();
+            }
+        }
+        RealmResults<Category> realmResults = query.findAll();
+        for (Category category : realmResults) {
+            categories.add(category);
+        }
     }
 
     private void initViews() {
@@ -105,26 +144,72 @@ public class SearchDetailFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         initVariables();
-        if (exploreItem != null) {
-            ((MainActivity) getActivity()).getToolbar().setTitle(exploreItem.getTitle());
+        if (catIds != null && !catIds.isEmpty()) {
+            ((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
         } else {
-            ((MainActivity) getActivity()).getToolbar().setTitle(query);
+            if (exploreItem != null) {
+                ((MainActivity) getActivity()).getToolbar().setTitle(exploreItem.getTitle());
+            } else {
+                ((MainActivity) getActivity()).getToolbar().setTitle(query);
+            }
         }
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
-            if (exploreItem == null) {
-                if (catId == 0) {
-                    getSearchDetails();
-                } else {
-                    getCategoryDetail();
-                }
+            if (catIds != null && !catIds.isEmpty()) {
+                setupViewPagerAndTabsMyBox();
             } else {
-                getExploreDetails();
+                if (exploreItem == null) {
+                    if (catId == 0) {
+                        getSearchDetails();
+                    } else {
+                        getCategoryDetail();
+                    }
+                } else {
+                    setupViewPagerAndTabsMyBox();
+                }
             }
-
         }
         return rootView;
+    }
+
+    private void setupViewPagerAndTabsMyBox() {
+        if (getActivity() == null) {
+            return;
+        }
+        progressBar.setVisibility(View.GONE);
+        final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
+        for (int i = 0; i < categories.size(); i++) {
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle())), categories.get(i));
+        }
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        int length = tabLayout.getTabCount();
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), true));
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), false));
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        for (int i = 0; i < length; i++) {
+            if (i == 0) {
+                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
+            } else {
+                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
+            }
+        }
+        viewPager.setCurrentItem(clickPosition);
     }
 
     private void setupViewPagerAndTabs() {
