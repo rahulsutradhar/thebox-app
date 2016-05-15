@@ -3,6 +3,10 @@ package one.thebox.android.app;
 import android.app.Application;
 import android.content.Context;
 
+import org.acra.ACRA;
+import org.acra.ErrorReporter;
+import org.acra.annotation.ReportsCrashes;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -15,10 +19,12 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.util.HockeySenderHelper;
 
 /**
  * Created by harsh on 10/12/15.
  */
+@ReportsCrashes(buildConfigClass = MyApplication.class)
 public class MyApplication extends Application {
 
     private static final int READ_TIMEOUT = 60 * 1000;
@@ -29,6 +35,7 @@ public class MyApplication extends Application {
     private static Realm realm;
     private static Context mContext;
     private static RealmConfiguration realmConfiguration;
+    private static ErrorReporter errorReporterSingleton;
     public final String TAG = MyApplication.class.getSimpleName();
 
     private static RestClient getRestClient() {
@@ -93,5 +100,7 @@ public class MyApplication extends Application {
         super.onCreate();
         myApplication = this;
         mContext = getApplicationContext();
+        ACRA.init(this);
+        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
     }
 }
