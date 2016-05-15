@@ -13,86 +13,82 @@
         android:layout_height="match_parent">
 
 
-        <LinearLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
 
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/app_bar_layout"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                android:layout_height="56dp"
+                android:layout_gravity="top"
+                android:background="@color/primary"
+                android:backgroundTint="@color/primary"
+                android:gravity="center_vertical"
+                app:layout_scrollFlags="scroll|enterAlways">
 
-
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_gravity="top"
-                    android:background="@color/primary"
-                    android:backgroundTint="@color/primary"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:id="@+id/button_special_action"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:padding="16dp"
-                        android:src="@drawable/ic_edit"
-                        android:visibility="gone" />
-
-
-                </android.support.v7.widget.Toolbar>
-
-                <FrameLayout
-                    android:id="@+id/search_view_holder"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/button_special_action"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginRight="12dp">
-
-                    <EditText
-                        android:id="@+id/search"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:background="@drawable/search_view_background"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:gravity="center_vertical"
-                        android:hint="Search"
-                        android:padding="10dp"
-                        android:textColor="@color/primary_text_color"
-                        android:textColorHint="@color/manatee" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar"
-                        style="?android:attr/android:progressBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right|center_vertical"
-                        android:gravity="center"
-                        android:paddingRight="12dp"
-
-                        />
+                    android:layout_gravity="right"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_edit"
+                    android:visibility="gone" />
 
 
-                </FrameLayout>
-
-
-            </android.support.design.widget.AppBarLayout>
+            </android.support.v7.widget.Toolbar>
 
             <FrameLayout
-                android:id="@+id/frame"
+                android:id="@+id/search_view_holder"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:background="@drawable/search_view_background"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:hint="Search"
+                    android:padding="10dp"
+                    android:textColor="@color/primary_text_color"
+                    android:textColorHint="@color/manatee" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/android:progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center_vertical"
+                    android:gravity="center"
+                    android:paddingRight="12dp"
+
+                    />
+
 
             </FrameLayout>
-        </LinearLayout>
+
+
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 
