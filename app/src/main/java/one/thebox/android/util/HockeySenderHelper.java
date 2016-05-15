@@ -59,7 +59,7 @@ public class HockeySenderHelper implements ReportSender {
         String url = BASE_URL + formKey + CRASHES_PATH;
 
 
-        Log.e("Crashes 2", url);
+        Log.e("Crashes 2",url);
 
         try {
 
@@ -75,7 +75,8 @@ public class HockeySenderHelper implements ReportSender {
             httpPost.setEntity(new UrlEncodedFormEntity(parameters, HTTP.UTF_8));
 
             httpClient.execute(httpPost);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             try {
                 throw e;
@@ -85,12 +86,13 @@ public class HockeySenderHelper implements ReportSender {
         }
 
     }
-
-    private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
+    private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
+    {
         StringBuilder result = new StringBuilder();
         boolean first = true;
 
-        for (NameValuePair pair : params) {
+        for (NameValuePair pair : params)
+        {
             if (first)
                 first = false;
             else

@@ -33,7 +33,7 @@ public class UserCategory extends RealmObject implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o.getClass() != getClass()) {
+        if (!this.getClass().getSuperclass().getName().equals(o.getClass().getName())) {
             return false;
         }
         UserCategory userCategory = (UserCategory) o;
