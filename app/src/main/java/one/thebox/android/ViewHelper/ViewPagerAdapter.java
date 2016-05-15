@@ -7,17 +7,22 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import one.thebox.android.Models.Category;
 import one.thebox.android.R;
 import one.thebox.android.util.DisplayUtil;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
+    private final List<Category> mFragmentCategoryList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
     private Context context;
 
@@ -36,6 +41,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return mFragmentList.size();
     }
 
+    public void addFragment(Fragment fragment, Category category) {
+        mFragmentList.add(fragment);
+        mFragmentCategoryList.add(category);
+    }
+
     public void addFragment(Fragment fragment, String title) {
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
@@ -43,7 +53,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mFragmentTitleList.get(position);
+        if (mFragmentCategoryList.isEmpty()) {
+            return mFragmentTitleList.get(position);
+        } else {
+            return mFragmentCategoryList.get(position).getTitle();
+        }
     }
 
     @Override
@@ -58,9 +72,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public View getTabView(View view, int position, boolean isSelected) {
-        TextView title = (TextView) view.findViewById(R.id.text_view);
+        TextView title = (TextView) view.findViewById(R.id.text_view_category_name);
+        TextView numberOfItems = (TextView) view.findViewById(R.id.number_of_item);
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.holder);
-        title.setText(mFragmentTitleList.get(position));
+        title.setText(mFragmentCategoryList.get(position).getTitle());
+        numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
+        Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).into(icon);
         if (isSelected) {
             title.setTextColor(context.getResources().getColor(R.color.black));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);

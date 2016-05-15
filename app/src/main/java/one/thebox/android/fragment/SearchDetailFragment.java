@@ -133,9 +133,9 @@ public class SearchDetailFragment extends BaseFragment {
         }
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems), categories.get(0).getTitle());
+        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems), categories.get(0));
         for (int i = 1; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle())), categories.get(i).getTitle());
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle())), categories.get(i));
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
