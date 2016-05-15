@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -160,7 +159,7 @@ public class BoxItem extends RealmObject implements Serializable {
         this.photoContentType = photoContentType;
     }
 
-    public List<ItemConfig> getItemConfigs() {
+    public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
     }
 

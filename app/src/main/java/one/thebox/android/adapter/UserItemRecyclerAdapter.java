@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ItemAddEvent;
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -338,7 +339,17 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                             dialog.cancel();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
+                                    int prevQuantity = userItems.get(position).getQuantity();
                                     userItems.get(position).setQuantity(quantity);
+                                    if (quantity >= 1) {
+                                        RealmList<ItemConfig> itemConfigs = userItems.get(position).getBoxItem().getItemConfigs();
+                                        for (int i = 0; i < itemConfigs.size(); i++) {
+                                            itemConfigs.get(i).setPrice((int) (itemConfigs.get(i).getPrice() * ((float) quantity / (float) prevQuantity)));
+                                        }
+                                        BoxItem boxItem = userItems.get(position).getBoxItem();
+                                        boxItem.setItemConfigs(itemConfigs);
+                                        userItems.get(position).setBoxItem(boxItem);
+                                    }
                                     notifyItemChanged(getAdapterPosition());
                                     int count = 0;
                                     for (int i = 0; i < userItems.size(); i++) {

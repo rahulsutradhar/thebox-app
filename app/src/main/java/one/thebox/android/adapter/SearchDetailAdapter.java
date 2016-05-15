@@ -123,7 +123,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         dialog.cancel();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
+                                int prevQuantity = boxItems.get(position).getQuantity();
                                 boxItems.get(position).setQuantity(quantity);
+                                if (quantity >= 1) {
+                                    RealmList<ItemConfig> itemConfigs = boxItems.get(position).getItemConfigs();
+                                    for (int i = 0; i < itemConfigs.size(); i++) {
+                                        itemConfigs.get(i).setPrice((int) (itemConfigs.get(i).getPrice() * ((float) quantity / (float) prevQuantity)));
+                                    }
+                                    boxItems.get(position).setItemConfigs(itemConfigs);
+                                }
+
+                                //boxItems.get()
                                 notifyItemChanged(position);
                                 int count = 0;
                                 for (int i = 0; i < boxItems.size(); i++) {
@@ -536,7 +546,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.cancel();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
+                                    int prevQuantity = userItems.get(position).getQuantity();
                                     userItems.get(position).setQuantity(quantity);
+                                    if (quantity >= 1) {
+                                        RealmList<ItemConfig> itemConfigs = userItems.get(position).getBoxItem().getItemConfigs();
+                                        for (int i = 0; i < itemConfigs.size(); i++) {
+                                            itemConfigs.get(i).setPrice((int) (itemConfigs.get(i).getPrice() * ((float) quantity / (float) prevQuantity)));
+                                        }
+                                        BoxItem boxItem = userItems.get(position).getBoxItem();
+                                        boxItem.setItemConfigs(itemConfigs);
+                                        userItems.get(position).setBoxItem(boxItem);
+                                    }
                                     notifyItemChanged(getAdapterPosition());
                                     int count = 0;
                                     for (int i = 0; i < userItems.size(); i++) {

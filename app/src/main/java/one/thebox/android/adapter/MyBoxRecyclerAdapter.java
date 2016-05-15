@@ -315,7 +315,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.subTitle.setText(box.getSubTitle());
             }
             Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
-
             boxImageView.getLayoutParams().height = linearLayoutHolder.getMeasuredHeight();
             boxImageView.requestLayout();
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
