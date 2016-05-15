@@ -301,9 +301,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.subTitle.setText(box.getSubTitle());
             }
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
+
             boxImageView.getLayoutParams().height = linearLayoutHolder.getMeasuredHeight();
             boxImageView.requestLayout();
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);
             } else {
