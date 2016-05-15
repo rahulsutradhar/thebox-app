@@ -64,11 +64,12 @@ public class MyBoxesFragment extends Fragment {
     }
 
     private void initVariables() {
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-
+        if (!boxes.isEmpty()) {
+            Realm realm = MyApplication.getRealm();
+            RealmQuery<Box> query = realm.where(Box.class);
+            RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+            boxes.addAll(realmResults.subList(0, realmResults.size()));
+        }
     }
 
     private void setupRecyclerView() {

@@ -8,7 +8,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -75,21 +75,31 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         TextView title = (TextView) view.findViewById(R.id.text_view_category_name);
         TextView numberOfItems = (TextView) view.findViewById(R.id.number_of_item);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.holder);
+        RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
         title.setText(mFragmentCategoryList.get(position).getTitle());
         numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).into(icon);
         if (isSelected) {
+            icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
+            icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 48);
+            icon.requestLayout();
             title.setTextColor(context.getResources().getColor(R.color.black));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            title.setPadding(DisplayUtil.dpToPx(context, 24), DisplayUtil.dpToPx(context, 24), DisplayUtil.dpToPx(context, 24), DisplayUtil.dpToPx(context, 24));
-            linearLayout.setBackgroundResource(R.drawable.tab_layout_selected);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            layout.setBackgroundResource(R.drawable.tab_layout_selected);
+            layout.setPadding(DisplayUtil.dpToPx(context, 12), DisplayUtil.dpToPx(context, 12), DisplayUtil.dpToPx(context, 12), DisplayUtil.dpToPx(context, 12));
+
         } else {
+            icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 42);
+            icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 42);
+            icon.requestLayout();
             title.setTextColor(context.getResources().getColor(R.color.primary_text_color));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            title.setPadding(DisplayUtil.dpToPx(context, 16), DisplayUtil.dpToPx(context, 16), DisplayUtil.dpToPx(context, 16), DisplayUtil.dpToPx(context, 16));
-            linearLayout.setBackgroundResource(R.drawable.tab_layout);
+            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            layout.setBackgroundResource(R.drawable.tab_layout);
+            layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
         }
+
         return view;
     }
 }
