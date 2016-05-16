@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import one.thebox.android.util.DisplayUtil;
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Box> boxes;
+    private int stickyHeaderHeight = 0;
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -319,8 +321,21 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.subTitle.setText(box.getSubTitle());
             }
             Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
-            boxImageView.getLayoutParams().height = linearLayoutHolder.getMeasuredHeight();
-            boxImageView.requestLayout();
+            if (stickyHeaderHeight == 0) {
+                linearLayoutHolder.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        stickyHeaderHeight = linearLayoutHolder.getMeasuredHeight();
+                        boxImageView.getLayoutParams().height = stickyHeaderHeight;
+                        boxImageView.requestLayout();
+                    }
+                });
+            } else {
+                boxImageView.getLayoutParams().height = stickyHeaderHeight;
+                boxImageView.requestLayout();
+            }
+
+
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);
             } else {

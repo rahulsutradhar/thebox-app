@@ -3,8 +3,6 @@ package one.thebox.android.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +20,6 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
-import one.thebox.android.adapter.SwapAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -36,9 +33,6 @@ public class MyBoxesFragment extends Fragment {
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
     private ProgressBar progressBar;
-    private BottomSheetBehavior bottomSheetBehavior;
-    private BottomSheetDialog bottomSheetDialog;
-    private SwapAdapter swapAdapter;
     private FloatingActionButton floatingActionButton;
 
     private RealmList<Box> boxes = new RealmList<>();
@@ -78,6 +72,13 @@ public class MyBoxesFragment extends Fragment {
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     private void initViews() {
