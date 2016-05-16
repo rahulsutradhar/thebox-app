@@ -93,35 +93,84 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/button_add"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/circular_drawable"
-                        android:gravity="center"
-                        android:text="+"
-                        android:textColor="@color/primary_text_color" />
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/no_of_item_selected"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="8dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="8dp"
-                        android:text="0"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="12dp" />
+                        <LinearLayout
+                            android:id="@+id/holder_add_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/grey_borders"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/button_subtract"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/circular_drawable"
-                        android:gravity="center"
-                        android:text="-"
-                        android:textColor="@color/primary_text_color" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:text="Add"
+                                android:textColor="@color/dim_gray"
+                                android:textSize="@dimen/text_medium1" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:background="@color/dim_gray" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="8dp"
+                                android:text="+"
+                                android:textColor="@color/dim_gray"
+                                android:textSize="@dimen/text_medium1" />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/holder_adjust_quantity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/button_add"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/circular_drawable"
+                                android:gravity="center"
+                                android:text="+"
+                                android:textColor="@color/primary_text_color" />
+
+                            <TextView
+                                android:id="@+id/no_of_item_selected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="8dp"
+                                android:paddingLeft="12dp"
+                                android:paddingRight="12dp"
+                                android:paddingTop="8dp"
+                                android:text="0"
+                                android:textColor="@color/primary_text_color"
+                                android:textSize="12dp" />
+
+                            <TextView
+                                android:id="@+id/button_subtract"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/circular_drawable"
+                                android:gravity="center"
+                                android:text="-"
+                                android:textColor="@color/primary_text_color" />
+
+                        </LinearLayout>
+
+                    </FrameLayout>
 
 
                     <LinearLayout

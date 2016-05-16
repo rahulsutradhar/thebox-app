@@ -212,14 +212,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getItemConfigById(0));
         }
         searchedItemViewHolder.setViews(boxItems.get(position), position, false);
+        searchedItemViewHolder.addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addItemToBox(position);
+            }
+        });
         searchedItemViewHolder.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (boxItems.get(position).getUserItemId() == 0) {
-                    addItemToBox(position);
-                } else {
-                    updateQuantity(position, boxItems.get(position).getQuantity() + 1);
-                }
+                updateQuantity(position, boxItems.get(position).getQuantity() + 1);
             }
         });
         searchedItemViewHolder.subtractButton.setOnClickListener(new View.OnClickListener() {
@@ -276,6 +278,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView productName, productBrand, size, savings;
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
+        private LinearLayout addButtonViewHolder, updateQuantityViewHolder;
 
         public SearchedItemViewHolder(View itemView) {
             super(itemView);
@@ -292,6 +295,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
             savings = (TextView) itemView.findViewById(R.id.text_view_savings);
             savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
+            addButtonViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_add_button);
+            updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
         }
 
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
@@ -348,7 +353,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getQuantity() > 0) {
                 setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
+                addButtonViewHolder.setVisibility(View.GONE);
+                updateQuantityViewHolder.setVisibility(View.VISIBLE);
             } else {
+                addButtonViewHolder.setVisibility(View.VISIBLE);
+                updateQuantityViewHolder.setVisibility(View.GONE);
                 savingHolder.setVisibility(View.GONE);
             }
             productName.setText(boxItem.getTitle());
