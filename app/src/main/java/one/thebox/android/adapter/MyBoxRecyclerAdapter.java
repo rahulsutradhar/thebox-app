@@ -256,7 +256,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             }
 
             public void setViewHolder(Category category) {
-                categoryNameTextView.setText(category.getTitle());
+                if (isSearchDetailItemFragment) {
+                    categoryNameTextView.setText(category.getTitle());
+                } else {
+                    categoryNameTextView.setText("Add " + category.getTitle());
+                }
                 noOfItems.setText(category.getNoOfItems() + " Items");
                 Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
             }

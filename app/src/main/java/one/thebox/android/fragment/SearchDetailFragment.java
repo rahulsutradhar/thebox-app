@@ -166,7 +166,7 @@ public class SearchDetailFragment extends BaseFragment {
                         getCategoryDetail();
                     }
                 } else {
-                    setupViewPagerAndTabsMyBox();
+                    getExploreDetails();
                 }
             }
         }
