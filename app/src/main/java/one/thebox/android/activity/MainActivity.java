@@ -29,9 +29,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.ExploreItem;
@@ -121,27 +118,6 @@ public class MainActivity extends BaseActivity implements
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
-    }
-
-    private void RealmWriteQuery() {
-        // realm async write example
-        User user = new User(PrefUtils.getUser(this));
-        Realm realm = MyApplication.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(user);
-        realm.commitTransaction();
-        realmReadQuery();
-
-    }
-
-    private void realmReadQuery() {
-   /*     RealmConfiguration realmConfig = new RealmConfiguration.Builder(this)
-                .deleteRealmIfMigrationNeeded().schemaVersion(1).build();
-        Realm realm = Realm.getInstance(realmConfig);*/
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<User> query = realm.where(User.class).equalTo(User.FIELD_USER_ID, PrefUtils.getUser(this).getUserId());
-        RealmResults<User> users = query.findAll();
-        // Log.d("Realm", CoreGsonUtils.toJson(users.get(0)));
     }
 
     private void setupNavigationDrawer() {
@@ -435,7 +411,6 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        RealmWriteQuery();
     }
 
     @Override

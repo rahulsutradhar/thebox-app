@@ -29,12 +29,13 @@ import retrofit2.Response;
 
 public class MyBoxesFragment extends Fragment {
 
+    //private LinearLayout stickyHolder;
+    int totalScroll = 0;
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
     private ProgressBar progressBar;
     private FloatingActionButton floatingActionButton;
-
     private RealmList<Box> boxes = new RealmList<>();
 
     public MyBoxesFragment() {
@@ -67,18 +68,28 @@ public class MyBoxesFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
+        final int scrollingItemNumber = 0;
+       /* stickyHolder.setVisibility(View.GONE);
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
                 super.onScrolled(recyclerView, dx, dy);
+                totalScroll = totalScroll + dy;
+                if (totalScroll > myBoxRecyclerAdapter.getStickyHeaderHeight()) {
+                    Log.d("MyBox", String.valueOf(linearLayoutManager.findViewByPosition(scrollingItemNumber).getMeasuredHeight()));
+                    stickyHolder.setVisibility(View.VISIBLE);
+                } else {
+                    if (myBoxRecyclerAdapter.getStickyHeaderHeight() != 0) {
+                        stickyHolder.setAlpha((float) totalScroll / (float) myBoxRecyclerAdapter.getStickyHeaderHeight());
+                    }
+                }
             }
-        });
+        });*/
     }
 
     private void initViews() {
@@ -91,6 +102,9 @@ public class MyBoxesFragment extends Fragment {
                 startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
             }
         });
+/*
+        stickyHolder = (LinearLayout) rootLayout.findViewById(R.id.holder);
+*/
     }
 
     @Override

@@ -2,8 +2,10 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Box> boxes;
     private int stickyHeaderHeight = 0;
+    private SparseArray<Integer> boxHeights = new SparseArray<>();
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -48,6 +51,22 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
+    }
+
+    public int getStickyHeaderHeight() {
+        return stickyHeaderHeight;
+    }
+
+    public void setStickyHeaderHeight(int stickyHeaderHeight) {
+        this.stickyHeaderHeight = stickyHeaderHeight;
+    }
+
+    public SparseArray<Integer> getBoxHeights() {
+        return boxHeights;
+    }
+
+    public void setBoxHeights(SparseArray<Integer> boxHeights) {
+        this.boxHeights = boxHeights;
     }
 
     @Override
@@ -297,6 +316,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private LinearLayoutManager verticalLinearLayoutManager;
         private LinearLayout emptyBoxLayout;
         private LinearLayout linearLayoutHolder;
+        private CardView parentLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -310,6 +330,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
             this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
             this.linearLayoutHolder = (LinearLayout) itemView.findViewById(R.id.holder);
+            this.parentLayout = (CardView) itemView.findViewById(R.id.parent_layout);
         }
 
         public void setViews(Box box) {
@@ -364,6 +385,13 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
                 this.emptyBoxLayout.setVisibility(View.GONE);
             }
+            parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    int height = parentLayout.getMeasuredHeight();
+                    boxHeights.put(getAdapterPosition() + 1, height);
+                }
+            });
         }
     }
 }
