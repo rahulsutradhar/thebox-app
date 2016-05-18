@@ -117,7 +117,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);
     }
 
-
     @Override
     public void onOffsetChange(int offset, int dOffset) {
         proceedToPayment.setTranslationY(-offset);

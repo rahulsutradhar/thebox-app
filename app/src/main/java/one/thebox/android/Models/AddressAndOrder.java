@@ -8,10 +8,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
+import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 29-04-2016.
@@ -23,6 +25,7 @@ public class AddressAndOrder implements Serializable {
     private int orderId;
     @SerializedName("date")
     private Date oderDate;
+    private User user;
 
     private transient Address address;
     private transient Order order;
@@ -30,6 +33,7 @@ public class AddressAndOrder implements Serializable {
     public AddressAndOrder(int addressId, int orderId) {
         this.addressId = addressId;
         this.orderId = orderId;
+        this.user = PrefUtils.getUser(MyApplication.getInstance());
     }
 
     public static String getDateString(Date date) {
@@ -90,11 +94,13 @@ public class AddressAndOrder implements Serializable {
     }
 
     public Address getAddress() {
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Address> query = realm.where(Address.class)
-                .equalTo(Address.FIELD_ID, addressId);
-        RealmResults<Address> realmResults = query.findAll();
-        return realmResults.get(0);
+        RealmList<Address> addresses = user.getAddresses();
+        for (Address address : addresses) {
+            if (address.getId() == addressId) {
+                return address;
+            }
+        }
+        return null;
     }
 
     public Order getOrder() {
