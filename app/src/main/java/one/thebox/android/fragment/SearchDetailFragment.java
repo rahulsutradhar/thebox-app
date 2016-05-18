@@ -1,8 +1,10 @@
 package one.thebox.android.fragment;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -28,6 +30,7 @@ import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -43,7 +46,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SearchDetailFragment extends BaseFragment {
+public class SearchDetailFragment extends BaseFragment implements AppBarObserver.OnOffsetChangeListener {
 
     public static final String EXTRA_MY_BOX_CATEGORIES_ID = "my_box_category_click_event";
     public static final String EXTRA_CLICK_POSITION = "extra_click_position";
@@ -156,6 +159,7 @@ public class SearchDetailFragment extends BaseFragment {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
+            setupAppBarObserver();
             if (catIds != null && !catIds.isEmpty()) {
                 setupViewPagerAndTabsMyBox();
             } else {
@@ -262,9 +266,9 @@ public class SearchDetailFragment extends BaseFragment {
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
-                            userItems.addAll(response.body().getMySearchItems());
-                            userItems.addAll(response.body().getMyNonSearchedItems());
-                            boxItems.addAll(response.body().getSearchedItems());
+                            userItems.add(response.body().getMySearchItem());
+                            boxItems.add(response.body().getSearchedItem());
+                            boxItems.addAll(response.body().getNormalItems());
                             categories.add(response.body().getSearchedCategory());
                             categories.addAll(response.body().getRestCategories());
                             setupViewPagerAndTabs();
@@ -366,5 +370,21 @@ public class SearchDetailFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
+    }
+
+    @Override
+    public void onOffsetChange(int offset, int dOffset) {
+        floatingActionButton.setTranslationY(-offset);
+    }
+
+    private void setupAppBarObserver() {
+        AppBarObserver appBarObserver;
+        Activity activity = getActivity();
+        AppBarLayout appBarLayout = (AppBarLayout) activity
+                .findViewById(R.id.app_bar_layout);
+        if (appBarLayout != null) {
+            appBarObserver = AppBarObserver.observe(appBarLayout);
+            appBarObserver.addOffsetChangeListener(this);
+        }
     }
 }

@@ -1,7 +1,9 @@
 package one.thebox.android.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,13 +21,14 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 
 
-public class UpComingOrderFragment extends Fragment implements View.OnClickListener {
+public class UpComingOrderFragment extends Fragment implements View.OnClickListener, AppBarObserver.OnOffsetChangeListener {
 
     private static final String EXTRA_ORDER_ARRAY = "extra_order_array";
     ArrayList<Integer> orderIds = new ArrayList<>();
@@ -81,10 +84,11 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_my_orders, container, false);
+        rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
         initViews();
         initVariables();
         setupRecyclerView();
+        setupAppBarObserver();
         return rootView;
     }
 
@@ -139,5 +143,21 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void openSelectAddressActivity() {
         startActivity(ConfirmAddressActivity.getInstance(getActivity(), ordersItemAdapter.getSelectedOrders()));
+    }
+
+    @Override
+    public void onOffsetChange(int offset, int dOffset) {
+        buttonSelectAndPay.setTranslationY(-offset);
+    }
+
+    private void setupAppBarObserver() {
+        AppBarObserver appBarObserver;
+        Activity activity = getActivity();
+        AppBarLayout appBarLayout = (AppBarLayout) activity
+                .findViewById(R.id.app_bar_layout);
+        if (appBarLayout != null) {
+            appBarObserver = AppBarObserver.observe(appBarLayout);
+            appBarObserver.addOffsetChangeListener(this);
+        }
     }
 }

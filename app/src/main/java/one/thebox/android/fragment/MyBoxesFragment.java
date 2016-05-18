@@ -1,8 +1,10 @@
 package one.thebox.android.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +20,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
@@ -27,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyBoxesFragment extends Fragment {
+public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     //private LinearLayout stickyHolder;
     int totalScroll = 0;
@@ -37,6 +40,7 @@ public class MyBoxesFragment extends Fragment {
     private ProgressBar progressBar;
     private FloatingActionButton floatingActionButton;
     private RealmList<Box> boxes = new RealmList<>();
+    private AppBarObserver appBarObserver;
 
     public MyBoxesFragment() {
 
@@ -50,6 +54,7 @@ public class MyBoxesFragment extends Fragment {
             this.rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
             initVariables();
             initViews();
+            setupAppBarObserver();
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
             }
@@ -66,6 +71,17 @@ public class MyBoxesFragment extends Fragment {
             boxes.addAll(realmResults.subList(0, realmResults.size()));
         }
     }
+
+    private void setupAppBarObserver() {
+        Activity activity = getActivity();
+        AppBarLayout appBarLayout = (AppBarLayout) activity
+                .findViewById(R.id.app_bar_layout);
+        if (appBarLayout != null) {
+            appBarObserver = AppBarObserver.observe(appBarLayout);
+            appBarObserver.addOffsetChangeListener(this);
+        }
+    }
+
 
     private void setupRecyclerView() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -185,5 +201,10 @@ public class MyBoxesFragment extends Fragment {
             });
         }
 
+    }
+
+    @Override
+    public void onOffsetChange(int offset, int dOffset) {
+        floatingActionButton.setTranslationY(-offset);
     }
 }

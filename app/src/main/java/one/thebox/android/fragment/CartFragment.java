@@ -1,6 +1,8 @@
 package one.thebox.android.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,12 +20,13 @@ import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.UserItemRecyclerAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 
-public class CartFragment extends Fragment {
+public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     private static final String EXTRA_USER_ITEMS_ARRAY_LIST = "user_items_array_list";
     ArrayList<Integer> orderIds = new ArrayList<>();
@@ -32,6 +35,7 @@ public class CartFragment extends Fragment {
     private TextView proceedToPayment;
     private UserItemRecyclerAdapter userItemRecyclerAdapter;
     private View rootView;
+    private TextView emptyCartText;
 
     public CartFragment() {
     }
@@ -80,6 +84,7 @@ public class CartFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         initViews();
         setupRecyclerView();
+        setupAppBarObserver();
         return rootView;
     }
 
@@ -87,6 +92,13 @@ public class CartFragment extends Fragment {
         RealmList<UserItem> userItems = new RealmList<>();
         for (Order order : orders) {
             userItems.addAll(order.getUserItems());
+        }
+        if (userItems.isEmpty()) {
+            emptyCartText.setVisibility(View.VISIBLE);
+            proceedToPayment.setVisibility(View.GONE);
+        } else {
+            emptyCartText.setVisibility(View.GONE);
+            proceedToPayment.setVisibility(View.VISIBLE);
         }
         userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), userItems, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -102,7 +114,23 @@ public class CartFragment extends Fragment {
                 startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders));
             }
         });
+        emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);
     }
 
 
+    @Override
+    public void onOffsetChange(int offset, int dOffset) {
+        proceedToPayment.setTranslationY(-offset);
+    }
+
+    private void setupAppBarObserver() {
+        AppBarObserver appBarObserver;
+        Activity activity = getActivity();
+        AppBarLayout appBarLayout = (AppBarLayout) activity
+                .findViewById(R.id.app_bar_layout);
+        if (appBarLayout != null) {
+            appBarObserver = AppBarObserver.observe(appBarLayout);
+            appBarObserver.addOffsetChangeListener(this);
+        }
+    }
 }

@@ -154,14 +154,12 @@ public class SearchDetailItemsFragment extends Fragment {
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
 
                         if (response.body() != null) {
-                            if (response.body().getSearchedItems() != null && !response.body().getSearchedItems().isEmpty()) {
-                                userItems.addAll(response.body().getMySearchItems());
-                                userItems.addAll(response.body().getMyNonSearchedItems());
-                                boxItems.addAll(response.body().getSearchedItems());
-                                categories.add(response.body().getSearchedCategory());
-                                categories.addAll(response.body().getRestCategories());
-                                setupRecyclerView();
-                            }
+                            userItems.add(response.body().getMySearchItem());
+                            boxItems.add(response.body().getSearchedItem());
+                            boxItems.addAll(response.body().getNormalItems());
+                            categories.add(response.body().getSearchedCategory());
+                            categories.addAll(response.body().getRestCategories());
+                            setupRecyclerView();
                         }
                     }
 

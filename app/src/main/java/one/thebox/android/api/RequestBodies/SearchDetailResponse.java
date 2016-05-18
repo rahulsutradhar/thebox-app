@@ -3,6 +3,7 @@ package one.thebox.android.api.RequestBodies;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.BoxItem;
@@ -16,17 +17,21 @@ import one.thebox.android.api.ApiResponse;
 public class SearchDetailResponse extends ApiResponse implements Serializable {
 
     @SerializedName("search_items")
-    private List<BoxItem> searchedItems;
+    private BoxItem searchedItem;
     @SerializedName("my_search_items")
-    private List<UserItem> mySearchItems;
-    @SerializedName("my_non_searched_items")
-    private List<UserItem> myNonSearchedItems;
+    private UserItem mySearchItem;
     @SerializedName("searched_category")
     private Category searchedCategory;
     @SerializedName("rest_of_the_categories_in_box")
     private List<Category> restCategories;
     @SerializedName("box_name")
     private String boxName;
+    @SerializedName("normal_items")
+    private ArrayList<BoxItem> normalItems;
+
+    public ArrayList<BoxItem> getNormalItems() {
+        return normalItems;
+    }
 
     public String getBoxName() {
         return boxName;
@@ -36,28 +41,20 @@ public class SearchDetailResponse extends ApiResponse implements Serializable {
         this.boxName = boxName;
     }
 
-    public List<BoxItem> getSearchedItems() {
-        return searchedItems;
+    public BoxItem getSearchedItem() {
+        return searchedItem;
     }
 
-    public void setSearchedItems(List<BoxItem> searchedItems) {
-        this.searchedItems = searchedItems;
+    public void setSearchedItem(BoxItem searchedItem) {
+        this.searchedItem = searchedItem;
     }
 
-    public List<UserItem> getMySearchItems() {
-        return mySearchItems;
+    public UserItem getMySearchItem() {
+        return mySearchItem;
     }
 
-    public void setMySearchItems(List<UserItem> mySearchItems) {
-        this.mySearchItems = mySearchItems;
-    }
-
-    public List<UserItem> getMyNonSearchedItems() {
-        return myNonSearchedItems;
-    }
-
-    public void setMyNonSearchedItems(List<UserItem> myNonSearchedItems) {
-        this.myNonSearchedItems = myNonSearchedItems;
+    public void setMySearchItem(UserItem mySearchItem) {
+        this.mySearchItem = mySearchItem;
     }
 
     public Category getSearchedCategory() {
