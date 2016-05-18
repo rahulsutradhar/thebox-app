@@ -266,7 +266,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
+                            if (response.body().getMySearchItem().getId() != 0)
                             userItems.add(response.body().getMySearchItem());
+                            if (response.body().getSearchedItem().getId() != 0)
                             boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
                             categories.add(response.body().getSearchedCategory());
