@@ -24,13 +24,16 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
+import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class UpComingOrderFragment extends Fragment implements View.OnClickListener, AppBarObserver.OnOffsetChangeListener {
 
-    private static final String EXTRA_ORDER_ARRAY = "extra_order_array";
     ArrayList<Integer> orderIds = new ArrayList<>();
     private View rootView;
     private RecyclerView recyclerView;
@@ -42,38 +45,16 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     public UpComingOrderFragment() {
     }
 
-    public static UpComingOrderFragment newInstance(ArrayList<Order> orders) {
+    public static UpComingOrderFragment newInstance() {
         UpComingOrderFragment fragment = new UpComingOrderFragment();
-        Bundle args = new Bundle();
+      /*  Bundle args = new Bundle();
         ArrayList<Integer> orderIds = new ArrayList<>();
         for (Order order : orders) {
             orderIds.add(order.getId());
         }
         args.putString(EXTRA_ORDER_ARRAY, CoreGsonUtils.toJson(orderIds));
-        fragment.setArguments(args);
+        fragment.setArguments(args);*/
         return fragment;
-    }
-
-    private void initVariables() {
-        orderIds = CoreGsonUtils.fromJsontoArrayList(
-                getArguments().getString(EXTRA_ORDER_ARRAY), Integer.class);
-        if (orderIds.isEmpty()) {
-            return;
-        }
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, 0);
-        for (int i = 0; i < orderIds.size(); i++) {
-            if (orderIds.size() - 1 == i) {
-                query.equalTo(Order.FIELD_ID, orderIds.get(i));
-            } else {
-                query.equalTo(Order.FIELD_ID, orderIds.get(i)).or();
-            }
-        }
-        RealmResults<Order> realmResults = query.findAll();
-        for (Order order : realmResults) {
-            orders.add(order);
-        }
     }
 
     @Override
@@ -88,6 +69,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         initViews();
         initVariables();
         setupRecyclerView();
+        getAllOrders();
         setupAppBarObserver();
         return rootView;
     }
@@ -143,6 +125,68 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void openSelectAddressActivity() {
         startActivity(ConfirmAddressActivity.getInstance(getActivity(), ordersItemAdapter.getSelectedOrders()));
+    }
+
+    public void getAllOrders() {
+        MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<OrdersApiResponse>() {
+                             @Override
+                             public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
+                                 if (response.body() != null) {
+                                     if (response.body().isSuccess()) {
+                                         if (!orders.equals(response.body().getOrders())) {
+                                             orders.clear();
+                                             for (int i = 0; i < response.body().getOrders().size(); i++) {
+                                                 if (!response.body().getOrders().get(i).isCart())
+                                                     orders.add(response.body().getOrders().get(i));
+                                             }
+                                             storeToRealm();
+                                             setupRecyclerView();
+                                         }
+                                     }
+                                 }
+                             }
+
+                             @Override
+                             public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+                                /* progressBar.setVisibility(View.GONE);
+                                 holder.setVisibility(View.VISIBLE);*/
+                             }
+                         }
+
+                );
+    }
+
+    private void storeToRealm() {
+        final Realm superRealm = MyApplication.getRealm();
+        for (final Order order : orders) {
+            superRealm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.copyToRealmOrUpdate(order);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
+    private void initVariables() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class);
+        RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
+        for (int i = 0; i < realmResults.size(); i++) {
+            orders.add(realmResults.get(i));
+        }
     }
 
     @Override

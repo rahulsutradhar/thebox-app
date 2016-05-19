@@ -25,6 +25,7 @@ import java.util.Calendar;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ItemAddEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ItemConfig;
@@ -91,7 +92,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                 boxItems.get(position).setSuggestedCategory(suggestedCategories);
-                                // CustomToast.show(mContext, "Total Savings: 300 Rs per month");
+                                CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 notifyItemChanged(position);
                                 int count = 0;
                                 for (int i = 0; i < boxItems.size(); i++) {
@@ -131,6 +132,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         itemConfigs.get(i).setPrice((int) (itemConfigs.get(i).getPrice() * ((float) quantity / (float) prevQuantity)));
                                     }
                                     boxItems.get(position).setItemConfigs(itemConfigs);
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                } else {
+                                    CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
                                 }
 
                                 //boxItems.get()
@@ -259,7 +263,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return boxItems.size() + userItems.size() - 1;
+        return boxItems.size() + userItems.size();
     }
 
     @Override
@@ -518,7 +522,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Picasso.with(mContext).load(itemConfig.getPhotoUrl()).into(productImageView);
         }
 
-        public void addItemToBox(final int position) {
+        public void addItemToBox(final int position) throws IllegalStateException {
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
@@ -532,6 +536,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 if (response.body().isSuccess()) {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     notifyItemChanged(position);
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 } else {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
@@ -546,7 +551,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void updateQuantity(final int position, final int quantity) {
+        public void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
@@ -556,7 +561,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     int prevQuantity = userItems.get(position).getQuantity();
-                                    userItems.get(position).setQuantity(quantity);
                                     if (quantity >= 1) {
                                         RealmList<ItemConfig> itemConfigs = userItems.get(position).getBoxItem().getItemConfigs();
                                         for (int i = 0; i < itemConfigs.size(); i++) {
@@ -564,7 +568,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         }
                                         BoxItem boxItem = userItems.get(position).getBoxItem();
                                         boxItem.setItemConfigs(itemConfigs);
+                                        userItems.get(position).setQuantity(quantity);
                                         userItems.get(position).setBoxItem(boxItem);
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    } else {
+                                        CartHelper.removeUserItem(userItems.get(position).getId());
                                     }
                                     notifyItemChanged(getAdapterPosition());
                                     int count = 0;

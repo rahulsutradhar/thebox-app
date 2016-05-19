@@ -17,6 +17,7 @@ import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.AdjustDeliveryResponse;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
+import one.thebox.android.api.Responses.CartResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.Responses.ExploreItemResponse;
@@ -142,4 +143,7 @@ public interface APIService {
     @GET("get_delay_delivery_options")
     Call<AdjustDeliveryResponse> getAdjustDeliveryOrders(@Header("authtoken") String authToken,
                                                          @Query("useritem[id]") int userItemId);
+
+    @GET("getmycart")
+    Call<CartResponse> getMyCart(@Header("authtoken") String authToken);
 }

@@ -4,17 +4,17 @@ package one.thebox.android.Events;
  * Created by Ajeet kumar Meena on 02-05-2016.
  */
 public class TabEvent {
-    private int tabNo;
+    int numberOfItemsInCart;
 
-    public TabEvent(int tabNo) {
-        this.tabNo = tabNo;
+    public TabEvent(int numberOfItemsInCart) {
+        this.numberOfItemsInCart = numberOfItemsInCart;
     }
 
-    public int getTabNo() {
-        return tabNo;
+    public int getNumberOfItemsInCart() {
+        return numberOfItemsInCart;
     }
 
-    public void setTabNo(int tabNo) {
-        this.tabNo = tabNo;
+    public void setNumberOfItemsInCart(int numberOfItemsInCart) {
+        this.numberOfItemsInCart = numberOfItemsInCart;
     }
 }

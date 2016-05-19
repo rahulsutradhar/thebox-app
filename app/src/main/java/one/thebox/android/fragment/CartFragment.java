@@ -11,12 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -24,13 +20,11 @@ import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.UserItemRecyclerAdapter;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.PrefUtils;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
-    private static final String EXTRA_USER_ITEMS_ARRAY_LIST = "user_items_array_list";
-    ArrayList<Integer> orderIds = new ArrayList<>();
-    private RealmList<Order> orders = new RealmList<>();
+    private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
     private UserItemRecyclerAdapter userItemRecyclerAdapter;
@@ -40,35 +34,25 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public CartFragment() {
     }
 
-    public static CartFragment newInstance(ArrayList<Order> orders) {
+    public static CartFragment newInstance() {
         CartFragment fragment = new CartFragment();
-        Bundle args = new Bundle();
+      /*  Bundle args = new Bundle();
         ArrayList<Integer> orderIds = new ArrayList<>();
         for (Order order : orders) {
             orderIds.add(order.getId());
         }
         args.putString(EXTRA_USER_ITEMS_ARRAY_LIST, CoreGsonUtils.toJson(orderIds));
-        fragment.setArguments(args);
+        fragment.setArguments(args);*/
         return fragment;
     }
 
     private void initVariables() {
-        orderIds = CoreGsonUtils.fromJsontoArrayList(
-                getArguments().getString(EXTRA_USER_ITEMS_ARRAY_LIST), Integer.class);
-        if (orderIds.isEmpty()) {
-            return;
-        }
+        int cartId = PrefUtils.getUser(getActivity()).getCartId();
         Realm realm = MyApplication.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class)
+        Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
-                .equalTo(Order.FIELD_IS_CART, true);
-        for (int i = 0; i < orderIds.size(); i++) {
-            query.equalTo(Order.FIELD_ID, orderIds.get(i));
-        }
-        RealmResults<Order> realmResults = query.findAll();
-        for (Order order : realmResults) {
-            orders.add(order);
-        }
+                .equalTo(Order.FIELD_ID, cartId).findFirst();
+        this.order = realm.copyFromRealm(order);
     }
 
     @Override
@@ -89,18 +73,17 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     private void setupRecyclerView() {
-        RealmList<UserItem> userItems = new RealmList<>();
-        for (Order order : orders) {
-            userItems.addAll(order.getUserItems());
-        }
-        if (userItems.isEmpty()) {
+        if (order.getUserItems() == null || order.getUserItems().isEmpty()) {
             emptyCartText.setVisibility(View.VISIBLE);
-            proceedToPayment.setVisibility(View.GONE);
+            return;
         } else {
             emptyCartText.setVisibility(View.GONE);
-            proceedToPayment.setVisibility(View.VISIBLE);
         }
-        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), userItems, false);
+        RealmList<UserItem> userItems = new RealmList<>();
+        for (int i = 0; i < order.getUserItems().size(); i++) {
+            userItems.add(order.getUserItems().get(i));
+        }
+        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), order.getUserItems(), false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }
@@ -111,6 +94,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RealmList<Order> orders = new RealmList<>();
+                orders.add(order);
                 startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders));
             }
         });

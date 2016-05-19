@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
@@ -95,6 +96,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 storeToRealm(response.body().getOrders());
+                                CartHelper.clearCart();
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
