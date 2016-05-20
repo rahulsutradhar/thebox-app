@@ -25,12 +25,11 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Events.SearchEvent;
-import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
@@ -66,7 +65,7 @@ public class MainActivity extends BaseActivity implements
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
-    Call<SearchAutoCompleteResponse> call;
+    private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
@@ -93,7 +92,6 @@ public class MainActivity extends BaseActivity implements
     private FrameLayout searchViewHolder;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private User user;
-    private boolean isRegistered;
     private FragmentManager fragmentManager;
 
     @Override
@@ -118,6 +116,11 @@ public class MainActivity extends BaseActivity implements
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
+        initCart();
+    }
+
+    private void initCart() {
+        CartHelper.saveCartItemsIfRequire();
     }
 
     private void setupNavigationDrawer() {
@@ -324,7 +327,6 @@ public class MainActivity extends BaseActivity implements
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
     }
 
-
     @Override
     public void onClick(View view) {
         int id = view.getId();
@@ -398,16 +400,6 @@ public class MainActivity extends BaseActivity implements
                 });
     }
 
-    @Subscribe
-    public void onTabEvent(TabEvent tabEvent) {
-        switch (tabEvent.getTabNo()) {
-            case 1: {
-                navigationView.setCheckedItem(R.id.my_boxes);
-                break;
-            }
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -416,10 +408,6 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        if (!isRegistered) {
-            EventBus.getDefault().register(this);
-            isRegistered = true;
-        }
     }
 
     @Override

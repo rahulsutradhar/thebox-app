@@ -12,8 +12,10 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,6 +26,8 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnCategorySelectEvent;
+import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
@@ -69,6 +73,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds;
     private int clickPosition;
+    private TextView numberOfItemsInCart;
+    private FrameLayout fabHolder;
 
     public SearchDetailFragment() {
         // Required empty public constructor
@@ -140,6 +146,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         });
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
+        numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
+        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
+        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 
     @Override
@@ -266,8 +275,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
-                            userItems.add(response.body().getMySearchItem());
-                            boxItems.add(response.body().getSearchedItem());
+                            if (response.body().getMySearchItem().getId() != 0)
+                                userItems.add(response.body().getMySearchItem());
+                            if (response.body().getSearchedItem().getId() != 0)
+                                boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
                             categories.add(response.body().getSearchedCategory());
                             categories.addAll(response.body().getRestCategories());
@@ -374,7 +385,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        floatingActionButton.setTranslationY(-offset);
+        fabHolder.setTranslationY(-offset);
     }
 
     private void setupAppBarObserver() {
@@ -385,6 +396,16 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (appBarLayout != null) {
             appBarObserver = AppBarObserver.observe(appBarLayout);
             appBarObserver.addOffsetChangeListener(this);
+        }
+    }
+
+    @Subscribe
+    public void onTabEvent(TabEvent tabEvent) {
+        if (tabEvent.getNumberOfItemsInCart() > 0) {
+            numberOfItemsInCart.setVisibility(View.VISIBLE);
+            numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
+        } else {
+            numberOfItemsInCart.setVisibility(View.GONE);
         }
     }
 }

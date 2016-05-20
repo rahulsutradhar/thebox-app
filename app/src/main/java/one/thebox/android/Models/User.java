@@ -45,7 +45,8 @@ public class User extends RealmObject implements Serializable {
     private String localityCode;
     @SerializedName("auth_token")
     private String authToken;
-
+    @SerializedName("cart_id")
+    private int cartId;
     private RealmList<Address> addresses;
 
     public User() {
@@ -73,6 +74,14 @@ public class User extends RealmObject implements Serializable {
         this.name = name;
         this.localityCode = localityCode;
         this.authToken = authToken;
+    }
+
+    public int getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(int cartId) {
+        this.cartId = cartId;
     }
 
     public int getUserId() {

@@ -31,6 +31,8 @@ public class UserItem extends RealmObject implements Serializable {
     private int selectedConfigId;
     @SerializedName("item")
     private BoxItem boxItem;
+    @SerializedName("cart_id")
+    private int cartId;
 
     public UserItem() {
     }
@@ -45,6 +47,14 @@ public class UserItem extends RealmObject implements Serializable {
         this.stillSubscribed = stillSubscribed;
         this.selectedConfigId = selectedConfigId;
         this.boxItem = boxItem;
+    }
+
+    public int getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(int cartId) {
+        this.cartId = cartId;
     }
 
     @Override

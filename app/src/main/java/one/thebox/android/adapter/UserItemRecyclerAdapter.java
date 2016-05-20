@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ItemAddEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
@@ -302,7 +303,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
             Picasso.with(mContext).load(itemConfig.getPhotoUrl()).into(productImageView);
         }
 
-        public void addItemToBox(final int position) {
+        public void addItemToBox(final int position) throws IllegalStateException {
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
@@ -316,6 +317,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                 if (response.body().isSuccess()) {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     notifyItemChanged(position);
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 } else {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
@@ -330,7 +332,7 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void updateQuantity(final int position, final int quantity) {
+        public void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
@@ -340,7 +342,6 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     int prevQuantity = userItems.get(position).getQuantity();
-                                    userItems.get(position).setQuantity(quantity);
                                     if (quantity >= 1) {
                                         RealmList<ItemConfig> itemConfigs = userItems.get(position).getBoxItem().getItemConfigs();
                                         for (int i = 0; i < itemConfigs.size(); i++) {
@@ -348,7 +349,11 @@ public class UserItemRecyclerAdapter extends BaseRecyclerAdapter {
                                         }
                                         BoxItem boxItem = userItems.get(position).getBoxItem();
                                         boxItem.setItemConfigs(itemConfigs);
+                                        userItems.get(position).setQuantity(quantity);
                                         userItems.get(position).setBoxItem(boxItem);
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    } else {
+                                        CartHelper.removeUserItem(userItems.get(position).getId());
                                     }
                                     notifyItemChanged(getAdapterPosition());
                                     int count = 0;

@@ -12,12 +12,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -39,8 +46,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private View rootLayout;
     private ProgressBar progressBar;
     private FloatingActionButton floatingActionButton;
+    private TextView noOfItemsInCart;
     private RealmList<Box> boxes = new RealmList<>();
     private AppBarObserver appBarObserver;
+    private FrameLayout fabHolder;
+    private boolean isRegistered;
 
     public MyBoxesFragment() {
 
@@ -64,12 +74,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private void initVariables() {
-        if (!boxes.isEmpty()) {
-            Realm realm = MyApplication.getRealm();
-            RealmQuery<Box> query = realm.where(Box.class);
-            RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-            boxes.addAll(realmResults.subList(0, realmResults.size()));
-        }
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Box> query = realm.where(Box.class);
+        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+        boxes.addAll(realmResults.subList(0, realmResults.size()));
     }
 
     private void setupAppBarObserver() {
@@ -82,8 +90,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-
     private void setupRecyclerView() {
+        progressBar.setVisibility(View.GONE);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
@@ -115,9 +123,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
             }
         });
+        noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
+        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
 /*
         stickyHolder = (LinearLayout) rootLayout.findViewById(R.id.holder);
 */
@@ -134,17 +145,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onStart() {
         super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     @Override
@@ -162,7 +178,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
-                        progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
@@ -205,6 +220,16 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        floatingActionButton.setTranslationY(-offset);
+        fabHolder.setTranslationY(-offset);
+    }
+
+    @Subscribe
+    public void onTabEvent(TabEvent tabEvent) {
+        if (tabEvent.getNumberOfItemsInCart() > 0) {
+            noOfItemsInCart.setVisibility(View.VISIBLE);
+            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
+        } else {
+            noOfItemsInCart.setVisibility(View.GONE);
+        }
     }
 }

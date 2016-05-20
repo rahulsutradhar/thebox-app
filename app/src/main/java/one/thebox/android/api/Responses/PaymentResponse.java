@@ -3,8 +3,8 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Order;
 import one.thebox.android.api.ApiResponse;
 
@@ -17,7 +17,7 @@ public class PaymentResponse extends ApiResponse implements Serializable {
     @SerializedName("info")
     private String info;
     @SerializedName("orders_to_pay_for")
-    private ArrayList<Order> orders;
+    private RealmList<Order> orders;
 
     public boolean isSuccess() {
         return success;
@@ -27,7 +27,7 @@ public class PaymentResponse extends ApiResponse implements Serializable {
         return info;
     }
 
-    public ArrayList<Order> getOrders() {
+    public RealmList<Order> getOrders() {
         return orders;
     }
 }

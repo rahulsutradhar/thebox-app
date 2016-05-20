@@ -14,6 +14,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
@@ -92,6 +95,8 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                             if (response.body().isSuccess()) {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                storeToRealm(response.body().getOrders());
+                                CartHelper.clearCart();
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -105,5 +110,29 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     }
                 });
     }
+
+    private void storeToRealm(RealmList<Order> orders) {
+        final Realm superRealm = MyApplication.getRealm();
+        for (final Order order : orders) {
+            superRealm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    realm.copyToRealmOrUpdate(order);
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
 
 }
