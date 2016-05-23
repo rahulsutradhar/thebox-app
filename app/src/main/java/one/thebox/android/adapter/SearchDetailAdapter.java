@@ -52,6 +52,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private RealmList<UserItem> userItems = new RealmList<>();
     private Context mContext;
     private boolean isSearchDetailItemFragment;
+    private boolean shouldRemoveBoxItemOnEmptyQuantity;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -63,6 +64,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void setSearchDetailItemFragment(boolean searchDetailItemFragment) {
         isSearchDetailItemFragment = searchDetailItemFragment;
+    }
+
+    public boolean isShouldRemoveBoxItemOnEmptyQuantity() {
+        return shouldRemoveBoxItemOnEmptyQuantity;
+    }
+
+    public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
+        this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
     }
 
     public void setBoxItems(RealmList<BoxItem> boxItems, RealmList<UserItem> userItems) {
@@ -127,10 +136,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     }
                                     boxItems.get(position).setItemConfigs(itemConfigs);
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    notifyItemChanged(position);
                                 } else {
                                     CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
+                                    if (shouldRemoveBoxItemOnEmptyQuantity) {
+                                        boxItems.remove(position);
+                                        notifyItemRemoved(position);
+                                    } else {
+                                        notifyItemChanged(position);
+                                    }
                                 }
-                                notifyItemChanged(position);
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -342,12 +357,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty()) {
                 setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
-                addButtonViewHolder.setVisibility(View.GONE);
-                updateQuantityViewHolder.setVisibility(View.VISIBLE);
             } else {
+                savingHolder.setVisibility(View.GONE);
+            }
+            if (boxItem.getQuantity() == 0) {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
-                savingHolder.setVisibility(View.GONE);
+            } else {
+                addButtonViewHolder.setVisibility(View.GONE);
+                updateQuantityViewHolder.setVisibility(View.VISIBLE);
             }
             productName.setText(boxItem.getTitle());
             productBrand.setText(boxItem.getBrand());

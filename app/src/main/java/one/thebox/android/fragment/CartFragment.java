@@ -81,6 +81,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
         userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
         userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+        userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

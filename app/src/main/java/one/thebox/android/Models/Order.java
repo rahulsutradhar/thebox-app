@@ -103,7 +103,7 @@ public class Order extends RealmObject implements Serializable {
         RealmList<BoxItem> boxItems = new RealmList<>();
         for (UserItem userItem : userItems) {
             BoxItem boxItem = userItem.getBoxItem();
-            boxItem.setUserItemId(userItem.getUserId());
+            boxItem.setUserItemId(userItem.getId());
             boxItem.setQuantity(userItem.getQuantity());
             boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
             boxItems.add(boxItem);
