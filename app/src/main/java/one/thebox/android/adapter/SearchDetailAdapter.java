@@ -18,13 +18,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.squareup.picasso.Picasso;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.text.ParseException;
 import java.util.Calendar;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -98,13 +95,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 boxItems.get(position).setSuggestedCategory(suggestedCategories);
                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 notifyItemChanged(position);
-                                int count = 0;
-                                for (int i = 0; i < boxItems.size(); i++) {
-                                    if (boxItems.get(i).getQuantity() > 0) {
-                                        count++;
-                                    }
-                                    EventBus.getDefault().post(new ItemAddEvent(count));
-                                }
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
@@ -140,16 +130,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 } else {
                                     CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
                                 }
-
-                                //boxItems.get()
                                 notifyItemChanged(position);
-                                int count = 0;
-                                for (int i = 0; i < boxItems.size(); i++) {
-                                    if (boxItems.get(i).getQuantity() > 0) {
-                                        count++;
-                                    }
-                                }
-                                EventBus.getDefault().post(new ItemAddEvent(count));
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -530,7 +511,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
-                            new AddToMyBoxRequestBody.Item(userItems.get(position).getId()),
+                            new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
                             new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
                     .enqueue(new Callback<AddToMyBoxResponse>() {
                         @Override
@@ -539,6 +520,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    userItems.set(position, response.body().getUserItem());
                                     notifyItemChanged(position);
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 } else {
@@ -575,17 +557,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         userItems.get(position).setQuantity(quantity);
                                         userItems.get(position).setBoxItem(boxItem);
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                        notifyItemChanged(getAdapterPosition());
                                     } else {
                                         CartHelper.removeUserItem(userItems.get(position).getId());
+                                        userItems.remove(position);
+                                        notifyItemRemoved(position);
                                     }
-                                    notifyItemChanged(getAdapterPosition());
-                                    int count = 0;
-                                    for (int i = 0; i < userItems.size(); i++) {
-                                        if (userItems.get(i).getQuantity() > 0) {
-                                            count++;
-                                        }
-                                    }
-                                    EventBus.getDefault().post(new ItemAddEvent(count));
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
