@@ -18,7 +18,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
-import one.thebox.android.adapter.UserItemRecyclerAdapter;
+import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
 
@@ -27,7 +27,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
-    private UserItemRecyclerAdapter userItemRecyclerAdapter;
+    private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
     private TextView emptyCartText;
 
@@ -83,7 +83,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         for (int i = 0; i < order.getUserItems().size(); i++) {
             userItems.add(order.getUserItems().get(i));
         }
-        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), order.getUserItems(), false);
+        userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
+        userItemRecyclerAdapter.setBoxItems(null, userItems);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

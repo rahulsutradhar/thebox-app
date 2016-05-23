@@ -307,7 +307,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private RemainingCategoryAdapter remainingCategoryAdapter;
-        private UserItemRecyclerAdapter userItemRecyclerAdapter;
+        private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private RecyclerView recyclerViewUserItems;
         private TextView title, subTitle, savings;
@@ -377,7 +377,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                     this.emptyBoxLayout.setVisibility(View.GONE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-                    this.userItemRecyclerAdapter = new UserItemRecyclerAdapter(mContext, box.getAllItemInTheBox(), false);
+                    this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
+                    this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
                 }
 

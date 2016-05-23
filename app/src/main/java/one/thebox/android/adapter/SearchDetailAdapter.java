@@ -69,8 +69,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void setBoxItems(RealmList<BoxItem> boxItems, RealmList<UserItem> userItems) {
-        this.boxItems = boxItems;
-        this.userItems = userItems;
+        if (boxItems != null) {
+            this.boxItems = boxItems;
+        }
+        if (this.userItems != null) {
+            this.userItems = userItems;
+        }
     }
 
     public void addItemToBox(final int position) {
@@ -198,7 +202,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (holder instanceof SearchedItemViewHolder) {
             bindSearchViewHolder(holder, position);
         } else {
-            bindMyItemViewHolder(holder, position - boxItems.size() + 1);
+            bindMyItemViewHolder(holder, position - boxItems.size());
         }
     }
 
@@ -263,7 +267,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return boxItems.size() + userItems.size();
+        return (boxItems == null ? 0 : boxItems.size()) + (userItems == null ? 0 : userItems.size());
     }
 
     @Override

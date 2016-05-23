@@ -401,6 +401,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Subscribe
     public void onTabEvent(TabEvent tabEvent) {
+        if (getActivity() == null) {
+            return;
+        }
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             numberOfItemsInCart.setVisibility(View.VISIBLE);
             numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));

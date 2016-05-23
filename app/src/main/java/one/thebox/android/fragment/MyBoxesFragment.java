@@ -225,6 +225,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     @Subscribe
     public void onTabEvent(TabEvent tabEvent) {
+        if (getActivity() == null) {
+            return;
+        }
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
