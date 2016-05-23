@@ -358,7 +358,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public void setViews(BoxItem boxItem, int position, boolean shouldScrollToPosition) {
             setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-            if (boxItem.getQuantity() > 0) {
+            if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty()) {
                 setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
                 addButtonViewHolder.setVisibility(View.GONE);

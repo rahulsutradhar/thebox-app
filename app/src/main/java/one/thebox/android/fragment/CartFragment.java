@@ -14,7 +14,6 @@ import android.widget.TextView;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
@@ -79,12 +78,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         } else {
             emptyCartText.setVisibility(View.GONE);
         }
-        RealmList<UserItem> userItems = new RealmList<>();
-        for (int i = 0; i < order.getUserItems().size(); i++) {
-            userItems.add(order.getUserItems().get(i));
-        }
+
         userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
-        userItemRecyclerAdapter.setBoxItems(null, userItems);
+        userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }
