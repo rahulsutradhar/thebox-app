@@ -134,6 +134,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                                 getActivity().finish();
                                 MyApplication.getRealm().close();
                                 Realm.deleteRealm(MyApplication.getRealmConfiguration());
+                                MyApplication.setRealm(null);
 
 
                             }

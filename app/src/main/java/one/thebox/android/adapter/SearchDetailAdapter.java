@@ -53,6 +53,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context mContext;
     private boolean isSearchDetailItemFragment;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
+    private boolean hasUneditableUserItem;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -72,6 +73,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
         this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
+    }
+
+    public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
+        this.hasUneditableUserItem = hasUneditableUserItem;
     }
 
     public void setBoxItems(RealmList<BoxItem> boxItems, RealmList<UserItem> userItems) {

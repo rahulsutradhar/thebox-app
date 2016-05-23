@@ -1,14 +1,10 @@
 package one.thebox.android.ViewHelper;
 
 import android.app.Activity;
-import android.content.Context;
-import android.os.Handler;
 import android.support.design.widget.BottomSheetDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -33,7 +29,6 @@ import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.KeyboardVisibilityListener;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -81,7 +76,6 @@ public class AddressBottomSheet {
     private Locality localitySelected;
     private OnAddressAdded onAddressAdded;
     private Address address;
-    private boolean isKeyboardVisible = true;
     public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
@@ -282,13 +276,6 @@ public class AddressBottomSheet {
                 localitySelected = localities.get(position);
             }
         });
-        setKeyboardVisibilityListener(context, new KeyboardVisibilityListener() {
-            @Override
-            public void onKeyboardVisibilityChanged(boolean keyboardVisible) {
-                AddressBottomSheet.this.isKeyboardVisible = keyboardVisible;
-            }
-        });
-
     }
 
     private void initViews() {
@@ -301,25 +288,6 @@ public class AddressBottomSheet {
         primaryAddress = (CheckBox) bottomSheet.findViewById(R.id.check_box_primary_address);
         addButton = (TextView) bottomSheet.findViewById(R.id.button_add);
         progressBar.setVisibility(View.GONE);
-        if (android.os.Build.VERSION.SDK_INT >= 17) {
-            localityAutoCompleteTextView.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
-                @Override
-                public void onDismiss() {
-                    if (isKeyboardVisible) {
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(bottomSheet.getWindowToken(), 0);
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                localityAutoCompleteTextView.showDropDown();
-                            }
-                        }, 100);
-
-                    }
-                }
-            });
-        }
     }
 
     private void setAutoCompleteAdapter() {
@@ -327,29 +295,6 @@ public class AddressBottomSheet {
         localityAutoCompleteTextView.setAdapter(arrayAdapter);
     }
 
-    public void setKeyboardVisibilityListener(Activity activity, final KeyboardVisibilityListener keyboardVisibilityListener) {
-        final View contentView = activity.findViewById(android.R.id.content);
-        contentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int mPreviousHeight;
-
-            @Override
-            public void onGlobalLayout() {
-                int newHeight = contentView.getHeight();
-                if (mPreviousHeight != 0) {
-                    if (mPreviousHeight > newHeight) {
-                        // Height decreased: keyboard was shown
-                        keyboardVisibilityListener.onKeyboardVisibilityChanged(true);
-                    } else if (mPreviousHeight < newHeight) {
-                        // Height increased: keyboard was hidden
-                        keyboardVisibilityListener.onKeyboardVisibilityChanged(false);
-                    } else {
-                        // No change
-                    }
-                }
-                mPreviousHeight = newHeight;
-            }
-        });
-    }
 
     public interface OnAddressAdded {
         void onAddressAdded(Address address);
