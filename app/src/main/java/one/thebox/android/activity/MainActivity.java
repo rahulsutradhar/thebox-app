@@ -222,6 +222,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachExploreBoxes() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
@@ -234,6 +235,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachOrderFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.GONE);
@@ -245,6 +247,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyAccountFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -262,6 +265,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.GONE);
@@ -500,5 +504,11 @@ public class MainActivity extends BaseActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void clearBackStack() {
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 }

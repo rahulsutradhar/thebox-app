@@ -202,6 +202,9 @@ public class Order extends RealmObject implements Serializable {
 
     public String getItemString() {
         String itemString = "";
+        if (userItems == null || userItems.isEmpty()) {
+            return "Empty order";
+        }
         for (int i = 0; i < userItems.size(); i++) {
             if (i == 3) {
                 itemString = itemString.substring(0, itemString.length() - 2);
