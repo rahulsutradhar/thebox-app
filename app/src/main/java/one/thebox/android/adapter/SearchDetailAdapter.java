@@ -29,6 +29,7 @@ import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
@@ -319,7 +320,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             if (!shouldScrollToPosition) {
                 linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
             }

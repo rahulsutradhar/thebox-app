@@ -3,7 +3,7 @@
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#303F9F</color>
     <color name="primary_light">#C5CAE9</color>
-    <color name="accent">#FF4081</color>
+    <color name="accent">#F44336</color>
     <color name="text">#FFFFFF</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
@@ -17,7 +17,7 @@
     <color name="primary_text_color">#B7000000</color>
     <color name="primary_inverse_text_color">#B7FFFFFF</color>
     <color name="secondary_text_color">#8C000000</color>
-    <color name="brilliant_rose">#ff4da6</color>
+    <color name="brilliant_rose">#F44336</color>
     <color name="neon_carrot">#ffa64d</color>
     <color name="bistre">#323030</color>
     <color name="cornflower_blue">#4da6ff</color>

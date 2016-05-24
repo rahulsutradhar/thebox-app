@@ -74,17 +74,28 @@
                         android:id="@+id/button_change"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:text="Change"
+                        android:layout_marginLeft="8dp"
+                        android:text="@string/change_button"
                         android:textColor="@color/brilliant_rose"
-                        android:textSize="12sp" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="Repeats every"
+                    android:textColor="@color/primary_text_color"
+                    android:textSize="14sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view_frequency"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:scrollbars="horizontal" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
