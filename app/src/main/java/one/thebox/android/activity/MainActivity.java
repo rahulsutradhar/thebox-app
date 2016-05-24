@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,6 +37,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -49,6 +51,7 @@ import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -72,7 +75,7 @@ public class MainActivity extends BaseActivity implements
     private EditText searchView;
     private String query;
     private boolean callHasBeenCompleted = true;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
@@ -156,7 +159,7 @@ public class MainActivity extends BaseActivity implements
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
         searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
@@ -222,6 +225,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachExploreBoxes() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
@@ -234,6 +238,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachOrderFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.GONE);
@@ -245,6 +250,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyAccountFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -262,6 +268,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragment() {
+        clearBackStack();
         getToolbar().setSubtitle(null);
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.GONE);
@@ -345,12 +352,28 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
-            super.onBackPressed();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, 2000);
         }
     }
 
@@ -375,7 +398,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void getAllAddresses() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(this).show();
         MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
                 .enqueue(new Callback<GetAllAddressResponse>() {
                     @Override
@@ -500,5 +523,11 @@ public class MainActivity extends BaseActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void clearBackStack() {
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 }

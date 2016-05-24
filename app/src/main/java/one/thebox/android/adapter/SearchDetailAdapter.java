@@ -18,20 +18,19 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.squareup.picasso.Picasso;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.text.ParseException;
 import java.util.Calendar;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.ItemAddEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
@@ -55,6 +54,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private RealmList<UserItem> userItems = new RealmList<>();
     private Context mContext;
     private boolean isSearchDetailItemFragment;
+    private boolean shouldRemoveBoxItemOnEmptyQuantity;
+    private boolean hasUneditableUserItem;
+    private int currentPositionOfSuggestedCategory = -1;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -68,13 +70,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         isSearchDetailItemFragment = searchDetailItemFragment;
     }
 
+    public boolean isShouldRemoveBoxItemOnEmptyQuantity() {
+        return shouldRemoveBoxItemOnEmptyQuantity;
+    }
+
+    public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
+        this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
+    }
+
+    public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
+        this.hasUneditableUserItem = hasUneditableUserItem;
+    }
+
     public void setBoxItems(RealmList<BoxItem> boxItems, RealmList<UserItem> userItems) {
-        this.boxItems = boxItems;
-        this.userItems = userItems;
+        if (boxItems != null) {
+            this.boxItems = boxItems;
+        }
+        if (this.userItems != null) {
+            this.userItems = userItems;
+        }
     }
 
     public void addItemToBox(final int position) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                 new AddToMyBoxRequestBody(
                         new AddToMyBoxRequestBody.Item(boxItems.get(position).getId()),
@@ -93,14 +111,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                 boxItems.get(position).setSuggestedCategory(suggestedCategories);
                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem());
-                                notifyItemChanged(position);
-                                int count = 0;
-                                for (int i = 0; i < boxItems.size(); i++) {
-                                    if (boxItems.get(i).getQuantity() > 0) {
-                                        count++;
-                                    }
-                                    EventBus.getDefault().post(new ItemAddEvent(count));
+                                int temp = currentPositionOfSuggestedCategory;
+                                currentPositionOfSuggestedCategory = position;
+                                if (temp != -1) {
+                                    boxItems.get(temp).setSuggestedCategory(new RealmList<Category>());
+                                    notifyItemChanged(temp);
                                 }
+                                notifyItemChanged(position);
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
@@ -116,12 +133,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void updateQuantity(final int position, final int quantity) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(boxItems.get(position).getUserItemId(), quantity)))
                 .enqueue(new Callback<UpdateItemConfigResponse>() {
                     @Override
                     public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                        dialog.cancel();
+                        dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 int prevQuantity = boxItems.get(position).getQuantity();
@@ -133,19 +150,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     }
                                     boxItems.get(position).setItemConfigs(itemConfigs);
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    notifyItemChanged(position);
                                 } else {
                                     CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
-                                }
-
-                                //boxItems.get()
-                                notifyItemChanged(position);
-                                int count = 0;
-                                for (int i = 0; i < boxItems.size(); i++) {
-                                    if (boxItems.get(i).getQuantity() > 0) {
-                                        count++;
+                                    if (shouldRemoveBoxItemOnEmptyQuantity) {
+                                        boxItems.remove(position);
+                                        notifyItemRemoved(position);
+                                    } else {
+                                        boxItems.get(position).setUserItemId(0);
+                                        notifyItemChanged(position);
                                     }
                                 }
-                                EventBus.getDefault().post(new ItemAddEvent(count));
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -155,24 +170,24 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     @Override
                     public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
     }
 
     public void changeConfig(final int position, final int itemConfigId) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
                 (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getUserItemId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
     }
@@ -198,7 +213,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (holder instanceof SearchedItemViewHolder) {
             bindSearchViewHolder(holder, position);
         } else {
-            bindMyItemViewHolder(holder, position - boxItems.size() + 1);
+            bindMyItemViewHolder(holder, position - boxItems.size());
         }
     }
 
@@ -263,7 +278,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return boxItems.size() + userItems.size();
+        return (boxItems == null ? 0 : boxItems.size()) + (userItems == null ? 0 : userItems.size());
     }
 
     @Override
@@ -314,7 +329,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             if (!shouldScrollToPosition) {
                 linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
             }
@@ -354,15 +369,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public void setViews(BoxItem boxItem, int position, boolean shouldScrollToPosition) {
             setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-            if (boxItem.getQuantity() > 0) {
+            if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
                 setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
-                addButtonViewHolder.setVisibility(View.GONE);
-                updateQuantityViewHolder.setVisibility(View.VISIBLE);
             } else {
+                savingHolder.setVisibility(View.GONE);
+            }
+            if (boxItem.getQuantity() == 0) {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
-                savingHolder.setVisibility(View.GONE);
+            } else {
+                addButtonViewHolder.setVisibility(View.GONE);
+                updateQuantityViewHolder.setVisibility(View.VISIBLE);
             }
             productName.setText(boxItem.getTitle());
             productBrand.setText(boxItem.getBrand());
@@ -523,10 +541,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void addItemToBox(final int position) throws IllegalStateException {
-            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog =   new BoxLoader(mContext).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
-                            new AddToMyBoxRequestBody.Item(userItems.get(position).getId()),
+                            new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
                             new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
                     .enqueue(new Callback<AddToMyBoxResponse>() {
                         @Override
@@ -535,6 +553,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    userItems.set(position, response.body().getUserItem());
                                     notifyItemChanged(position);
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 } else {
@@ -552,12 +571,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void updateQuantity(final int position, final int quantity) throws IllegalStateException {
-            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog =   new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.cancel();
+                            dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     int prevQuantity = userItems.get(position).getQuantity();
@@ -571,17 +590,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         userItems.get(position).setQuantity(quantity);
                                         userItems.get(position).setBoxItem(boxItem);
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                        notifyItemChanged(getAdapterPosition());
                                     } else {
                                         CartHelper.removeUserItem(userItems.get(position).getId());
+                                        userItems.remove(position);
+                                        notifyItemRemoved(position);
                                     }
-                                    notifyItemChanged(getAdapterPosition());
-                                    int count = 0;
-                                    for (int i = 0; i < userItems.size(); i++) {
-                                        if (userItems.get(i).getQuantity() > 0) {
-                                            count++;
-                                        }
-                                    }
-                                    EventBus.getDefault().post(new ItemAddEvent(count));
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -591,7 +605,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                         @Override
                         public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.cancel();
+                            dialog.dismiss();
                         }
                     });
         }

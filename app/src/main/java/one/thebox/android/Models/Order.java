@@ -99,6 +99,18 @@ public class Order extends RealmObject implements Serializable {
         this.userItems = userItems;
     }
 
+    public RealmList<BoxItem> getBoxItemsObjectFromUserItem() {
+        RealmList<BoxItem> boxItems = new RealmList<>();
+        for (UserItem userItem : userItems) {
+            BoxItem boxItem = userItem.getBoxItem();
+            boxItem.setUserItemId(userItem.getId());
+            boxItem.setQuantity(userItem.getQuantity());
+            boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
+            boxItems.add(boxItem);
+        }
+        return boxItems;
+    }
+
     public int getId() {
         return id;
     }
@@ -190,6 +202,9 @@ public class Order extends RealmObject implements Serializable {
 
     public String getItemString() {
         String itemString = "";
+        if (userItems == null || userItems.isEmpty()) {
+            return "Empty order";
+        }
         for (int i = 0; i < userItems.size(); i++) {
             if (i == 3) {
                 itemString = itemString.substring(0, itemString.length() - 2);

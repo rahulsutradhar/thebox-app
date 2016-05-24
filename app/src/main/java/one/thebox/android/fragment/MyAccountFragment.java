@@ -17,6 +17,7 @@ import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.AddressesActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
@@ -123,7 +124,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                 break;
             }
             case R.id.button_sign_out: {
-                final MaterialDialog dialog = new MaterialDialog.Builder(getActivity()).progressIndeterminateStyle(true).progress(true, 0).show();
+                final BoxLoader dialog = new BoxLoader(getActivity()).show();
                 MyApplication.getAPIService().signOut(PrefUtils.getToken(getActivity()))
                         .enqueue(new Callback<ApiResponse>() {
                             @Override
@@ -134,6 +135,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                                 getActivity().finish();
                                 MyApplication.getRealm().close();
                                 Realm.deleteRealm(MyApplication.getRealmConfiguration());
+                                MyApplication.setRealm(null);
 
 
                             }

@@ -21,6 +21,7 @@
     <string name="view_items"><u>View Items</u></string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="change_button"><u>Change</u></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="change_size">Change Size</string>
     <string name="change_quantity">Change Quantity</string>

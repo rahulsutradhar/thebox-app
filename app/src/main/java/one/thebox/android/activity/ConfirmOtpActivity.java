@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
@@ -74,7 +75,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
         if (smsEvent.getMessage().contains("awesome")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             otp = Integer.parseInt(otpString);
-            final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog = new BoxLoader(this).show();
             MyApplication.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -127,7 +128,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -140,7 +141,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                                 PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
-                                                    final MaterialDialog dialog = new MaterialDialog.Builder(ConfirmOtpActivity.this).progressIndeterminateStyle(true).progress(true, 0).show();
+                                                    final BoxLoader dialog = new BoxLoader(ConfirmOtpActivity.this).show();
                                                     MyApplication.getAPIService().updateProfile(
                                                             PrefUtils.getToken(ConfirmOtpActivity.this), new StoreUserInfoRequestBody(
                                                                     new StoreUserInfoRequestBody.User
@@ -190,7 +191,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
 
             case R.id.button_resend: {
                 if (isSignUpActivity) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
@@ -204,7 +205,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                 }
                             });
                 } else {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {

@@ -115,13 +115,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ProgressBar
+            <pl.droidsonroids.gif.GifImageView
                 android:id="@+id/progress_bar"
+                android:src="@drawable/loader"
                 style="?android:attr/android:progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_gravity="right|bottom"
-                android:layout_marginBottom="22dp"
+
+                android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:padding="8dp" />

@@ -33,6 +33,7 @@ import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +46,7 @@ public class DelayDeliveryBottomSheet {
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheet;
     private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private AdjustDeliverySlotAdapter adjustDeliverySlotAdapter;
     private ArrayList<Order> nextOrder = new ArrayList<>();
     private ArrayList<Order> beforeNextDeliveryOrders = new ArrayList<>();
@@ -69,7 +70,7 @@ public class DelayDeliveryBottomSheet {
 
     public void initViews() {
         recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-        progressBar = (ProgressBar) bottomSheet.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) bottomSheet.findViewById(R.id.progress_bar);
     }
 
     public void setupRecyclerView() {
@@ -307,7 +308,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        final BoxLoader loader =   new BoxLoader(mContext).show();
                         MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
@@ -326,7 +327,7 @@ public class DelayDeliveryBottomSheet {
 
                                     @Override
                                     public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                        loader.cancel();
+                                        loader.dismiss();
                                     }
                                 });
                     }
@@ -354,7 +355,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        final BoxLoader loader =   new BoxLoader(context).show();
                         MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
@@ -373,7 +374,7 @@ public class DelayDeliveryBottomSheet {
 
                                     @Override
                                     public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                        loader.cancel();
+                                        loader.dismiss();
                                     }
                                 });
                     }

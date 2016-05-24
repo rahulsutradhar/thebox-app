@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
@@ -75,7 +76,7 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
 
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void submitMobileNumber() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(this).show();
         MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override

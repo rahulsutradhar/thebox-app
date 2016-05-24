@@ -21,7 +21,7 @@
         <item
             android:id="@+id/view_bill"
             android:checked="false"
-            android:title="My Orders" />
+            android:title="My Deliveries" />
 
     </group>
 </menu>

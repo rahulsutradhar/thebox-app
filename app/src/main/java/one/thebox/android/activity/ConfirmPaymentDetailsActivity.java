@@ -21,6 +21,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.PaymentDetailAdapter;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
@@ -85,7 +86,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     }
 
     private void pay() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(this).show();
         MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override

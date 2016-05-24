@@ -14,13 +14,14 @@ import android.widget.ProgressBar;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
+import pl.droidsonroids.gif.GifImageView;
 
 public class OrderTabFragment extends Fragment {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private View rootView;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private LinearLayout holder;
 
 
@@ -48,7 +49,7 @@ public class OrderTabFragment extends Fragment {
     private void initViews() {
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         holder = (LinearLayout) rootView.findViewById(R.id.holder);
     }
 

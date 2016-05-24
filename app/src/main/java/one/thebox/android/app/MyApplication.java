@@ -53,6 +53,10 @@ public class MyApplication extends Application {
         return realm;
     }
 
+    public static void setRealm(Realm realm) {
+        MyApplication.realm = realm;
+    }
+
     public static RealmConfiguration getRealmConfiguration() {
         if (realmConfiguration == null) {
             realmConfiguration = new RealmConfiguration.Builder(getInstance())

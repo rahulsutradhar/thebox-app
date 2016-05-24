@@ -14,11 +14,10 @@ import android.widget.TextView;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
-import one.thebox.android.adapter.UserItemRecyclerAdapter;
+import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
 
@@ -27,7 +26,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
-    private UserItemRecyclerAdapter userItemRecyclerAdapter;
+    private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
     private TextView emptyCartText;
 
@@ -75,15 +74,16 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private void setupRecyclerView() {
         if (order.getUserItems() == null || order.getUserItems().isEmpty()) {
             emptyCartText.setVisibility(View.VISIBLE);
+            proceedToPayment.setVisibility(View.GONE);
             return;
         } else {
             emptyCartText.setVisibility(View.GONE);
+            proceedToPayment.setVisibility(View.VISIBLE);
         }
-        RealmList<UserItem> userItems = new RealmList<>();
-        for (int i = 0; i < order.getUserItems().size(); i++) {
-            userItems.add(order.getUserItems().get(i));
-        }
-        userItemRecyclerAdapter = new UserItemRecyclerAdapter(getActivity(), order.getUserItems(), false);
+
+        userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
+        userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+        userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

@@ -33,6 +33,7 @@ import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,7 +45,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
     private TextView noOfItemsInCart;
     private RealmList<Box> boxes = new RealmList<>();
@@ -117,7 +118,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private void initViews() {
-        this.progressBar = (ProgressBar) rootLayout.findViewById(R.id.progress_bar);
+        this.progressBar = (GifImageView) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
         this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -225,6 +226,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     @Subscribe
     public void onTabEvent(TabEvent tabEvent) {
+        if (getActivity() == null) {
+            return;
+        }
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));

@@ -11,7 +11,7 @@ public class ItemConfig extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
-    @SerializedName("size")
+    @SerializedName("size_or_quantity")
     private int size;
     @SerializedName("size_unit")
     private String sizeUnit;

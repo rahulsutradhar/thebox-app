@@ -17,6 +17,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
@@ -99,7 +100,7 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                final BoxLoader loader =   new BoxLoader(mContext).show();
                 MyApplication.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(mContext),
                         new MergeSubscriptionRequest(userItem.getId(), orders.get(position).getId()))
                         .enqueue(new Callback<MergeSubscriptionResponse>() {

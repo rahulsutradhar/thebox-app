@@ -13,14 +13,14 @@ import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.adapter.UserItemRecyclerAdapter;
+import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 
 public class OrderItemsActivity extends BaseActivity {
 
     private static final String EXTRA_USER_ITEM_ARRAY_LIST = "user_item_array_list";
     private RecyclerView recyclerView;
-    private UserItemRecyclerAdapter userItemRecyclerAdapter;
+    private SearchDetailAdapter userItemRecyclerAdapter;
     private RealmList<UserItem> userItems = new RealmList<>();
     private int orderId;
 
@@ -54,7 +54,8 @@ public class OrderItemsActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        userItemRecyclerAdapter = new UserItemRecyclerAdapter(this, userItems, true);
+        userItemRecyclerAdapter = new SearchDetailAdapter(this);
+        userItemRecyclerAdapter.setBoxItems(null, userItems);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

@@ -43,6 +43,7 @@ import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,7 +64,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private int catId;
     private View rootView;
     private LinearLayout linearLayoutHolder;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
     private ArrayList<Category> categories = new ArrayList<>();
     private TabLayout tabLayout;
@@ -136,7 +137,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     private void initViews() {
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -401,6 +402,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Subscribe
     public void onTabEvent(TabEvent tabEvent) {
+        if (getActivity() == null) {
+            return;
+        }
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             numberOfItemsInCart.setVisibility(View.VISIBLE);
             numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
