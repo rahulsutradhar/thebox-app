@@ -28,6 +28,7 @@ import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.api.ApiResponse;
@@ -55,6 +56,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean isSearchDetailItemFragment;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
     private boolean hasUneditableUserItem;
+    private int currentPositionOfSuggestedCategory = -1;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -90,7 +92,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void addItemToBox(final int position) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                 new AddToMyBoxRequestBody(
                         new AddToMyBoxRequestBody.Item(boxItems.get(position).getId()),
@@ -109,6 +111,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                 boxItems.get(position).setSuggestedCategory(suggestedCategories);
                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                int temp = currentPositionOfSuggestedCategory;
+                                currentPositionOfSuggestedCategory = position;
+                                if (temp != -1) {
+                                    boxItems.get(temp).setSuggestedCategory(new RealmList<Category>());
+                                    notifyItemChanged(temp);
+                                }
                                 notifyItemChanged(position);
                             } else {
                                 Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -125,12 +133,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void updateQuantity(final int position, final int quantity) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(boxItems.get(position).getUserItemId(), quantity)))
                 .enqueue(new Callback<UpdateItemConfigResponse>() {
                     @Override
                     public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                        dialog.cancel();
+                        dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 int prevQuantity = boxItems.get(position).getQuantity();
@@ -161,24 +169,24 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     @Override
                     public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
     }
 
     public void changeConfig(final int position, final int itemConfigId) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(mContext).show();
         MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
                 (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getUserItemId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
 
                     @Override
                     public void onFailure(Call<ApiResponse> call, Throwable t) {
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
     }
@@ -360,7 +368,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public void setViews(BoxItem boxItem, int position, boolean shouldScrollToPosition) {
             setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
             noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-            if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty()) {
+            if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
                 setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
                 savingHolder.setVisibility(View.VISIBLE);
             } else {
@@ -532,7 +540,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void addItemToBox(final int position) throws IllegalStateException {
-            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog =   new BoxLoader(mContext).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
                             new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
@@ -562,12 +570,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void updateQuantity(final int position, final int quantity) throws IllegalStateException {
-            final MaterialDialog dialog = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog =   new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.cancel();
+                            dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     int prevQuantity = userItems.get(position).getQuantity();
@@ -596,7 +604,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                         @Override
                         public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.cancel();
+                            dialog.dismiss();
                         }
                     });
         }

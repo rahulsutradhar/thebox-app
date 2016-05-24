@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -63,7 +64,7 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
             case R.id.button_submit: {
 
                 if (isValidInfo() && hasChanges()) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService().updateProfile(
                             PrefUtils.getToken(this), new StoreUserInfoRequestBody(
                                     new StoreUserInfoRequestBody.User

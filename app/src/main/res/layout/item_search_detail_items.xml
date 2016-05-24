@@ -122,7 +122,9 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginLeft="12dp"
+                                android:layout_marginTop="8dp"
                                 android:text="Add"
                                 android:textColor="@color/dim_gray"
                                 android:textSize="@dimen/text_medium1" />
@@ -130,14 +132,14 @@
                             <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="8dp"
+                                android:layout_marginLeft="12dp"
+                                android:layout_marginRight="12dp"
                                 android:background="@color/dim_gray" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginRight="8dp"
+                                android:layout_marginRight="12dp"
                                 android:text="+"
                                 android:textColor="@color/dim_gray"
                                 android:textSize="@dimen/text_medium1" />

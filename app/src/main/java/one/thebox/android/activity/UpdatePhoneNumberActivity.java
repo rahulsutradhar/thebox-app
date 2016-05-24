@@ -12,6 +12,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -77,7 +78,7 @@ public class UpdatePhoneNumberActivity extends BaseActivity implements View.OnCl
     }
 
     public void singIn() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(this).show();
         MyApplication.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + mobileNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {

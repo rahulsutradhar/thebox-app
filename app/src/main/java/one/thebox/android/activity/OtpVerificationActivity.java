@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -73,7 +74,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         if (smsEvent.getMessage().contains("awesome")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             otp = Integer.parseInt(otpString);
-            final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+            final BoxLoader dialog =   new BoxLoader(this).show();
             MyApplication.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -126,7 +127,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog =   new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -163,7 +164,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
             case R.id.button_resend: {
                 if (isSignUpActivity) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog =   new BoxLoader(this).show();
                     MyApplication.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
@@ -177,7 +178,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                 }
                             });
                 } else {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog =   new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {

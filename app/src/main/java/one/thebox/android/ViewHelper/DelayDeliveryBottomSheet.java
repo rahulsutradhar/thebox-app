@@ -307,7 +307,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        final BoxLoader loader =   new BoxLoader(mContext).show();
                         MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
@@ -326,7 +326,7 @@ public class DelayDeliveryBottomSheet {
 
                                     @Override
                                     public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                        loader.cancel();
+                                        loader.dismiss();
                                     }
                                 });
                     }
@@ -354,7 +354,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final MaterialDialog loader = new MaterialDialog.Builder(mContext).progressIndeterminateStyle(true).progress(true, 0).show();
+                        final BoxLoader loader =   new BoxLoader(context).show();
                         MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
@@ -373,7 +373,7 @@ public class DelayDeliveryBottomSheet {
 
                                     @Override
                                     public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                        loader.cancel();
+                                        loader.dismiss();
                                     }
                                 });
                     }

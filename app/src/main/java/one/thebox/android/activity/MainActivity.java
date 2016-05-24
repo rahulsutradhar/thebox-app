@@ -37,6 +37,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -396,7 +397,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void getAllAddresses() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(this).show();
         MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
                 .enqueue(new Callback<GetAllAddressResponse>() {
                     @Override

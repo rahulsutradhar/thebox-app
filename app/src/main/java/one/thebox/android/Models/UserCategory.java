@@ -17,7 +17,7 @@ public class UserCategory extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
-    @SerializedName("useritems")
+    @SerializedName("noncart_susbcribed_useritems")
     private RealmList<UserItem> userItems;
     @SerializedName("category")
     private Category category;

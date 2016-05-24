@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.Locality;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
@@ -133,7 +134,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         switch (id) {
             case R.id.button_submit: {
                 if (isValidInfo()) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(this).progressIndeterminateStyle(true).progress(true, 0).show();
+                    final BoxLoader dialog =   new BoxLoader(this).show();
                     MyApplication
                             .getAPIService()
                             .storeUserInfo(PrefUtils.getToken(this)

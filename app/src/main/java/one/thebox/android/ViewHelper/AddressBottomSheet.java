@@ -170,7 +170,7 @@ public class AddressBottomSheet {
     }
 
     private void addAddress(final Address address) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(context).show();
         MyApplication.getAPIService().addAddress(PrefUtils.getToken(context),
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
@@ -204,7 +204,7 @@ public class AddressBottomSheet {
     }
 
     private void updateAddress(final Address address) {
-        final MaterialDialog dialog = new MaterialDialog.Builder(context).progressIndeterminateStyle(true).progress(true, 0).show();
+        final BoxLoader dialog =   new BoxLoader(context).show();
         MyApplication.getAPIService().updateAddress(PrefUtils.getToken(context),
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
