@@ -11,11 +11,14 @@
         android:background="@color/light_white"
         tools:context=".fragment.MyBoxesFragment">
 
-        <ProgressBar
+        <pl.droidsonroids.gif.GifImageView
             android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:src="@drawable/loader" />
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

@@ -60,16 +60,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ProgressBar
+            <pl.droidsonroids.gif.GifImageView
                 android:id="@+id/progress_bar"
                 style="?android:attr/android:progressBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="right|bottom"
                 android:layout_marginBottom="22dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:padding="8dp" />
+                android:src="@drawable/loader"
+                 />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/locality_text_input"

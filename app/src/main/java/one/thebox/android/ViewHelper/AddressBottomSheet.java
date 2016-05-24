@@ -30,6 +30,7 @@ import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +48,7 @@ public class AddressBottomSheet {
     private TextView addButton;
     private AutoCompleteTextView localityAutoCompleteTextView;
     private CheckBox primaryAddress;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private boolean callHasBeenCompleted = true;
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
@@ -279,7 +280,7 @@ public class AddressBottomSheet {
     }
 
     private void initViews() {
-        progressBar = (ProgressBar) bottomSheet.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) bottomSheet.findViewById(R.id.progress_bar);
         label = (EditText) bottomSheet.findViewById(R.id.society_edit_text);
         flat = (EditText) bottomSheet.findViewById(R.id.flat_edit_text);
         street = (EditText) bottomSheet.findViewById(R.id.street_edit_text);

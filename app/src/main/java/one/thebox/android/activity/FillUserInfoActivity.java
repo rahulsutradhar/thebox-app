@@ -26,6 +26,7 @@ import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,7 +38,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
     private Button submitButton;
     private EditText nameEditText, emailEditText;
     private AutoCompleteTextView localityAutoCompleteTextView;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private boolean callHasBeenCompleted = true;
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
@@ -123,7 +124,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         submitButton.setOnClickListener(this);
         nameEditText = (EditText) findViewById(R.id.edit_text_name);
         emailEditText = (EditText) findViewById(R.id.edit_text_email);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) findViewById(R.id.progress_bar);
         localityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.edit_text_locality);
         progressBar.setVisibility(View.GONE);
     }

@@ -27,6 +27,7 @@ import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +47,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
     private LinearLayout linearLayoutHolder;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private String query;
     private int catId;
     private RealmList<Category> categories = new RealmList<>();
@@ -125,7 +126,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder_linear_layout);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         emptyText = (TextView) rootView.findViewById(R.id.empty_text);
     }
 

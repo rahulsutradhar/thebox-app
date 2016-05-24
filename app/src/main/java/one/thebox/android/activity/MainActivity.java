@@ -51,6 +51,7 @@ import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,7 +75,7 @@ public class MainActivity extends BaseActivity implements
     private EditText searchView;
     private String query;
     private boolean callHasBeenCompleted = true;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
@@ -158,7 +159,7 @@ public class MainActivity extends BaseActivity implements
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
         searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);

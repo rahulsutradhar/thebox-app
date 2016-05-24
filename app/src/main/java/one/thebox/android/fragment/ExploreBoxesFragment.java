@@ -19,6 +19,7 @@ import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,7 +29,7 @@ public class ExploreBoxesFragment extends Fragment {
     private View rootView;
     private RecyclerView recyclerView;
     private ExploreItemAdapter exploreItemAdapter;
-    private ProgressBar progressBar;
+    private GifImageView progressBar;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
 
     public ExploreBoxesFragment() {
@@ -59,7 +60,7 @@ public class ExploreBoxesFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
+        progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
     }
 
     @Override
