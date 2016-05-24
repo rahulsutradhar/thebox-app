@@ -1,6 +1,7 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
@@ -121,10 +122,14 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
             if (getAdapterPosition() == currentSelectedPosition) {
                 textViewPrice.setTextColor(mContext.getResources().getColor(R.color.black));
                 textViewSize.setTextColor(mContext.getResources().getColor(R.color.black));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_medium1));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_medium1));
                 selector.setVisibility(View.VISIBLE);
             } else {
                 textViewSize.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
                 textViewPrice.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_small2));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_small2));
                 selector.setVisibility(View.INVISIBLE);
             }
         }

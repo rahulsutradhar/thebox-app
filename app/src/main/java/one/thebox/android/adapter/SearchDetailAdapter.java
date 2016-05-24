@@ -157,6 +157,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         boxItems.remove(position);
                                         notifyItemRemoved(position);
                                     } else {
+                                        boxItems.get(position).setUserItemId(0);
                                         notifyItemChanged(position);
                                     }
                                 }
