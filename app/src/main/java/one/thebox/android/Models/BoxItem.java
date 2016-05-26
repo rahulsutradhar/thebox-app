@@ -184,7 +184,7 @@ public class BoxItem extends RealmObject implements Serializable {
     }
 
     public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
-        HashMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
+        TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
         for (int i = 0; i < itemConfigs.size(); i++) {
             String subscriptionType = itemConfigs.get(i).getSubscriptionType();
             int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
@@ -199,9 +199,7 @@ public class BoxItem extends RealmObject implements Serializable {
                 frequencyItemConfigHashMap.put(key, tempItemConfig);
             }
         }
-        TreeMap<IntStringObject, RealmList<ItemConfig>> sorted = new TreeMap<>(new IntStringComparator());
-        sorted.putAll(frequencyItemConfigHashMap);
-        return sorted;
+        return frequencyItemConfigHashMap;
     }
 
     public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {

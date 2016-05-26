@@ -63,6 +63,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.mContext = context;
     }
 
+    public boolean isHasUneditableUserItem() {
+        return hasUneditableUserItem;
+    }
+
+    public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
+        this.hasUneditableUserItem = hasUneditableUserItem;
+    }
+
     public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
         this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
     }
@@ -419,8 +427,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void setViews(final UserItem userItem, final int arrayListPosition) {
-
-
             quantityHolder.setVisibility(View.VISIBLE);
             adjustButton.setVisibility(View.VISIBLE);
             changeButton.setOnClickListener(new View.OnClickListener() {
@@ -656,58 +662,4 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dialog.show();
         }
     }
-
-      /*     new BottomSheet.Builder((Activity) mContext).sheet(R.menu.menu_adjust).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.change_size: {
-
-
-                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                        @Override
-                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                            dialogFragment.dismiss();
-                                            changeConfig(arrayListPosition, selectedItemConfig.getId());
-
-                                        }
-                                    });
-                                    break;
-                                }
-
-                               *//* case R.id.change_quantity: {
-                                    break;
-                                }*//*
-                                case R.id.change_frequency: {
-
-
-                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                        @Override
-                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                            dialogFragment.dismiss();
-                                            changeConfig(arrayListPosition, selectedItemConfig.getId());
-
-                                        }
-                                    });
-                                    break;
-                                }
-                               *//* case R.id.swap_with_similar_product: {
-                                    openSwipeBottomSheet();
-                                    break;
-                                }*//*
-                                case R.id.delay_delivery: {
-
-                                    break;
-                                }
-                            }
-                        }
-
-                    }).show();
-                }*/
 }

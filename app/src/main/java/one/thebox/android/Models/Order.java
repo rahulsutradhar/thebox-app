@@ -44,8 +44,6 @@ public class Order extends RealmObject implements Serializable {
     private boolean cart;
     @SerializedName("useritems")
     private RealmList<UserItem> userItems;
-    @Ignore
-    private boolean isSelected;
 
     public Order() {
     }
@@ -81,14 +79,6 @@ public class Order extends RealmObject implements Serializable {
         this.tax = tax;
         this.cart = cart;
         this.userItems = userItems;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
     }
 
     public RealmList<UserItem> getUserItems() {

@@ -21,9 +21,6 @@ import one.thebox.android.util.DateTimeUtil;
 public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Order> orders = new RealmList<>();
-    private String nextDeliveryDate;
-    private String nextDeliveryDayPayment;
-    private boolean shouldHaveHeader;
 
     public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
@@ -44,23 +41,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         return false;
     }
 
-    public boolean isAnyItemSelected() {
-        for (Order order : orders) {
-            if (order.isSelected()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public RealmList<Order> getSelectedOrders() {
-        RealmList<Order> selectedOrders = new RealmList<>();
-        for (Order order : orders) {
-            if (order.isSelected())
-                selectedOrders.add(order);
-        }
-        return selectedOrders;
-    }
 
     public void addBillItem(Order order) {
         orders.add(order);
@@ -98,13 +78,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(orders.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                orders.get(position).setSelected(!orders.get(position).isSelected());
-                notifyItemChanged(holder.getAdapterPosition());
-            }
-        });
+
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,13 +125,12 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, timeTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
+        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
         private LinearLayout linearLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
-            timeTextView = (TextView) itemView.findViewById(R.id.text_time);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
@@ -165,22 +138,11 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(Order order) {
-            if (order.isSelected()) {
-                linearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.light_white));
-            } else {
-                linearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.white));
-            }
-            if (order.isCart()) {
-                dateTextView.setVisibility(View.GONE);
-                timeTextView.setVisibility(View.GONE);
-            } else {
-                dateTextView.setVisibility(View.VISIBLE);
-                timeTextView.setVisibility(View.GONE);
-                try {
-                    dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            dateTextView.setVisibility(View.VISIBLE);
+            try {
+                dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             itemsNameTextView.setText(order.getItemString());
             amountTobePaidTextView.setText(order.getTotalPrice() + " Rs");

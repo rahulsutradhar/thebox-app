@@ -17,19 +17,6 @@
             android:layout_weight="1" />
 
 
-        <TextView
-            android:id="@+id/button_select_and_pay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="56dp"
-            android:background="@color/primary"
-            android:gravity="center_horizontal"
-            android:padding="16dp"
-            android:text="Select and Pay"
-            android:textColor="@color/white"
-            android:visibility="visible" />
-
-
     </LinearLayout>
 
     <FrameLayout
