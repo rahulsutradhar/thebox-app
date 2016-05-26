@@ -256,7 +256,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 boxItem.setSelectedItemConfig(selectedItemConfig);
                                 setViews(boxItem, position, true);
                             } else {
-                                changeConfig(position, boxItem.getSelectedItemConfig().getId());
+                                changeConfig(position, selectedItemConfig.getId());
                             }
                         }
                     });

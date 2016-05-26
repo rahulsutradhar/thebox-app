@@ -29,11 +29,11 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("delivery_scheduled_at")
     private String deliveryScheduleAt;
     @SerializedName("paid")
-    private String paid;
+    private boolean paid;
     @SerializedName("delivered")
-    private String delivered;
+    private boolean delivered;
     @SerializedName("open")
-    private String open;
+    private boolean open;
     @SerializedName("total_price")
     private float totalPrice;
     @SerializedName("delivery_charges")
@@ -53,9 +53,9 @@ public class Order extends RealmObject implements Serializable {
         this.userId = order.getUserId();
         this.addressId = order.getAddressId();
         this.deliveryScheduleAt = order.getDeliveryScheduleAt();
-        this.paid = order.getPaid();
-        this.delivered = order.getDelivered();
-        this.open = order.getOpen();
+        this.paid = order.isPaid();
+        this.delivered = order.isDelivered();
+        this.open = order.isOpen();
         this.totalPrice = order.getTotalPrice();
         this.deliveryCharges = order.getDeliveryCharges();
         this.tax = order.getDeliveryCharges();
@@ -66,7 +66,7 @@ public class Order extends RealmObject implements Serializable {
         }
     }
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems) {
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, boolean paid, boolean delivered, boolean open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -133,30 +133,6 @@ public class Order extends RealmObject implements Serializable {
         this.deliveryScheduleAt = deliveryScheduleAt;
     }
 
-    public String getPaid() {
-        return paid;
-    }
-
-    public void setPaid(String paid) {
-        this.paid = paid;
-    }
-
-    public String getDelivered() {
-        return delivered;
-    }
-
-    public void setDelivered(String delivered) {
-        this.delivered = delivered;
-    }
-
-    public String getOpen() {
-        return open;
-    }
-
-    public void setOpen(String open) {
-        this.open = open;
-    }
-
     public boolean isCart() {
         return cart;
     }
@@ -204,5 +180,29 @@ public class Order extends RealmObject implements Serializable {
 
     public void setTax(float tax) {
         this.tax = tax;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 }

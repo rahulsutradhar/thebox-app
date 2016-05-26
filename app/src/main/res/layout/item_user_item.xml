@@ -104,10 +104,10 @@
                 android:id="@+id/frequency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Repeats every two monts"
-                android:layout_marginTop="16dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginTop="16dp"
                 android:lines="1"
+                android:text="Repeats every two monts"
                 android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_medium1" />
 
@@ -140,13 +140,12 @@
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rs 55"
-                android:layout_marginTop="4dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginTop="4dp"
                 android:lines="1"
+                android:text="Rs 55"
                 android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_medium1" />
-
 
 
             <LinearLayout

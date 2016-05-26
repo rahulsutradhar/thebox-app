@@ -1,16 +1,20 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -137,15 +141,34 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
         }
 
-        public void setViewHolder(Order order) {
+        public void setViewHolder(final Order order) {
             dateTextView.setVisibility(View.VISIBLE);
             try {
                 dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            itemsNameTextView.setText(order.getItemString());
-            amountTobePaidTextView.setText(order.getTotalPrice() + " Rs");
+            itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
+            if (order.isPaid()) {
+                amountTobePaidTextView.setText("Paid");
+                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
+                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        RealmList<Order> orders = new RealmList<>();
+                        orders.add(order);
+                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
+                    }
+                });
+            }
+
         }
     }
 
