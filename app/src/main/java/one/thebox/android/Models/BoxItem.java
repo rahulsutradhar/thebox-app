@@ -3,11 +3,18 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import one.thebox.android.util.IntStringComparator;
 
 /**
  * Created by Ajeet Kumar Meena on 22-04-2016.
@@ -176,10 +183,12 @@ public class BoxItem extends RealmObject implements Serializable {
         return null;
     }
 
-    public HashMap<String, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
-        HashMap<String, RealmList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
+    public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
+        HashMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new HashMap<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
-            String key = itemConfigs.get(i).getSubscriptionType();
+            String subscriptionType = itemConfigs.get(i).getSubscriptionType();
+            int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
+            IntStringObject key = new IntStringObject(subscriptionTypeUnit,subscriptionType);
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
                 RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
                 tempItemConfigs.add(itemConfigs.get(i));
@@ -190,7 +199,9 @@ public class BoxItem extends RealmObject implements Serializable {
                 frequencyItemConfigHashMap.put(key, tempItemConfig);
             }
         }
-        return frequencyItemConfigHashMap;
+        TreeMap<IntStringObject, RealmList<ItemConfig>> sorted = new TreeMap<>(new IntStringComparator());
+        sorted.putAll(frequencyItemConfigHashMap);
+        return sorted;
     }
 
     public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {

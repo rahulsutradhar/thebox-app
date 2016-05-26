@@ -227,10 +227,6 @@ public class MainActivity extends BaseActivity implements
     private void attachExploreBoxes() {
         clearBackStack();
         getToolbar().setSubtitle(null);
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
@@ -239,28 +235,21 @@ public class MainActivity extends BaseActivity implements
 
     private void attachOrderFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
         OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
     }
 
+    private void attachOrderFragmentWithBackStack() {
+        OrderTabFragment fragment = new OrderTabFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
+        fragmentTransaction.commit();
+    }
+
     private void attachMyAccountFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setImageResource(R.drawable.ic_edit);
-        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
-            }
-        });
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
@@ -269,10 +258,6 @@ public class MainActivity extends BaseActivity implements
 
     private void attachMyBoxesFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -282,9 +267,6 @@ public class MainActivity extends BaseActivity implements
     private void attachSearchResultFragment() {
         getToolbar().setSubtitle(null);
         if (!isSearchFragmentIsAttached) {
-            searchViewHolder.setVisibility(View.VISIBLE);
-            buttonSpecialAction.setVisibility(View.GONE);
-            buttonSpecialAction.setOnClickListener(null);
             isSearchFragmentIsAttached = true;
             getToolbar().setTitle("Search");
             AutoCompleteFragment fragment = new AutoCompleteFragment();
@@ -371,7 +353,7 @@ public class MainActivity extends BaseActivity implements
 
                 @Override
                 public void run() {
-                    doubleBackToExitPressedOnce=false;
+                    doubleBackToExitPressedOnce = false;
                 }
             }, 2000);
         }
@@ -398,7 +380,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void getAllAddresses() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
                 .enqueue(new Callback<GetAllAddressResponse>() {
                     @Override
@@ -451,7 +433,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 3: {
-                attachOrderFragment();
+                attachOrderFragmentWithBackStack();
                 break;
             }
             case 4: {
@@ -529,5 +511,17 @@ public class MainActivity extends BaseActivity implements
         for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+    }
+
+    public ImageView getButtonSpecialAction() {
+        return buttonSpecialAction;
+    }
+
+    public EditText getSearchView() {
+        return searchView;
+    }
+
+    public FrameLayout getSearchViewHolder() {
+        return searchViewHolder;
     }
 }

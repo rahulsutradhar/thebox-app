@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
-            android:text="Product is not finished"
+            android:text="Item is not finished"
             android:textColor="@color/primary_text_color" />
 
         <RadioButton
@@ -50,7 +50,7 @@
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
             android:checked="false"
-            android:text="Trying out a new product"
+            android:text="Trying out a new Item"
             android:textColor="@color/primary_text_color" />
 
 
@@ -60,7 +60,7 @@
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
             android:checked="false"
-            android:text="Product quality was bad"
+            android:text="Item quality was bad"
             android:textColor="@color/primary_text_color" />
 
 

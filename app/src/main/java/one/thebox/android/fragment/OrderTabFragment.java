@@ -92,5 +92,8 @@ public class OrderTabFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }
 }

@@ -22,6 +22,7 @@ import one.thebox.android.activity.AddressesActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.SplashActivity;
+import one.thebox.android.activity.UpdateProfileActivity;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -170,6 +171,15 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageResource(R.drawable.ic_edit);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), UpdateProfileActivity.class));
+            }
+        });
     }
 
 }

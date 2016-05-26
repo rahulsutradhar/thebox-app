@@ -162,6 +162,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }
 
     @Override

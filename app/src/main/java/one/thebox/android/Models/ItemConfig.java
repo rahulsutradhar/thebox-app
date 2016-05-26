@@ -23,8 +23,18 @@ public class ItemConfig extends RealmObject implements Serializable {
     private String subscriptionType;
     @SerializedName("photo_url")
     private String photoUrl;
+    @SerializedName("subscriptiontype")
+    private int subscriptionTypeUnit;
 
     public ItemConfig() {
+    }
+
+    public int getSubscriptionTypeUnit() {
+        return subscriptionTypeUnit;
+    }
+
+    public void setSubscriptionTypeUnit(int subscriptionTypeUnit) {
+        this.subscriptionTypeUnit = subscriptionTypeUnit;
     }
 
     public int getId() {

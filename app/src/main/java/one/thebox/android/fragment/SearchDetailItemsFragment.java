@@ -140,7 +140,6 @@ public class SearchDetailItemsFragment extends Fragment {
             return;
         }
         searchDetailAdapter = new SearchDetailAdapter(getActivity());
-        searchDetailAdapter.setSearchDetailItemFragment(true);
         searchDetailAdapter.setBoxItems(boxItems, userItems);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(searchDetailAdapter);
@@ -156,6 +155,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
                         if (response.body() != null) {
                             userItems.add(response.body().getMySearchItem());
+                            userItems.addAll(response.body().getMyNonSearchedItems());
                             boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
                             categories.add(response.body().getSearchedCategory());

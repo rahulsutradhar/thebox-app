@@ -35,11 +35,11 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("open")
     private String open;
     @SerializedName("total_price")
-    private String totalPrice;
+    private float totalPrice;
     @SerializedName("delivery_charges")
-    private String deliveryCharges;
+    private float deliveryCharges;
     @SerializedName("tax")
-    private String tax;
+    private float tax;
     @SerializedName("cart")
     private boolean cart;
     @SerializedName("useritems")
@@ -68,7 +68,7 @@ public class Order extends RealmObject implements Serializable {
         }
     }
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, String totalPrice, String deliveryCharges, String tax, boolean cart, RealmList<UserItem> userItems) {
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, String paid, String delivered, String open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -167,31 +167,6 @@ public class Order extends RealmObject implements Serializable {
         this.open = open;
     }
 
-    public String getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(String totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public String getDeliveryCharges() {
-        return deliveryCharges;
-    }
-
-    public void setDeliveryCharges(String deliveryCharges) {
-        this.deliveryCharges = deliveryCharges;
-    }
-
-    public String getTax() {
-        return tax;
-    }
-
-
-    public void setTax(String tax) {
-        this.tax = tax;
-    }
-
     public boolean isCart() {
         return cart;
     }
@@ -217,5 +192,27 @@ public class Order extends RealmObject implements Serializable {
         return itemString;
     }
 
+    public float getTotalPrice() {
+        return totalPrice;
+    }
 
+    public void setTotalPrice(float totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public float getDeliveryCharges() {
+        return deliveryCharges;
+    }
+
+    public void setDeliveryCharges(float deliveryCharges) {
+        this.deliveryCharges = deliveryCharges;
+    }
+
+    public float getTax() {
+        return tax;
+    }
+
+    public void setTax(float tax) {
+        this.tax = tax;
+    }
 }

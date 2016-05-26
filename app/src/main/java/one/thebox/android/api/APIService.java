@@ -107,7 +107,7 @@ public interface APIService {
                                                   @Body UpdateItemQuantityRequestBody updateItemQuantityRequestBody);
 
     @POST("/updateitemconfig")
-    Call<ApiResponse> updateItemConfig(@Header("authtoken") String authToken,
+    Call<UpdateItemConfigResponse> updateItemConfig(@Header("authtoken") String authToken,
                                        @Body UpdateItemConfigurationRequest updateItemConfigurationRequest);
 
     @POST("/addmyaddress")

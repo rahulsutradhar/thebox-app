@@ -278,6 +278,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                             boxName = response.body().getBoxName();
                             if (response.body().getMySearchItem().getId() != 0)
                                 userItems.add(response.body().getMySearchItem());
+                            userItems.addAll(response.body().getMyNonSearchedItems());
                             if (response.body().getSearchedItem().getId() != 0)
                                 boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
@@ -382,6 +383,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }
 
     @Override
