@@ -25,6 +25,7 @@ import one.thebox.android.util.DateTimeUtil;
 public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Order> orders = new RealmList<>();
+    private boolean isTimeSlotOrderAdapter;
 
     public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
@@ -36,6 +37,14 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
        /* }*/
     }
 
+    public boolean isTimeSlotOrderAdapter() {
+        return isTimeSlotOrderAdapter;
+    }
+
+    public void setTimeSlotOrderAdapter(boolean timeSlotOrderAdapter) {
+        isTimeSlotOrderAdapter = timeSlotOrderAdapter;
+    }
+
     private boolean shouldHaveOrders() {
         for (Order order : orders) {
             if (!order.isCart()) {
@@ -44,7 +53,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         }
         return false;
     }
-
 
     public void addBillItem(Order order) {
         orders.add(order);
@@ -82,7 +90,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(orders.get(position));
-
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,33 +149,35 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(final Order order) {
-            dateTextView.setVisibility(View.VISIBLE);
             try {
                 dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
-            if (order.isPaid()) {
-                amountTobePaidTextView.setText("Paid");
-                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            if(isTimeSlotOrderAdapter) {
+                amountTobePaidTextView.setText("Merge");
             } else {
-                amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
-                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RealmList<Order> orders = new RealmList<>();
-                        orders.add(order);
-                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
-                    }
-                });
+                if (order.isPaid()) {
+                    amountTobePaidTextView.setText("Paid");
+                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
+                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RealmList<Order> orders = new RealmList<>();
+                            orders.add(order);
+                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
+                        }
+                    });
+                }
             }
-
         }
     }
 

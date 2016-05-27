@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import one.thebox.android.Models.AddressAndOrder;
+import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 
@@ -63,14 +64,14 @@ public class EditTimeSlotAdapter extends BaseRecyclerAdapter {
             itemViewHolder.timeSlotHolderTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(), new TimeSlotBottomSheet.OnTimePicked() {
+                    new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(),addressAndOrders.get(position).getOderDate(), new TimeSlotBottomSheet.OnTimePicked() {
                         @Override
-                        public void onTimePicked(Date date) {
+                        public void onTimePicked(Date date, Order order) {
                             addressAndOrders.get(position).setOderDate(date);
                             notifyItemChanged(position);
                             Toast.makeText(mContext, date.toString(), Toast.LENGTH_SHORT).show();
                         }
-                    }).show();
+                    }).showTimeSlotBottomSheet();
                 }
             });
         } else {

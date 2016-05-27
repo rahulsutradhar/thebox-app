@@ -79,9 +79,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         } else {
             emptyOrderText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(ordersItemAdapter);
         }
     }
 
@@ -147,12 +144,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
-                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
                 public void onError(Throwable error) {
-                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
                 }
             });
         }

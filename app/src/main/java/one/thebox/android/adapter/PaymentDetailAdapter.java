@@ -97,8 +97,8 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(Order order) {
-            itemText.setText(order.getItemString() + " Rs");
-            amountText.setText(order.getTotalPrice() + " Rs");
+            itemText.setText(order.getItemString());
+            amountText.setText("Rs " + getTotalPrice());
         }
     }
 
@@ -111,9 +111,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
             tax = (TextView) itemView.findViewById(R.id.tax);
             amount = (TextView) itemView.findViewById(R.id.amount);
-            deliveryCharge.setText("0" + " Rs");
-            tax.setText(getTotalTax() + " Rs");
-            amount.setText(getTotalPrice() + " Rs");
+            deliveryCharge.setText( "Rs " + getTotalDeliverCharges());
+            tax.setText("Rs " + getTotalTax());
+            amount.setText("Rs " +getTotalPrice());
 
         }
     }
@@ -121,7 +121,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     public float getTotalDeliverCharges() {
         float total = 0;
         for (Order order : orders) {
-            total = Float.valueOf(order.getDeliveryCharges()) + total;
+            total = order.getDeliveryCharges() + total;
         }
         return total;
     }
@@ -129,7 +129,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     public float getTotalTax() {
         float total = 0;
         for (Order order : orders) {
-            total = Float.valueOf(order.getTax()) + total;
+            total = order.getTax() + total;
         }
         return total;
     }
@@ -137,7 +137,18 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     public float getTotalPrice() {
         float total = 0;
         for (Order order : orders) {
-            total = Float.valueOf(order.getTotalPrice()) + total;
+            if (!order.isCart()) {
+                total = order.getTotalPrice() + total;
+            } else {
+                int deliveryCharges = 0;
+                for (int i = 0; i < order.getUserItems().size(); i++) {
+                    deliveryCharges = deliveryCharges + order.getUserItems()
+                            .get(i).getBoxItem().getItemConfigById(
+                                    order.getUserItems().get(i).getSelectedConfigId()
+                            ).getPrice();
+                }
+                total = deliveryCharges + total;
+            }
         }
         return total;
     }
