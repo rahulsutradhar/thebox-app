@@ -7,6 +7,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         } else {
             emptyOrderText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+            ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(ordersItemAdapter);
         }
     }
 
@@ -113,6 +117,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                                          if (!orders.equals(response.body().getOrders())) {
                                              orders.clear();
                                              for (int i = 0; i < response.body().getOrders().size(); i++) {
+                                                 Log.d("logs",response.body().getOrders().toString());
                                                  if (!response.body().getOrders().get(i).isCart())
                                                      orders.add(response.body().getOrders().get(i));
                                              }
@@ -125,6 +130,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
                              @Override
                              public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+                                 Log.d("exception logs",t.toString());
                                 /* progressBar.setVisibility(View.GONE);
                                  holder.setVisibility(View.VISIBLE);*/
                              }

@@ -51,7 +51,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initMergeOrders();
-        if (hasPreviousOrder()) {
+        if (hasPreviousOrder() && isCart()) {
             setContentView(R.layout.confirm_time_slot_when_user_have_orders);
             setTitle("Merge Time Slots");
             initVariable();
@@ -76,7 +76,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             try {
                 if (Calendar.getInstance().getTime()
                         .compareTo
-                                (DateTimeUtil.convertStringToDate(realmResults.get(0).getDeliveryScheduleAt())) > 1) {
+                                (DateTimeUtil.convertStringToDate(realmResults.get(0).getDeliveryScheduleAt())) == -1) {
                     mergeOrders.add(realmResults.get(i));
                 }
             } catch (ParseException e) {
@@ -91,6 +91,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     private boolean hasPreviousOrder() {
         return !(mergeOrders == null || mergeOrders.isEmpty());
+    }
+
+    private boolean isCart() {
+        return currentSelectedOrder != null && currentSelectedOrder.isCart();
     }
 
     private void setupTimeSlotRecyclerView() {
@@ -133,18 +137,29 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
             });
         } else {
-            timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-                        @Override
-                        public void onTimePicked(Date date, Order order) {
-                            currentSelectedOrder = order;
-                            setOrderViewHolder(order);
-                        }
-                    }).showOrderSlotBottomSheet(mergeOrders);
+            if (isCart()) {
+                timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
+                            @Override
+                            public void onTimePicked(Date date, Order order) {
+                                currentSelectedOrder = order;
+                                setOrderViewHolder(order);
+                            }
+                        }).showOrderSlotBottomSheet(mergeOrders);
+                    }
+                });
+            } else {
+                try {
+                    timeHolderLinearLayout.setOnClickListener(null);
+                    timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+                    timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(
+                            DateTimeUtil.convertStringToDate(currentSelectedOrder.getDeliveryScheduleAt())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            });
+            }
         }
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);

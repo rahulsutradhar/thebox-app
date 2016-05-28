@@ -349,6 +349,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             itemConfigs.get(i).setPrice((int) (itemConfigs.get(i).getPrice() * ((float) quantity / (float) prevQuantity)));
                                         }
                                         boxItems.get(position).setItemConfigs(itemConfigs);
+                                        response.body().getUserItem().setBoxItem(boxItems.get(position));
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
@@ -386,10 +387,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             if (response.body() != null) {
                                 boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
                                 notifyItemChanged(getAdapterPosition());
-                                if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
-                                        || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
-                                }
+                                CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                             }
                         }
 
@@ -467,7 +465,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         onNegative(new MaterialDialog.SingleButtonCallback() {
                                             @Override
                                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                openCancelDialog(userItem,arrayListPosition);
+                                                openCancelDialog(userItem, arrayListPosition);
                                             }
                                         }).content("By unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                         dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;

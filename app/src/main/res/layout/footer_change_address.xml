@@ -6,14 +6,44 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+
+
+    <LinearLayout
         android:id="@+id/create_new_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/curve_grey_border"
-        android:padding="16dp"
-        android:text="Create New"
-        android:textColor="@color/primary_text_color" />
+        android:background="@drawable/grey_borders"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="8dp"
+            android:text="Add Address"
+            android:textColor="@color/dim_gray"
+            android:textSize="@dimen/text_medium1"
+            android:id="@+id/textView7" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:background="@color/dim_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:text="+"
+            android:textColor="@color/dim_gray"
+            android:textSize="@dimen/text_medium1" />
+
+
+    </LinearLayout>
 
 </LinearLayout>
