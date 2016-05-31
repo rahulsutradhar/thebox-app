@@ -20,7 +20,7 @@
             android:orientation="vertical">
 
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/text_next_delivery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
                 android:textColor="@color/primary_text_color"
                 android:textSize="16sp" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/text_amount_to_be_paid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/button_pay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
         android:orientation="horizontal"
         android:visibility="gone">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -80,7 +80,7 @@
             android:text="Pay for a month"
             android:textColor="@color/primary_text_color" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"

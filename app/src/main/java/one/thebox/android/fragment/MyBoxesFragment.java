@@ -69,7 +69,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
             }
-            getMyBoxes();
         }
         return rootLayout;
     }
@@ -161,6 +160,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onResume() {
         super.onResume();
+        getMyBoxes();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);

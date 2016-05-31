@@ -94,9 +94,9 @@ public class DelayDeliveryBottomSheet {
                                          nextOrder.addAll(response.body().getNextOrder());
                                          beforeNextDeliveryOrders.addAll(response.body().getOrdersBeforeNextOrder());
                                          setupRecyclerView();
+                                     } else {
+                                         Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                      }
-                                 } else {
-                                     Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                  }
                              }
 

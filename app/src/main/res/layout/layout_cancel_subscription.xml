@@ -8,7 +8,7 @@
     android:paddingRight="16dp"
     >
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -18,7 +18,7 @@
         android:visibility="gone"
         android:id="@+id/textView2" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -26,7 +26,7 @@
         android:text="Plus your time which is invaluable"
         android:textColor="@color/brilliant_rose" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select a reason given below:"
@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -48,7 +48,7 @@
             android:textColor="@color/primary_text_color"
             android:id="@+id/radioButton" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -57,7 +57,7 @@
             android:textColor="@color/primary_text_color" />
 
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -65,7 +65,7 @@
             android:text="Could not find the required size"
             android:textColor="@color/primary_text_color" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -73,7 +73,7 @@
             android:text="Require a different frequency"
             android:textColor="@color/primary_text_color" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -81,7 +81,7 @@
             android:text="Item quality is bad"
             android:textColor="@color/primary_text_color" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -35,7 +35,7 @@
             />
     </LinearLayout>
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -47,7 +47,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="24sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="fill_parent"
         android:layout_height="64dp" />
 </LinearLayout>

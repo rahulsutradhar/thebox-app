@@ -5,7 +5,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="32sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         android:textSize="18sp" />
 
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/create_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="18sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="18sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/facebook_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/google_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,82 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:card_view="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_marginBottom="4dp"
-android:layout_marginLeft="8dp"
-android:layout_marginRight="8dp"
-android:layout_marginTop="4dp"
-android:clickable="true"
-android:focusable="true"
-android:foreground="@drawable/ripple"
-card_view:cardBackgroundColor="@color/white"
-card_view:cardCornerRadius="6dp"
-card_view:cardElevation="2dp">
-
-<LinearLayout
-    android:id="@+id/holder"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:orientation="vertical"
-    android:paddingBottom="16dp"
-    android:paddingTop="16dp">
-
-    <TextView
-        android:id="@+id/text_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="10:30 A.M - 12:00 A.M, Sun 14 Feb"
-        android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_medium1" />
-
-
-    <TextView
-        android:id="@+id/text_items_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="You have 21 items in the order"
-        android:textColor="@color/secondary_text_color" />
-
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/light_white" />
+    android:layout_marginBottom="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/ripple"
+    card_view:cardBackgroundColor="@color/white"
+    card_view:cardCornerRadius="6dp"
+    card_view:cardElevation="2dp">
 
     <LinearLayout
+        android:id="@+id/holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp">
 
-        <TextView
-            android:id="@+id/text_view_view_items"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Arriving on: "
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_medium1" />
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sun 14 Feb"
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_medium1" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time slot: "
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_small1" />
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/time_slot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10:00 A.M - 11:30 A.M"
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_small1" />
+
+
+        </LinearLayout>
+
+
+         <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/text_items_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/grey_borders"
-            android:padding="8dp"
-            android:text="View Items"
-            android:textColor="@color/primary_text_color" />
+            android:layout_marginTop="4dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="You have 21 items in the order"
+            android:textColor="@color/secondary_text_color" />
 
-        <TextView
-            android:id="@+id/text_amount_to_be_paid"
-            android:layout_width="wrap_content"
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/light_white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/grey_borders"
-            android:padding="8dp"
-            android:text="Pay Rs. 200"
-            android:textColor="@color/primary_text_color" />
+            android:orientation="horizontal">
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/text_view_view_items"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/grey_borders"
+                android:padding="8dp"
+                android:text="View Items"
+                android:textColor="@color/primary_text_color" />
+
+             <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/text_amount_to_be_paid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/grey_borders"
+                android:padding="8dp"
+                android:text="Pay Rs. 200"
+                android:textColor="@color/primary_text_color" />
 
 
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </android.support.v7.widget.CardView>

@@ -8,7 +8,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
@@ -136,7 +138,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
+        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot;
         private LinearLayout linearLayout;
 
         public ItemViewHolder(View itemView) {
@@ -146,11 +148,15 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
             viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
+            timeSlot = (TextView) itemView.findViewById(R.id.time_slot);
         }
 
         public void setViewHolder(final Order order) {
+
             try {
-                dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
+                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+                dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+                timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

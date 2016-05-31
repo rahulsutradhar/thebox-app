@@ -9,13 +9,13 @@
     android:paddingBottom="56dp"
     android:paddingLeft="32dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome,"
         android:textSize="16sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

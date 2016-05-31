@@ -38,6 +38,7 @@ import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -111,15 +112,16 @@ public class MainActivity extends BaseActivity implements
         setStatusBarTranslucent(true);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        if (PrefUtils.getBoolean(this, Constants.PREF_SHOULD_OPEN_EXPLORE_BOXES)) {
+        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             attachExploreBoxes();
+            getAllAddresses();
         } else {
             attachMyBoxesFragment();
         }
-        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-            getAllAddresses();
-        }
         initCart();
+/*
+        new ShowCaseHelper(this,0).show("Search","Search your favorite items and categories",searchViewHolder);
+*/
     }
 
     private void initCart() {
@@ -226,6 +228,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachExploreBoxes() {
         clearBackStack();
+        setTitle("Explore Boxes");
         getToolbar().setSubtitle(null);
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -258,6 +261,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachMyBoxesFragment() {
         clearBackStack();
+        setTitle("My Boxes");
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -390,6 +394,9 @@ public class MainActivity extends BaseActivity implements
                             if (response.body().isSuccess()) {
                                 PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
                                 User user = PrefUtils.getUser(MainActivity.this);
+                                if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
+                                    response.body().getUserAddresses().get(0).setCurrentAddress(true);
+                                }
                                 user.setAddresses(response.body().getUserAddresses());
                                 PrefUtils.saveUser(MainActivity.this, user);
                             } else {

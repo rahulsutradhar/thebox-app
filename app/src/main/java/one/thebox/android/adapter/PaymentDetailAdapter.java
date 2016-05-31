@@ -113,7 +113,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             amount = (TextView) itemView.findViewById(R.id.amount);
             deliveryCharge.setText( "Rs " + getTotalDeliverCharges());
             tax.setText("Rs " + getTotalTax());
-            amount.setText("Rs " +getTotalPrice());
+            amount.setText("Rs " +getFinalPaymentAmount());
 
         }
     }
@@ -151,5 +151,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             }
         }
         return total;
+    }
+
+    public float getFinalPaymentAmount(){
+        return getTotalDeliverCharges() + getTotalPrice() + getTotalTax();
     }
 }

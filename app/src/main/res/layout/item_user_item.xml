@@ -36,7 +36,7 @@
                 android:layout_height="18dp"
                 android:src="@drawable/ic_rocket" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/savings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/product_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:textColor="@color/primary_text_color"
                 android:textSize="@dimen/text_medium1" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/product_brand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_small2" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/delivery_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                 android:textSize="@dimen/text_small2"
                 android:visibility="gone" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/arriving_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 android:textColor="@color/md_green_500"
                 android:textSize="@dimen/text_small2" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/frequency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/config"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:textColor="@color/secondary_text_color"
                     android:textSize="@dimen/text_medium1" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/button_change"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
 
             </LinearLayout>
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/button_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -167,7 +167,7 @@
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_medium1" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/no_of_item_selected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_small3" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/button_subtract"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -187,7 +187,7 @@
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_medium1" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/adjust"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

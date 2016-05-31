@@ -183,12 +183,12 @@ public class BoxItem extends RealmObject implements Serializable {
         return null;
     }
 
-    public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap(){
+    public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
         TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
         for (int i = 0; i < itemConfigs.size(); i++) {
             String subscriptionType = itemConfigs.get(i).getSubscriptionType();
             int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
-            IntStringObject key = new IntStringObject(subscriptionTypeUnit,subscriptionType);
+            IntStringObject key = new IntStringObject(subscriptionTypeUnit, subscriptionType);
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
                 RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
                 tempItemConfigs.add(itemConfigs.get(i));
@@ -208,7 +208,9 @@ public class BoxItem extends RealmObject implements Serializable {
         }
         RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
-            if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize() && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())) {
+            if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
+                    && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())
+                    && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())) {
                 tempItemConfigs.add(itemConfigs.get(i));
             }
         }
@@ -234,5 +236,9 @@ public class BoxItem extends RealmObject implements Serializable {
             }
         }
         return 0;
+    }
+
+    public void getSmallestItemConfig() {
+
     }
 }

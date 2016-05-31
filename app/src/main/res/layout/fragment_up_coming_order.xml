@@ -26,7 +26,7 @@
         android:layout_gravity="center">
 
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/empty_order_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

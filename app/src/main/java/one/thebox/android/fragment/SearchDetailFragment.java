@@ -59,7 +59,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
     private static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
-    String boxName;
+    private String boxName;
     private String query;
     private int catId;
     private View rootView;
@@ -149,6 +149,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
         numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
+
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 

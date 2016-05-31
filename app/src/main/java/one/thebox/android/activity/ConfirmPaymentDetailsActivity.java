@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.api.Api;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,8 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.PaymentDetailAdapter;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.app.MyApplication;
@@ -34,16 +37,25 @@ import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
+    private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailAdapter paymentDetailAdapter;
     private CheckBox checkBox;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private TextView payButton;
     private User user;
+    private int mergeOrderId;
 
     public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        return intent;
+    }
+
+    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId) {
+        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        intent.putExtra(EXTRA_MERGE_ORDER_ID,mergeOrderId);
         return intent;
     }
 
@@ -61,6 +73,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private void initVariables() {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
+        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID,0);
     }
 
     private void setupRecyclerAdapter() {
@@ -80,9 +93,34 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         payButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pay();
+                if(mergeOrderId == 0) {
+                    pay();
+                } else {
+                    mergeCartToOrder();
+                }
             }
         });
+    }
+
+    private void mergeCartToOrder() {
+        final BoxLoader dialog =   new BoxLoader(this).show();
+        MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
+                .enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                            CartHelper.clearCart();
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
     }
 
     private void pay() {

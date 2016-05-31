@@ -23,6 +23,7 @@
 
 
     <LinearLayout
+        android:id="@+id/select_date_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/light_white"
@@ -30,15 +31,15 @@
         android:layout_marginBottom="8dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView5"
+         <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/text_view_select_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            android:text="Select Date:"
+            android:text="Select Delivery Date:"
             android:textColor="@color/primary_text_color"
             android:textSize="@dimen/text_medium1" />
 
@@ -53,7 +54,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/time_slot_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -65,6 +66,7 @@
                 android:textSize="@dimen/text_medium1" />
 
             <ImageView
+                android:id="@+id/drop_down_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -75,13 +77,13 @@
 
     </LinearLayout>
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:text="Select Time Slot:"
+        android:text="Select Delivery Time Slot:"
         android:textColor="@color/primary_text_color"
         android:textSize="@dimen/text_medium1" />
 
@@ -96,7 +98,7 @@
         android:layout_weight="1" />
 
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_proceed_to_payment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

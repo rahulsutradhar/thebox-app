@@ -8,7 +8,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Combine from upcoming delivery slots"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/time_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
             android:text="7:30 - 9:00, 13 Feb, Wednesday"
             android:textColor="@color/primary_text_color" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -40,7 +40,7 @@
 
     </LinearLayout>
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/arriving_time_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

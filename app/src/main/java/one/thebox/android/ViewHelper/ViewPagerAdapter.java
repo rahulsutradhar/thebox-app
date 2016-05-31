@@ -88,6 +88,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
             layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
+            layout.requestLayout();
 
         } else {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 42);

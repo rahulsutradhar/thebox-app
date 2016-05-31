@@ -7,7 +7,7 @@
     android:paddingBottom="16dp"
     android:paddingTop="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -17,7 +17,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="16sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
         android:layout_marginTop="16dp"
         android:background="#22000000" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -43,7 +43,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="16sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"

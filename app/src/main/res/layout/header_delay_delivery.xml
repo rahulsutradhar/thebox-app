@@ -8,14 +8,14 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="Choose Reason given below"
         android:textColor="@color/primary_text_color" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/delivery_schedule_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:text="Delivered to you every week"
         android:textColor="@color/primary_text_color" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/arriving_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:text="Arriving in 3 days"
         android:textColor="@color/brilliant_rose" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

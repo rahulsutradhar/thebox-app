@@ -22,6 +22,10 @@ import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Helpers.CartHelper;
@@ -32,6 +36,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
@@ -171,6 +176,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             RealmList<ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
+            Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
+                @Override
+                public int compare(ItemConfig lhs, ItemConfig rhs) {
+                    if (lhs.getSubscriptionTypeUnit() > rhs.getSubscriptionTypeUnit()) {
+                        return 1;
+                    } else if (lhs.getSubscriptionTypeUnit() < rhs.getSubscriptionTypeUnit()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
             int selectedPosition = 0;
             for (int i = 0; i < itemConfigs.size(); i++) {
                 if (boxItem.getSelectedItemConfig().equals(itemConfigs.get(i))) {
@@ -273,6 +290,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getQuantity() == 0) {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
+               /* new ShowCaseHelper((Activity) mContext, 1)
+                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                            @Override
+                            public void onComplete() {
+                                new ShowCaseHelper((Activity) mContext, 2).show("Subscription Frequency", "Select your suitable subscription frequency", recyclerViewFrequency);
+                            }
+                        });*/
             } else {
                 addButtonViewHolder.setVisibility(View.GONE);
                 updateQuantityViewHolder.setVisibility(View.VISIBLE);
@@ -286,7 +311,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 savings.setText(boxItem.getSavings() + " Rs Savings");
             }
             if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit());
+                size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
             }
             Picasso.with(mContext).load(boxItem.getSelectedItemConfig().getPhotoUrl()).into(productImage);
         }
@@ -385,7 +410,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
                             if (response.body() != null) {
+                                RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
                                 boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
+                                boxItems.get(position).setSuggestedCategory(suggestionsCategories);
                                 notifyItemChanged(getAdapterPosition());
                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                             }

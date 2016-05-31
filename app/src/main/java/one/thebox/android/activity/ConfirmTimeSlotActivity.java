@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
+import one.thebox.android.adapter.MergeOrderAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
@@ -37,11 +39,13 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private TextView proceedToPayment;
     private LinearLayout timeHolderLinearLayout;
     private Date currentSelectedDate;
-    private TextView timeSlotTextView;
+    private TextView timeSlotTextView, textViewSelectDate;
     private Date nextSlotDate;
     private RecyclerView timeSlotRecyclerView;
     private TimeSlotAdapter timeSlotAdapter;
     private Order currentSelectedOrder;
+    private ImageView dropDownIcon;
+    private MergeOrderAdapter mergeOrderAdapter;
 
     public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
         return new Intent(context, ConfirmTimeSlotActivity.class).putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders));
@@ -51,20 +55,108 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initMergeOrders();
+        initVariable();
         if (hasPreviousOrder() && isCart()) {
             setContentView(R.layout.confirm_time_slot_when_user_have_orders);
             setTitle("Merge Time Slots");
-            initVariable();
-            initViews();
-            setupTimeSlotRecyclerView();
-            setOrderViewHolder(currentSelectedOrder);
-        } else {
+            initViewsCase1();
+            setupMergeDeliveryRecyclerView();
+        } else if (!hasPreviousOrder() && isCart()) {
             setContentView(R.layout.activity_confirm_time_slot);
             setTitle("Select Time Slots");
-            initVariable();
-            initViews();
+            initViewCase2();
+            setupTimeSlotRecyclerView();
+        } else {
+            setContentView(R.layout.activity_confirm_time_slot);
+            setTitle("Select Time Slot");
+            initViewsCase3();
             setupTimeSlotRecyclerView();
         }
+    }
+
+    private void initViewsCase1() {
+        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
+                        addressAndOrders,
+                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
+            }
+        });
+    }
+
+    public void initViewCase2() {
+        textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
+        dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
+        timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
+        timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(nextSlotDate));
+        timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
+                    @Override
+                    public void onTimePicked(Date date, Order order) {
+                        currentSelectedDate = date;
+                        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+                    }
+                }).showTimeSlotBottomSheet();
+            }
+        });
+        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date orderDate = getDateWithTimeSlot(currentSelectedDate,
+                        timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
+                for (int i = 0; i < addressAndOrders.size(); i++) {
+                    addressAndOrders.get(i).setOderDate(orderDate);
+                }
+                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
+            }
+        });
+    }
+
+    public void initViewsCase3() {
+        textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
+        dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
+        timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
+        timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(nextSlotDate));
+        try {
+            timeHolderLinearLayout.setOnClickListener(null);
+            timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+            timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(
+                    DateTimeUtil.convertStringToDate(currentSelectedOrder.getDeliveryScheduleAt())));
+            dropDownIcon.setVisibility(View.GONE);
+            textViewSelectDate.setText("Arriving on:");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentSelectedDate = addressAndOrders.get(0).getOderDate();
+                Date orderDate = getDateWithTimeSlot(currentSelectedDate,
+                        timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
+                for (int i = 0; i < addressAndOrders.size(); i++) {
+                    addressAndOrders.get(i).setOderDate(orderDate);
+                }
+                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
+            }
+        });
+    }
+
+    public void setupMergeDeliveryRecyclerView() {
+        mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
+        ArrayList<String> timeSlotArrayList = new ArrayList<>();
+        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
     }
 
     private void initMergeOrders() {
@@ -94,7 +186,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     private boolean isCart() {
-        return currentSelectedOrder != null && currentSelectedOrder.isCart();
+        return addressAndOrders.get(0).getOrder().isCart();
     }
 
     private void setupTimeSlotRecyclerView() {
@@ -117,65 +209,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 isCart = true;
             }
         }
-    }
-
-    private void initViews() {
-        timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
-        if (!hasPreviousOrder()) {
-            timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-            timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(nextSlotDate));
-            timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-                        @Override
-                        public void onTimePicked(Date date, Order order) {
-                            currentSelectedDate = date;
-                            timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                        }
-                    }).showTimeSlotBottomSheet();
-                }
-            });
-        } else {
-            if (isCart()) {
-                timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-                            @Override
-                            public void onTimePicked(Date date, Order order) {
-                                currentSelectedOrder = order;
-                                setOrderViewHolder(order);
-                            }
-                        }).showOrderSlotBottomSheet(mergeOrders);
-                    }
-                });
-            } else {
-                try {
-                    timeHolderLinearLayout.setOnClickListener(null);
-                    timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-                    timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(
-                            DateTimeUtil.convertStringToDate(currentSelectedOrder.getDeliveryScheduleAt())));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
-        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
-        proceedToPayment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (hasPreviousOrder()) {
-                    Date orderDate = getDateWithTimeSlot(currentSelectedDate,
-                            timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
-                    for (int i = 0; i < addressAndOrders.size(); i++) {
-                        addressAndOrders.get(i).setOderDate(orderDate);
-                    }
-                }
-                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
-            }
-        });
     }
 
     @Override
@@ -227,26 +260,5 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-    public void setOrderViewHolder(final Order order) {
-        TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
-        LinearLayout linearLayout;
-        dateTextView = (TextView) findViewById(R.id.text_date);
-        itemsNameTextView = (TextView) findViewById(R.id.text_items_name);
-        viewItemsTextView = (TextView) findViewById(R.id.text_view_view_items);
-        viewItemsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(OrderItemsActivity.newInstance(ConfirmTimeSlotActivity.this, order.getId()));
-            }
-        });
-        dateTextView.setVisibility(View.VISIBLE);
-        try {
-            dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
     }
 }

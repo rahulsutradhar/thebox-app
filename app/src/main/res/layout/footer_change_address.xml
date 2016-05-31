@@ -17,7 +17,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -35,7 +35,7 @@
             android:layout_marginRight="12dp"
             android:background="@color/dim_gray" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="12dp"

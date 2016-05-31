@@ -10,7 +10,7 @@
     android:paddingRight="8dp"
     android:paddingTop="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

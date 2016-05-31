@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
@@ -16,7 +16,7 @@
         android:textColor="@color/primary_inverse_text_color"
         android:textSize="@dimen/text_medium1" />
 
-    <android.support.design.widget.TabLayout
+    <one.thebox.android.ViewHelper.CustomTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

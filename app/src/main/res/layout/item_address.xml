@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -24,7 +24,7 @@
             android:textColor="@color/primary_text_color"
             android:textSize="16sp" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"

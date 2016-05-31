@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"

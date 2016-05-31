@@ -29,7 +29,7 @@
         android:layout_weight="1"/>
 
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <RadioButton
+    <one.thebox.android.ViewHelper.MontserratRadioButton
         android:id="@+id/radio_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

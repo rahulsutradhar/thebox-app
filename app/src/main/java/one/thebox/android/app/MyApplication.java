@@ -17,6 +17,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
+import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.util.HockeySenderHelper;
@@ -106,5 +107,6 @@ public class MyApplication extends Application {
         mContext = getApplicationContext();
         ACRA.init(this);
         ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
+        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
     }
 }
