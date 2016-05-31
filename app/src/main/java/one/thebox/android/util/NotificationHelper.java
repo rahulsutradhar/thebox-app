@@ -113,7 +113,7 @@ public class NotificationHelper {
 
     private void showNotification() {
         Notification notification = builder.build();
-        notification.sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
+        //notification.sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
         notification.ledARGB = context.getResources().getColor(R.color.primary);
         this.notificationManager.notify(notificationInfo.getNotificationId(), notification);
     }
@@ -148,7 +148,7 @@ public class NotificationHelper {
     }
 
     private void setNotificationSoundAndLights() {
-        getNotificaiton().sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
+       // getNotificaiton().sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
         getNotificaiton().defaults = Notification.DEFAULT_VIBRATE;
         getNotificaiton().ledARGB = context.getResources().getColor(R.color.primary);
     }
