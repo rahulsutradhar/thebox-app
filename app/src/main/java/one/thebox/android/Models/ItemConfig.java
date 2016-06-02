@@ -15,16 +15,26 @@ public class ItemConfig extends RealmObject implements Serializable {
     private int size;
     @SerializedName("size_unit")
     private String sizeUnit;
-    @SerializedName("itemtype")
-    private int itemType;
+    @SerializedName("item_type")
+    private String itemType;
     @SerializedName("price")
     private int price;
     @SerializedName("subscription_type")
     private String subscriptionType;
     @SerializedName("photo_url")
     private String photoUrl;
+    @SerializedName("subscriptiontype")
+    private int subscriptionTypeUnit;
 
     public ItemConfig() {
+    }
+
+    public int getSubscriptionTypeUnit() {
+        return subscriptionTypeUnit;
+    }
+
+    public void setSubscriptionTypeUnit(int subscriptionTypeUnit) {
+        this.subscriptionTypeUnit = subscriptionTypeUnit;
     }
 
     public int getId() {
@@ -51,11 +61,11 @@ public class ItemConfig extends RealmObject implements Serializable {
         this.sizeUnit = sizeUnit;
     }
 
-    public int getItemType() {
+    public String getItemType() {
         return itemType;
     }
 
-    public void setItemType(int itemType) {
+    public void setItemType(String itemType) {
         this.itemType = itemType;
     }
 

@@ -8,14 +8,14 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="&quot;Great customer service is our pride&quot;"
         android:textColor="@color/brilliant_rose" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
@@ -36,31 +36,31 @@
             android:text="Found a cheaper option"
             android:textColor="@color/primary_text_color" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
-            android:text="Product is not finished"
+            android:text="Item is not finished"
             android:textColor="@color/primary_text_color" />
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
             android:checked="false"
-            android:text="Trying out a new product"
+            android:text="Trying out a new Item"
             android:textColor="@color/primary_text_color" />
 
 
-        <RadioButton
+        <one.thebox.android.ViewHelper.MontserratRadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:buttonTint="@color/primary_text_color"
             android:checked="false"
-            android:text="Product quality was bad"
+            android:text="Item quality was bad"
             android:textColor="@color/primary_text_color" />
 
 

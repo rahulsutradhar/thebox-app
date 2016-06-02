@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -12,9 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.Montserrat;
 
 /**
  * Created by harsh on 10/12/15.
@@ -61,23 +65,25 @@ abstract class BaseActivity extends AppCompatActivity {
                 toolbar.setTitleTextColor(Color.argb(0, 255, 255, 255));
             }
         }
-        //setToolbarFont();
+        setToolbarFont();
     }
 
-   /* private void setToolbarFont() {
-        for (int i = 0; i < toolbar.getChildCount(); ++i) {
-            View child = toolbar.getChildAt(i);
+    private void setToolbarFont() {
+        if(toolbar!=null) {
+            for (int i = 0; i < toolbar.getChildCount(); ++i) {
+                View child = toolbar.getChildAt(i);
 
-            // assuming that the title is the first instance of TextView
-            // you can also check if the title string matches
-            if (child instanceof TextView) {
-                toolbarTitle = (TextView) child;
-                break;
+                // assuming that the title is the first instance of TextView
+                // you can also check if the title string matches
+                if (child instanceof TextView) {
+                    toolbarTitle = (TextView) child;
+                    break;
+                }
             }
+            if (toolbarTitle != null)
+                toolbarTitle.setTypeface(Montserrat.getRoboto(this, Montserrat.MONTSERRAT_REGULAR));
         }
-        if (toolbarTitle != null)
-            toolbarTitle.setTypeface(Montserrat.getRoboto(this, Montserrat.MONTSERRAT_REGULAR));
-    }*/
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,5 +154,18 @@ abstract class BaseActivity extends AppCompatActivity {
 
     public View getContentView() {
         return findViewById(android.R.id.content);
+    }
+
+    public void setEditTextFocus(EditText searchEditText, boolean isFocused)
+    {
+        searchEditText.setCursorVisible(isFocused);
+        searchEditText.setFocusable(isFocused);
+        searchEditText.setFocusableInTouchMode(isFocused);
+        if (isFocused) {
+            searchEditText.requestFocus();
+        } else {
+            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS );
+        }
     }
 }

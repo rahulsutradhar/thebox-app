@@ -35,11 +35,8 @@ public class ConfirmAddressActivity extends BaseActivity {
     private TextView selectAddress;
     private RecyclerView recyclerView;
     private SelectDeliveryAddressAdapter selectDeliveryAddressAdapter;
-    private EditDeliveryAddressAdapter editDeliveryAddressAdapter;
     private User user;
-    private CheckBox checkBox;
     private RealmList<Order> orders = new RealmList<>();
-    private boolean haveDifferentAddresses;
 
     public static Intent getInstance(Context context, RealmList<Order> orders) {
         ArrayList<Integer> orderIds = new ArrayList<>();
@@ -90,19 +87,14 @@ public class ConfirmAddressActivity extends BaseActivity {
     public void setupRecyclerView(boolean editAddressAdapter) {
         user = PrefUtils.getUser(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if (editAddressAdapter) {
-            editDeliveryAddressAdapter = new EditDeliveryAddressAdapter(this, orders);
-            recyclerView.setAdapter(editDeliveryAddressAdapter);
-        } else {
-            selectDeliveryAddressAdapter = new SelectDeliveryAddressAdapter(this, user.getAddresses());
-            recyclerView.setAdapter(selectDeliveryAddressAdapter);
-        }
+        selectDeliveryAddressAdapter = new SelectDeliveryAddressAdapter(this, user.getAddresses());
+        recyclerView.setAdapter(selectDeliveryAddressAdapter);
+
     }
 
     private void initViews() {
         selectAddress = (TextView) findViewById(R.id.button_select_address);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        checkBox = (CheckBox) findViewById(R.id.check_box);
         if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
             selectAddress.setText("Add Address");
             selectAddress.setOnClickListener(new View.OnClickListener() {
@@ -111,32 +103,22 @@ public class ConfirmAddressActivity extends BaseActivity {
                     addAddress();
                 }
             });
-            checkBox.setVisibility(View.GONE);
         } else {
             selectAddress.setText("Proceed to Time Slots");
             selectAddress.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (haveDifferentAddresses) {
-                        startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, editDeliveryAddressAdapter.getAddressAndOrders()));
-                    } else {
-                        ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
-                        for (Order order : orders) {
-                            addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
-                        }
-                        startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+
+                    ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
+                    for (Order order : orders) {
+                        addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
                     }
+                    startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+
                 }
             });
-            checkBox.setVisibility(View.VISIBLE);
         }
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setupRecyclerView(isChecked);
-                haveDifferentAddresses = isChecked;
-            }
-        });
+
     }
 
     public void addAddress() {

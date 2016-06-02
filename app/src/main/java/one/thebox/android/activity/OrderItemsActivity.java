@@ -56,6 +56,7 @@ public class OrderItemsActivity extends BaseActivity {
     private void setupRecyclerView() {
         userItemRecyclerAdapter = new SearchDetailAdapter(this);
         userItemRecyclerAdapter.setBoxItems(null, userItems);
+        userItemRecyclerAdapter.setHasUneditableUserItem(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }

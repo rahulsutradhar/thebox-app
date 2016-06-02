@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -24,18 +24,18 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_weight="7"
         android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="256dp"
             android:layout_height="256dp"
-            android:src="@drawable/save_more"
+            android:src="@drawable/ic_personalized_deals"
             />
     </LinearLayout>
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -47,7 +47,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="24sp" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="fill_parent"
         android:layout_height="64dp" />
 </LinearLayout>

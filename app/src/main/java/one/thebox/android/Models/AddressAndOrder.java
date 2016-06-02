@@ -47,6 +47,18 @@ public class AddressAndOrder implements Serializable {
         return getSlotString(hour) + ", " + dayOfMonth + " " + monthName + ", " + dayName;
     }
 
+
+    public static String getDateStringWithoutSlot(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        String monthName = new SimpleDateFormat("MMMM").format(calendar.getTime());
+        String dayName = new SimpleDateFormat("EEEE").format(calendar.getTime());
+        String hour = new SimpleDateFormat("hh").format(calendar.getTime());
+        String minute = new SimpleDateFormat("mm").format(calendar.getTime());
+        return dayOfMonth + " " + monthName + ", " + dayName;
+    }
+
     public static String getSlotString(String hour) {
         for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
             String temp = Constants.DATE_RANGE[i];

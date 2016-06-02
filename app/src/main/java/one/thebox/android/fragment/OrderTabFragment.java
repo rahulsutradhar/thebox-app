@@ -91,6 +91,10 @@ public class OrderTabFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setTitle("My Deliveries");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }
 }

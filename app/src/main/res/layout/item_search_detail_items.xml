@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/product_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                     android:textColor="@color/primary_text_color"
                     android:textSize="16sp" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/product_brand"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
 
                     android:orientation="horizontal">
 
-                    <TextView
+                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/text_view_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                         android:textColor="@color/black"
                         android:textSize="16sp" />
 
-                    <TextView
+                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/button_change"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -84,14 +84,14 @@
 
                 </LinearLayout>
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
-                    android:text="Repeats every"
+                    android:text="Send this to me every:"
                     android:textColor="@color/primary_text_color"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/text_medium1" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view_frequency"
@@ -119,7 +119,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <TextView
+                             <one.thebox.android.ViewHelper.MontserratTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="8dp"
@@ -136,7 +136,7 @@
                                 android:layout_marginRight="12dp"
                                 android:background="@color/dim_gray" />
 
-                            <TextView
+                             <one.thebox.android.ViewHelper.MontserratTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="12dp"
@@ -154,16 +154,17 @@
                             android:orientation="horizontal"
                             android:visibility="gone">
 
-                            <TextView
-                                android:id="@+id/button_add"
+
+                             <one.thebox.android.ViewHelper.MontserratTextView
+                                android:id="@+id/button_subtract"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
-                                android:text="+"
+                                android:text="-"
                                 android:textColor="@color/primary_text_color" />
-
-                            <TextView
+                            
+                             <one.thebox.android.ViewHelper.MontserratTextView
                                 android:id="@+id/no_of_item_selected"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -175,13 +176,14 @@
                                 android:textColor="@color/primary_text_color"
                                 android:textSize="12dp" />
 
-                            <TextView
-                                android:id="@+id/button_subtract"
+
+                             <one.thebox.android.ViewHelper.MontserratTextView
+                                android:id="@+id/button_add"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
-                                android:text="-"
+                                android:text="+"
                                 android:textColor="@color/primary_text_color" />
 
                         </LinearLayout>
@@ -202,7 +204,7 @@
                             android:layout_height="12dp"
                             android:background="@color/brilliant_rose" />
 
-                        <TextView
+                         <one.thebox.android.ViewHelper.MontserratTextView
                             android:id="@+id/text_view_savings"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -246,7 +248,7 @@
                     android:background="@color/primary_text_color"
                     android:visibility="gone" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Suggested Categories"

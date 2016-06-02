@@ -21,14 +21,7 @@
         app:contentInsetRight="6dp"
         app:contentInsetStart="6dp" />
 
-    <CheckBox
-        android:id="@+id/check_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:buttonTint="@color/primary_text_color"
-        android:text="I want different addresses for my orders"
-        android:textColor="@color/primary_text_color" />
+
 
 
     <android.support.v7.widget.RecyclerView
@@ -38,7 +31,7 @@
         android:layout_weight="1" />
 
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_select_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

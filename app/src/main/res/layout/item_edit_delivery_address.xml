@@ -13,14 +13,14 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_view_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Milk, Gillete Razor, Harpic ... 21 items"
             android:textColor="@color/primary_text_color" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_view_order_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:textColor="@color/primary_text_color" />
 
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_view_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:textColor="@color/primary_text_color" />
     </LinearLayout>
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/change_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

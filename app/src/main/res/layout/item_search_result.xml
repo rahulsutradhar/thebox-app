@@ -22,7 +22,7 @@
         android:paddingRight="24dp"
         android:paddingTop="12dp">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_search_result"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

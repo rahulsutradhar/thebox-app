@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,30 +6,26 @@
     android:orientation="vertical"
     tools:context="one.thebox.android.fragment.CartFragment">
 
-    <FrameLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        />
 
 
-        <TextView
-            android:id="@+id/empty_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="16dp"
-            android:text="No items found"
-            android:textColor="@color/dim_gray" />
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/empty_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:text="No items found"
+        android:textColor="@color/dim_gray" />
 
 
-    </FrameLayout>
-
-    <TextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_proceed_to_payment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,8 +34,9 @@
         android:gravity="center_horizontal"
         android:padding="16dp"
         android:text="Proceed to Payment"
+        android:layout_gravity="bottom"
         android:textColor="@color/white"
         android:visibility="visible" />
 
 
-</LinearLayout>
+</FrameLayout>

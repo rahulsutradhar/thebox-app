@@ -43,7 +43,7 @@
                 app:elevation="0dp"
                 app:layout_anchorGravity="bottom|right|end" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/no_of_items_in_cart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
              android:visibility="gone"
              android:padding="16dp">
 
-             <TextView
+              <one.thebox.android.ViewHelper.MontserratTextView
                  android:id="@+id/title"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                  android:textColor="@color/primary_text_color"
                  android:textSize="@dimen/text_medium1" />
 
-             <TextView
+              <one.thebox.android.ViewHelper.MontserratTextView
                  android:id="@+id/sub_title"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"

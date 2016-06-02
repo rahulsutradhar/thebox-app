@@ -1,5 +1,6 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -23,6 +24,7 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
@@ -100,6 +102,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
+        new ShowCaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
     }
 
     @Override

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.UserItem;
@@ -27,14 +28,20 @@ public class SearchDetailResponse extends ApiResponse implements Serializable {
     @SerializedName("box_name")
     private String boxName;
     @SerializedName("normal_items")
-    private ArrayList<BoxItem> normalItems;
+    private RealmList<BoxItem> normalItems;
+    @SerializedName("my_non_searched_items")
+    private RealmList<UserItem> myNonSearchedItems;
 
-    public ArrayList<BoxItem> getNormalItems() {
+    public RealmList<BoxItem> getNormalItems() {
         return normalItems;
     }
 
     public String getBoxName() {
         return boxName;
+    }
+
+    public RealmList<UserItem> getMyNonSearchedItems() {
+        return myNonSearchedItems;
     }
 
     public void setBoxName(String boxName) {

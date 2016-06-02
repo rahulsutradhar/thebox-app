@@ -18,7 +18,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Purifying Neem"
@@ -26,13 +26,13 @@
 
             />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="by Himalaya"
             android:textColor="@color/manatee" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="One 55ml Tube, 50 Rs Monthly"

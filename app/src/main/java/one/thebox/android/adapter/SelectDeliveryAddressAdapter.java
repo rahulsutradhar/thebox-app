@@ -3,6 +3,8 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -181,11 +183,11 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
     }
 
     class FooterViewHolder extends FooterHolder {
-        private TextView editAddressButton;
+        private LinearLayout editAddressButton;
 
         public FooterViewHolder(View itemView) {
             super(itemView);
-            editAddressButton = (TextView) itemView.findViewById(R.id.create_new_button);
+            editAddressButton = (LinearLayout) itemView.findViewById(R.id.create_new_button);
             editAddressButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

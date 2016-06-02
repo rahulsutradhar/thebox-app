@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".fragment.MyBoxesFragment">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="top"
+        android:background="@color/primary"
+        android:backgroundTint="@color/primary"
+        android:elevation="6dp"
+        android:gravity="center_vertical"
+        app:contentInsetEnd="6dp"
+        app:contentInsetLeft="6dp"
+        app:contentInsetRight="6dp"
+        app:contentInsetStart="6dp" />
+
+
+
+
+     <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Merge delivery with these order:"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_time_slots"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1" />
+
+
+     <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/button_proceed_to_payment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="Proceed to Payment"
+        android:textColor="@color/white"
+        android:visibility="visible" />
+
+
+</LinearLayout>

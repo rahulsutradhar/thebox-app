@@ -31,7 +31,7 @@ public class Box extends RealmObject implements Serializable {
     private int boxId;
     @SerializedName("remaining_categories")
     private RealmList<Category> remainingCategories;
-    @SerializedName("usercategories")
+    @SerializedName("usercategories_with_at_least_one_item")
     private RealmList<UserCategory> userCategories;
     @SerializedName("box")
     private BoxDetail box;

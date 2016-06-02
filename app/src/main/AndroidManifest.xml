@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="one.thebox.android">
+    package="one.thebox.android"
+   >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -15,6 +16,10 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="23" />
+
     <permission
         android:name="one.thebox.android.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
@@ -23,7 +28,6 @@
 
     <application
         android:name=".app.MyApplication"
-        android:debuggable="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -92,12 +96,15 @@
         </activity>
         <activity
             android:name=".activity.FillUserInfoActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MobileNumberActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OtpVerificationActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
 
         <activity
@@ -111,15 +118,18 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ConfirmOtpActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.UpdateProfileActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.UpdatePhoneNumberActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.SignInActivity"
+            android:windowSoftInputMode="stateVisible"
             android:screenOrientation="portrait" />
 
         <activity
@@ -128,7 +138,11 @@
         <activity
             android:name=".activity.ConfirmTimeSlotActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.OrderItemsActivity"></activity>
+        <activity android:name=".activity.OrderItemsActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

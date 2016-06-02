@@ -7,7 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="@drawable/ripple"
@@ -40,7 +41,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
+                <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -48,10 +49,11 @@
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_medium1" />
 
-                <TextView
+                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/sub_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                     android:layout_marginTop="4dp"
                     android:maxLines="2"
                     android:text="sub_title"
                     android:textColor="@color/secondary_text_color"
@@ -74,7 +76,7 @@
                 android:layout_margin="4dp"
                 android:background="@color/brilliant_rose" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/saving_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,7 +98,7 @@
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_tissue_paper" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -104,7 +106,7 @@
                 android:text="There are better things to do in life than \n ordering tissue papers"
                 android:textColor="@color/primary_text_color" />
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

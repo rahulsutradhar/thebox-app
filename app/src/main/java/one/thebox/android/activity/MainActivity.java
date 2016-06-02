@@ -38,6 +38,7 @@ import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -111,15 +112,14 @@ public class MainActivity extends BaseActivity implements
         setStatusBarTranslucent(true);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        if (PrefUtils.getBoolean(this, Constants.PREF_SHOULD_OPEN_EXPLORE_BOXES)) {
+        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             attachExploreBoxes();
+            getAllAddresses();
         } else {
             attachMyBoxesFragment();
         }
-        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-            getAllAddresses();
-        }
         initCart();
+        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -226,11 +226,8 @@ public class MainActivity extends BaseActivity implements
 
     private void attachExploreBoxes() {
         clearBackStack();
+        setTitle("Explore Boxes");
         getToolbar().setSubtitle(null);
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
@@ -239,28 +236,21 @@ public class MainActivity extends BaseActivity implements
 
     private void attachOrderFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
         OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
     }
 
+    private void attachOrderFragmentWithBackStack() {
+        OrderTabFragment fragment = new OrderTabFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
+        fragmentTransaction.commit();
+    }
+
     private void attachMyAccountFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setImageResource(R.drawable.ic_edit);
-        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, UpdateProfileActivity.class));
-            }
-        });
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
@@ -269,10 +259,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachMyBoxesFragment() {
         clearBackStack();
-        getToolbar().setSubtitle(null);
-        searchViewHolder.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setVisibility(View.GONE);
-        buttonSpecialAction.setOnClickListener(null);
+        setTitle("My Boxes");
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -282,9 +269,6 @@ public class MainActivity extends BaseActivity implements
     private void attachSearchResultFragment() {
         getToolbar().setSubtitle(null);
         if (!isSearchFragmentIsAttached) {
-            searchViewHolder.setVisibility(View.VISIBLE);
-            buttonSpecialAction.setVisibility(View.GONE);
-            buttonSpecialAction.setOnClickListener(null);
             isSearchFragmentIsAttached = true;
             getToolbar().setTitle("Search");
             AutoCompleteFragment fragment = new AutoCompleteFragment();
@@ -371,7 +355,7 @@ public class MainActivity extends BaseActivity implements
 
                 @Override
                 public void run() {
-                    doubleBackToExitPressedOnce=false;
+                    doubleBackToExitPressedOnce = false;
                 }
             }, 2000);
         }
@@ -398,7 +382,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void getAllAddresses() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
                 .enqueue(new Callback<GetAllAddressResponse>() {
                     @Override
@@ -408,6 +392,9 @@ public class MainActivity extends BaseActivity implements
                             if (response.body().isSuccess()) {
                                 PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
                                 User user = PrefUtils.getUser(MainActivity.this);
+                                if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
+                                    response.body().getUserAddresses().get(0).setCurrentAddress(true);
+                                }
                                 user.setAddresses(response.body().getUserAddresses());
                                 PrefUtils.saveUser(MainActivity.this, user);
                             } else {
@@ -451,7 +438,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 3: {
-                attachOrderFragment();
+                attachOrderFragmentWithBackStack();
                 break;
             }
             case 4: {
@@ -525,9 +512,21 @@ public class MainActivity extends BaseActivity implements
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void clearBackStack() {
+    private void clearBackStack() {
         for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+    }
+
+    public ImageView getButtonSpecialAction() {
+        return buttonSpecialAction;
+    }
+
+    public EditText getSearchView() {
+        return searchView;
+    }
+
+    public FrameLayout getSearchViewHolder() {
+        return searchViewHolder;
     }
 }

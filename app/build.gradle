@@ -10,8 +10,8 @@ android {
         applicationId "one.thebox.android"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 7
+        versionName "1.02"
     }
     buildTypes {
         release {
@@ -57,6 +57,8 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'ch.acra:acra:4.6.2'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

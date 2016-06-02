@@ -1,10 +1,15 @@
 package one.thebox.android.ViewHelper;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -29,6 +34,7 @@ import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -74,9 +80,10 @@ public class AddressBottomSheet {
         }
     };
     private int codeSelected;
-    private Locality localitySelected;
+    private Locality localitySelected = Constants.POWAI_LOCALITY;
     private OnAddressAdded onAddressAdded;
     private Address address;
+
     public AddressBottomSheet(Activity context, OnAddressAdded onAddressAdded) {
         this.context = context;
         this.onAddressAdded = onAddressAdded;
@@ -102,7 +109,23 @@ public class AddressBottomSheet {
         bottomSheet = context.getLayoutInflater().inflate(R.layout.layout_add_address, null);
         bottomSheetDialog = new BottomSheetDialog(context);
         bottomSheetDialog.setContentView(bottomSheet);
+        bottomSheetDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            }
+        });
+        bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+            }
+        });
         bottomSheetDialog.show();
+
         initViews();
         if (address != null) {
             setupViews();
@@ -171,7 +194,7 @@ public class AddressBottomSheet {
     }
 
     private void addAddress(final Address address) {
-        final BoxLoader dialog =   new BoxLoader(context).show();
+        final BoxLoader dialog = new BoxLoader(context).show();
         MyApplication.getAPIService().addAddress(PrefUtils.getToken(context),
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
@@ -205,7 +228,7 @@ public class AddressBottomSheet {
     }
 
     private void updateAddress(final Address address) {
-        final BoxLoader dialog =   new BoxLoader(context).show();
+        final BoxLoader dialog = new BoxLoader(context).show();
         MyApplication.getAPIService().updateAddress(PrefUtils.getToken(context),
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
@@ -289,13 +312,16 @@ public class AddressBottomSheet {
         primaryAddress = (CheckBox) bottomSheet.findViewById(R.id.check_box_primary_address);
         addButton = (TextView) bottomSheet.findViewById(R.id.button_add);
         progressBar.setVisibility(View.GONE);
+        localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
+        localityAutoCompleteTextView.setFocusable(false);
+        localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
+        localityAutoCompleteTextView.setClickable(false); //
     }
 
     private void setAutoCompleteAdapter() {
         ArrayAdapter arrayAdapter = new ArrayAdapter(context, R.layout.item_autocomplete, localitiesSuggestions);
         localityAutoCompleteTextView.setAdapter(arrayAdapter);
     }
-
 
     public interface OnAddressAdded {
         void onAddressAdded(Address address);

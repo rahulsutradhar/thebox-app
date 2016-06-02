@@ -7,7 +7,7 @@
     android:paddingBottom="8dp"
     android:paddingTop="8dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

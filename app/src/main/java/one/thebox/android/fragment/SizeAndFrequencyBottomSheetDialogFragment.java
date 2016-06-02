@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.IntStringObject;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
@@ -25,7 +27,7 @@ import one.thebox.android.util.CoreGsonUtils;
 public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     public static final String TAG = "Choose size and frequency";
     private static final String EXTRA_BOX_ITEM = "extra_box_item";
-    HashMap<String, RealmList<ItemConfig>> hashMap = new HashMap<>();
+    TreeMap<IntStringObject, RealmList<ItemConfig>> hashMap = new TreeMap<>();
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private View rootView;
@@ -58,18 +60,18 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     private void setupViewPager() {
         int defaultSelectedPosition = 0;
         String keySelectedPosition = boxItem.getSelectedItemConfig().getSubscriptionType();
-        Set<String> keySet = hashMap.keySet();
+        Set<IntStringObject> keySet = hashMap.keySet();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity());
         int i = 0;
-        for (String key : keySet) {
+        for (IntStringObject key : keySet) {
 
             PriceAndSizeFragment priceAndSizeFragment = PriceAndSizeFragment.newInstance(hashMap.get(key));
             priceAndSizeFragment.addListener(onSizeAndFrequencySelected);
-            if (key.equals(keySelectedPosition)) {
+            if (key.getString().equals(keySelectedPosition)) {
                 defaultSelectedPosition = i;
                 priceAndSizeFragment.setSelectedItemConfig(boxItem.getSelectedItemConfig());
             }
-            adapter.addFragment(priceAndSizeFragment, key);
+            adapter.addFragment(priceAndSizeFragment, key.getString());
             i++;
         }
         viewPager.setAdapter(adapter);

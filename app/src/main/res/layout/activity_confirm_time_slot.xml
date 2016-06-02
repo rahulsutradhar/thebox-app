@@ -21,26 +21,27 @@
         app:contentInsetRight="6dp"
         app:contentInsetStart="6dp" />
 
-    <CheckBox
-        android:id="@+id/check_box"
+
+    <LinearLayout
+        android:id="@+id/select_date_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:buttonTint="@color/primary_text_color"
-        android:text="I want different time slots for my orders"
-        android:textColor="@color/primary_text_color" />
+        android:background="@color/light_white"
+        android:paddingBottom="16dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical">
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+         <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/text_view_select_date"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Select Delivery Date:"
+            android:textColor="@color/primary_text_color"
+            android:textSize="@dimen/text_medium1" />
 
 
         <LinearLayout
@@ -49,21 +50,23 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_weight="1"
             android:background="@drawable/grey_borders"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
+             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/time_slot_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center_horizontal"
                 android:padding="16dp"
                 android:text="7:30 - 9:00, 13 Feb, Wednesday "
-                android:textColor="@color/primary_text_color" />
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_medium1" />
 
             <ImageView
+                android:id="@+id/drop_down_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
@@ -72,10 +75,30 @@
 
         </LinearLayout>
 
-    </FrameLayout>
+    </LinearLayout>
+
+     <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Select Delivery Time Slot:"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_time_slots"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1" />
 
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_proceed_to_payment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

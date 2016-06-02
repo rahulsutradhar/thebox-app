@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/size_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="@dimen/text_medium1" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/cost_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -7,6 +7,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +33,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class UpComingOrderFragment extends Fragment implements View.OnClickListener, AppBarObserver.OnOffsetChangeListener {
+public class UpComingOrderFragment extends Fragment implements View.OnClickListener{
 
     ArrayList<Integer> orderIds = new ArrayList<>();
     private View rootView;
     private RecyclerView recyclerView;
     private OrdersItemAdapter ordersItemAdapter;
-    private TextView buttonSelectAndPay;
     private RealmList<Order> orders = new RealmList<>();
     private TextView emptyOrderText;
 
@@ -70,7 +70,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         initVariables();
         setupRecyclerView();
         getAllOrders();
-        setupAppBarObserver();
         return rootView;
     }
 
@@ -78,11 +77,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         if (orders == null || orders.isEmpty()) {
             emptyOrderText.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-            buttonSelectAndPay.setVisibility(View.GONE);
         } else {
             emptyOrderText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            buttonSelectAndPay.setVisibility(View.VISIBLE);
             ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(ordersItemAdapter);
@@ -91,9 +88,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        buttonSelectAndPay = (TextView) rootView.findViewById(R.id.button_select_and_pay);
         emptyOrderText = (TextView) rootView.findViewById(R.id.empty_order_text_view);
-        buttonSelectAndPay.setOnClickListener(this);
 
     }
 
@@ -110,21 +105,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-
-            case R.id.button_select_and_pay: {
-                if (!ordersItemAdapter.isAnyItemSelected()) {
-                    Toast.makeText(getActivity(), "Select At Least One Option", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                openSelectAddressActivity();
-                break;
-            }
-        }
-    }
-
-    private void openSelectAddressActivity() {
-        startActivity(ConfirmAddressActivity.getInstance(getActivity(), ordersItemAdapter.getSelectedOrders()));
     }
 
     public void getAllOrders() {
@@ -137,6 +117,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                                          if (!orders.equals(response.body().getOrders())) {
                                              orders.clear();
                                              for (int i = 0; i < response.body().getOrders().size(); i++) {
+                                                 Log.d("logs",response.body().getOrders().toString());
                                                  if (!response.body().getOrders().get(i).isCart())
                                                      orders.add(response.body().getOrders().get(i));
                                              }
@@ -149,6 +130,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
                              @Override
                              public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+                                 Log.d("exception logs",t.toString());
                                 /* progressBar.setVisibility(View.GONE);
                                  holder.setVisibility(View.VISIBLE);*/
                              }
@@ -168,12 +150,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
-                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
                 public void onError(Throwable error) {
-                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
                 }
             });
         }
@@ -186,22 +168,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
             orders.add(realmResults.get(i));
-        }
-    }
-
-    @Override
-    public void onOffsetChange(int offset, int dOffset) {
-        buttonSelectAndPay.setTranslationY(-offset);
-    }
-
-    private void setupAppBarObserver() {
-        AppBarObserver appBarObserver;
-        Activity activity = getActivity();
-        AppBarLayout appBarLayout = (AppBarLayout) activity
-                .findViewById(R.id.app_bar_layout);
-        if (appBarLayout != null) {
-            appBarObserver = AppBarObserver.observe(appBarLayout);
-            appBarObserver.addOffsetChangeListener(this);
         }
     }
 }

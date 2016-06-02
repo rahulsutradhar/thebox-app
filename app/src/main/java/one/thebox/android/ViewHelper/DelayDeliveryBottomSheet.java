@@ -94,9 +94,9 @@ public class DelayDeliveryBottomSheet {
                                          nextOrder.addAll(response.body().getNextOrder());
                                          beforeNextDeliveryOrders.addAll(response.body().getOrdersBeforeNextOrder());
                                          setupRecyclerView();
+                                     } else {
+                                         Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                      }
-                                 } else {
-                                     Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                  }
                              }
 
@@ -308,7 +308,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final BoxLoader loader =   new BoxLoader(mContext).show();
+                        final BoxLoader loader = new BoxLoader(mContext).show();
                         MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
@@ -355,7 +355,7 @@ public class DelayDeliveryBottomSheet {
                         }
                         String selectedtext = r.getText().toString();
 
-                        final BoxLoader loader =   new BoxLoader(context).show();
+                        final BoxLoader loader = new BoxLoader(context).show();
                         MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {

@@ -72,8 +72,10 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
         sizeAndFrequencyAdapter.setItemConfigs(itemConfigs);
         if (selectedItemConfig != null) {
             for (int i = 0; i < itemConfigs.size(); i++) {
-                sizeAndFrequencyAdapter.setCurrentItemSelected(i);
-                break;
+                if(itemConfigs.get(i).equals(selectedItemConfig)) {
+                    sizeAndFrequencyAdapter.setCurrentItemSelected(i);
+                    break;
+                }
             }
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

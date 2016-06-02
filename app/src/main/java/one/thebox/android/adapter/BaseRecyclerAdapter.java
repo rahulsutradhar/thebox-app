@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import one.thebox.android.app.MyApplication;
+
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
@@ -41,19 +43,19 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         Log.d("Test OnCreateViewHolder", String.valueOf(adapterCurrentPosition));
         if (viewType == RECYCLER_ADAPTER_ITEM) {
 
-            View itemView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getItemLayoutId(), parent, false);
+            View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(getItemLayoutId(), parent, false);
             return getItemHolder(itemView);
 
 
         } else if (viewType == RECYCLER_ADAPTER_HEADER) {
             if (getHeaderLayoutId() != -1) {
-                View headerView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getHeaderLayoutId(), parent, false);
+                View headerView = LayoutInflater.from(MyApplication.getInstance()).inflate(getHeaderLayoutId(), parent, false);
 
                 return getHeaderHolder(headerView);
             }
         } else if (viewType == RECYCLER_ADAPTER_FOOTER) {
             if (getFooterLayoutId() != -1) {
-                View footerView = LayoutInflater.from(mContext.getApplicationContext()).inflate(getFooterLayoutId(), parent, false);
+                View footerView = LayoutInflater.from(MyApplication.getInstance()).inflate(getFooterLayoutId(), parent, false);
                 return getFooterHolder(footerView);
             }
         }

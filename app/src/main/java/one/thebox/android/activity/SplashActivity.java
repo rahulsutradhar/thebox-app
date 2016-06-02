@@ -56,21 +56,15 @@ public class SplashActivity extends Activity {
     }
 
     private void jump() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String token = PrefUtils.getToken(SplashActivity.this);
-                User user = PrefUtils.getUser(SplashActivity.this);
-                if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-                } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
-                } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                }
-                finish();
-            }
-        }, DELAY);
-
+        String token = PrefUtils.getToken(SplashActivity.this);
+        User user = PrefUtils.getUser(SplashActivity.this);
+        if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
+            startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+        } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
+            startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+        } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        }
+        finish();
     }
 }

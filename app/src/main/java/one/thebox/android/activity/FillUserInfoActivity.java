@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,13 +26,14 @@ import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FillUserInfoActivity extends AppCompatActivity implements View.OnClickListener {
+public class FillUserInfoActivity extends BaseActivity implements View.OnClickListener {
 
     String name, email, locality;
     Call<LocalitiesResponse> call;
@@ -40,6 +42,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
     private AutoCompleteTextView localityAutoCompleteTextView;
     private GifImageView progressBar;
     private boolean callHasBeenCompleted = true;
+    //    {"code":400072,"name":"Powai"}
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
@@ -71,6 +74,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_sign_up);
         initViews();
         setupAutoCompleteTextView();
+        setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     private void setupAutoCompleteTextView() {
@@ -127,6 +131,11 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         localityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.edit_text_locality);
         progressBar.setVisibility(View.GONE);
+        localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
+        localityAutoCompleteTextView.setFocusable(false);
+        localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
+        localityAutoCompleteTextView.setClickable(false); //
+        codeSelected = Constants.POWAI_LOCALITY.getCode();
     }
 
     @Override
@@ -135,7 +144,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
         switch (id) {
             case R.id.button_submit: {
                 if (isValidInfo()) {
-                    final BoxLoader dialog =   new BoxLoader(this).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication
                             .getAPIService()
                             .storeUserInfo(PrefUtils.getToken(this)
@@ -196,7 +205,7 @@ public class FillUserInfoActivity extends AppCompatActivity implements View.OnCl
             localityAutoCompleteTextView.setError("Locality could not be empty");
             return false;
         }
-        if(codeSelected == 0){
+        if (codeSelected == 0) {
             localityAutoCompleteTextView.setError("Locality don't exist");
             return false;
         }

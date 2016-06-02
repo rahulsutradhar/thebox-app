@@ -24,25 +24,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+
         android:layout_toEndOf="@+id/icon"
         android:layout_toRightOf="@+id/icon"
         android:orientation="vertical"
         android:padding="8dp">
 
-        <TextView
-            android:id="@+id/text_view_category_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
+        <one.thebox.android.ViewHelper.AutoScaleTextView
+           android:id="@+id/text_view_category_name"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:maxLines="1"
 
-            android:text="Body Wash"
-            android:textColor="@color/primary_text_color"
-            android:textSize="@dimen/text_small3" />
+           android:text="This a big text to check if match parent is working or not"
+           android:textColor="@color/primary_text_color"
+           android:textSize="@dimen/text_small3" />
 
 
-        <TextView
+        <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/number_of_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

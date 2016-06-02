@@ -133,4 +133,12 @@ public class UserItem extends RealmObject implements Serializable {
     public void setBoxItem(BoxItem boxItem) {
         this.boxItem = boxItem;
     }
+
+    public BoxItem getFakeBoxItemObject() {
+        BoxItem boxItem = this.getBoxItem();
+        boxItem.setUserItemId(this.getId());
+        boxItem.setQuantity(this.getQuantity());
+        boxItem.setSelectedItemConfig(boxItem.getItemConfigById(this.getSelectedConfigId()));
+        return boxItem;
+    }
 }

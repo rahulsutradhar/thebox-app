@@ -9,18 +9,20 @@
     android:paddingBottom="56dp"
     android:paddingLeft="32dp">
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome,"
-        android:textSize="16sp" />
+         android:textColor="@color/white"
+        android:textSize="@dimen/text_medium2" />
 
-    <TextView
+     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/user_name_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Name here"
-        android:textSize="16sp" />
+         android:textColor="@color/white"
+         android:text="Name here"
+        android:textSize="@dimen/text_medium2" />
 
 </LinearLayout>

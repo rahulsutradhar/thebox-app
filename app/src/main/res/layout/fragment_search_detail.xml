@@ -11,13 +11,13 @@
         android:orientation="vertical">
 
 
-        <android.support.design.widget.TabLayout
+        <one.thebox.android.ViewHelper.CustomTabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="86dp"
             android:layout_marginBottom="4dp"
             android:background="@color/white"
-            app:tabGravity="center"
+            app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable" />
 
@@ -56,7 +56,7 @@
             app:elevation="0dp"
             app:layout_anchorGravity="bottom|right|end" />
 
-        <TextView
+         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/no_of_items_in_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

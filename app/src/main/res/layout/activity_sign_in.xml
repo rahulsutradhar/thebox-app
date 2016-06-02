@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
 
-    <TextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:textColor="@color/primary_text_color"
         android:textSize="14sp" />
 
-    <TextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_sign_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,10 +32,12 @@
         android:textColor="@color/primary_text_color"
         android:textSize="16sp" />
 
-    <EditText
+    <one.thebox.android.ViewHelper.MontserratEditText
         android:id="@+id/edit_text_mobile_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_alignEnd="@+id/textView6"
         android:layout_alignLeft="@+id/textView6"
         android:layout_alignRight="@+id/textView6"

@@ -1,16 +1,22 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -21,9 +27,7 @@ import one.thebox.android.util.DateTimeUtil;
 public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Order> orders = new RealmList<>();
-    private String nextDeliveryDate;
-    private String nextDeliveryDayPayment;
-    private boolean shouldHaveHeader;
+    private boolean isTimeSlotOrderAdapter;
 
     public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
@@ -35,6 +39,14 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
        /* }*/
     }
 
+    public boolean isTimeSlotOrderAdapter() {
+        return isTimeSlotOrderAdapter;
+    }
+
+    public void setTimeSlotOrderAdapter(boolean timeSlotOrderAdapter) {
+        isTimeSlotOrderAdapter = timeSlotOrderAdapter;
+    }
+
     private boolean shouldHaveOrders() {
         for (Order order : orders) {
             if (!order.isCart()) {
@@ -42,24 +54,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             }
         }
         return false;
-    }
-
-    public boolean isAnyItemSelected() {
-        for (Order order : orders) {
-            if (order.isSelected()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public RealmList<Order> getSelectedOrders() {
-        RealmList<Order> selectedOrders = new RealmList<>();
-        for (Order order : orders) {
-            if (order.isSelected())
-                selectedOrders.add(order);
-        }
-        return selectedOrders;
     }
 
     public void addBillItem(Order order) {
@@ -98,13 +92,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(orders.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                orders.get(position).setSelected(!orders.get(position).isSelected());
-                notifyItemChanged(holder.getAdapterPosition());
-            }
-        });
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,39 +138,52 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, timeTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView;
+        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot;
         private LinearLayout linearLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
-            timeTextView = (TextView) itemView.findViewById(R.id.text_time);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
             viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
+            timeSlot = (TextView) itemView.findViewById(R.id.time_slot);
         }
 
-        public void setViewHolder(Order order) {
-            if (order.isSelected()) {
-                linearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.light_white));
-            } else {
-                linearLayout.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+        public void setViewHolder(final Order order) {
+
+            try {
+                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+                dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+                timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-            if (order.isCart()) {
-                dateTextView.setVisibility(View.GONE);
-                timeTextView.setVisibility(View.GONE);
+            itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
+            if(isTimeSlotOrderAdapter) {
+                amountTobePaidTextView.setText("Merge");
             } else {
-                dateTextView.setVisibility(View.VISIBLE);
-                timeTextView.setVisibility(View.GONE);
-                try {
-                    dateTextView.setText(AddressAndOrder.getDateString(DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt())));
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                if (order.isPaid()) {
+                    amountTobePaidTextView.setText("Paid");
+                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
+                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RealmList<Order> orders = new RealmList<>();
+                            orders.add(order);
+                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
+                        }
+                    });
                 }
             }
-            itemsNameTextView.setText(order.getItemString());
-            amountTobePaidTextView.setText(order.getTotalPrice() + " Rs");
         }
     }
 
