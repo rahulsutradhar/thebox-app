@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private static final String EXTRA_SOURCE = "extra_source";
     private static final String EXTRA_USER_ITEM_ARRAY_LIST = "extra_user_item_array_list";
     private static final String EXTRA_BOX_ITEM_ARRAY_LIST = "extra_box_item_array_list";
+    private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
     private static final int SOURCE_NON_CATEGORY = 0;
     private static final int SOURCE_CATEGORY = 1;
     private static final int SOURCE_SEARCH = 2;
@@ -55,11 +55,12 @@ public class SearchDetailItemsFragment extends Fragment {
     private RealmList<BoxItem> boxItems = new RealmList<>();
     private int source;
     private TextView emptyText;
+    private int positionInViewPager;
 
     public SearchDetailItemsFragment() {
     }
 
-    public static SearchDetailItemsFragment getInstance(SearchResult searchResult) {
+    public static SearchDetailItemsFragment getInstance(SearchResult searchResult, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_QUERY, searchResult.getResult());
         bundle.putInt(EXTRA_CAT_ID, searchResult.getId());
@@ -68,18 +69,20 @@ public class SearchDetailItemsFragment extends Fragment {
         } else {
             bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
         }
+        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER,positionInViewPager);
         bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
     }
 
-    public static SearchDetailItemsFragment getInstance(Context activity, ArrayList<UserItem> userItems, ArrayList<BoxItem> boxItems) {
+    public static SearchDetailItemsFragment getInstance(Context activity, ArrayList<UserItem> userItems, ArrayList<BoxItem> boxItems, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
         bundle.putInt(EXTRA_SOURCE, SOURCE_SEARCH);
         bundle.putString(EXTRA_USER_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(userItems));
         bundle.putString(EXTRA_BOX_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(boxItems));
+        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER,positionInViewPager);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
@@ -93,8 +96,9 @@ public class SearchDetailItemsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        initVariables();
+
         if (rootView == null) {
+            initVariables();
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
             initViews();
             switch (source) {
@@ -121,6 +125,7 @@ public class SearchDetailItemsFragment extends Fragment {
         catId = getArguments().getInt(EXTRA_CAT_ID);
         userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
         boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
+        positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
     }
 
     private void initViews() {
@@ -136,16 +141,14 @@ public class SearchDetailItemsFragment extends Fragment {
         if (boxItems.isEmpty() && userItems.isEmpty()) {
             emptyText.setVisibility(View.VISIBLE);
         }
-        if (getActivity() == null) {
-            return;
-        }
         searchDetailAdapter = new SearchDetailAdapter(getActivity());
+        searchDetailAdapter.setPositionInViewPager(positionInViewPager);
         searchDetailAdapter.setBoxItems(boxItems, userItems);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(searchDetailAdapter);
     }
 
-    public void getSearchDetails() {
+    private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
@@ -172,7 +175,7 @@ public class SearchDetailItemsFragment extends Fragment {
                 });
     }
 
-    public void getCategoryDetail() {
+    private void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
@@ -191,6 +194,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
+                        emptyText.setText(t.toString());
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                     }

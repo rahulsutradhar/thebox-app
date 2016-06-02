@@ -55,7 +55,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_MERGE_ORDER_ID,mergeOrderId);
+        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
         return intent;
     }
 
@@ -73,7 +73,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private void initVariables() {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
-        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID,0);
+        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
     }
 
     private void setupRecyclerAdapter() {
@@ -93,7 +93,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         payButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mergeOrderId == 0) {
+                if (mergeOrderId == 0) {
                     pay();
                 } else {
                     mergeCartToOrder();
@@ -103,7 +103,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     }
 
     private void mergeCartToOrder() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
@@ -124,7 +124,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     }
 
     private void pay() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override

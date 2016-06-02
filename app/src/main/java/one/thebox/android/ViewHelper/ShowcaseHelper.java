@@ -93,4 +93,9 @@ public class ShowCaseHelper {
     public interface OnCompleteListener {
         void onComplete();
     }
+
+    public static void removeAllTutorial() {
+        for (int i = 0; i < 10; i++)
+            PrefUtils.removeSharedPref(MyApplication.getInstance(), PREF_SHOW_CASE_STATUS + i);
+    }
 }

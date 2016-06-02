@@ -32,9 +32,9 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
     private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
-    EditText otpVerificationEditText;
-    TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
-    String phoneNumber;
+    private EditText otpVerificationEditText;
+    private TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
+    private String phoneNumber;
     private int otp;
     private boolean isSignUpActivity;
 
@@ -51,6 +51,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         setContentView(R.layout.activity_otp);
         initVariables();
         initViews();
+        setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     private void initVariables() {
@@ -71,7 +72,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
-        if (smsEvent.getMessage().contains("awesome")) {
+        if (smsEvent.getMessage().contains("awesome") || smsEvent.getMessage().toLowerCase().contains("the box")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             otp = Integer.parseInt(otpString);
             final BoxLoader dialog =   new BoxLoader(this).show();
@@ -87,7 +88,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                         PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
                                             finish();
                                         } else {
                                             startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
@@ -140,8 +141,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
-                                                    finish();
+                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));                                                    finish();
                                                 } else {
                                                     startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
                                                     finish();
@@ -197,7 +197,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    public boolean isValidOtp() {
+    private boolean isValidOtp() {
         if (otpVerificationEditText.getText().toString().isEmpty()) {
             otpVerificationEditText.setError("Otp could not be empty");
             return false;

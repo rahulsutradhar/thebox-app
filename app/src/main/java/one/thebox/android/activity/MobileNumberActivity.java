@@ -29,7 +29,7 @@ import retrofit2.Response;
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
 @RuntimePermissions
-public class MobileNumberActivity extends AppCompatActivity implements View.OnClickListener {
+public class MobileNumberActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView submitButton;
     private EditText mobileNumberEditText;
@@ -40,6 +40,7 @@ public class MobileNumberActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.enter_mobile_number_activity);
         initViews();
+        setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     private void initViews() {

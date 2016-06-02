@@ -127,7 +127,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             }
         });
         noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
         fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
 /*
         stickyHolder = (LinearLayout) rootLayout.findViewById(R.id.holder);
@@ -137,23 +136,15 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (!isRegistered) {
-            EventBus.getDefault().register(this);
-            isRegistered = true;
-        }
     }
 
     @Override
     public void onDestroy() {
-        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -165,6 +156,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 
     @Override
@@ -227,7 +219,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         fabHolder.setTranslationY(-offset);
     }
 
-    @Subscribe
     public void onTabEvent(TabEvent tabEvent) {
         if (getActivity() == null) {
             return;

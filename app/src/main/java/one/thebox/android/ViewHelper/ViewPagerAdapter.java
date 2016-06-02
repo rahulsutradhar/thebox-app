@@ -7,7 +7,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -89,7 +91,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
             layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
             layout.requestLayout();
-
         } else {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 42);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 42);
@@ -99,8 +100,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             layout.setBackgroundResource(R.drawable.tab_layout);
             layout.setPadding(DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2));
+            layout.requestLayout();
         }
-
         return view;
     }
 }

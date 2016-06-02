@@ -3,6 +3,7 @@ package one.thebox.android.ViewHelper;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -24,7 +25,8 @@ public class AutoScaleTextView extends TextView
     public AutoScaleTextView(Context context, AttributeSet attrs)
     {
         this(context, attrs, R.attr.autoScaleTextViewStyle);
- 
+        parseAttributes(attrs);
+
         // Use this constructor, if you do not want use the default style
         // super(context, attrs);
     }
@@ -40,6 +42,7 @@ public class AutoScaleTextView extends TextView
         a.recycle();
  
         this.preferredTextSize = this.getTextSize();
+        parseAttributes(attrs);
     }
  
     /**
@@ -90,6 +93,7 @@ public class AutoScaleTextView extends TextView
     protected void onTextChanged(final CharSequence text, final int start, final int before, final int after)
     {
         this.refitText(text.toString(), this.getWidth());
+
     }
  
     @Override
@@ -97,6 +101,26 @@ public class AutoScaleTextView extends TextView
     {
         if (width != oldwidth)
             this.refitText(this.getText().toString(), width);
+    }
+
+    private void parseAttributes(AttributeSet attrs) {
+        int typeface;
+        if (attrs == null) { //Not created from xml
+            typeface = Montserrat.MONTSERRAT_REGULAR;
+        } else {
+            TypedArray values = getContext().obtainStyledAttributes(attrs, R.styleable.MontserratTextView);
+            typeface = values.getInt(R.styleable.MontserratTextView_typeface, Montserrat.MONTSERRAT_REGULAR);
+            values.recycle();
+        }
+        setTypeface(getRoboto(typeface));
+    }
+
+    public void setRobotoTypeface(int typeface) {
+        setTypeface(getRoboto(typeface));
+    }
+
+    private Typeface getRoboto(int typeface) {
+        return Montserrat.getRoboto(getContext(), typeface);
     }
  
 }

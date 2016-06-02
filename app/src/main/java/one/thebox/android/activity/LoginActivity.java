@@ -17,7 +17,7 @@ import retrofit2.Response;
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
  */
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView signIn, createAccount, facebookButton, googleButton;
 
@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initViews();
+        setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     private void initViews() {

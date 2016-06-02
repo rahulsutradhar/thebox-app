@@ -119,9 +119,7 @@ public class MainActivity extends BaseActivity implements
             attachMyBoxesFragment();
         }
         initCart();
-/*
-        new ShowCaseHelper(this,0).show("Search","Search your favorite items and categories",searchViewHolder);
-*/
+        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -514,7 +512,7 @@ public class MainActivity extends BaseActivity implements
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void clearBackStack() {
+    private void clearBackStack() {
         for (int i = 0; i < fragmentManager.getBackStackEntryCount(); ++i) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }

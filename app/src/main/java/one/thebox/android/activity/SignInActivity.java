@@ -44,6 +44,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         initViews();
+        setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     private void initViews() {

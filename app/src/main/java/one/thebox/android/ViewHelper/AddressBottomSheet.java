@@ -34,6 +34,7 @@ import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -79,7 +80,7 @@ public class AddressBottomSheet {
         }
     };
     private int codeSelected;
-    private Locality localitySelected;
+    private Locality localitySelected = Constants.POWAI_LOCALITY;
     private OnAddressAdded onAddressAdded;
     private Address address;
 
@@ -311,13 +312,16 @@ public class AddressBottomSheet {
         primaryAddress = (CheckBox) bottomSheet.findViewById(R.id.check_box_primary_address);
         addButton = (TextView) bottomSheet.findViewById(R.id.button_add);
         progressBar.setVisibility(View.GONE);
+        localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
+        localityAutoCompleteTextView.setFocusable(false);
+        localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
+        localityAutoCompleteTextView.setClickable(false); //
     }
 
     private void setAutoCompleteAdapter() {
         ArrayAdapter arrayAdapter = new ArrayAdapter(context, R.layout.item_autocomplete, localitiesSuggestions);
         localityAutoCompleteTextView.setAdapter(arrayAdapter);
     }
-
 
     public interface OnAddressAdded {
         void onAddressAdded(Address address);

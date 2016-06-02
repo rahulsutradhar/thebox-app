@@ -1,6 +1,8 @@
 package one.thebox.android.Helpers;
 
-import org.greenrobot.eventbus.EventBus;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -9,6 +11,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.Responses.CartResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -100,7 +103,7 @@ public class CartHelper {
                         if (!arrayContainsUserItem) {
                             userItems.add(userItem);
                         }
-                        EventBus.getDefault().post(new TabEvent(userItems.size()));
+                        sendUpdateNoItemsInCartBroadcast(userItems.size());
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
@@ -133,7 +136,7 @@ public class CartHelper {
                                 userItems.remove(i);
                             }
                         }
-                        EventBus.getDefault().post(new TabEvent(userItems.size()));
+                        sendUpdateNoItemsInCartBroadcast(userItems.size());
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
@@ -156,7 +159,7 @@ public class CartHelper {
                     public void execute(Realm realm) {
                         Order order = realm.where(Order.class).equalTo(Order.FIELD_ID, cartId).findFirst();
                         order.getUserItems().clear();
-                        EventBus.getDefault().post(new TabEvent(order.getUserItems().size()));
+                        sendUpdateNoItemsInCartBroadcast(order.getUserItems().size());
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
@@ -168,5 +171,12 @@ public class CartHelper {
 
                     }
                 });
+    }
+
+    public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
+        Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
+        // add data
+        intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
+        LocalBroadcastManager.getInstance(MyApplication.getInstance()).sendBroadcast(intent);
     }
 }

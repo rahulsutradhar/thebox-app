@@ -102,9 +102,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
-/*
-        new ShowCaseHelper((Activity) mContext, 3).show("My Box", "Keep track of your ordered items and add more", holder.itemView);
-*/
+        new ShowCaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
     }
 
     @Override

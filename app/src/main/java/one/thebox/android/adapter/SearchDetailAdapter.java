@@ -20,6 +20,8 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -28,6 +30,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.ShowTabTutorialEvent;
+import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -63,6 +67,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
     private boolean hasUneditableUserItem;
     private int currentPositionOfSuggestedCategory = -1;
+    private int positionInViewPager = -1;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -74,6 +79,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
         this.hasUneditableUserItem = hasUneditableUserItem;
+    }
+
+    public int getPositionInViewPager() {
+        return positionInViewPager;
+    }
+
+    public void setPositionInViewPager(int positionInViewPager) {
+        this.positionInViewPager = positionInViewPager;
     }
 
     public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
@@ -94,11 +107,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewType) {
             case VIEW_TYPE_USER_ITEM: {
-                View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_user_item, parent, false);
+                View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(R.layout.item_user_item, parent, false);
                 return new UserItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
-                View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_search_detail_items, parent, false);
+                View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(R.layout.item_search_detail_items, parent, false);
                 return new SearchedItemViewHolder(itemView);
             }
         }
@@ -140,7 +153,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return position < (userItems == null ? 0 : userItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
     }
 
-    public class SearchedItemViewHolder extends RecyclerView.ViewHolder {
+    private class SearchedItemViewHolder extends RecyclerView.ViewHolder {
 
         private RecyclerView recyclerViewSavings;
         private RecyclerView recyclerViewFrequency;
@@ -154,7 +167,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private LinearLayout addButtonViewHolder, updateQuantityViewHolder;
         private int position;
 
-        public SearchedItemViewHolder(View itemView) {
+        private SearchedItemViewHolder(View itemView) {
             super(itemView);
             recyclerViewSavings = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
@@ -290,14 +303,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getQuantity() == 0) {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
-               /* new ShowCaseHelper((Activity) mContext, 1)
-                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                            @Override
-                            public void onComplete() {
-                                new ShowCaseHelper((Activity) mContext, 2).show("Subscription Frequency", "Select your suitable subscription frequency", recyclerViewFrequency);
-                            }
-                        });*/
+                if(positionInViewPager == 0) {
+                    new ShowCaseHelper((Activity) mContext, 1).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                            .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                @Override
+                                public void onComplete() {
+                                    new ShowCaseHelper((Activity) mContext, 2)
+                                            .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                            .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                                @Override
+                                                public void onComplete() {
+                                                    EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                }
+                                            });
+                                }
+                            });
+                }
             } else {
                 addButtonViewHolder.setVisibility(View.GONE);
                 updateQuantityViewHolder.setVisibility(View.VISIBLE);
@@ -316,7 +337,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Picasso.with(mContext).load(boxItem.getSelectedItemConfig().getPhotoUrl()).into(productImage);
         }
 
-        public void addItemToBox(final int position) {
+        private void addItemToBox(final int position) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
@@ -357,7 +378,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void updateQuantity(final int position, final int quantity) {
+        private void updateQuantity(final int position, final int quantity) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(boxItems.get(position).getUserItemId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
@@ -401,7 +422,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
         }
 
-        public void changeConfig(final int position, final int itemConfigId) {
+        private void changeConfig(final int position, final int itemConfigId) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
                     (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getUserItemId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
@@ -426,7 +447,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public class UserItemViewHolder extends RecyclerView.ViewHolder {
+    private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView adjustButton, productName, brand,
                 arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price;
@@ -451,7 +472,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             frequency = (TextView) itemView.findViewById(R.id.frequency);
         }
 
-        public void setViews(final UserItem userItem, final int arrayListPosition) {
+        private void setViews(final UserItem userItem, final int arrayListPosition) {
             quantityHolder.setVisibility(View.VISIBLE);
             adjustButton.setVisibility(View.VISIBLE);
             changeButton.setOnClickListener(new View.OnClickListener() {
@@ -543,7 +564,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Picasso.with(mContext).load(itemConfig.getPhotoUrl()).into(productImageView);
         }
 
-        public void addItemToBox(final int position) throws IllegalStateException {
+        private void addItemToBox(final int position) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(mContext),
                     new AddToMyBoxRequestBody(
@@ -573,7 +594,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void updateQuantity(final int position, final int quantity) throws IllegalStateException {
+        private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(mContext), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
@@ -613,7 +634,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
         }
 
-        public void changeConfig(final int position, final int itemConfigId) {
+        private void changeConfig(final int position, final int itemConfigId) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(mContext), new UpdateItemConfigurationRequest
                     (new UpdateItemConfigurationRequest.UserItem(userItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
