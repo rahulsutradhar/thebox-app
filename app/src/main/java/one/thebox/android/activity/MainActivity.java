@@ -14,8 +14,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -199,7 +201,7 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         });
-        appBarLayout = (AppBarLayout)findViewById(R.id.app_bar_layout);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
     }
 
     @Override
@@ -290,7 +292,7 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachSearchDetailFragment(SearchResult query) {
+    public void attachSearchDetailFragment(SearchResult query) {
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
@@ -535,5 +537,9 @@ public class MainActivity extends BaseActivity implements
 
     public FrameLayout getSearchViewHolder() {
         return searchViewHolder;
+    }
+
+    public void setSearchView(EditText searchView) {
+        this.searchView = searchView;
     }
 }

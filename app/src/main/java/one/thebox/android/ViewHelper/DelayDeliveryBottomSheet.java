@@ -75,8 +75,12 @@ public class DelayDeliveryBottomSheet {
 
     public void setupRecyclerView() {
         ArrayList<String> reasonString = new ArrayList<>();
-        reasonString.add("In case you want this item early, Combine with the following deliveries:");
-        reasonString.add("In case you want delay delivery for this item, Combine with following deliveries:");
+        if (beforeNextDeliveryOrders != null && !beforeNextDeliveryOrders.isEmpty()) {
+            reasonString.add("If you want this item early, Combine with the following deliveries:");
+        }
+        if (nextOrder != null && !nextOrder.isEmpty()) {
+            reasonString.add("If you want this item later, Combine with following deliveries:");
+        }
         adjustDeliverySlotAdapter = new AdjustDeliverySlotAdapter(context, reasonString);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -148,7 +152,7 @@ public class DelayDeliveryBottomSheet {
                     notifyItemChanged(currentSelection + 1);
                 }
             });
-            itemViewHolder.setupViews(position == 0 ? beforeNextDeliveryOrders : nextOrder, reasonString.get(0));
+            itemViewHolder.setupViews(reasonString.contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
         }
 
         @Override
@@ -319,7 +323,7 @@ public class DelayDeliveryBottomSheet {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
                                                 bottomSheetDialog.dismiss();
-                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                                onDelayActionCompleted.onDelayActionCompleted(null);
                                                 dialog.dismiss();
                                             }
                                         }

@@ -166,6 +166,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
                 dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
                 timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+                radioButton.setClickable(false);
                 if (getAdapterPosition() == currentSelection) {
                     radioButton.setChecked(true);
                 } else {

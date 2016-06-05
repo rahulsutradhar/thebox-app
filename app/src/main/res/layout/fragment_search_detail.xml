@@ -42,8 +42,19 @@
         layout="@layout/layout_connection_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/no_result_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
         android:visibility="gone"
-        android:layout_gravity="center_vertical" />
+        android:text="No result found"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
 
 
     <FrameLayout
@@ -63,7 +74,7 @@
             app:elevation="0dp"
             app:layout_anchorGravity="bottom|right|end" />
 
-         <one.thebox.android.ViewHelper.MontserratTextView
+        <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/no_of_items_in_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

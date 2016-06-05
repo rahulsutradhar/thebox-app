@@ -138,7 +138,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
         if (boxItems.get(position).getSelectedItemConfig() == null) {
-            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getItemConfigById(0));
+            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestItemConfig());
         }
         searchedItemViewHolder.setViews(boxItems.get(position), position, false);
     }
@@ -303,7 +303,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (boxItem.getQuantity() == 0) {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
-                if(positionInViewPager == 0) {
+                if (positionInViewPager == 0) {
                     new ShowCaseHelper((Activity) mContext, 1).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
                             .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                                 @Override
@@ -506,7 +506,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (userItem.getQuantity() > 1) {
                         updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
                     } else if (userItem.getQuantity() == 1) {
-                        MaterialDialog dialog = new MaterialDialog.Builder(MyApplication.getInstance()).
+                        MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                 title("Unsubscribe " + userItem.getBoxItem().getTitle()).
                                 positiveText("Cancel")
                                 .negativeText("Unsubscribe").
@@ -661,7 +661,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void openCancelDialog(final UserItem userItem, final int positionInArrayList) {
-            MaterialDialog dialog = new MaterialDialog.Builder(MyApplication.getInstance()).
+            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                     title("Cancel Subscription").
                     customView(R.layout.layout_cancel_subscription, true).
                     positiveText("Cancel Subscription").onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -689,7 +689,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (response.body() != null) {
                                         Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         if (response.body().isSuccess()) {
-                                            userItems.remove(positionInArrayList);
+                                            userItems.remove(getAdapterPosition());
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
                                         }

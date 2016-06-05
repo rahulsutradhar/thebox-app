@@ -58,7 +58,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         initVariable();
         if (hasPreviousOrder() && isCart()) {
             setContentView(R.layout.confirm_time_slot_when_user_have_orders);
-            setTitle("Merge Time Slots");
+            setTitle("Merge Delivery Time Slots");
             initViewsCase1();
             setupMergeDeliveryRecyclerView();
         } else if (!hasPreviousOrder() && isCart()) {
@@ -80,6 +80,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (addressAndOrders.size() == 2) {
+                    addressAndOrders.set(1, new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
+                } else {
+                    addressAndOrders.add(new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
+                }
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
                         addressAndOrders,
                         mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
@@ -168,7 +173,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             try {
                 if (Calendar.getInstance().getTime()
                         .compareTo
-                                (DateTimeUtil.convertStringToDate(realmResults.get(0).getDeliveryScheduleAt())) == -1) {
+                                (DateTimeUtil.convertStringToDate(realmResults.get(i).getDeliveryScheduleAt())) == -1) {
                     mergeOrders.add(realmResults.get(i));
                 }
             } catch (ParseException e) {
@@ -247,6 +252,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         int minute = Integer.parseInt(timeSlot.substring(3, 5));
         String am_pm = timeSlot.substring(6, 7);
         Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
         cal.set(Calendar.HOUR, hour);
         cal.set(Calendar.MINUTE, minute);
         if (am_pm.equals("A")) {

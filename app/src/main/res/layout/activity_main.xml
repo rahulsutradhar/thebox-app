@@ -61,6 +61,8 @@
                     android:focusableInTouchMode="true"
                     android:gravity="center_vertical"
                     android:hint="Search and Add"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
                     android:padding="10dp"
                     android:textColor="@color/primary_text_color"
                     android:textColorHint="@color/manatee" />
@@ -71,11 +73,10 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="right|center_vertical"
-                    android:gravity="center"
-                    android:src="@drawable/loader"
-                    android:layout_marginRight="12dp"
                     android:layout_marginEnd="12dp"
-                    />
+                    android:layout_marginRight="12dp"
+                    android:gravity="center"
+                    android:src="@drawable/loader" />
 
 
             </FrameLayout>
@@ -100,8 +101,8 @@
         android:layout_gravity="start"
         android:background="@color/white"
         app:headerLayout="@layout/drawer_header"
+        app:itemTextAppearance="@style/NavigationDrawerStyle"
         app:itemTextColor="@color/primary_text_color"
-        app:menu="@menu/drawer"
-        app:itemTextAppearance="@style/NavigationDrawerStyle" />
+        app:menu="@menu/drawer" />
 
 </android.support.v4.widget.DrawerLayout>

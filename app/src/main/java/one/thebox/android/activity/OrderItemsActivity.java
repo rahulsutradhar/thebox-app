@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -23,6 +25,8 @@ public class OrderItemsActivity extends BaseActivity {
     private SearchDetailAdapter userItemRecyclerAdapter;
     private RealmList<UserItem> userItems = new RealmList<>();
     private int orderId;
+    private Order order;
+    private TextView payTextView;
 
     public static Intent newInstance(Context context, int orderId) {
         return new Intent(context, OrderItemsActivity.class).putExtra(EXTRA_USER_ITEM_ARRAY_LIST, orderId);
@@ -35,7 +39,7 @@ public class OrderItemsActivity extends BaseActivity {
                 .notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_ID, orderId);
 
         RealmResults<Order> realmResults = query.findAll();
-        Order order = realmResults.get(0);
+        order = realmResults.get(0);
         userItems.addAll(order.getUserItems());
     }
 
@@ -43,7 +47,7 @@ public class OrderItemsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_items);
-        setTitle("Order Items");
+        setTitle("Delivery Items");
         initVariables();
         initViews();
         setupRecyclerView();
@@ -51,6 +55,31 @@ public class OrderItemsActivity extends BaseActivity {
 
     private void initViews() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        payTextView = (TextView) findViewById(R.id.button_pay);
+        payTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(OrderItemsActivity.newInstance(OrderItemsActivity.this, orderId));
+            }
+        });
+        if (order.isPaid()) {
+            payTextView.setText("Paid");
+            payTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            });
+        } else {
+            payTextView.setText("Pay Rs " + order.getTotalPrice());
+            payTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RealmList<Order> orders = new RealmList<>();
+                    orders.add(order);
+                    startActivity(ConfirmAddressActivity.getInstance(OrderItemsActivity.this, orders));
+                }
+            });
+        }
     }
 
     private void setupRecyclerView() {

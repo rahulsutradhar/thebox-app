@@ -211,8 +211,6 @@ public class BoxItem extends RealmObject implements Serializable {
         }
         RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
-            checkAndPrintIfNull(itemConfigs.get(i));
-            checkAndPrintIfNull(selectedItemConfig);
             if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
                     && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())
                     && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())) {
@@ -254,7 +252,13 @@ public class BoxItem extends RealmObject implements Serializable {
         return 0;
     }
 
-    public void getSmallestItemConfig() {
-
+    public ItemConfig getSmallestItemConfig() {
+        ItemConfig smallestItemConfig = itemConfigs.get(0);
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
+                smallestItemConfig = itemConfigs.get(i);
+            }
+        }
+        return smallestItemConfig;
     }
 }

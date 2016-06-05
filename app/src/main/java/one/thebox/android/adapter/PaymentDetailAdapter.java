@@ -98,7 +98,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(Order order) {
             itemText.setText(order.getItemString());
-            amountText.setText("Rs " + getTotalPrice());
+            amountText.setText("Rs " + getTotalPrice(order));
         }
     }
 
@@ -111,9 +111,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
             tax = (TextView) itemView.findViewById(R.id.tax);
             amount = (TextView) itemView.findViewById(R.id.amount);
-            deliveryCharge.setText( "Rs " + getTotalDeliverCharges());
+            deliveryCharge.setText("Rs " + getTotalDeliverCharges());
             tax.setText("Rs " + getTotalTax());
-            amount.setText("Rs " +getFinalPaymentAmount());
+            amount.setText("Rs " + getFinalPaymentAmount());
 
         }
     }
@@ -153,7 +153,23 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
         return total;
     }
 
-    public float getFinalPaymentAmount(){
+    public float getTotalPrice(Order order) {
+
+        if (!order.isCart()) {
+            return order.getTotalPrice();
+        } else {
+            int deliveryCharges = 0;
+            for (int i = 0; i < order.getUserItems().size(); i++) {
+                deliveryCharges = deliveryCharges + order.getUserItems()
+                        .get(i).getBoxItem().getItemConfigById(
+                                order.getUserItems().get(i).getSelectedConfigId()
+                        ).getPrice();
+            }
+            return deliveryCharges;
+        }
+    }
+
+    public float getFinalPaymentAmount() {
         return getTotalDeliverCharges() + getTotalPrice() + getTotalTax();
     }
 }

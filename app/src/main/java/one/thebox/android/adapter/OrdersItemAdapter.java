@@ -98,6 +98,12 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
             }
         });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
+            }
+        });
     }
 
     @Override
@@ -161,7 +167,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 e.printStackTrace();
             }
             itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
-            if(isTimeSlotOrderAdapter) {
+            if (isTimeSlotOrderAdapter) {
                 amountTobePaidTextView.setText("Merge");
             } else {
                 if (order.isPaid()) {
@@ -169,7 +175,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {

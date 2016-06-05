@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,6 +62,17 @@ public class AutoCompleteFragment extends Fragment {
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         noItemFoundTextView = (TextView) rootView.findViewById(R.id.no_item_found_text_view);
+        ((MainActivity) getActivity()).getSearchView().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (searchAutoCompleteAdapter.getSearchResults().size() != 0)
+                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0));
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Subscribe

@@ -88,7 +88,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds;
     private int clickPosition;
-    private TextView numberOfItemsInCart;
+    private TextView numberOfItemsInCart, noResultFound;
     private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int source;
@@ -201,6 +201,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 }
             }
         });
+        noResultFound = (TextView) rootView.findViewById(R.id.no_result_found);
     }
 
     @Override
