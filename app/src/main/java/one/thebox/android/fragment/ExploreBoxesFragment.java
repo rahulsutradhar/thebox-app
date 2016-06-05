@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.CustomShowcaseView;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.api.Responses.ExploreItemResponse;

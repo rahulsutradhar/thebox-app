@@ -13,11 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -33,7 +30,6 @@ import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,13 +41,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
-    private GifImageView progressBar;
+    private LinearLayout progressBar;
     private FloatingActionButton floatingActionButton;
     private TextView noOfItemsInCart;
     private RealmList<Box> boxes = new RealmList<>();
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
     private boolean isRegistered;
+    private String next_order_status;
 
     public MyBoxesFragment() {
 
@@ -66,6 +63,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             initVariables();
             initViews();
             setupAppBarObserver();
+            setupNextOrderStatus();
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
             }
@@ -89,6 +87,16 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             appBarObserver.addOffsetChangeListener(this);
         }
     }
+
+    private void setupNextOrderStatus() {
+        Activity activity = getActivity();
+        LinearLayout explore_and_deliveries = (LinearLayout) activity.findViewById(R.id.explore_and_deliveries);
+        explore_and_deliveries.setVisibility(View.VISIBLE);
+
+        //Setting the order status
+        ((TextView) activity.findViewById(R.id.calendar)).setText("No orders yet");
+    }
+
 
     private void setupRecyclerView() {
         progressBar.setVisibility(View.GONE);
@@ -117,7 +125,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private void initViews() {
-        this.progressBar = (GifImageView) rootLayout.findViewById(R.id.progress_bar);
+        this.progressBar = (LinearLayout) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
         this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -170,15 +178,20 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     public void getMyBoxes() {
+
+        progressBar.setVisibility(View.VISIBLE);
+
         MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
+
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
                                 setupRecyclerView();
+                                setupNextOrderStatus();
                                 storeToRealm();
                             }
                         }

@@ -1,0 +1,24 @@
+<vector android:height="24dp" android:viewportHeight="32.0"
+    android:viewportWidth="32.0" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M29,3L25,3L25,1C25,0.45 24.55,0 24,0C23.45,0 23,0.45 23,1L23,3L17,3L17,1C17,0.45 16.55,0 16,0C15.45,0 15,0.45 15,1L15,3L9,3L9,1C9,0.45 8.55,0 8,0C7.45,0 7,0.45 7,1L7,3L3,3C1.19,3 0,4.19 0,6L0,29C0,30.81 1.19,32 3,32L29,32C30.81,32 32,30.81 32,29L32,6C32,4.19 30.81,3 29,3L29,3ZM30,29C30,29.7 29.7,30 29,30L3,30C2.3,30 2,29.7 2,29L2,6C2,5.3 2.3,5 3,5L7,5L7,7C7,7.55 7.45,8 8,8C8.55,8 9,7.55 9,7L9,5L15,5L15,7C15,7.55 15.45,8 16,8C16.55,8 17,7.55 17,7L17,5L23,5L23,7C23,7.55 23.45,8 24,8C24.55,8 25,7.55 25,7L25,5L29,5C29.7,5 30,5.3 30,6L30,29L30,29Z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M7,12h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M7,17h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M7,22h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M14,22h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M14,17h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M14,12h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M21,22h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M21,17h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M21,12h4v3h-4z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+</vector>

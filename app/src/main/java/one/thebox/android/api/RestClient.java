@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClient {
 
     private static final boolean IS_LOCAL_URL = false;
-    private static final String BASE_URL = "https://theboxprod.herokuapp.com/";
+    private static final String BASE_URL = "https://tranquil-springs-65978.herokuapp.com/";
     private static final String LOCAL_URL = "http://50ef0c1e.ngrok.io/";
     private APIService apiService;
 

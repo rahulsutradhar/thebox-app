@@ -24,7 +24,7 @@ import one.thebox.android.util.PrefUtils;
  * Created by 32 on 30-05-2016.
  */
 
-public class ShowCaseHelper {
+public class ShowcaseHelper {
 
     private Activity context;
     private int id;
@@ -33,12 +33,12 @@ public class ShowCaseHelper {
     private static final int EXTRA_PADDING = DisplayUtil.dpToPx(MyApplication.getInstance(), 16);
     private OnCompleteListener onCompleteListener;
 
-    public ShowCaseHelper(Activity context, int id) {
+    public ShowcaseHelper(Activity context, int id) {
         this.context = context;
         this.id = id;
     }
 
-    public ShowCaseHelper show(final String title, final String description, final View view) {
+    public ShowcaseHelper show(final String title, final String description, final View view) {
         if (PrefUtils.getBoolean(context, PREF_SHOW_CASE_STATUS + id, true)) {
             build(title, description, view);
         }

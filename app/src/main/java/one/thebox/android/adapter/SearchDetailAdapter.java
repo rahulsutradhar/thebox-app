@@ -40,7 +40,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
@@ -304,13 +304,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
                 if(positionInViewPager == 0) {
-                    new ShowCaseHelper((Activity) mContext, 1).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                            .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                    new ShowcaseHelper((Activity) mContext, 1).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                 @Override
                                 public void onComplete() {
-                                    new ShowCaseHelper((Activity) mContext, 2)
+                                    new ShowcaseHelper((Activity) mContext, 2)
                                             .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                            .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                                 @Override
                                                 public void onComplete() {
                                                     EventBus.getDefault().post(new ShowTabTutorialEvent());

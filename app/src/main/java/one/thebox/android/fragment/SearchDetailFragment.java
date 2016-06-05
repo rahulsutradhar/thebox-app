@@ -44,7 +44,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -461,11 +461,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Subscribe
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
-        new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+        new ShowcaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
+                .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                     @Override
                     public void onComplete() {
-                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items of your current session are here in the cart", fabHolder);
+                        new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items of your current session are here in the cart", fabHolder);
                         tabLayout.setScrollPosition(clickPosition, 0, true);
                         shouldMoveMore = false;
                     }

@@ -38,7 +38,7 @@ import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements
             attachMyBoxesFragment();
         }
         initCart();
-        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+        new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -228,6 +228,7 @@ public class MainActivity extends BaseActivity implements
         clearBackStack();
         setTitle("Explore Boxes");
         getToolbar().setSubtitle(null);
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         ExploreBoxesFragment fragment = new ExploreBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
@@ -236,6 +237,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachOrderFragment() {
         clearBackStack();
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
@@ -243,6 +245,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachOrderFragmentWithBackStack() {
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         OrderTabFragment fragment = new OrderTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
@@ -251,6 +254,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachMyAccountFragment() {
         clearBackStack();
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
@@ -260,6 +264,7 @@ public class MainActivity extends BaseActivity implements
     private void attachMyBoxesFragment() {
         clearBackStack();
         setTitle("My Boxes");
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         MyBoxesFragment fragment = new MyBoxesFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -268,6 +273,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachSearchResultFragment() {
         getToolbar().setSubtitle(null);
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         if (!isSearchFragmentIsAttached) {
             isSearchFragmentIsAttached = true;
             getToolbar().setTitle("Search");
@@ -280,6 +286,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachSearchDetailFragment(SearchResult query) {
         getToolbar().setSubtitle(null);
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -300,6 +307,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
         getToolbar().setSubtitle(null);
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -461,6 +469,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachCategoriesFragment(Intent intent) {
         getToolbar().setSubtitle(null);
+        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
