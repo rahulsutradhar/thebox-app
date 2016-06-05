@@ -36,7 +36,7 @@
         android:background="@color/primary"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:text="Pay(Cash on Delivery)"
+        android:text="Pay (Cash on Delivery)"
         android:textColor="@color/white"
         android:visibility="visible" />
 

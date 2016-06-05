@@ -40,8 +40,6 @@ import retrofit2.Response;
 
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
-    //private LinearLayout stickyHolder;
-    int totalScroll = 0;
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
@@ -62,13 +60,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                              Bundle savedInstanceState) {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Boxes");
         if (rootLayout == null) {
-            this.rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+            rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
             initVariables();
             initViews();
             setupAppBarObserver();
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
             }
+            onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
         }
         return rootLayout;
     }
@@ -97,23 +96,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
         myBoxRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(myBoxRecyclerAdapter);
-        final int scrollingItemNumber = 0;
-       /* stickyHolder.setVisibility(View.GONE);
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                totalScroll = totalScroll + dy;
-                if (totalScroll > myBoxRecyclerAdapter.getStickyHeaderHeight()) {
-                    Log.d("MyBox", String.valueOf(linearLayoutManager.findViewByPosition(scrollingItemNumber).getMeasuredHeight()));
-                    stickyHolder.setVisibility(View.VISIBLE);
-                } else {
-                    if (myBoxRecyclerAdapter.getStickyHeaderHeight() != 0) {
-                        stickyHolder.setAlpha((float) totalScroll / (float) myBoxRecyclerAdapter.getStickyHeaderHeight());
-                    }
-                }
-            }
-        });*/
     }
 
     private void initViews() {
@@ -128,9 +110,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         });
         noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
-/*
-        stickyHolder = (LinearLayout) rootLayout.findViewById(R.id.holder);
-*/
     }
 
     @Override

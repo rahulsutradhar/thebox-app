@@ -61,7 +61,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="10dp"
 
                     android:orientation="horizontal">
 
@@ -78,6 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
+                         android:padding="8dp"
                         android:text="@string/change_button"
                         android:textColor="@color/brilliant_rose"
                         android:textSize="14sp" />
@@ -88,7 +89,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="16dp"
                     android:text="Send this to me every:"
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_medium1" />
@@ -103,7 +104,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="16dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -125,24 +126,11 @@
                                 android:layout_marginBottom="8dp"
                                 android:layout_marginLeft="12dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Add"
+                                 android:layout_marginRight="12dp"
+                                android:text="Add To Cart"
                                 android:textColor="@color/dim_gray"
                                 android:textSize="@dimen/text_medium1" />
 
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginLeft="12dp"
-                                android:layout_marginRight="12dp"
-                                android:background="@color/dim_gray" />
-
-                             <one.thebox.android.ViewHelper.MontserratTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginRight="12dp"
-                                android:text="+"
-                                android:textColor="@color/dim_gray"
-                                android:textSize="@dimen/text_medium1" />
 
 
                         </LinearLayout>

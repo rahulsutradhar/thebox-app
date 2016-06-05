@@ -7,6 +7,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
@@ -37,7 +39,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Box> boxes;
     private int stickyHeaderHeight = 0;
-    private SparseArray<Integer> boxHeights = new SparseArray<>();
+    private SparseIntArray boxHeights = new SparseIntArray();
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -61,14 +63,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setStickyHeaderHeight(int stickyHeaderHeight) {
         this.stickyHeaderHeight = stickyHeaderHeight;
-    }
-
-    public SparseArray<Integer> getBoxHeights() {
-        return boxHeights;
-    }
-
-    public void setBoxHeights(SparseArray<Integer> boxHeights) {
-        this.boxHeights = boxHeights;
     }
 
     @Override
@@ -96,7 +90,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boxes.get(position).setExpandedListVisible(!boxes.get(position).isExpandedListVisible());
+                if (boxes.get(position).getAllItemInTheBox() == null || boxes.get(position).getAllItemInTheBox().isEmpty()) {
+                    String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(position).getBoxId(), boxes.get(position).getBoxDetail().getTitle()));
+                    mContext.startActivity(new Intent(mContext, MainActivity.class)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+                } else {
+                    boxes.get(position).setExpandedListVisible(!boxes.get(position).isExpandedListVisible());
+                }
                 notifyItemChanged(position);
             }
         });

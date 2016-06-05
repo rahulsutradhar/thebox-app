@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -48,8 +49,11 @@ import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.util.ActionExecuter;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.NotificationHelper;
+import one.thebox.android.util.NotificationInfo;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -97,6 +101,7 @@ public class MainActivity extends BaseActivity implements
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private User user;
     private FragmentManager fragmentManager;
+    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +199,7 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         });
+        appBarLayout = (AppBarLayout)findViewById(R.id.app_bar_layout);
     }
 
     @Override
@@ -232,6 +238,7 @@ public class MainActivity extends BaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
         fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachOrderFragment() {
@@ -240,6 +247,7 @@ public class MainActivity extends BaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachOrderFragmentWithBackStack() {
@@ -247,6 +255,7 @@ public class MainActivity extends BaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
         fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachMyAccountFragment() {
@@ -255,6 +264,7 @@ public class MainActivity extends BaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
         fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachMyBoxesFragment() {
@@ -264,6 +274,7 @@ public class MainActivity extends BaseActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
         fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachSearchResultFragment() {
@@ -276,6 +287,7 @@ public class MainActivity extends BaseActivity implements
             fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
             fragmentTransaction.commit();
         }
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachSearchDetailFragment(SearchResult query) {
@@ -296,6 +308,7 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.commit();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        appBarLayout.setExpanded(true, true);
     }
 
     private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
@@ -316,6 +329,7 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.commit();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        appBarLayout.setExpanded(true, true);
     }
 
     @Override
@@ -326,14 +340,6 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
         }
-    }
-
-    private void searchFor(String newText) {
-        attachSearchResultFragment();
-    }
-
-    private void openSearchResultActivity(String query) {
-
     }
 
     boolean doubleBackToExitPressedOnce = false;
@@ -480,6 +486,7 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.commit();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        appBarLayout.setExpanded(true, true);
     }
 
     @Override

@@ -30,6 +30,11 @@ public class ExploreItem implements Serializable {
         this.boxType = boxType;
     }
 
+    public ExploreItem(int id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
     public int getId() {
         return id;
     }

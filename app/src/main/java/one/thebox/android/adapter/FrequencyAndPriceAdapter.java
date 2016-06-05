@@ -8,6 +8,7 @@ import android.widget.TextView;
 import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
+import one.thebox.android.app.MyApplication;
 
 class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
@@ -25,7 +26,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return itemConfigs;
     }
 
-    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
+    protected void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs = itemConfigs;
     }
 
@@ -104,12 +105,12 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         void onItemConfigItemChange(ItemConfig selectedItemConfig);
     }
 
-    class ItemFrequencyViewHolder extends ItemHolder {
+    private class ItemFrequencyViewHolder extends ItemHolder {
 
         View selector;
         private TextView textViewSize, textViewPrice;
 
-        public ItemFrequencyViewHolder(View itemView) {
+        private ItemFrequencyViewHolder(View itemView) {
             super(itemView);
             textViewSize = (TextView) itemView.findViewById(R.id.text_view_frequency);
             textViewPrice = (TextView) itemView.findViewById(R.id.text_view_price);
@@ -120,16 +121,16 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
             textViewPrice.setText("Rs " + itemConfig.getPrice());
             textViewSize.setText(itemConfig.getSubscriptionType());
             if (getAdapterPosition() == currentSelectedPosition) {
-                textViewPrice.setTextColor(mContext.getResources().getColor(R.color.black));
-                textViewSize.setTextColor(mContext.getResources().getColor(R.color.black));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_medium1));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_medium1));
+                textViewPrice.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.black));
+                textViewSize.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.black));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_medium1));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_medium1));
                 selector.setVisibility(View.VISIBLE);
             } else {
-                textViewSize.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-                textViewPrice.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_small2));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources().getDimension(R.dimen.text_small2));
+                textViewSize.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.primary_text_color));
+                textViewPrice.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.primary_text_color));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_small2));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_small2));
                 selector.setVisibility(View.INVISIBLE);
             }
         }
