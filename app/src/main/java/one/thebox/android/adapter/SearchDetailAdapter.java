@@ -401,7 +401,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     } else {
                                         CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
                                         if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                            boxItems.remove(position);
+                                            boxItems.remove(getAdapterPosition());
                                             notifyItemRemoved(getAdapterPosition());
                                         } else {
                                             boxItems.get(position).setUserItemId(0);
@@ -709,4 +709,5 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dialog.show();
         }
     }
+
 }
