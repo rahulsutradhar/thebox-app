@@ -44,6 +44,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
@@ -89,6 +90,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private int clickPosition;
     private TextView numberOfItemsInCart;
     private FrameLayout fabHolder;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
+    private int source;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -179,6 +182,25 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (source) {
+                    case 0: {
+                        getSearchDetails();
+                        break;
+                    }
+                    case 1: {
+                        getCategoryDetail();
+                        break;
+                    }
+                    case 2: {
+                        getExploreDetails();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -204,11 +226,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             } else {
                 if (exploreItem == null) {
                     if (catId == 0) {
+                        source = 0;
                         getSearchDetails();
                     } else {
+                        source = 1;
                         getCategoryDetail();
                     }
                 } else {
+                    source = 2;
                     getExploreDetails();
                 }
             }
@@ -223,7 +248,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         progressBar.setVisibility(View.GONE);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
         for (int i = 0; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()),i), categories.get(i));
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -261,9 +286,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems,0), categories.get(0));
+        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems, 0), categories.get(0));
         for (int i = 1; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()),i), categories.get(i));
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -314,10 +339,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
@@ -338,6 +365,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     public void onFailure(Call<SearchDetailResponse> call, Throwable t) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }
@@ -345,12 +373,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
                             userItems.addAll(response.body().getMyBoxItems());
@@ -365,16 +395,19 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }
 
     public void getExploreDetails() {
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override
                     public void onResponse(Call<ExploreBoxResponse> call, Response<ExploreBoxResponse> response) {
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
@@ -387,6 +420,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     @Override
                     public void onFailure(Call<ExploreBoxResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                     }
                 });
     }
@@ -475,18 +509,18 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private boolean shouldMoveMore = true;
 
     public void moveViewPager(final int position) {
-        if(shouldMoveMore) {
+        if (shouldMoveMore) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     viewPager.setCurrentItem(position);
-                    if(position>=1) {
-                        moveViewPager(position-1);
-                    }else {
-                        moveViewPager(position+1);
+                    if (position >= 1) {
+                        moveViewPager(position - 1);
+                    } else {
+                        moveViewPager(position + 1);
                     }
                 }
-            },1000);
+            }, 1000);
         }
     }
 

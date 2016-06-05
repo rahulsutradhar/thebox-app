@@ -28,7 +28,7 @@
         android:src="@drawable/loader" />
 
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/empty_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,5 +37,14 @@
         android:textColor="@color/primary_text_color"
         android:textSize="@dimen/text_medium2"
         android:visibility="gone" />
+
+
+    <include
+        android:id="@+id/holder_connection_error"
+        layout="@layout/layout_connection_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical" />
 
 </FrameLayout>

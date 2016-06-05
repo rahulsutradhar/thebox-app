@@ -23,7 +23,7 @@ public class OnBoardingActivity extends AppIntro {
     public void init(Bundle savedInstanceState) {
         showSkipButton(false);
         ((Button) doneButton).setTextColor(getResources().getColor(R.color.primary_text_color));
-        //doneButton.setVisibility(View.GONE);
+        //doneButton.isVisible(View.GONE);
         setImageNextButton(null);
         addSlide(IntroSlide.newInstance(R.layout.intro_slide1));
         addSlide(IntroSlide.newInstance(R.layout.intro_slide2));

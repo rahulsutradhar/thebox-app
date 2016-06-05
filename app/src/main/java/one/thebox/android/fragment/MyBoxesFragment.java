@@ -28,6 +28,7 @@ import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
@@ -50,6 +51,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
     private boolean isRegistered;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
 
     public MyBoxesFragment() {
 
@@ -91,6 +93,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     private void setupRecyclerView() {
         progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
@@ -110,6 +113,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         });
         noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getMyBoxes();
+            }
+        });
     }
 
     @Override
@@ -149,10 +158,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     public void getMyBoxes() {
+        progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
@@ -166,6 +178,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     @Override
                     public void onFailure(Call<MyBoxResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }

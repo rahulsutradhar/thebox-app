@@ -131,8 +131,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                              @Override
                              public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
                                  Log.d("exception logs",t.toString());
-                                /* progressBar.setVisibility(View.GONE);
-                                 holder.setVisibility(View.VISIBLE);*/
+                                /* progressBar.isVisible(View.GONE);
+                                 holder.isVisible(View.VISIBLE);*/
                              }
                          }
 

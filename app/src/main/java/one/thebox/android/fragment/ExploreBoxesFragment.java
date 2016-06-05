@@ -1,33 +1,23 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextPaint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
-import com.github.paolorotolo.appintro.ScrollerCustomDuration;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.CustomShowcaseView;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.api.Responses.ExploreItemResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -41,6 +31,7 @@ public class ExploreBoxesFragment extends Fragment {
     private ExploreItemAdapter exploreItemAdapter;
     private GifImageView progressBar;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
 
     public ExploreBoxesFragment() {
     }
@@ -71,6 +62,12 @@ public class ExploreBoxesFragment extends Fragment {
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getAllBoxes();
+            }
+        });
     }
 
     @Override
@@ -85,11 +82,13 @@ public class ExploreBoxesFragment extends Fragment {
 
     public void getAllBoxes() {
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getAllExploreBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<ExploreItemResponse>() {
                     @Override
                     public void onResponse(Call<ExploreItemResponse> call, Response<ExploreItemResponse> response) {
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null && response.body().getBoxes() != null) {
                             recyclerView.setVisibility(View.VISIBLE);
                             exploreItems = new ArrayList<ExploreItem>(response.body().getBoxes());
@@ -100,7 +99,8 @@ public class ExploreBoxesFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<ExploreItemResponse> call, Throwable t) {
-
+                        progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }

@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="86dp"
             android:layout_marginBottom="4dp"
-            android:background="@color/white"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable" />
@@ -37,6 +36,14 @@
         android:layout_gravity="center"
         android:padding="8dp"
         android:src="@drawable/loader" />
+
+    <include
+        android:id="@+id/holder_connection_error"
+        layout="@layout/layout_connection_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical" />
 
 
     <FrameLayout
