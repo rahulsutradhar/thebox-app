@@ -261,4 +261,18 @@ public class BoxItem extends RealmObject implements Serializable {
         }
         return smallestItemConfig;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        BoxItem boxItem = (BoxItem) o;
+        return boxItem != null
+                && userItemId == boxItem.getUserItemId()
+                && id == boxItem.getId()
+                && title.equals(boxItem.getTitle())
+                && brand.equals(boxItem.getBrand())
+                && savings == boxItem.getSavings()
+                && isSmartItems == boxItem.isSmartItems()
+                && categoryId == boxItem.getCategoryId()
+                && itemConfigs.equals(boxItem.getItemConfigs());
+    }
 }

@@ -3,6 +3,12 @@ package one.thebox.android.app;
 import android.app.Application;
 import android.content.Context;
 
+import com.squareup.okhttp.Cache;
+import com.squareup.picasso.LruCache;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
+
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
@@ -12,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -90,9 +95,9 @@ public class MyApplication extends Application {
         return okHttpClient;
     }
 
-    private static Cache getCache(int size_in_mb) {
+    private static okhttp3.Cache getCache(int size_in_mb) {
         int cacheSize = size_in_mb * 1024 * 1024; //10MB
-        Cache cache = new Cache(mContext.getCacheDir(), cacheSize);
+        okhttp3.Cache cache = new okhttp3.Cache(mContext.getCacheDir(), cacheSize);
         return cache;
     }
 
@@ -108,5 +113,11 @@ public class MyApplication extends Application {
         ACRA.init(this);
         ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
+        Picasso.Builder builder = new Picasso.Builder(this);
+        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
+
+        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
+        Picasso built = builder.memoryCache(memoryCache).build();
+        Picasso.setSingletonInstance(built);
     }
 }

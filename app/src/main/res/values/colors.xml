@@ -28,6 +28,7 @@
     <color name="red_orange">#ff4d4d</color>
     <color name="lavender_indigo">#a64dff</color>
     <color name="light_white">#EFEFEF</color>
+    <color name="very_light_white">#f6f6f6</color>
     <color name="isabelline">#ededed</color>
     <color name="transparent">#00000000</color>
 

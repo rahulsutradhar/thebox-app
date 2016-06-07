@@ -55,7 +55,7 @@ public class OnBoardingActivity extends AppIntro {
 
     @Override
     public void onDonePressed() {
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, SignInActivity.class));
         finish();
     }
 

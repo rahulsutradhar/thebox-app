@@ -61,6 +61,9 @@ public class ExploreBoxesFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override

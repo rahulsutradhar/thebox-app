@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +51,6 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -98,7 +96,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         public void onReceive(Context context, Intent intent) {
             if (getActivity() == null) {
                 return;
-            }
+        }
             int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
             if (noOfTabs > 0) {
                 numberOfItemsInCart.setVisibility(View.VISIBLE);
@@ -279,6 +277,23 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         }
         viewPager.setCurrentItem(clickPosition);
+        ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME),clickPosition);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME),position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void setupViewPagerAndTabs() {
@@ -334,6 +349,25 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             } else {
                 tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
             }
+        }
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                exploreItem.setDefaultPositionOfViewPager(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        if(exploreItem!=null) {
+            viewPager.setCurrentItem(exploreItem.getDefaultPositionOfViewPager());
         }
     }
 
@@ -491,7 +525,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             appBarObserver.addOffsetChangeListener(this);
         }
     }
-
 
     @Subscribe
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {

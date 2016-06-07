@@ -36,7 +36,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/user_name_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                         android:textColor="@color/manatee"
                         android:textSize="32dp" />
 
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/email_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -73,14 +73,14 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Phone"
                         android:textColor="@color/manatee"
                         android:textSize="18dp" />
 
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/phone_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -101,43 +101,45 @@
                     android:layout_height="48dp"
                     android:src="@drawable/ic_location" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:text="Address"
+                        android:textColor="@color/manatee"
+                        android:textSize="18dp"
+                        android:id="@+id/montserratTextView" />
 
-                         <one.thebox.android.ViewHelper.MontserratTextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Address"
-                            android:textColor="@color/manatee"
-                            android:textSize="18dp" />
 
-                         <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/button_show_all_address"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Show All"
-                            android:textColor="@color/red_orange"
-                            android:textSize="14dp" />
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/button_show_all_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:text="Show All"
+                        android:textColor="@color/red_orange"
+                        android:textSize="14dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
 
-                    </LinearLayout>
-
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/address_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="c2603, Oberoi splendor, JVLR"
-                        android:textColor="@color/primary_text_color" />
-                </LinearLayout>
+                        android:textColor="@color/primary_text_color"
+                        android:layout_below="@+id/montserratTextView"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -166,7 +168,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                         <one.thebox.android.ViewHelper.MontserratTextView
+                        <one.thebox.android.ViewHelper.MontserratTextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -174,7 +176,7 @@
                             android:textColor="@color/manatee"
                             android:textSize="18dp" />
 
-                         <one.thebox.android.ViewHelper.MontserratTextView
+                        <one.thebox.android.ViewHelper.MontserratTextView
                             android:id="@+id/button_show_all_orders"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -184,7 +186,7 @@
 
                     </LinearLayout>
 
-                     <one.thebox.android.ViewHelper.MontserratTextView
+                    <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/last_order_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -193,7 +195,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-             <one.thebox.android.ViewHelper.MontserratTextView
+            <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/button_sign_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

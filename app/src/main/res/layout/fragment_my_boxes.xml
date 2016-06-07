@@ -8,7 +8,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_white"
+        android:background="@color/white"
         tools:context=".fragment.MyBoxesFragment">
 
         <android.support.v7.widget.RecyclerView
@@ -61,8 +61,8 @@
             layout="@layout/layout_connection_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:visibility="gone" />
 
     </FrameLayout>
 

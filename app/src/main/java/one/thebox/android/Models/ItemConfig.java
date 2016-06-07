@@ -25,6 +25,8 @@ public class ItemConfig extends RealmObject implements Serializable {
     private String photoUrl;
     @SerializedName("subscriptiontype")
     private int subscriptionTypeUnit;
+    @SerializedName("correct_quantity")
+    private String correctQuantity;
 
     public ItemConfig() {
     }
@@ -97,5 +99,13 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getCorrectQuantity() {
+        return correctQuantity;
+    }
+
+    public void setCorrectQuantity(String correctQuantity) {
+        this.correctQuantity = correctQuantity;
     }
 }

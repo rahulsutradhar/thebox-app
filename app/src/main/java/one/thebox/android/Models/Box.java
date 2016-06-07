@@ -37,6 +37,8 @@ public class Box extends RealmObject implements Serializable {
     private BoxDetail box;
     @Ignore
     private boolean isExpandedListVisible;
+    @Ignore
+    private RealmList<UserItem> allItemsInTheBox;
 
 
     public Box() {
@@ -53,9 +55,6 @@ public class Box extends RealmObject implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (!this.getClass().getSuperclass().getName().equals(o.getClass().getName())) {
-            return false;
-        }
         Box box = (Box) o;
         if (box.getId() != this.getId()) {
             return false;
@@ -131,11 +130,18 @@ public class Box extends RealmObject implements Serializable {
     }
 
     public RealmList<UserItem> getAllItemInTheBox() {
-        RealmList<UserItem> userItems = new RealmList<>();
-        for (UserCategory userCategory : userCategories) {
-            userItems.addAll(userCategory.getUserItems());
+        if(allItemsInTheBox == null) {
+            allItemsInTheBox = new RealmList<>();
+            for (UserCategory userCategory : userCategories) {
+                allItemsInTheBox.addAll(userCategory.getUserItems());
+            }
+            return allItemsInTheBox;
         }
-        return userItems;
+        return allItemsInTheBox;
+    }
+
+    public void setAllItemsInTheBox(RealmList<UserItem> allItemsInTheBox) {
+        this.allItemsInTheBox = allItemsInTheBox;
     }
 
     public BoxDetail getBox() {

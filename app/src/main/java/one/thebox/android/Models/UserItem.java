@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -59,7 +60,18 @@ public class UserItem extends RealmObject implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        UserItem userItem = (UserItem) o;
+        return userItem != null && this.id == userItem.getId()
+                && userCategoryId == userItem.getUserCategoryId()
+                && itemId == userItem.getItemId() && userId == userItem.getUserId()
+                && quantity == userItem.getQuantity()
+                && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
+                && stillSubscribed.equals(userItem.getStillSubscribed())
+                && selectedConfigId == userItem.getSelectedConfigId()
+                && boxItem.equals(userItem.getBoxItem())
+                && cartId == userItem.getCartId();
+
+
     }
 
     public int getId() {

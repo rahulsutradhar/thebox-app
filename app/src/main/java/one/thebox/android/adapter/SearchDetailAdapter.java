@@ -23,6 +23,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,6 +69,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private boolean hasUneditableUserItem;
     private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
+    private OnUserItemChange onUserItemChange;
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
@@ -79,6 +81,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
         this.hasUneditableUserItem = hasUneditableUserItem;
+    }
+
+    public void addOnUserItemChangeListener(OnUserItemChange onUserItemChange) {
+        this.onUserItemChange = onUserItemChange;
     }
 
     public int getPositionInViewPager() {
@@ -170,12 +176,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private SearchedItemViewHolder(View itemView) {
             super(itemView);
             recyclerViewSavings = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
+            recyclerViewSavings.setItemViewCacheSize(20);
+            recyclerViewSavings.setDrawingCacheEnabled(true);
+            recyclerViewSavings.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             changeButton = (TextView) itemView.findViewById(R.id.button_change);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
             savingHolder = (LinearLayout) itemView.findViewById(R.id.saving_holder);
             recyclerViewFrequency = (RecyclerView) itemView.findViewById(R.id.recycler_view_frequency);
+            recyclerViewFrequency.setItemViewCacheSize(20);
+            recyclerViewFrequency.setDrawingCacheEnabled(true);
+            recyclerViewFrequency.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             productName = (TextView) itemView.findViewById(R.id.product_name);
             productBrand = (TextView) itemView.findViewById(R.id.product_brand);
             size = (TextView) itemView.findViewById(R.id.text_view_size);
@@ -332,7 +344,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 savings.setText(boxItem.getSavings() + " Rs Savings");
             }
             if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
+                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                } else {
+                    size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + "X" + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                }
             }
             Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).into(productImage);
         }
@@ -537,19 +553,28 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onDelayActionCompleted(UserItem userItem) {
                             if (userItem == null) {
                                 userItems.remove(arrayListPosition);
+                                if (onUserItemChange != null) {
+                                    onUserItemChange.onUserItemChange(userItems);
+                                }
                                 notifyItemRemoved(getAdapterPosition());
                             } else {
                                 userItems.set(arrayListPosition, userItem);
+                                if (onUserItemChange != null) {
+                                    onUserItemChange.onUserItemChange(userItems);
+                                }
                                 notifyItemChanged(getAdapterPosition());
                             }
                         }
                     }).show(userItem);
                 }
             });
-
-
             productName.setText(userItem.getBoxItem().getTitle());
-            config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+            if (itemConfig.getCorrectQuantity().equals("NA")) {
+                config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+            } else {
+                config.setText(itemConfig.getCorrectQuantity() + "X" +
+                        itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+            }
             brand.setText(userItem.getBoxItem().getBrand());
             savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
             if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
@@ -621,6 +646,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         userItems.remove(position);
                                         notifyItemRemoved(getAdapterPosition());
                                     }
+                                    if (onUserItemChange != null) {
+                                        onUserItemChange.onUserItemChange(userItems);
+                                    }
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -645,6 +673,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 userItems.set(position, response.body().getUserItem());
+                                if (onUserItemChange != null) {
+                                    onUserItemChange.onUserItemChange(userItems);
+                                }
                                 notifyItemChanged(getAdapterPosition());
                                 if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
                                         || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
@@ -690,6 +721,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         if (response.body().isSuccess()) {
                                             userItems.remove(getAdapterPosition());
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
                                         }
@@ -708,6 +742,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
             dialog.show();
         }
+    }
+
+    public interface OnUserItemChange {
+        void onUserItemChange(RealmList<UserItem> userItems);
     }
 
 }

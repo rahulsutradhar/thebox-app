@@ -92,8 +92,6 @@ public class Category extends RealmObject implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (getClass() != o.getClass())
-            return false;
         Category category = (Category) o;
         return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
                 && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());

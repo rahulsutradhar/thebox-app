@@ -33,9 +33,6 @@ public class UserCategory extends RealmObject implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (!this.getClass().getSuperclass().getName().equals(o.getClass().getName())) {
-            return false;
-        }
         UserCategory userCategory = (UserCategory) o;
         if (userCategory.getId() != this.id) {
             return false;
@@ -43,8 +40,7 @@ public class UserCategory extends RealmObject implements Serializable {
         if (!userCategory.getCategory().equals(category)) {
             return false;
         }
-        return !((userCategory.getUserItems().size() != this.getUserItems().size()) &&
-                (!userCategory.getUserItems().equals(getUserItems())));
+        return userCategory.getUserItems().equals(getUserItems());
     }
 
     public int getId() {

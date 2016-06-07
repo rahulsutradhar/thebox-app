@@ -1,50 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="92dp"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:background="@drawable/grey_borders"
-    android:padding="8dp">
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginTop="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/ripple"
+    card_view:cardBackgroundColor="@color/white"
+    card_view:cardCornerRadius="6dp"
+    card_view:cardElevation="10dp">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:scaleType="centerCrop" />
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_toRightOf="@+id/icon"
-        android:orientation="vertical">
+
+        >
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/icon"
+            android:layout_toRightOf="@+id/icon"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+
+            <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/number_of_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10 items"
+                android:textColor="@color/brilliant_rose"
+                android:textSize="@dimen/text_small2"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_view_category_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/icon"
+            android:gravity="center_horizontal"
             android:maxLines="1"
-
+            android:padding="8dp"
             android:text="Body Wash"
-            android:textColor="@color/primary_text_color"
+            android:textColor="@color/black"
             android:textSize="@dimen/text_small3" />
 
 
-         <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/number_of_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
 
-            android:text="10 items"
-            android:textColor="@color/brilliant_rose"
-            android:textSize="@dimen/text_small2" />
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="98dp"
+            android:layout_height="98dp"
+            android:layout_alignTop="@+id/linearLayout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="centerCrop" />
 
-    </LinearLayout>
 
+    </RelativeLayout>
 
-</RelativeLayout>
+</android.support.v7.widget.CardView>

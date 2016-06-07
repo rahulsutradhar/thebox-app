@@ -64,7 +64,7 @@ public class EditTimeSlotAdapter extends BaseRecyclerAdapter {
             itemViewHolder.timeSlotHolderTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new TimeSlotBottomSheet((Activity) mContext, Calendar.getInstance().getTime(),addressAndOrders.get(position).getOderDate(), new TimeSlotBottomSheet.OnTimePicked() {
+                    new TimeSlotBottomSheet((Activity) mContext,addressAndOrders.get(position).getOderDate(), new TimeSlotBottomSheet.OnTimePicked() {
                         @Override
                         public void onTimePicked(Date date, Order order) {
                             addressAndOrders.get(position).setOderDate(date);

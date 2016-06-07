@@ -55,6 +55,9 @@ public class OrderItemsActivity extends BaseActivity {
 
     private void initViews() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         payTextView = (TextView) findViewById(R.id.button_pay);
         payTextView.setOnClickListener(new View.OnClickListener() {
             @Override

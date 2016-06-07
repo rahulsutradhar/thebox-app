@@ -78,7 +78,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         Realm realm = MyApplication.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+        RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
+        this.boxes.addAll(realm.copyFromRealm(boxes));
     }
 
     private void setupAppBarObserver() {
@@ -104,6 +106,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private void initViews() {
         this.progressBar = (GifImageView) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,10 +145,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void onResume() {
         super.onResume();
         getMyBoxes();
-        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 
@@ -165,6 +166,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
+                        progressBar.setVisibility(View.GONE);
+
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
@@ -186,25 +189,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     private void storeToRealm() {
         final Realm superRealm = MyApplication.getRealm();
-        for (final Box box : boxes) {
-            superRealm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealmOrUpdate(box);
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            });
-        }
-
+        superRealm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(boxes);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(Throwable error) {
+                //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        });
     }
 
     @Override

@@ -14,19 +14,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -46,16 +41,14 @@ import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.AutoCompleteFragment;
+import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
+import one.thebox.android.fragment.MyBoxTabFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.util.ActionExecuter;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.NotificationHelper;
-import one.thebox.android.util.NotificationInfo;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -80,6 +73,7 @@ public class MainActivity extends BaseActivity implements
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction;
     private EditText searchView;
+    private TextView termsOfUserTextView;
     private String query;
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
@@ -202,6 +196,13 @@ public class MainActivity extends BaseActivity implements
             }
         });
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        termsOfUserTextView = (TextView) findViewById(R.id.terms_of_use);
+        termsOfUserTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
+            }
+        });
     }
 
     @Override
@@ -245,7 +246,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachOrderFragment() {
         clearBackStack();
-        OrderTabFragment fragment = new OrderTabFragment();
+        CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills");
         fragmentTransaction.commit();
@@ -253,7 +254,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachOrderFragmentWithBackStack() {
-        OrderTabFragment fragment = new OrderTabFragment();
+        CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
         fragmentTransaction.commit();
@@ -271,8 +272,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachMyBoxesFragment() {
         clearBackStack();
-        setTitle("My Boxes");
-        MyBoxesFragment fragment = new MyBoxesFragment();
+        MyBoxTabFragment fragment = new MyBoxTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
         fragmentTransaction.commit();

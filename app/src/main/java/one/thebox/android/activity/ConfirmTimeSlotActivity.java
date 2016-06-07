@@ -101,7 +101,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, Calendar.getInstance().getTime(), currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
+                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
                     @Override
                     public void onTimePicked(Date date, Order order) {
                         currentSelectedDate = date;
@@ -208,6 +208,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private void initVariable() {
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
         nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
+        currentSelectedDate = nextSlotDate;
         for (int i = 0; i < addressAndOrders.size(); i++) {
             addressAndOrders.get(i).setOderDate(nextSlotDate);
             if (addressAndOrders.get(i).getOrder().isCart()) {
@@ -245,7 +246,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         super.onStart();
 
     }
-
 
     public Date getDateWithTimeSlot(Date date, String timeSlot) {
         int hour = Integer.parseInt(timeSlot.substring(0, 2));

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -25,6 +26,7 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
@@ -265,7 +267,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
                 layoutParams.height = DisplayUtil.dpToPx(mContext, heightInDp);
                 linearLayout.setLayoutParams(layoutParams);
-
             }
         }
 
@@ -284,10 +285,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 if (isSearchDetailItemFragment) {
                     categoryNameTextView.setText(category.getTitle());
                 } else {
-                    categoryNameTextView.setText("Add " + category.getTitle());
+                    categoryNameTextView.setText(category.getTitle());
                 }
                 noOfItems.setText(category.getNoOfItems() + " Items");
-                Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
+                Picasso.with(mContext).load(category.getIconUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(categoryIcon);
             }
         }
     }
@@ -320,12 +321,19 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private LinearLayoutManager verticalLinearLayoutManager;
         private LinearLayout emptyBoxLayout;
         private LinearLayout linearLayoutHolder;
-        private CardView parentLayout;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
             this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
+            recyclerViewCategories.setItemViewCacheSize(20);
+            recyclerViewCategories.setDrawingCacheEnabled(true);
+            recyclerViewCategories.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+            recyclerViewCategories.setNestedScrollingEnabled(false);
+            recyclerViewUserItems.setNestedScrollingEnabled(false);
+            recyclerViewUserItems.setItemViewCacheSize(20);
+            recyclerViewUserItems.setDrawingCacheEnabled(true);
+            recyclerViewUserItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.subTitle = (TextView) itemView.findViewById(R.id.sub_title);
             this.savings = (TextView) itemView.findViewById(R.id.saving_text_view);
@@ -334,18 +342,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
             this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
             this.linearLayoutHolder = (LinearLayout) itemView.findViewById(R.id.holder);
-            this.parentLayout = (CardView) itemView.findViewById(R.id.parent_layout);
         }
 
         public void setViews(Box box) {
             if (box.getBoxDetail().getTitle() != null)
                 this.title.setText(box.getBoxDetail().getTitle());
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                this.subTitle.setText("Empty Box");
-            } else {
-                this.subTitle.setText(box.getSubTitle());
-            }
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
+            this.subTitle.setText("Suggestions for you");
+
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(boxImageView);
             if (stickyHeaderHeight == 0) {
                 linearLayoutHolder.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -383,6 +387,13 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
                     this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
                     this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
+                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
+                        @Override
+                        public void onUserItemChange(RealmList<UserItem> userItems) {
+                            boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
+                            setViews(boxes.get(getAdapterPosition()));
+                        }
+                    });
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
                 }
 
@@ -390,13 +401,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
                 this.emptyBoxLayout.setVisibility(View.GONE);
             }
-            parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    int height = parentLayout.getMeasuredHeight();
-                    boxHeights.put(getAdapterPosition() + 1, height);
-                }
-            });
         }
     }
 }

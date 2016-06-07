@@ -70,6 +70,9 @@ public class DelayDeliveryBottomSheet {
 
     public void initViews() {
         recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         progressBar = (GifImageView) bottomSheet.findViewById(R.id.progress_bar);
     }
 
@@ -212,6 +215,9 @@ public class DelayDeliveryBottomSheet {
                 super(itemView);
                 radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
                 recyclerView = (RecyclerView) itemView.findViewById(R.id.recycler_view);
+                recyclerView.setItemViewCacheSize(20);
+                recyclerView.setDrawingCacheEnabled(true);
+                recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             }
 

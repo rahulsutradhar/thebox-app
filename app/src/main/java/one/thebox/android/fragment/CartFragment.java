@@ -17,6 +17,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -35,13 +36,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     public static CartFragment newInstance() {
         CartFragment fragment = new CartFragment();
-      /*  Bundle args = new Bundle();
-        ArrayList<Integer> orderIds = new ArrayList<>();
-        for (Order order : orders) {
-            orderIds.add(order.getId());
-        }
-        args.putString(EXTRA_USER_ITEMS_ARRAY_LIST, CoreGsonUtils.toJson(orderIds));
-        fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -90,6 +84,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         proceedToPayment = (TextView) rootView.findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,5 +113,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             appBarObserver = AppBarObserver.observe(appBarLayout);
             appBarObserver.addOffsetChangeListener(this);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setTitle("Cart");
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }
 }

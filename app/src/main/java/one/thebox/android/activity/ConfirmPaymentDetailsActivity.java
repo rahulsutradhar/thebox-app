@@ -110,8 +110,8 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                         dialog.dismiss();
                         if (response.body() != null) {
-                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                             CartHelper.clearCart();
+                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                             finish();
                         }
                     }
@@ -133,9 +133,9 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                CartHelper.clearCart();
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 storeToRealm(response.body().getOrders());
-                                CartHelper.clearCart();
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();

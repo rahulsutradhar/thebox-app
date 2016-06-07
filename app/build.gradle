@@ -35,7 +35,6 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
         transitive = true
     }
-    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
 
 
     compile 'com.android.support:support-v4:23.2.1'
@@ -51,6 +50,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.1.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.hotchemi:permissionsdispatcher:2.1.2'
@@ -60,6 +60,7 @@ dependencies {
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
+    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

@@ -132,6 +132,9 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder_linear_layout);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         emptyText = (TextView) rootView.findViewById(R.id.empty_text);
