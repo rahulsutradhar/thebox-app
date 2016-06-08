@@ -9,6 +9,7 @@ import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
+import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
@@ -150,4 +151,7 @@ public interface APIService {
 
     @POST("add_cartitems_to_order")
     Call<ApiResponse> mergeCartItemToOrder(@Header("authtoken") String authToken, @Body MergeCartToOrderRequestBody mergeCartToOrderRequestBody);
+
+    @POST("/devices")
+    Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 }

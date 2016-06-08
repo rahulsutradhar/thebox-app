@@ -1,6 +1,7 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
@@ -121,7 +122,14 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         ((MainActivity) getActivity()).getToolbar().setTitle("Cart");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
     }
 }

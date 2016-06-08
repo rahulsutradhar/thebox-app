@@ -249,7 +249,9 @@
                 android:id="@+id/relatedCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp" />
+                android:paddingRight="4dp"
+                android:paddingLeft="4dp"
+                />
 
         </LinearLayout>
 

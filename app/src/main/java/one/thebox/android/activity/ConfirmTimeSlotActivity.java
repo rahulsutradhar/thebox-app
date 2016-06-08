@@ -181,6 +181,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             }
         }
 
+
         if (mergeOrders != null && !mergeOrders.isEmpty()) {
             currentSelectedOrder = mergeOrders.get(0);
         }

@@ -499,8 +499,15 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }

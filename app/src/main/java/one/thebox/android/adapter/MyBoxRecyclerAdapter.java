@@ -89,20 +89,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (boxes.get(position).getAllItemInTheBox() == null || boxes.get(position).getAllItemInTheBox().isEmpty()) {
-                    String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(position).getBoxId(), boxes.get(position).getBoxDetail().getTitle()));
-                    mContext.startActivity(new Intent(mContext, MainActivity.class)
-                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
-                } else {
-                    boxes.get(position).setExpandedListVisible(!boxes.get(position).isExpandedListVisible());
-                }
-                notifyItemChanged(position);
-            }
-        });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
         new ShowCaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
@@ -315,12 +301,27 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private RecyclerView recyclerViewUserItems;
-        private TextView title, subTitle, savings;
+        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
-        private LinearLayout emptyBoxLayout;
-        private LinearLayout linearLayoutHolder;
+        private View.OnClickListener openBoxListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
+                mContext.startActivity(new Intent(mContext, MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+            }
+        };
+
+        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boxes.get(getAdapterPosition()).setExpandedListVisible(!boxes.get(getAdapterPosition()).isExpandedListVisible());
+                notifyItemChanged(getAdapterPosition());
+            }
+        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -340,30 +341,33 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
-            this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
-            this.linearLayoutHolder = (LinearLayout) itemView.findViewById(R.id.holder);
+            this.viewItems = (TextView) itemView.findViewById(R.id.view_items);
+            this.noOfItemSubscribed = (TextView) itemView.findViewById(R.id.no_of_item_subscribed);
         }
 
         public void setViews(Box box) {
-            if (box.getBoxDetail().getTitle() != null)
-                this.title.setText(box.getBoxDetail().getTitle());
+            this.title.setText(box.getBoxDetail().getTitle());
+            this.title.setOnClickListener(openBoxListener);
             this.subTitle.setText("Suggestions for you");
-
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(boxImageView);
-            if (stickyHeaderHeight == 0) {
-                linearLayoutHolder.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        stickyHeaderHeight = linearLayoutHolder.getMeasuredHeight();
-                        boxImageView.getLayoutParams().height = stickyHeaderHeight;
-                        boxImageView.requestLayout();
-                    }
-                });
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                viewItems.setText("Add");
+                viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                noOfItemSubscribed.setText("Empty Box");
+                viewItems.setOnClickListener(openBoxListener);
+                noOfItemSubscribed.setOnClickListener(openBoxListener);
             } else {
-                boxImageView.getLayoutParams().height = stickyHeaderHeight;
-                boxImageView.requestLayout();
+                if(box.isExpandedListVisible()) {
+                    viewItems.setText("Hide My Items");
+                }else {
+                    viewItems.setText("View My Items");
+                }
+                viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
+                noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
+                viewItems.setOnClickListener(viewItemsListener);
+                noOfItemSubscribed.setOnClickListener(viewItemsListener);
             }
 
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(boxImageView);
 
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);
@@ -380,10 +384,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             if (box.isExpandedListVisible()) {
                 if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                     this.recyclerViewUserItems.setVisibility(View.GONE);
-                    this.emptyBoxLayout.setVisibility(View.VISIBLE);
                 } else {
                     this.recyclerViewUserItems.setVisibility(View.VISIBLE);
-                    this.emptyBoxLayout.setVisibility(View.GONE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
                     this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
                     this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
@@ -399,7 +401,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
             } else {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
-                this.emptyBoxLayout.setVisibility(View.GONE);
             }
         }
     }

@@ -1,6 +1,7 @@
 package one.thebox.android.Services;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -22,6 +23,7 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        Log.d("message received",data.toString());
         String notificationInfoString = data.getString("notification_info");
         NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
         new NotificationHelper(this, notificationInfo).show();

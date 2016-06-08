@@ -82,6 +82,14 @@ public class ConfirmAddressActivity extends BaseActivity {
         } else {
             setupRecyclerView(false);
         }
+        if (user.getAddresses() != null && !user.getAddresses().isEmpty()) {
+            ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
+            for (Order order : orders) {
+                addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
+            }
+            startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+            finish();
+        }
     }
 
     public void setupRecyclerView(boolean editAddressAdapter) {
@@ -114,6 +122,7 @@ public class ConfirmAddressActivity extends BaseActivity {
                         addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
                     }
                     startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+                    finish();
 
                 }
             });

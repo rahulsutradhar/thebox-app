@@ -41,7 +41,7 @@ public class MyBoxTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).getToolbar().setTitle("My Orders");
+        ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_box_tabs, container, false);
             initViews();
@@ -74,7 +74,7 @@ public class MyBoxTabFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         holder.setVisibility(View.VISIBLE);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(new MyBoxesFragment(), "Items");
+        adapter.addFragment(new MyBoxesFragment(), "My Boxes");
         adapter.addFragment(UpComingOrderFragment.newInstance(), "My Deliveries");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -82,13 +82,11 @@ public class MyBoxTabFragment extends Fragment {
 
     @Override
     public void onStart() {
-        MainActivity.isSearchFragmentIsAttached = true;
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        MainActivity.isSearchFragmentIsAttached = false;
         super.onStop();
     }
 

@@ -114,11 +114,12 @@ public class MainActivity extends BaseActivity implements
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
+/*
             attachExploreBoxes();
+*/
             getAllAddresses();
-        } else {
-            attachMyBoxesFragment();
         }
+        attachMyBoxesFragment();
         initCart();
         new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
@@ -152,7 +153,9 @@ public class MainActivity extends BaseActivity implements
             }
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
+/*
         navigationView.setCheckedItem(R.id.explore_boxes);
+*/
     }
 
     private void initViews() {
@@ -225,15 +228,19 @@ public class MainActivity extends BaseActivity implements
             case R.id.view_bill:
                 attachOrderFragment();
                 return true;
-            case R.id.explore_boxes: {
+           /* case R.id.explore_boxes: {
                 attachExploreBoxes();
+                return true;
+            }*/
+            case R.id.faqs: {
+                startActivity(TermsOfUserActivity.getIntent(this, true));
                 return true;
             }
         }
         return true;
     }
 
-    private void attachExploreBoxes() {
+    /*private void attachExploreBoxes() {
         clearBackStack();
         setTitle("Explore Boxes");
         getToolbar().setSubtitle(null);
@@ -242,7 +249,7 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
-    }
+    }*/
 
     private void attachOrderFragment() {
         clearBackStack();
@@ -275,6 +282,14 @@ public class MainActivity extends BaseActivity implements
         MyBoxTabFragment fragment = new MyBoxTabFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
+        fragmentTransaction.commit();
+        appBarLayout.setExpanded(true, true);
+    }
+
+    private void attachMyBoxesFragmentWithBackStack() {
+        MyBoxTabFragment fragment = new MyBoxTabFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment, "My Boxes").addToBackStack("My Boxes");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
     }
@@ -438,7 +453,9 @@ public class MainActivity extends BaseActivity implements
         super.onNewIntent(intent);
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
+/*
                 attachExploreBoxes();
+*/
                 break;
             }
             case 1: {
@@ -462,6 +479,10 @@ public class MainActivity extends BaseActivity implements
             }
             case 6: {
                 attachCategoriesFragment(intent);
+                break;
+            }
+            case 7: {
+                attachMyBoxesFragmentWithBackStack();
                 break;
             }
         }

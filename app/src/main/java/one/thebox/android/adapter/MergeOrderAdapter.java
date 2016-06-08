@@ -126,7 +126,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orders.size();
+        return orders.size()>=4?4:orders.size();
     }
 
     @Override

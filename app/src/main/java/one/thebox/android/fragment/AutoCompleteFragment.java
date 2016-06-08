@@ -1,6 +1,7 @@
 package one.thebox.android.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -105,6 +106,21 @@ public class AutoCompleteFragment extends Fragment {
     public void onStart() {
         super.onStart();
         MainActivity.isSearchFragmentIsAttached = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setSubtitle("Search");
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
     }
 
     @Override

@@ -38,28 +38,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Tax"
-            android:textColor="@color/primary_text_color" />
-
-         <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/tax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30 Rs"
-            android:textColor="@color/accent" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-         <one.thebox.android.ViewHelper.MontserratTextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Amount"
             android:textColor="@color/primary_text_color" />
 

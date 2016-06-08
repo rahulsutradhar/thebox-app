@@ -50,7 +50,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private RealmList<Box> boxes = new RealmList<>();
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
-    private boolean isRegistered;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
 
     public MyBoxesFragment() {
@@ -60,11 +59,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).getToolbar().setTitle("My Boxes");
         if (rootLayout == null) {
             rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
             initVariables();
             initViews();
+            getMyBoxes();
             setupAppBarObserver();
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
@@ -144,7 +143,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onResume() {
         super.onResume();
-        getMyBoxes();
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 

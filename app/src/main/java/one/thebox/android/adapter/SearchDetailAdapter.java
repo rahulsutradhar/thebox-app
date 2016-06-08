@@ -569,6 +569,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             productName.setText(userItem.getBoxItem().getTitle());
+
             if (itemConfig.getCorrectQuantity().equals("NA")) {
                 config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
             } else {

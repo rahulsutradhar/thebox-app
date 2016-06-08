@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/grp1" android:checkableBehavior="single">
 
         <item
             android:id="@+id/my_boxes"
             android:checked="false"
-            android:title="My Boxes" />
-
-        <item
-            android:id="@+id/explore_boxes"
-            android:checked="false"
-            android:title="Explore Boxes" />
-
+            android:title="Home" />
 
         <item
             android:id="@+id/my_account"
@@ -21,7 +15,13 @@
         <item
             android:id="@+id/view_bill"
             android:checked="false"
-            android:title="My Deliveries" />
+            android:title="My Cart" />
 
+    </group>
+
+    <group android:id="@+id/grp2" android:checkableBehavior="single" >
+        <item
+            android:id="@+id/faqs"
+            android:title="FAQs" />
     </group>
 </menu>
