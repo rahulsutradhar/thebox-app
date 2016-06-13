@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:clickable="true"
+    android:focusable="true"
+
+    android:foreground="@drawable/ripple"
+    card_view:cardBackgroundColor="@color/primary"
+    card_view:cardCornerRadius="6dp"
+    card_view:cardElevation="2dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="8dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_small3"
+            android:textColor="@color/primary_inverse_text_color"
+            android:text="3 Items in your card"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_small3"
+            android:textColor="@color/primary_inverse_text_color"
+            android:text="Add Rs 1000 to go for free delivery"/>
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>

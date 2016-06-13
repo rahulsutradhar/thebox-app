@@ -14,14 +14,22 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.eftimoff.androidplayer.Player;
+import com.eftimoff.androidplayer.actions.property.PropertyAction;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,6 +41,7 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnCategorySelectEvent;
+import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.CartHelper;
@@ -51,6 +60,7 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.AnimationUtil;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -86,17 +96,19 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds;
     private int clickPosition;
-    private TextView numberOfItemsInCart, noResultFound;
+    private TextView numberOfItemsInCart, noResultFound, itemsInCart, savings;
     private FrameLayout fabHolder;
+    private CardView specialCardView;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int source;
-
+    public static int POSITION_OF_VIEW_PAGER;
+    private boolean previousScrollAction = false;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (getActivity() == null) {
                 return;
-        }
+            }
             int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
             if (noOfTabs > 0) {
                 numberOfItemsInCart.setVisibility(View.VISIBLE);
@@ -200,6 +212,16 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         });
         noResultFound = (TextView) rootView.findViewById(R.id.no_result_found);
+        specialCardView = (CardView) rootView.findViewById(R.id.special_card);
+        specialCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+            }
+        });
+        itemsInCart = (TextView) rootView.findViewById(R.id.items_in_cart);
+        savings = (TextView) rootView.findViewById(R.id.savings);
+
     }
 
     @Override
@@ -277,7 +299,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         }
         viewPager.setCurrentItem(clickPosition);
-        ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME),clickPosition);
+        POSITION_OF_VIEW_PAGER = clickPosition;
+        ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), clickPosition);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -286,7 +309,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
             @Override
             public void onPageSelected(int position) {
-                ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME),position);
+                POSITION_OF_VIEW_PAGER = position;
+                ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), position);
             }
 
             @Override
@@ -366,7 +390,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
             }
         });
-        if(exploreItem!=null) {
+        if (exploreItem != null) {
             viewPager.setCurrentItem(exploreItem.getDefaultPositionOfViewPager());
         }
     }
@@ -501,11 +525,19 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
+        ((MainActivity) getActivity()).getSearchAction().setImageResource(R.drawable.menu_icon);
+        ((MainActivity) getActivity()).getSearchAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
             }
         });
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
@@ -520,6 +552,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Override
     public void onOffsetChange(int offset, int dOffset) {
         fabHolder.setTranslationY(-offset);
+        specialCardView.setTranslationY(-offset);
     }
 
     private void setupAppBarObserver() {
@@ -540,11 +573,16 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                     @Override
                     public void onComplete() {
-                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items of your current session are here in the cart", fabHolder);
+                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                         tabLayout.setScrollPosition(clickPosition, 0, true);
                         shouldMoveMore = false;
                     }
                 });
+    }
+
+    @Subscribe
+    public void showSpecialCard() {
+
     }
 
     private boolean shouldMoveMore = true;
@@ -575,5 +613,24 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         } else {
             numberOfItemsInCart.setVisibility(View.GONE);
         }
+    }
+
+    @Subscribe
+    public void showSpecialCardEvent(ShowSpecialCardEvent showSpecialCardEvent) {
+        if (previousScrollAction != showSpecialCardEvent.isVisible()) {
+            if (showSpecialCardEvent.isVisible()) {
+                specialCardView.setVisibility(View.VISIBLE);
+                fabHolder.setVisibility(View.GONE);
+                itemsInCart.setText("You have " + CartHelper.getNumberOfItemsInCart() + " in the card");
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.animation_show));
+            } else {
+                specialCardView.setVisibility(View.GONE);
+                fabHolder.setVisibility(View.VISIBLE);
+                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.animation_show));
+            }
+            previousScrollAction = showSpecialCardEvent.isVisible();
+        }
+
+
     }
 }

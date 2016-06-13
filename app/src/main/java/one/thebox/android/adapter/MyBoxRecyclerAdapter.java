@@ -88,10 +88,17 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, final int position) {
+    public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
-        new ShowCaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+        new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
+                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                    @Override
+                    public void onComplete() {
+                        new ShowCaseHelper((Activity) mContext, 3)
+                                .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+                    }
+                });
     }
 
     @Override
@@ -274,7 +281,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     categoryNameTextView.setText(category.getTitle());
                 }
                 noOfItems.setText(category.getNoOfItems() + " Items");
-                Picasso.with(mContext).load(category.getIconUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(categoryIcon);
+                Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
             }
         }
     }
@@ -301,7 +308,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private RecyclerView recyclerViewUserItems;
-        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed;
+        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed,addMore;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
@@ -343,26 +350,37 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
             this.viewItems = (TextView) itemView.findViewById(R.id.view_items);
             this.noOfItemSubscribed = (TextView) itemView.findViewById(R.id.no_of_item_subscribed);
+            this.addMore = (TextView) itemView.findViewById(R.id.add_more);
         }
 
         public void setViews(Box box) {
             this.title.setText(box.getBoxDetail().getTitle());
             this.title.setOnClickListener(openBoxListener);
-            this.subTitle.setText("Suggestions for you");
+            if (box.getAllItemInTheBox().size() == 0) {
+                addMore.setVisibility(View.GONE);
+                this.subTitle.setText("Suggestions for you");
+            } else {
+                addMore.setVisibility(View.VISIBLE);
+                this.subTitle.setText("Remaining Categories");
+            }
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                viewItems.setText("Add");
+                viewItems.setText("Add Items");
                 viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-                noOfItemSubscribed.setText("Empty Box");
+                noOfItemSubscribed.setText("     Empty Box    ");
                 viewItems.setOnClickListener(openBoxListener);
                 noOfItemSubscribed.setOnClickListener(openBoxListener);
             } else {
-                if(box.isExpandedListVisible()) {
+                if (box.isExpandedListVisible()) {
                     viewItems.setText("Hide My Items");
-                }else {
+                } else {
                     viewItems.setText("View My Items");
                 }
                 viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
-                noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
+                if (box.getAllItemInTheBox().size() == 1) {
+                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " item subscribed");
+                } else {
+                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
+                }
                 viewItems.setOnClickListener(viewItemsListener);
                 noOfItemSubscribed.setOnClickListener(viewItemsListener);
             }

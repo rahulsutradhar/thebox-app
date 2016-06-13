@@ -12,9 +12,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
@@ -154,6 +157,16 @@ public class SearchDetailItemsFragment extends Fragment {
                         setupRecyclerView();
                         break;
                     }
+                }
+            }
+        });
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy!=0){
+
+                    EventBus.getDefault().post(new ShowSpecialCardEvent(false));
                 }
             }
         });

@@ -38,8 +38,13 @@ public class DateTimeUtil {
     }
 
     public static long getDifferenceAsDay(Date startDate, Date endDate) {
-        long diff = startDate.getTime() - endDate.getTime();
+        long diff =  endDate.getTime() - startDate.getTime();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+    }
+
+    public static long getDifferenceAsHours(Date startDate, Date endDate) {
+        long diff =  endDate.getTime() - startDate.getTime();
+        return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     public static Date convertStringToDate(String date) throws ParseException {
@@ -60,4 +65,12 @@ public class DateTimeUtil {
                 && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
                 && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
     }
+
+    public static boolean isArrivingToday(int hours) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR_OF_DAY, hours);
+        cal.getTime();
+        return cal.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+    }
+
 }

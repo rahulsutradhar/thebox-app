@@ -5,13 +5,16 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
+import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -98,5 +101,10 @@ public class MyBoxTabFragment extends Fragment {
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+        ((MainActivity) getActivity()).getSearchView().getText().clear();
+        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getSearchAction().setOnClickListener(null);
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(((BaseActivity) getActivity()).getContentView().getWindowToken(), 0);
     }
 }

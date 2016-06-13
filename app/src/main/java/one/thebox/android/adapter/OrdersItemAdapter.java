@@ -1,11 +1,10 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +19,8 @@ import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.util.DateTimeUtil;
 
+import static one.thebox.android.R.id.month;
+
 
 /**
  * Created by Ajeet Kumar Meena on 15-04-2016.
@@ -28,10 +29,28 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Order> orders = new RealmList<>();
     private boolean isTimeSlotOrderAdapter;
+    private ArrayList<Integer> monthPrintPosition = new ArrayList<>();
 
     public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
         this.orders = orders;
+
+        try {
+            String previousMonth = "";
+            for (int i = 0; i < orders.size(); i++) {
+                Order order = orders.get(i);
+                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+                String currentMonth = new SimpleDateFormat("MMMM").format(date);
+                if (!previousMonth.equals(currentMonth)) {
+                    monthPrintPosition.add(i);
+                }
+                previousMonth = currentMonth;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
       /*  if (shouldHaveOrders()) {
             mViewType = RECYCLER_VIEW_TYPE_HEADER;
         } else {*/
@@ -104,6 +123,12 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
             }
         });
+        itemViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
+            }
+        });
     }
 
     @Override
@@ -144,8 +169,9 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot;
+        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month;
         private LinearLayout linearLayout;
+        private CardView cardView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -155,6 +181,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
             viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
             timeSlot = (TextView) itemView.findViewById(R.id.time_slot);
+            month = (TextView) itemView.findViewById(R.id.month);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
 
         public void setViewHolder(final Order order) {
@@ -163,10 +191,18 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
                 dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
                 timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+                String currentMonth = new SimpleDateFormat("MMMM").format(date);
+                if (monthPrintPosition.contains(getAdapterPosition())) {
+                    month.setVisibility(View.VISIBLE);
+                    month.setText(currentMonth);
+                } else {
+                    month.setVisibility(View.GONE);
+                }
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
+            itemsNameTextView.setText(order.getUserItems().size() + " items in the order");
             if (isTimeSlotOrderAdapter) {
                 amountTobePaidTextView.setText("Merge");
             } else {

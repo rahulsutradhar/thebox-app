@@ -3,7 +3,6 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -19,7 +18,7 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("usercategory_id")
     private int userCategoryId;
     @SerializedName("item_id")
-    private int itemId;
+    private int selectedItemId;
     @SerializedName("user_id")
     private int userId;
     @SerializedName("quantity")
@@ -38,10 +37,10 @@ public class UserItem extends RealmObject implements Serializable {
     public UserItem() {
     }
 
-    public UserItem(int id, int userCategoryId, int itemId, int userId, int quantity, String nextDeliveryScheduledAt, String stillSubscribed, int selectedConfigId, BoxItem boxItem) {
+    public UserItem(int id, int userCategoryId, int selectedItemId, int userId, int quantity, String nextDeliveryScheduledAt, String stillSubscribed, int selectedConfigId, BoxItem boxItem) {
         this.id = id;
         this.userCategoryId = userCategoryId;
-        this.itemId = itemId;
+        this.selectedItemId = selectedItemId;
         this.userId = userId;
         this.quantity = quantity;
         this.nextDeliveryScheduledAt = nextDeliveryScheduledAt;
@@ -63,7 +62,7 @@ public class UserItem extends RealmObject implements Serializable {
         UserItem userItem = (UserItem) o;
         return userItem != null && this.id == userItem.getId()
                 && userCategoryId == userItem.getUserCategoryId()
-                && itemId == userItem.getItemId() && userId == userItem.getUserId()
+                && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getUserId()
                 && quantity == userItem.getQuantity()
                 && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
                 && stillSubscribed.equals(userItem.getStillSubscribed())
@@ -90,12 +89,12 @@ public class UserItem extends RealmObject implements Serializable {
         this.userCategoryId = userCategoryId;
     }
 
-    public int getItemId() {
-        return itemId;
+    public int getSelectedItemId() {
+        return selectedItemId;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setSelectedItemId(int selectedItemId) {
+        this.selectedItemId = selectedItemId;
     }
 
     public int getUserId() {
@@ -152,5 +151,10 @@ public class UserItem extends RealmObject implements Serializable {
         boxItem.setQuantity(this.getQuantity());
         boxItem.setSelectedItemConfig(boxItem.getItemConfigById(this.getSelectedConfigId()));
         return boxItem;
+    }
+
+    public int getTotalPrice(){
+        ItemConfig selectedItemConfig = getBoxItem().getItemConfigById(selectedConfigId);
+        return selectedItemConfig.getPrice()*getQuantity();
     }
 }

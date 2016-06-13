@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -29,6 +30,7 @@ import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Locality;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
@@ -121,7 +123,7 @@ public class AddressBottomSheet {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
+                imm.hideSoftInputFromWindow(((BaseActivity)context).getContentView().getWindowToken(), 0);
             }
         });
         bottomSheetDialog.show();

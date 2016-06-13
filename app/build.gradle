@@ -61,6 +61,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
+  compile 'com.eftimoff:androidplayer:1.0.3@aar'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

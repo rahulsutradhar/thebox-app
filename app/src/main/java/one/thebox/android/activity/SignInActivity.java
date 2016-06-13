@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -51,6 +53,25 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         signInButton = (TextView) findViewById(R.id.button_sign_in);
         mobileNumberEditText = (EditText) findViewById(R.id.edit_text_mobile_number);
         signInButton.setOnClickListener(this);
+        mobileNumberEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 10) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -68,7 +89,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void singIn() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {

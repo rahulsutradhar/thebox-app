@@ -14,12 +14,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -71,7 +75,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         initViews();
         initVariables();
         setupRecyclerView();
-        getAllOrders();
         return rootView;
     }
 
@@ -126,7 +129,11 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                                                  if (!response.body().getOrders().get(i).isCart())
                                                      orders.add(response.body().getOrders().get(i));
                                              }
-                                             storeToRealm();
+                                             if (orders.isEmpty()) {
+                                                 clearDatabase();
+                                             } else {
+                                                 storeToRealm();
+                                             }
                                              setupRecyclerView();
                                          }
                                      }
@@ -145,27 +152,31 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 );
     }
 
+    private void clearDatabase() {
+        Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(getActivity()).getCartId()).findAll().deleteAllFromRealm();
+        realm.commitTransaction();
+    }
+
     private void storeToRealm() {
         final Realm superRealm = MyApplication.getRealm();
-        for (final Order order : orders) {
-            superRealm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealmOrUpdate(order);
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            });
-        }
-
+        superRealm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(orders);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(Throwable error) {
+                // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        });
     }
 
     private void initVariables() {
@@ -175,5 +186,29 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         for (int i = 0; i < realmResults.size(); i++) {
             orders.add(realmResults.get(i));
         }
+    }
+
+    @Subscribe
+    public void onUpdateUpcomingDeliveries(UpdateUpcomingDeliveriesEvent UpdateUpcomingDeliveriesEvent) {
+        if (getActivity() != null)
+            getAllOrders();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getAllOrders();
     }
 }

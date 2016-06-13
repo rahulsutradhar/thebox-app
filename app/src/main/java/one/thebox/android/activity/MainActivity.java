@@ -14,6 +14,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,8 +29,13 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
@@ -71,12 +78,14 @@ public class MainActivity extends BaseActivity implements
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction;
+    private ImageView buttonSpecialAction, searchAction;
     private EditText searchView;
     private TextView termsOfUserTextView;
     private String query;
+    private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
+    private Menu menu;
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
@@ -121,16 +130,17 @@ public class MainActivity extends BaseActivity implements
         }
         attachMyBoxesFragment();
         initCart();
-        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
         CartHelper.saveCartItemsIfRequire();
     }
 
-    private void setupNavigationDrawer() {
+    public void setupNavigationDrawer() {
         fragmentManager.addOnBackStackChangedListener(this);
         navigationView.setNavigationItemSelectedListener(this);
+        this.menu = navigationView.getMenu();
+        addBoxesToMenu();
         View headerView = navigationView.getHeaderView(0);
         TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
         userNameTextView.setText(user.getName());
@@ -194,6 +204,7 @@ public class MainActivity extends BaseActivity implements
                         call.enqueue(searchAutoCompleteResponseCallback);
                     }
                 } else {
+                    getSupportFragmentManager().popBackStackImmediate();
                     progressBar.setVisibility(View.GONE);
                 }
             }
@@ -206,18 +217,28 @@ public class MainActivity extends BaseActivity implements
                 startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
             }
         });
+        searchAction = (ImageView) findViewById(R.id.image_view_search_action);
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+    public boolean onNavigationItemSelected(final MenuItem menuItem) {
         if (menuItem.isChecked()) {
             menuItem.setChecked(false);
             //menuItem.getActionView();
         } else {
             menuItem.setChecked(true);
         }
-
         drawerLayout.closeDrawers();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                handleDrawer(menuItem);
+            }
+        }, 350);
+        return true;
+    }
+
+    public boolean handleDrawer(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
                 attachMyBoxesFragment();
@@ -232,12 +253,29 @@ public class MainActivity extends BaseActivity implements
                 attachExploreBoxes();
                 return true;
             }*/
-            case R.id.faqs: {
-                startActivity(TermsOfUserActivity.getIntent(this, true));
-                return true;
+
+            default: {
+                String menuName = (String) menuItem.getTitle();
+                openBoxByName(menuName);
             }
         }
         return true;
+    }
+
+    private void openBoxByName(String name) {
+        if (name.equals("FAQs")) {
+            startActivity(TermsOfUserActivity.getIntent(this, true));
+        } else {
+            ExploreItem selectedExploreItem = null;
+            for (ExploreItem exploreItem : exploreItems) {
+                if (exploreItem.getTitle().equals(name)) {
+                    selectedExploreItem = exploreItem;
+                    break;
+                }
+            }
+            attachExploreItemDetailFragment(selectedExploreItem);
+        }
+
     }
 
     /*private void attachExploreBoxes() {
@@ -287,11 +325,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragmentWithBackStack() {
-        MyBoxTabFragment fragment = new MyBoxTabFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "My Boxes").addToBackStack("My Boxes");
-        fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
+        attachMyBoxesFragment();
     }
 
     private void attachSearchResultFragment() {
@@ -562,5 +596,46 @@ public class MainActivity extends BaseActivity implements
 
     public void setSearchView(EditText searchView) {
         this.searchView = searchView;
+    }
+
+    public DrawerLayout getDrawerLayout() {
+        return drawerLayout;
+    }
+
+    public void setDrawerLayout(DrawerLayout drawerLayout) {
+        this.drawerLayout = drawerLayout;
+    }
+
+    public ImageView getSearchAction() {
+        return searchAction;
+    }
+
+    public void setSearchAction(ImageView searchAction) {
+        this.searchAction = searchAction;
+    }
+
+    public ArrayList<ExploreItem> getAllExploreItems() {
+        ArrayList<ExploreItem> exploreItems = new ArrayList<>();
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Box> query = realm.where(Box.class);
+        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+        RealmList<Box> boxes = new RealmList<>();
+        boxes.addAll(realmResults.subList(0, realmResults.size()));
+        for (Box box : boxes) {
+            exploreItems.add(new ExploreItem(box.getBoxId(), box.getBoxDetail().getTitle()));
+        }
+        return exploreItems;
+    }
+
+    public void addBoxesToMenu(){
+        if(exploreItems==null || exploreItems.isEmpty()){
+            exploreItems = getAllExploreItems();
+            for (ExploreItem exploreItem : exploreItems) {
+                menu.add(exploreItem.getTitle());
+            }
+            menu.add("FAQs");
+            menu.add("");
+            navigationView.invalidate();
+        }
     }
 }

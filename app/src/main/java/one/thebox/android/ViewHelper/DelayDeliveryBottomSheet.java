@@ -260,13 +260,21 @@ public class DelayDeliveryBottomSheet {
                 if (userItem.getNextDeliveryScheduledAt() == null) {
                     arrivingTextView.setText("This item is in cart. Order this item now.");
                 } else {
-                    arrivingTextView.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(
-                            Calendar.getInstance().getTime(), orderDate
-                    ) + " days");
+                    int days = (int) DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), orderDate);
+                    if(days == 0) {
+                        arrivingTextView.setText("Arriving in " + days+" days");
+                    }else {
+                        int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), orderDate);
+                        if (DateTimeUtil.isArrivingToday(hours)) {
+                            arrivingTextView.setText("Arriving Today");
+                        } else {
+                            arrivingTextView.setText("Arriving Tomorrow");
+                        }
+                    }
                 }
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
                 deliveryTextView
-                        .setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
+                        .setText("Delivered to you every " + itemConfig.getSubscriptionType());
 
             }
 
@@ -329,7 +337,7 @@ public class DelayDeliveryBottomSheet {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
                                                 bottomSheetDialog.dismiss();
-                                                onDelayActionCompleted.onDelayActionCompleted(null);
+                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
                                                 dialog.dismiss();
                                             }
                                         }

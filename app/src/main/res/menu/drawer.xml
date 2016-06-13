@@ -18,10 +18,4 @@
             android:title="My Cart" />
 
     </group>
-
-    <group android:id="@+id/grp2" android:checkableBehavior="single" >
-        <item
-            android:id="@+id/faqs"
-            android:title="FAQs" />
-    </group>
 </menu>

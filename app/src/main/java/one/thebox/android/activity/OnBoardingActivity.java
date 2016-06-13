@@ -30,7 +30,7 @@ public class OnBoardingActivity extends AppIntro {
         addSlide(IntroSlide.newInstance(R.layout.intro_slide3));
         //  addSlide(IntroSlide.newInstance(R.layout.intro_slide4));
         setSeparatorColor(getResources().getColor(R.color.transparent));
-        setIndicatorColor(getResources().getColor(R.color.transparent_black), getResources().getColor(R.color.transparent_black));
+        setIndicatorColor(getResources().getColor(R.color.primary), getResources().getColor(R.color.primary_transparent));
         initStatusBarColor();
         setCustomTransformer(new ViewPageTransformer(ViewPageTransformer.TransformType.FLOW));
     }

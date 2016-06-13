@@ -46,7 +46,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, cartId).findFirst();
-        this.order = realm.copyFromRealm(order);
+        if(order!=null) {
+            this.order = realm.copyFromRealm(order);
+        }
     }
 
     @Override
@@ -74,6 +76,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         } else {
             emptyCartText.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
+            proceedToPayment.setText("Total Cost: Rs "+ order.getTotalPriceOfUserItems() + "\n"+"Proceed to Payment");
         }
 
         userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());

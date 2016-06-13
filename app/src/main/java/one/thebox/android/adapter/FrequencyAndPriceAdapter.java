@@ -15,11 +15,20 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
     private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private int currentSelectedPosition = 0;
     private OnItemConfigChange onItemConfigChange;
+    private int quantity;
 
     public FrequencyAndPriceAdapter(Context context, int currentSelectedPosition, OnItemConfigChange onItemConfigChange) {
         super(context);
         this.currentSelectedPosition = currentSelectedPosition;
         this.onItemConfigChange = onItemConfigChange;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public RealmList<ItemConfig> getItemConfigs() {
@@ -118,7 +127,11 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         }
 
         public void setView(ItemConfig itemConfig) {
-            textViewPrice.setText("Rs " + itemConfig.getPrice());
+            if (quantity != 0){
+                textViewPrice.setText("Rs " + itemConfig.getPrice() * quantity);
+            } else {
+                textViewPrice.setText("Rs " + itemConfig.getPrice());
+            }
             textViewSize.setText(itemConfig.getSubscriptionType());
             if (getAdapterPosition() == currentSelectedPosition) {
                 textViewPrice.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.black));

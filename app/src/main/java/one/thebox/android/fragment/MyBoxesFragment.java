@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -13,11 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -26,6 +26,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
@@ -143,7 +144,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onResume() {
         super.onResume();
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
     }
 
     @Override
@@ -195,6 +195,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
+                ((MainActivity) getActivity()).addBoxesToMenu();
                 // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
@@ -203,6 +204,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         });
+
     }
 
     @Override

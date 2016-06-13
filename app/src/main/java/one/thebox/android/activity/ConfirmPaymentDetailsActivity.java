@@ -85,6 +85,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         paymentDetailAdapter.setOrders(orders);
         recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
+        payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay (Cash on Delivery)");
     }
 
     private void initViews() {

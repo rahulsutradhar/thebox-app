@@ -7,11 +7,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -40,6 +46,7 @@ public class OrderItemsActivity extends BaseActivity {
 
         RealmResults<Order> realmResults = query.findAll();
         order = realmResults.get(0);
+        order = realm.copyFromRealm(order);
         userItems.addAll(order.getUserItems());
     }
 
@@ -65,6 +72,10 @@ public class OrderItemsActivity extends BaseActivity {
                 startActivity(OrderItemsActivity.newInstance(OrderItemsActivity.this, orderId));
             }
         });
+        setPayButton();
+    }
+
+    private void setPayButton() {
         if (order.isPaid()) {
             payTextView.setText("Paid");
             payTextView.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +96,15 @@ public class OrderItemsActivity extends BaseActivity {
         }
     }
 
+    public float getTotalPrice() {
+        int total = 0;
+        for (int i = 0; i < order.getUserItems().size(); i++) {
+            ItemConfig selectedItemConfig = order.getUserItems().get(i).getBoxItem().getItemConfigById(order.getUserItems().get(i).getSelectedConfigId());
+            total = total + selectedItemConfig.getPrice() * order.getUserItems().get(i).getQuantity();
+        }
+        return total;
+    }
+
     private void setupRecyclerView() {
         userItemRecyclerAdapter = new SearchDetailAdapter(this);
         userItemRecyclerAdapter.setBoxItems(null, userItems);
@@ -93,5 +113,32 @@ public class OrderItemsActivity extends BaseActivity {
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Subscribe
+    public void onUpdateOrderItemEvent(UpdateOrderItemEvent updateOrderItemEvent) {
+        this.userItems = userItemRecyclerAdapter.getUserItems();
+        if (!order.isPaid())
+            payTextView.setText("Pay Rs " + getTotalPrice());
+
+        order.getUserItems().get(updateOrderItemEvent.getPosition()).setQuantity(updateOrderItemEvent.getUserItem().getQuantity());
+        order.getUserItems().get(updateOrderItemEvent.getPosition()).setSelectedConfigId(updateOrderItemEvent.getUserItem().getSelectedConfigId());
+        Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(order);
+        realm.commitTransaction();
+
+
+    }
 
 }

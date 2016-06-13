@@ -13,6 +13,18 @@
         android:paddingRight="16dp"
         android:paddingTop="16dp">
 
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/add_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:layout_below="@+id/title"
+            android:text="Click to add more"
+            android:textColor="@color/secondary_text_color"
+            android:textSize="@dimen/text_small1"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentStart="true" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -55,12 +67,11 @@
             android:textColor="@color/primary_text_color"
             android:textSize="@dimen/text_medium2"
             android:textStyle="bold"
+            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/linearLayout3"
-            android:layout_toLeftOf="@+id/linearLayout3"
-            android:layout_toStartOf="@+id/linearLayout3"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentStart="true" />
+
+
 
     </RelativeLayout>
 

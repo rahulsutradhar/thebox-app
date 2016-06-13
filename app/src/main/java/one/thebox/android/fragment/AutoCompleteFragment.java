@@ -1,16 +1,20 @@
 package one.thebox.android.fragment;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -21,6 +25,7 @@ import java.util.ArrayList;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
+import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
 
@@ -32,6 +37,7 @@ public class AutoCompleteFragment extends Fragment {
     private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
     private TextView noItemFoundTextView;
+    private int tempScroll;
 
     public AutoCompleteFragment() {
     }
@@ -62,6 +68,16 @@ public class AutoCompleteFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy!=0) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(((BaseActivity)getActivity()).getContentView().getWindowToken(), 0);
+                }
+            }
+        });
         noItemFoundTextView = (TextView) rootView.findViewById(R.id.no_item_found_text_view);
         ((MainActivity) getActivity()).getSearchView().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -111,7 +127,7 @@ public class AutoCompleteFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).getToolbar().setSubtitle("Search");
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
