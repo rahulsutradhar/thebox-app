@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -130,6 +131,7 @@ public class MainActivity extends BaseActivity implements
         }
         attachMyBoxesFragment();
         initCart();
+        ShowCaseHelper.removeAllTutorial();
     }
 
     private void initCart() {
@@ -627,15 +629,19 @@ public class MainActivity extends BaseActivity implements
         return exploreItems;
     }
 
-    public void addBoxesToMenu(){
-        if(exploreItems==null || exploreItems.isEmpty()){
+    public void addBoxesToMenu() {
+        if (exploreItems == null || exploreItems.isEmpty()) {
             exploreItems = getAllExploreItems();
             for (ExploreItem exploreItem : exploreItems) {
                 menu.add(exploreItem.getTitle());
             }
-            menu.add("FAQs");
-            menu.add("");
-            navigationView.invalidate();
+            if (exploreItems != null && !exploreItems.isEmpty()) {
+                menu.add("FAQs");
+                menu.add("");
+            }
+
         }
+        navigationView.invalidate();
     }
 }
+

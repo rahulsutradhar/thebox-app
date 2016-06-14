@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.api.ApiResponse;
 
@@ -17,11 +18,20 @@ public class UserSignInSignUpResponse extends ApiResponse implements Serializabl
     private String info;
     @SerializedName("user")
     private User user;
-
+    @SerializedName("cart")
+    private Order cart;
     public UserSignInSignUpResponse(boolean success, String info, User user) {
         this.success = success;
         this.info = info;
         this.user = user;
+    }
+
+    public Order getCart() {
+        return cart;
+    }
+
+    public void setCart(Order cart) {
+        this.cart = cart;
     }
 
     public boolean isSuccess() {

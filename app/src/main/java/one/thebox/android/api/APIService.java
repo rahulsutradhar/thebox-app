@@ -46,7 +46,7 @@ public interface APIService {
             @Body CreateUserRequestBody createUserRequestBody
     );
 
-    @POST("/sign_up/verify_otp")
+    @POST("/sign_in/verify_otp")
     Call<UserSignInSignUpResponse> verifyOtp(
             @Body OtpRequestBody otpRequestBody
     );

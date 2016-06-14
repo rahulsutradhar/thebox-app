@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import one.thebox.android.util.ActionExecuter;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.NotificationHelper;
 import one.thebox.android.util.NotificationInfo;
@@ -23,15 +24,12 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.d("message received",data.toString());
+        Log.d("message received", data.toString());
         String notificationInfoString = data.getString("notification_info");
         NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
-        new NotificationHelper(this, notificationInfo).show();
-
-        if (from.startsWith("/topics/")) {
-
-        } else {
-
+        if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
+            ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
+            new NotificationHelper(this, notificationInfo).show();
         }
     }
 }

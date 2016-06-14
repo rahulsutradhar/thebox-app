@@ -17,7 +17,7 @@ public class PaymentResponse extends ApiResponse implements Serializable {
     @SerializedName("info")
     private String info;
     @SerializedName("orders_to_pay_for")
-    private RealmList<Order> orders;
+    private Order orders;
 
     public boolean isSuccess() {
         return success;
@@ -27,7 +27,7 @@ public class PaymentResponse extends ApiResponse implements Serializable {
         return info;
     }
 
-    public RealmList<Order> getOrders() {
+    public Order getOrders() {
         return orders;
     }
 }

@@ -35,10 +35,35 @@ public class ShowCaseHelper {
     private static final int EXTRA_PADDING = DisplayUtil.dpToPx(MyApplication.getInstance(), 16);
     private OnCompleteListener onCompleteListener;
     private boolean shouldBeOnMiddle;
+    private int topPadding;
+    private int leftPadding;
+    private int bottomPadding;
+    private int rightPadding;
 
     public ShowCaseHelper(Activity context, int id) {
         this.context = context;
         this.id = id;
+    }
+
+    public ShowCaseHelper setTopPadding(int topPadding) {
+        this.topPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), topPadding);
+        return this;
+    }
+
+    public ShowCaseHelper setLeftPadding(int leftPadding) {
+        this.leftPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), leftPadding);
+        return this;
+    }
+
+    public ShowCaseHelper setBottomPadding(int bottomPadding) {
+        this.bottomPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), bottomPadding);
+        return this;
+    }
+
+
+    public ShowCaseHelper setRightPadding(int rightPadding) {
+        this.rightPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), rightPadding);
+        return this;
     }
 
     public boolean isShouldBeOnMiddle() {
@@ -82,7 +107,7 @@ public class ShowCaseHelper {
                         .setContentText(description)
                         .setShowcaseDrawer(new CustomShowcaseView
                                 (context.getResources(), view.getMeasuredWidth() + EXTRA_PADDING,
-                                        view.getMeasuredHeight() + EXTRA_PADDING))
+                                        view.getMeasuredHeight() + EXTRA_PADDING + topPadding))
                         .setContentTitlePaint(paintTitle)
                         .setContentTextPaint(paintDetail)
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
@@ -132,6 +157,10 @@ public class ShowCaseHelper {
 
     public interface OnCompleteListener {
         void onComplete();
+    }
+
+    public static boolean hasNotBeenViewed(int id){
+        return PrefUtils.getBoolean(MyApplication.getInstance(), PREF_SHOW_CASE_STATUS + id, false);
     }
 
     public static void removeAllTutorial() {

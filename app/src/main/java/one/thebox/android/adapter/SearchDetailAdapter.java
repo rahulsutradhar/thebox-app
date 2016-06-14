@@ -2,6 +2,7 @@ package one.thebox.android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,18 +24,13 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
-import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
@@ -283,7 +279,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition, boolean shouldScrollToPosition) {
+        public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
             this.position = arrayListPosition;
             addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -340,10 +336,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 updateQuantityViewHolder.setVisibility(View.GONE);
                 if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                     if (getAdapterPosition() == 0) {
-                        new ShowCaseHelper((Activity) mContext, 1).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                        if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
+                            moveRecyclerView(true);
+                        }
+                        new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
                                 .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                                     @Override
                                     public void onComplete() {
+                                        PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
                                         new ShowCaseHelper((Activity) mContext, 2)
                                                 .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
                                                 .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
@@ -354,6 +354,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 });
                                     }
                                 });
+                        moveRecyclerView(true);
                     }
                 }
             } else {
@@ -487,7 +488,25 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                     });
         }
+
+
+        public void moveRecyclerView(final boolean finalPosition) {
+            if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
+                if (finalPosition)
+                    recyclerViewFrequency.smoothScrollToPosition(frequencyAndPriceAdapter.getItemsCount());
+                else {
+                    recyclerViewFrequency.smoothScrollToPosition(0);
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        moveRecyclerView(!finalPosition);
+                    }
+                }, 500);
+            }
+        }
     }
+
 
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -527,7 +546,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                             dialogFragment.dismiss();
-                            changeConfig(arrayListPosition, selectedItemConfig.getId());
+                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                         }
                     });
                 }
@@ -536,9 +555,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     if (userItem.getQuantity() == 0) {
-                        addItemToBox(arrayListPosition);
+                        addItemToBox(getAdapterPosition());
                     } else {
-                        updateQuantity(arrayListPosition, userItem.getQuantity() + 1);
+                        updateQuantity(getAdapterPosition(), userItem.getQuantity() + 1);
                     }
                 }
             });
@@ -546,7 +565,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     if (userItem.getQuantity() > 1) {
-                        updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
+                        updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
                     } else if (userItem.getQuantity() == 1) {
                         MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                 title("Unsubscribe " + userItem.getBoxItem().getTitle()).
@@ -555,7 +574,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         onNegative(new MaterialDialog.SingleButtonCallback() {
                                             @Override
                                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                openCancelDialog(userItem, arrayListPosition);
+                                                openCancelDialog(userItem, getAdapterPosition());
                                             }
                                         }).content("By unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                         dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -764,7 +783,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             }
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
-                                            if (userItems != null && !userItems.isEmpty()) {
+                                            if (userItems != null && !userItems.isEmpty() && userItems.size() > positionInArrayList) {
                                                 EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(positionInArrayList), positionInArrayList));
                                             }
                                         }
@@ -788,6 +807,4 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public interface OnUserItemChange {
         void onUserItemChange(RealmList<UserItem> userItems);
     }
-
-
 }

@@ -2,9 +2,13 @@ package one.thebox.android.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceScreen;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,6 +35,7 @@ import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -46,7 +51,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private OrdersItemAdapter ordersItemAdapter;
     private RealmList<Order> orders = new RealmList<>();
     private TextView emptyOrderText;
-    private GifImageView progressBar;
+    //private GifImageView progressBar;
 
     public UpComingOrderFragment() {
     }
@@ -94,7 +99,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         emptyOrderText = (TextView) rootView.findViewById(R.id.empty_order_text_view);
-        progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+        //progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
 
     }
 
@@ -114,12 +119,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     public void getAllOrders() {
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
         MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<OrdersApiResponse>() {
                              @Override
                              public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
-                                 progressBar.setVisibility(View.GONE);
+                                // progressBar.setVisibility(View.GONE);
                                  if (response.body() != null) {
                                      if (response.body().isSuccess()) {
                                          if (!orders.equals(response.body().getOrders())) {
@@ -143,7 +148,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                              @Override
                              public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
                                  Log.d("exception logs", t.toString());
-                                 progressBar.setVisibility(View.GONE);
+                                 //progressBar.setVisibility(View.GONE);
                                 /* progressBar.isVisible(View.GONE);
                                  holder.isVisible(View.VISIBLE);*/
                              }
@@ -190,8 +195,14 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     @Subscribe
     public void onUpdateUpcomingDeliveries(UpdateUpcomingDeliveriesEvent UpdateUpcomingDeliveriesEvent) {
-        if (getActivity() != null)
-            getAllOrders();
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getAllOrders();
+                }
+            });
+        }
     }
 
     @Override

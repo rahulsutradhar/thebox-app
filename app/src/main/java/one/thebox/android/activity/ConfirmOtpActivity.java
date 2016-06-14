@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -87,6 +88,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                     if (response.body().getUser() != null) {
                                         PrefUtils.saveUser(ConfirmOtpActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
+                                        CartHelper.saveOrdersToRealm(response.body().getCart());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(ConfirmOtpActivity.this, MainActivity.class));
                                             finish();
@@ -139,6 +141,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                         if (response.body().isSuccess()) {
                                             if (response.body().getUser() != null) {
                                                 PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
+                                                CartHelper.saveOrdersToRealm(response.body().getCart());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
                                                     final BoxLoader dialog = new BoxLoader(ConfirmOtpActivity.this).show();

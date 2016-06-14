@@ -308,7 +308,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private RecyclerView recyclerViewUserItems;
-        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed,addMore;
+        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
@@ -350,17 +350,15 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
             this.viewItems = (TextView) itemView.findViewById(R.id.view_items);
             this.noOfItemSubscribed = (TextView) itemView.findViewById(R.id.no_of_item_subscribed);
-            this.addMore = (TextView) itemView.findViewById(R.id.add_more);
         }
 
         public void setViews(Box box) {
-            this.title.setText(box.getBoxDetail().getTitle());
+            this.title.setText(box.getBoxDetail().getTitle().substring(4));
             this.title.setOnClickListener(openBoxListener);
+            this.boxImageView.setOnClickListener(openBoxListener);
             if (box.getAllItemInTheBox().size() == 0) {
-                addMore.setVisibility(View.GONE);
                 this.subTitle.setText("Suggestions for you");
             } else {
-                addMore.setVisibility(View.VISIBLE);
                 this.subTitle.setText("Remaining Categories");
             }
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
@@ -385,7 +383,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 noOfItemSubscribed.setOnClickListener(viewItemsListener);
             }
 
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).noFade().networkPolicy(NetworkPolicy.OFFLINE).into(boxImageView);
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
 
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);

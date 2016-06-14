@@ -1,13 +1,16 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,6 +43,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
+import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
+
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     private RecyclerView recyclerView;
@@ -52,6 +58,23 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (getActivity() == null) {
+                return;
+            }
+            int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
+            if (noOfTabs > 0) {
+                noOfItemsInCart.setVisibility(View.VISIBLE);
+                noOfItemsInCart.setText(String.valueOf(noOfTabs));
+            } else {
+                noOfItemsInCart.setVisibility(View.GONE);
+            }
+        }
+    };
+
 
     public MyBoxesFragment() {
 
@@ -144,6 +167,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onResume() {
         super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
+                new IntentFilter(BROADCAST_EVENT_TAB));
     }
 
     @Override

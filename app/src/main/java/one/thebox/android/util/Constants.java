@@ -12,5 +12,6 @@ public class Constants {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String PREF_SHOULD_OPEN_EXPLORE_BOXES = "should_open_explore_boxes";
     public static final Locality POWAI_LOCALITY = new Locality(400072,"Powai");
+    public static final String PREF_IS_ORDER_IS_LOADING = "pref_is_order_is_loading";
 
 }

@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
@@ -75,7 +76,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         if (smsEvent.getMessage().contains("awesome") || smsEvent.getMessage().toLowerCase().contains("the box")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             otp = Integer.parseInt(otpString);
-            final BoxLoader dialog =   new BoxLoader(this).show();
+            final BoxLoader dialog = new BoxLoader(this).show();
             MyApplication.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -87,6 +88,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     if (response.body().getUser() != null) {
                                         PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                        CartHelper.saveOrdersToRealm(response.body().getCart());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
                                             finish();
@@ -128,7 +130,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
-                    final BoxLoader dialog =   new BoxLoader(this).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
@@ -140,8 +142,10 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                             if (response.body().getUser() != null) {
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                                CartHelper.saveOrdersToRealm(response.body().getCart());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));                                                    finish();
+                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
+                                                    finish();
                                                 } else {
                                                     startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
                                                     finish();
@@ -164,7 +168,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
             case R.id.button_resend: {
                 if (isSignUpActivity) {
-                    final BoxLoader dialog =   new BoxLoader(this).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
@@ -178,7 +182,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                 }
                             });
                 } else {
-                    final BoxLoader dialog =   new BoxLoader(this).show();
+                    final BoxLoader dialog = new BoxLoader(this).show();
                     MyApplication.getAPIService()
                             .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {

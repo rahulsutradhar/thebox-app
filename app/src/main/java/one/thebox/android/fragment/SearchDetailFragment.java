@@ -621,7 +621,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
                 fabHolder.setVisibility(View.GONE);
-                itemsInCart.setText("You have " + CartHelper.getNumberOfItemsInCart() + " in the card");
+                int noOfItemsInCart = CartHelper.getNumberOfItemsInCart()+1;
+                if(noOfItemsInCart == 1) {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " item "+ "in the card");
+                }else {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " items "+ "in the card");
+                }
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.animation_show));
             } else {
                 specialCardView.setVisibility(View.GONE);
