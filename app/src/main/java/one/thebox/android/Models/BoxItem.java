@@ -1,5 +1,7 @@
 package one.thebox.android.Models;
 
+import android.widget.Toast;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -14,6 +16,7 @@ import java.util.TreeMap;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.IntStringComparator;
 
 /**
@@ -210,11 +213,23 @@ public class BoxItem extends RealmObject implements Serializable {
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
                     && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())
-                    && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())) {
+                    && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())
+                    && itemConfigs.get(i).getCorrectQuantity().equals(selectedItemConfig.getCorrectQuantity())) {
                 tempItemConfigs.add(itemConfigs.get(i));
             }
         }
         return tempItemConfigs;
+    }
+
+    private void checkAndPrintIfNull(ItemConfig itemConfig) {
+        if (itemConfig == null) {
+            Toast.makeText(MyApplication.getInstance(), "Item config is null for id " + this.getId(), Toast.LENGTH_SHORT).show();
+        } else {
+            if (itemConfig.getSizeUnit() == null ||
+                    itemConfig.getItemType() == null) {
+                Toast.makeText(MyApplication.getInstance(), "Item fields are null for " + this.getId(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public ItemConfig getItemConfigByFrequencyAndItemConfig(ItemConfig itemConfig, String frequency) {
@@ -238,7 +253,27 @@ public class BoxItem extends RealmObject implements Serializable {
         return 0;
     }
 
-    public void getSmallestItemConfig() {
+    public ItemConfig getSmallestItemConfig() {
+        ItemConfig smallestItemConfig = itemConfigs.get(0);
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
+                smallestItemConfig = itemConfigs.get(i);
+            }
+        }
+        return smallestItemConfig;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        BoxItem boxItem = (BoxItem) o;
+        return boxItem != null
+                && userItemId == boxItem.getUserItemId()
+                && id == boxItem.getId()
+                && title.equals(boxItem.getTitle())
+                && brand.equals(boxItem.getBrand())
+                && savings == boxItem.getSavings()
+                && isSmartItems == boxItem.isSmartItems()
+                && categoryId == boxItem.getCategoryId()
+                && itemConfigs.equals(boxItem.getItemConfigs());
     }
 }

@@ -10,6 +10,7 @@
         <item name="md_content_color">@color/primary_text_color</item>
         <item name="md_medium_font">Montserrat-Regular.otf</item>
         <item name="md_regular_font">Montserrat-Regular.otf</item>
+        <item name="android:listDivider">@color/light_white</item>
     </style>
 
     <style name="MyLaunchActivityTheme" parent="AppTheme">

@@ -23,7 +23,7 @@ import one.thebox.android.ViewHelper.Montserrat;
 /**
  * Created by harsh on 10/12/15.
  */
-abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     boolean isLoginActivity = false;
     private Toolbar toolbar;

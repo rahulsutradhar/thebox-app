@@ -8,17 +8,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_white"
+        android:background="@color/white"
         tools:context=".fragment.MyBoxesFragment">
-
-        <pl.droidsonroids.gif.GifImageView
-            android:id="@+id/progress_bar"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center"
-            android:padding="8dp"
-            android:src="@drawable/loader" />
-
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
@@ -43,7 +34,7 @@
                 app:elevation="0dp"
                 app:layout_anchorGravity="bottom|right|end" />
 
-             <one.thebox.android.ViewHelper.MontserratTextView
+            <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/no_of_items_in_cart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,33 +47,24 @@
 
         </FrameLayout>
 
-        <!-- <LinearLayout
-             android:id="@+id/holder"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:background="@drawable/white_gradient"
-             android:orientation="vertical"
-             android:visibility="gone"
-             android:padding="16dp">
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/progress_bar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:src="@drawable/loader" />
 
-              <one.thebox.android.ViewHelper.MontserratTextView
-                 android:id="@+id/title"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="Hygeine Box"
-                 android:textColor="@color/primary_text_color"
-                 android:textSize="@dimen/text_medium1" />
 
-              <one.thebox.android.ViewHelper.MontserratTextView
-                 android:id="@+id/sub_title"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:maxLines="2"
-                 android:text="sub_title"
-                 android:textColor="@color/secondary_text_color"
-                 android:textSize="@dimen/text_small2" />
-         </LinearLayout>-->
+        <include
+            android:id="@+id/holder_connection_error"
+            layout="@layout/layout_connection_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone" />
 
     </FrameLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

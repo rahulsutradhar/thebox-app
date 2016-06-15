@@ -5,6 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+
+import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
+import one.thebox.android.app.MyApplication;
+
 
 /**
  * Action executer is an easy to use action performer which can perform all app action.
@@ -62,13 +68,28 @@ public class ActionExecuter {
 
         ActionName actionName = null;
         switch (actionId) {
+            case 0: {
+                actionName = ActionName.ORDER_HAS_LOADED;
+                break;
+            }
+            case 1: {
+                actionName = ActionName.MAIN_ACTIVITY;
+                break;
+            }
         }
         performAction(context, actionName, actionExtra);
     }
 
     public static void performAction(final Context context, ActionName actionName, String actionExtra) {
         switch (actionName) {
+            case MAIN_ACTIVITY: {
+                break;
+            }
+            case ORDER_HAS_LOADED: {
+                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
 
+                break;
+            }
         }
     }
 
@@ -81,6 +102,7 @@ public class ActionExecuter {
     }
 
     public enum ActionName {
+        ORDER_HAS_LOADED(0),
         MAIN_ACTIVITY(1);
 
         private final int actionId;

@@ -6,6 +6,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Cache;
+import com.squareup.picasso.Downloader;
+import com.squareup.picasso.LruCache;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -13,6 +18,7 @@ import java.util.ArrayList;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
@@ -128,7 +134,14 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
             title.setText(exploreItem.getTitle());
             subTitle.setText(exploreItem.getSubTitle());
             noOfItemsTextView.setText(exploreItem.getTotalItems() + " items");
-            Picasso.with(mContext).load(exploreItem.getImageUrl()).into(imageView);
+            int PICASSO_DISK_CACHE_SIZE = 1024 * 1024 * 10;
+
+        /*    Downloader downloader = new OkHttpDownloader(MyApplication.getInstance(),
+                    PICASSO_DISK_CACHE_SIZE);
+            Cache memoryCache = new LruCache(24000);
+            Picasso mPicasso = new Picasso.Builder(MyApplication.getInstance())
+                    .downloader(downloader).memoryCache(memoryCache).build();*/
+            Picasso.with(mContext).load(exploreItem.getImageUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(imageView);
         }
     }
 

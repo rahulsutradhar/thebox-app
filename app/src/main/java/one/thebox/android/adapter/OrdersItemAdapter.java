@@ -1,11 +1,10 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +17,12 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.activity.OrderItemsActivity;
+import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.DateTimeUtil;
+import one.thebox.android.util.PrefUtils;
+
+import static one.thebox.android.R.id.month;
 
 
 /**
@@ -28,15 +32,31 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Order> orders = new RealmList<>();
     private boolean isTimeSlotOrderAdapter;
+    private ArrayList<Integer> monthPrintPosition = new ArrayList<>();
 
     public OrdersItemAdapter(Context context, RealmList<Order> orders) {
         super(context);
         this.orders = orders;
-      /*  if (shouldHaveOrders()) {
-            mViewType = RECYCLER_VIEW_TYPE_HEADER;
-        } else {*/
-        mViewType = RECYCLER_VIEW_TYPE_NORMAL;
-       /* }*/
+
+        try {
+            String previousMonth = "";
+            for (int i = 0; i < orders.size(); i++) {
+                Order order = orders.get(i);
+                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+                String currentMonth = new SimpleDateFormat("MMMM").format(date);
+                if (!previousMonth.equals(currentMonth)) {
+                    monthPrintPosition.add(i);
+                }
+                previousMonth = currentMonth;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+            mViewType = RECYCLER_VIEW_TYPE_FOOTER;
+        } else {
+            mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+        }
     }
 
     public boolean isTimeSlotOrderAdapter() {
@@ -85,7 +105,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected FooterHolder getFooterHolder(View view) {
-        return null;
+        return new FooterViewHolder(view);
     }
 
     @Override
@@ -93,6 +113,18 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(orders.get(position));
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
+            }
+        });
+        itemViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
@@ -113,7 +145,11 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orders.size();
+        if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+            return orders.size() > 1 ? 1 : 0;
+        } else {
+            return orders.size();
+        }
     }
 
     @Override
@@ -133,13 +169,14 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getFooterLayoutId() {
-        return 0;
+        return R.layout.footer_order_loader;
     }
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot;
+        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message;
         private LinearLayout linearLayout;
+        private CardView cardView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -149,6 +186,9 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
             viewItemsTextView = (TextView) itemView.findViewById(R.id.text_view_view_items);
             timeSlot = (TextView) itemView.findViewById(R.id.time_slot);
+            month = (TextView) itemView.findViewById(R.id.month);
+            cardView = (CardView) itemView.findViewById(R.id.card_view);
+            message = (TextView) itemView.findViewById(R.id.message);
         }
 
         public void setViewHolder(final Order order) {
@@ -157,32 +197,45 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
                 dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
                 timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+                String currentMonth = new SimpleDateFormat("MMMM").format(date);
+                if (monthPrintPosition.contains(getAdapterPosition())) {
+                    month.setVisibility(View.VISIBLE);
+                    month.setText(currentMonth);
+                } else {
+                    month.setVisibility(View.GONE);
+                }
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            itemsNameTextView.setText("You have " + order.getUserItems().size() + " items in the order");
-            if(isTimeSlotOrderAdapter) {
-                amountTobePaidTextView.setText("Merge");
-            } else {
-                if (order.isPaid()) {
-                    amountTobePaidTextView.setText("Paid");
-                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(mContext, "Order have been paid", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
-                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RealmList<Order> orders = new RealmList<>();
-                            orders.add(order);
-                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
-                        }
-                    });
-                }
+            itemsNameTextView.setText(order.getUserItems().size() + " items in the order");
+
+            if (!order.isOpen()) {
+                message.setText("Thank you for choosing us");
+                message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid via COD");
+                amountTobePaidTextView.setOnClickListener(null);
+            } else if (order.isCod()) {
+                message.setText("Please pay the amount to delivery boy");
+                message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " COD to be paid");
+                amountTobePaidTextView.setOnClickListener(null);
+            } else if (order.isPaid()) {
+                message.setText("Payment Confirm");
+                message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid online");
+            } else if (!order.isPaid() && !order.isCod()) {
+                message.setText("Please confirm delivery");
+                message.setTextColor(mContext.getResources().getColor(R.color.black));
+                amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
+                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        RealmList<Order> orders = new RealmList<>();
+                        orders.add(order);
+                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
+                    }
+                });
             }
         }
     }
@@ -201,6 +254,13 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             } else {
                 payForWeekAndWeekLayout.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    class FooterViewHolder extends FooterHolder {
+
+        public FooterViewHolder(View itemView) {
+            super(itemView);
         }
     }
 }

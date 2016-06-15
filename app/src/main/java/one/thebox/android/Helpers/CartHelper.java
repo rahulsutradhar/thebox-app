@@ -2,6 +2,7 @@ package one.thebox.android.Helpers;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.widget.Toast;
 
 
 import io.realm.Realm;
@@ -30,24 +31,9 @@ public class CartHelper {
     }
 
     private static void saveOrders() {
-        MyApplication.getAPIService().getMyCart(PrefUtils.getToken(MyApplication.getInstance()))
-                .enqueue(new Callback<CartResponse>() {
-                    @Override
-                    public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
-                        if (response.body() != null) {
-                            saveOrdersToRealm(response.body().getCart());
-                            PrefUtils.putBoolean(MyApplication.getInstance(), EXTRA_HAS_SAVED_ORDER, true);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<CartResponse> call, Throwable t) {
-
-                    }
-                });
     }
 
-    private static void saveOrdersToRealm(final Order order) {
+    public static void saveOrdersToRealm(final Order order) {
         final Realm superRealm = MyApplication.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -57,12 +43,13 @@ public class CartHelper {
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
+                sendUpdateNoItemsInCartBroadcast(order.getUserItems().size());
                 //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-                // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+                Toast.makeText(MyApplication.getInstance(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -18,7 +18,15 @@ import com.google.android.gms.iid.InstanceID;
 import java.io.IOException;
 
 import one.thebox.android.R;
+import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
+import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class RegistrationIntentService extends IntentService {
@@ -80,6 +88,18 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String gcm_token) {
         this.gcm_token = gcm_token;
+        MyApplication.getAPIService().postRegistrationId(PrefUtils.getToken(MyApplication.getInstance()),new RegistrationIdRequestBody(gcm_token))
+                .enqueue(new Callback<ApiResponse>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+
+                    }
+                });
     }
 
     /**

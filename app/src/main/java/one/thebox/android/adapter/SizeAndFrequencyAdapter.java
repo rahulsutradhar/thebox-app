@@ -136,8 +136,12 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(ItemConfig itemConfig) {
-            sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
-            costTextView.setText(itemConfig.getPrice() + " Rs");
+            if (itemConfig.getCorrectQuantity().equals("NA")) {
+                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            } else {
+                sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            }
+            costTextView.setText("Rs " + itemConfig.getPrice());
             if (getAdapterPosition() == currentItemSelected) {
                 sizeTextView.setTextColor(colorRose);
                 costTextView.setTextColor(colorRose);

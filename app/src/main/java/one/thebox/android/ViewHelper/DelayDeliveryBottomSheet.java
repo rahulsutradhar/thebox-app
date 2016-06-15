@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
@@ -70,13 +71,20 @@ public class DelayDeliveryBottomSheet {
 
     public void initViews() {
         recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         progressBar = (GifImageView) bottomSheet.findViewById(R.id.progress_bar);
     }
 
     public void setupRecyclerView() {
         ArrayList<String> reasonString = new ArrayList<>();
-        reasonString.add("In case you want this item early, Combine with the following deliveries:");
-        reasonString.add("In case you want delay delivery for this item, Combine with following deliveries:");
+        if (beforeNextDeliveryOrders != null && !beforeNextDeliveryOrders.isEmpty()) {
+            reasonString.add("If you want this item early, Combine with the following deliveries:");
+        }
+        if (nextOrder != null && !nextOrder.isEmpty()) {
+            reasonString.add("If you want this item later, Combine with following deliveries:");
+        }
         adjustDeliverySlotAdapter = new AdjustDeliverySlotAdapter(context, reasonString);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -148,7 +156,7 @@ public class DelayDeliveryBottomSheet {
                     notifyItemChanged(currentSelection + 1);
                 }
             });
-            itemViewHolder.setupViews(position == 0 ? beforeNextDeliveryOrders : nextOrder, reasonString.get(0));
+            itemViewHolder.setupViews(reasonString.contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
         }
 
         @Override
@@ -208,6 +216,9 @@ public class DelayDeliveryBottomSheet {
                 super(itemView);
                 radioButton = (RadioButton) itemView.findViewById(R.id.radio_button);
                 recyclerView = (RecyclerView) itemView.findViewById(R.id.recycler_view);
+                recyclerView.setItemViewCacheSize(20);
+                recyclerView.setDrawingCacheEnabled(true);
+                recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
                 recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             }
 
@@ -250,13 +261,21 @@ public class DelayDeliveryBottomSheet {
                 if (userItem.getNextDeliveryScheduledAt() == null) {
                     arrivingTextView.setText("This item is in cart. Order this item now.");
                 } else {
-                    arrivingTextView.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(
-                            Calendar.getInstance().getTime(), orderDate
-                    ) + " days");
+                    int days = (int) DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), orderDate);
+                    if(days == 0) {
+                        arrivingTextView.setText("Arriving in " + days+" days");
+                    }else {
+                        int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), orderDate);
+                        if (DateTimeUtil.isArrivingToday(hours)) {
+                            arrivingTextView.setText("Arriving Today");
+                        } else {
+                            arrivingTextView.setText("Arriving Tomorrow");
+                        }
+                    }
                 }
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
                 deliveryTextView
-                        .setText("Delivered to you on frequency of every " + itemConfig.getSubscriptionType());
+                        .setText("Delivered to you every " + itemConfig.getSubscriptionType());
 
             }
 
@@ -318,6 +337,7 @@ public class DelayDeliveryBottomSheet {
                                         if (response.body() != null) {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
+                                                OrderHelper.addAndNotify(response.body().getOrders());
                                                 bottomSheetDialog.dismiss();
                                                 onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
                                                 dialog.dismiss();
@@ -365,6 +385,7 @@ public class DelayDeliveryBottomSheet {
                                         if (response.body() != null) {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
+                                                OrderHelper.addAndNotify(response.body().getOrders());
                                                 bottomSheetDialog.dismiss();
                                                 onDelayActionCompleted.onDelayActionCompleted(null);
                                                 dialog.dismiss();

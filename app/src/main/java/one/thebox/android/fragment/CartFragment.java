@@ -1,6 +1,7 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -35,13 +37,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     public static CartFragment newInstance() {
         CartFragment fragment = new CartFragment();
-      /*  Bundle args = new Bundle();
-        ArrayList<Integer> orderIds = new ArrayList<>();
-        for (Order order : orders) {
-            orderIds.add(order.getId());
-        }
-        args.putString(EXTRA_USER_ITEMS_ARRAY_LIST, CoreGsonUtils.toJson(orderIds));
-        fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -51,7 +46,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, cartId).findFirst();
-        this.order = realm.copyFromRealm(order);
+        if(order!=null) {
+            this.order = realm.copyFromRealm(order);
+        }
     }
 
     @Override
@@ -79,6 +76,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         } else {
             emptyCartText.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
+            proceedToPayment.setText("Total Cost: Rs "+ order.getTotalPriceOfUserItems() + "\n"+"Proceed to Payment");
         }
 
         userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
@@ -90,6 +88,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         proceedToPayment = (TextView) rootView.findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,5 +117,22 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             appBarObserver = AppBarObserver.observe(appBarLayout);
             appBarObserver.addOffsetChangeListener(this);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity) getActivity()).getToolbar().setTitle("Cart");
+        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
     }
 }

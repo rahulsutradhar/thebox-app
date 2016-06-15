@@ -49,4 +49,10 @@ public class BoxDetail extends RealmObject implements Serializable {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        BoxDetail boxDetail = (BoxDetail) o;
+        return this.id == boxDetail.getId() && this.title.equals(boxDetail.getTitle()) && this.photoUrl.equals(boxDetail.getPhotoUrl());
+    }
 }

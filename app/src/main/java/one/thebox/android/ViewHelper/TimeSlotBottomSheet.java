@@ -23,6 +23,7 @@ import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
+import one.thebox.android.util.DateTimeUtil;
 
 /**
  * Created by Ajeet Kumar Meena on 29-04-2016.
@@ -32,7 +33,6 @@ public class TimeSlotBottomSheet {
     private Activity context;
     private BottomSheetDialog bottomSheetDialog;
     private View bottomSheet;
-    private Date startDate;
     private OnTimePicked onTimePicked;
     private RecyclerView recyclerViewDay;
     private ArrayList<String> timeSlots = new ArrayList<>();
@@ -41,10 +41,9 @@ public class TimeSlotBottomSheet {
     private int currentSelectedPosition;
     private Date currentSelectedDate;
 
-    public TimeSlotBottomSheet(Activity context, Date date, Date currentSelectedDate, OnTimePicked onTimePicked) {
+    public TimeSlotBottomSheet(Activity context, Date currentSelectedDate, OnTimePicked onTimePicked) {
         this.context = context;
         this.onTimePicked = onTimePicked;
-        this.startDate = date;
         this.currentSelectedDate = currentSelectedDate;
     }
 
@@ -163,7 +162,7 @@ public class TimeSlotBottomSheet {
             SimpleDateFormat month_date = new SimpleDateFormat("MMM");
             String month_name = month_date.format(startCalender.getTime());
             if (currentSelectedPosition == 0 && currentSelectedDate != null) {
-                if (startCalender.getTime().compareTo(currentSelectedDate) == 0) {
+                if (DateTimeUtil.checkIfSameDayMonthYear(startCalender.getTime(), currentSelectedDate)) {
                     currentSelectedPosition = position;
                 }
 

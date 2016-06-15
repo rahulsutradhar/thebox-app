@@ -24,7 +24,6 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     public SearchAutoCompleteAdapter(Context context) {
         super(context);
-        mViewType = RECYCLER_VIEW_TYPE_HEADER;
     }
 
     public void addSearchResult(SearchResult searchResult) {

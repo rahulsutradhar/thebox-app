@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/connection_error_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_connection_error"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
+
+    <TextView
+        android:id="@+id/connection_error_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/grey_borders"
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:text="Retry"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
+</LinearLayout>

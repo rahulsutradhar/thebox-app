@@ -12,14 +12,18 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
@@ -56,6 +60,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private int source;
     private TextView emptyText;
     private int positionInViewPager;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
 
     public SearchDetailItemsFragment() {
     }
@@ -69,7 +74,7 @@ public class SearchDetailItemsFragment extends Fragment {
         } else {
             bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
         }
-        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER,positionInViewPager);
+        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
         bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
@@ -82,7 +87,7 @@ public class SearchDetailItemsFragment extends Fragment {
         bundle.putInt(EXTRA_SOURCE, SOURCE_SEARCH);
         bundle.putString(EXTRA_USER_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(userItems));
         bundle.putString(EXTRA_BOX_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(boxItems));
-        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER,positionInViewPager);
+        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
@@ -130,9 +135,41 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder_linear_layout);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         emptyText = (TextView) rootView.findViewById(R.id.empty_text);
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (source) {
+                    case SOURCE_CATEGORY: {
+                        getCategoryDetail();
+                        break;
+                    }
+                    case SOURCE_NON_CATEGORY: {
+                        getSearchDetails();
+                        break;
+                    }
+                    case SOURCE_SEARCH: {
+                        setupRecyclerView();
+                        break;
+                    }
+                }
+            }
+        });
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy!=0){
+
+                    EventBus.getDefault().post(new ShowSpecialCardEvent(false));
+                }
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -155,7 +192,7 @@ public class SearchDetailItemsFragment extends Fragment {
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
-
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             userItems.add(response.body().getMySearchItem());
                             userItems.addAll(response.body().getMyNonSearchedItems());
@@ -171,6 +208,7 @@ public class SearchDetailItemsFragment extends Fragment {
                     public void onFailure(Call<SearchDetailResponse> call, Throwable t) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }
@@ -178,11 +216,12 @@ public class SearchDetailItemsFragment extends Fragment {
     private void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
-
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             userItems.addAll(response.body().getMyBoxItems());
                             boxItems.addAll(response.body().getNormalBoxItems());
@@ -197,6 +236,7 @@ public class SearchDetailItemsFragment extends Fragment {
                         emptyText.setText(t.toString());
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }

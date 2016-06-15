@@ -7,12 +7,14 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,6 +25,8 @@ import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
@@ -37,7 +41,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Box> boxes;
     private int stickyHeaderHeight = 0;
-    private SparseArray<Integer> boxHeights = new SparseArray<>();
+    private SparseIntArray boxHeights = new SparseIntArray();
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
@@ -63,14 +67,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         this.stickyHeaderHeight = stickyHeaderHeight;
     }
 
-    public SparseArray<Integer> getBoxHeights() {
-        return boxHeights;
-    }
-
-    public void setBoxHeights(SparseArray<Integer> boxHeights) {
-        this.boxHeights = boxHeights;
-    }
-
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
@@ -92,17 +88,17 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     }
 
     @Override
-    public void onBindViewItemHolder(ItemHolder holder, final int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boxes.get(position).setExpandedListVisible(!boxes.get(position).isExpandedListVisible());
-                notifyItemChanged(position);
-            }
-        });
+    public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
-        new ShowCaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+        new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
+                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                    @Override
+                    public void onComplete() {
+                        new ShowCaseHelper((Activity) mContext, 3)
+                                .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+                    }
+                });
     }
 
     @Override
@@ -264,7 +260,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
                 layoutParams.height = DisplayUtil.dpToPx(mContext, heightInDp);
                 linearLayout.setLayoutParams(layoutParams);
-
             }
         }
 
@@ -283,7 +278,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 if (isSearchDetailItemFragment) {
                     categoryNameTextView.setText(category.getTitle());
                 } else {
-                    categoryNameTextView.setText("Add " + category.getTitle());
+                    categoryNameTextView.setText(category.getTitle());
                 }
                 noOfItems.setText(category.getNoOfItems() + " Items");
                 Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
@@ -313,52 +308,82 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private RecyclerView recyclerViewUserItems;
-        private TextView title, subTitle, savings;
+        private TextView title, subTitle, savings, viewItems, noOfItemSubscribed;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
-        private LinearLayout emptyBoxLayout;
-        private LinearLayout linearLayoutHolder;
-        private CardView parentLayout;
+        private View.OnClickListener openBoxListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
+                mContext.startActivity(new Intent(mContext, MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+            }
+        };
+
+        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boxes.get(getAdapterPosition()).setExpandedListVisible(!boxes.get(getAdapterPosition()).isExpandedListVisible());
+                notifyItemChanged(getAdapterPosition());
+            }
+        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
             this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
+            recyclerViewCategories.setItemViewCacheSize(20);
+            recyclerViewCategories.setDrawingCacheEnabled(true);
+            recyclerViewCategories.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+            recyclerViewCategories.setNestedScrollingEnabled(false);
+            recyclerViewUserItems.setNestedScrollingEnabled(false);
+            recyclerViewUserItems.setItemViewCacheSize(20);
+            recyclerViewUserItems.setDrawingCacheEnabled(true);
+            recyclerViewUserItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.subTitle = (TextView) itemView.findViewById(R.id.sub_title);
             this.savings = (TextView) itemView.findViewById(R.id.saving_text_view);
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
-            this.emptyBoxLayout = (LinearLayout) itemView.findViewById(R.id.empty_box_holder);
-            this.linearLayoutHolder = (LinearLayout) itemView.findViewById(R.id.holder);
-            this.parentLayout = (CardView) itemView.findViewById(R.id.parent_layout);
+            this.viewItems = (TextView) itemView.findViewById(R.id.view_items);
+            this.noOfItemSubscribed = (TextView) itemView.findViewById(R.id.no_of_item_subscribed);
         }
 
         public void setViews(Box box) {
-            if (box.getBoxDetail().getTitle() != null)
-                this.title.setText(box.getBoxDetail().getTitle());
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                this.subTitle.setText("Empty Box");
+            this.title.setText(box.getBoxDetail().getTitle().substring(4));
+            this.title.setOnClickListener(openBoxListener);
+            this.boxImageView.setOnClickListener(openBoxListener);
+            if (box.getAllItemInTheBox().size() == 0) {
+                this.subTitle.setText("Suggestions for you");
             } else {
-                this.subTitle.setText(box.getSubTitle());
+                this.subTitle.setText("Remaining Categories");
             }
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
-            if (stickyHeaderHeight == 0) {
-                linearLayoutHolder.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        stickyHeaderHeight = linearLayoutHolder.getMeasuredHeight();
-                        boxImageView.getLayoutParams().height = stickyHeaderHeight;
-                        boxImageView.requestLayout();
-                    }
-                });
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                viewItems.setText("Add Items");
+                viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                noOfItemSubscribed.setText("     Empty Box    ");
+                viewItems.setOnClickListener(openBoxListener);
+                noOfItemSubscribed.setOnClickListener(openBoxListener);
             } else {
-                boxImageView.getLayoutParams().height = stickyHeaderHeight;
-                boxImageView.requestLayout();
+                if (box.isExpandedListVisible()) {
+                    viewItems.setText("Hide My Items");
+                } else {
+                    viewItems.setText("View My Items");
+                }
+                viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
+                if (box.getAllItemInTheBox().size() == 1) {
+                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " item subscribed");
+                } else {
+                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
+                }
+                viewItems.setOnClickListener(viewItemsListener);
+                noOfItemSubscribed.setOnClickListener(viewItemsListener);
             }
 
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
 
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);
@@ -375,27 +400,24 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             if (box.isExpandedListVisible()) {
                 if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                     this.recyclerViewUserItems.setVisibility(View.GONE);
-                    this.emptyBoxLayout.setVisibility(View.VISIBLE);
                 } else {
                     this.recyclerViewUserItems.setVisibility(View.VISIBLE);
-                    this.emptyBoxLayout.setVisibility(View.GONE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
                     this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
                     this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
+                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
+                        @Override
+                        public void onUserItemChange(RealmList<UserItem> userItems) {
+                            boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
+                            setViews(boxes.get(getAdapterPosition()));
+                        }
+                    });
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
                 }
 
             } else {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
-                this.emptyBoxLayout.setVisibility(View.GONE);
             }
-            parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    int height = parentLayout.getMeasuredHeight();
-                    boxHeights.put(getAdapterPosition() + 1, height);
-                }
-            });
         }
     }
 }

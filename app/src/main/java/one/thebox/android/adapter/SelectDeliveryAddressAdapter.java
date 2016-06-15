@@ -28,7 +28,6 @@ public class SelectDeliveryAddressAdapter extends BaseRecyclerAdapter {
 
     public SelectDeliveryAddressAdapter(Context context, RealmList<Address> addresses) {
         super(context);
-        mViewType = RECYCLER_VIEW_TYPE_FOOTER;
         this.addresses = addresses;
         for (int i = 0; i < addresses.size(); i++) {
             if (addresses.get(i).isCurrentAddress()) {

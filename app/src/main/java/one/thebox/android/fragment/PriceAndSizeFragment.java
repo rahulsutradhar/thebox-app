@@ -84,6 +84,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+
     }
 
     @Override

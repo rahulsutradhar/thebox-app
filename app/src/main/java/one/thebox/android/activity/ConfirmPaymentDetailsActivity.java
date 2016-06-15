@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
@@ -29,6 +30,7 @@ import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -85,6 +87,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         paymentDetailAdapter.setOrders(orders);
         recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
+        payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay (Cash on Delivery)");
     }
 
     private void initViews() {
@@ -110,8 +113,9 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                         dialog.dismiss();
                         if (response.body() != null) {
-                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                            PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
                             CartHelper.clearCart();
+                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                             finish();
                         }
                     }
@@ -132,10 +136,13 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
+                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                CartHelper.clearCart();
+                                RealmList<Order> orders = new RealmList<>();
+                                OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 storeToRealm(response.body().getOrders());
-                                CartHelper.clearCart();
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -150,26 +157,25 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 });
     }
 
-    private void storeToRealm(RealmList<Order> orders) {
+    private void storeToRealm(final Order order) {
         final Realm superRealm = MyApplication.getRealm();
-        for (final Order order : orders) {
-            superRealm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealmOrUpdate(order);
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-                }
-            });
-        }
+        superRealm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(order);
+            }
+        }, new Realm.Transaction.OnSuccess() {
+            @Override
+            public void onSuccess() {
+                //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        }, new Realm.Transaction.OnError() {
+            @Override
+            public void onError(Throwable error) {
+                // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
+            }
+        });
+
 
     }
 

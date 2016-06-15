@@ -3,21 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/light_white"
-        android:orientation="vertical"
-        tools:context=".fragment.MyBoxesFragment">
+        android:layout_height="match_parent" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/progress_bar"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:src="@drawable/loader"
+        android:visibility="gone" />
 
-
-    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/holder_layout"
@@ -26,12 +26,14 @@
         android:layout_gravity="center">
 
 
-         <one.thebox.android.ViewHelper.MontserratTextView
+        <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/empty_order_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No Orders Found"
-            android:textColor="@color/primary_text_color" />
+            android:textColor="@color/primary_text_color"
+            android:visibility="gone" />
+
 
     </FrameLayout>
 

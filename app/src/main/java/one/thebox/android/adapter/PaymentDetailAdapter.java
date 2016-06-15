@@ -6,12 +6,16 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<Order> orders = new ArrayList<>();
+    private RealmList<UserItem> userItems = new RealmList<>();
+    private boolean shouldShowPreviouslyAddedItemHeader = true;
 
     public PaymentDetailAdapter(Context context) {
         super(context);
@@ -24,6 +28,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     public void setOrders(ArrayList<Order> orders) {
         this.orders.addAll(orders);
+        for (Order order : orders) {
+            userItems.addAll(order.getUserItems());
+        }
     }
 
     @Override
@@ -49,7 +56,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViewHolder(orders.get(position));
+        itemViewHolder.setViewHolder(userItems.get(position));
     }
 
     @Override
@@ -64,7 +71,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orders.size();
+        return userItems.size();
     }
 
     @Override
@@ -88,72 +95,96 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     class ItemViewHolder extends ItemHolder {
-        private TextView itemText, amountText;
+        private TextView itemText, amountText, itemInfo;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             itemText = (TextView) itemView.findViewById(R.id.item_text);
             amountText = (TextView) itemView.findViewById(R.id.amount_text);
+            itemInfo = (TextView) itemView.findViewById(R.id.item_info);
         }
 
-        public void setViewHolder(Order order) {
-            itemText.setText(order.getItemString());
-            amountText.setText("Rs " + getTotalPrice());
+        public void setViewHolder(UserItem userItem) {
+            itemText.setText(userItem.getBoxItem().getTitle());
+            amountText.setText("Rs " + userItem.getTotalPrice());
+            if (userItem.getNextDeliveryScheduledAt() == null) {
+                itemText.setTextColor(mContext.getResources().getColor(R.color.black));
+                amountText.setTextColor(mContext.getResources().getColor(R.color.md_red_700));
+            } else {
+                itemText.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                amountText.setTextColor(mContext.getResources().getColor(R.color.accent));
+            }
+            if (orders.size() > 1) {
+                if (getAdapterPosition() == 0) {
+                    if (userItem.getNextDeliveryScheduledAt() == null) {
+                        itemInfo.setVisibility(View.VISIBLE);
+                        itemInfo.setText("Newly Added Items");
+                    }
+
+                } else if (getAdapterPosition() != 0 && userItem.getNextDeliveryScheduledAt() != null && shouldShowPreviouslyAddedItemHeader) {
+                    shouldShowPreviouslyAddedItemHeader = false;
+                    itemInfo.setVisibility(View.VISIBLE);
+                    itemInfo.setText("Previous Items");
+                } else {
+                    itemInfo.setVisibility(View.GONE);
+                }
+            } else {
+                itemInfo.setVisibility(View.GONE);
+            }
         }
     }
 
     class FooterViewHolder extends FooterHolder {
 
-        private TextView deliveryCharge, tax, amount;
+        private TextView deliveryCharge, amount;
 
         public FooterViewHolder(View itemView) {
             super(itemView);
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
-            tax = (TextView) itemView.findViewById(R.id.tax);
             amount = (TextView) itemView.findViewById(R.id.amount);
-            deliveryCharge.setText( "Rs " + getTotalDeliverCharges());
-            tax.setText("Rs " + getTotalTax());
-            amount.setText("Rs " +getFinalPaymentAmount());
-
+            deliveryCharge.setText("Rs " + getTotalDeliverCharges());
+            amount.setText("Rs " + getFinalPaymentAmount());
         }
     }
 
     public float getTotalDeliverCharges() {
-        float total = 0;
-        for (Order order : orders) {
-            total = order.getDeliveryCharges() + total;
-        }
-        return total;
+        return 0;
     }
 
     public float getTotalTax() {
-        float total = 0;
-        for (Order order : orders) {
-            total = order.getTax() + total;
-        }
-        return total;
+
+        return 0;
     }
 
     public float getTotalPrice() {
         float total = 0;
         for (Order order : orders) {
             if (!order.isCart()) {
-                total = order.getTotalPrice() + total;
+                total = order.getTotalPriceOfUserItems() + total;
             } else {
-                int deliveryCharges = 0;
-                for (int i = 0; i < order.getUserItems().size(); i++) {
-                    deliveryCharges = deliveryCharges + order.getUserItems()
-                            .get(i).getBoxItem().getItemConfigById(
-                                    order.getUserItems().get(i).getSelectedConfigId()
-                            ).getPrice();
-                }
-                total = deliveryCharges + total;
+                total = total + order.getTotalPriceOfUserItems();
             }
         }
         return total;
     }
 
-    public float getFinalPaymentAmount(){
+    public float getTotalPrice(Order order) {
+
+        if (!order.isCart()) {
+            return order.getTotalPrice();
+        } else {
+            int deliveryCharges = 0;
+            for (int i = 0; i < order.getUserItems().size(); i++) {
+                deliveryCharges = deliveryCharges + order.getUserItems()
+                        .get(i).getBoxItem().getItemConfigById(
+                                order.getUserItems().get(i).getSelectedConfigId()
+                        ).getPrice() * order.getUserItems().get(i).getQuantity();
+            }
+            return deliveryCharges;
+        }
+    }
+
+    public float getFinalPaymentAmount() {
         return getTotalDeliverCharges() + getTotalPrice() + getTotalTax();
     }
 }

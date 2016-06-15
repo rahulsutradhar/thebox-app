@@ -14,15 +14,22 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.CardView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.eftimoff.androidplayer.Player;
+import com.eftimoff.androidplayer.actions.property.PropertyAction;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,6 +41,7 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnCategorySelectEvent;
+import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.CartHelper;
@@ -44,6 +52,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
@@ -51,7 +60,7 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.Constants;
+import one.thebox.android.util.AnimationUtil;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -87,9 +96,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds;
     private int clickPosition;
-    private TextView numberOfItemsInCart;
+    private TextView numberOfItemsInCart, noResultFound, itemsInCart, savings;
     private FrameLayout fabHolder;
-
+    private CardView specialCardView;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
+    private int source;
+    public static int POSITION_OF_VIEW_PAGER;
+    private boolean previousScrollAction = false;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -179,6 +192,36 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (source) {
+                    case 0: {
+                        getSearchDetails();
+                        break;
+                    }
+                    case 1: {
+                        getCategoryDetail();
+                        break;
+                    }
+                    case 2: {
+                        getExploreDetails();
+                        break;
+                    }
+                }
+            }
+        });
+        noResultFound = (TextView) rootView.findViewById(R.id.no_result_found);
+        specialCardView = (CardView) rootView.findViewById(R.id.special_card);
+        specialCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+            }
+        });
+        itemsInCart = (TextView) rootView.findViewById(R.id.items_in_cart);
+        savings = (TextView) rootView.findViewById(R.id.savings);
+
     }
 
     @Override
@@ -204,11 +247,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             } else {
                 if (exploreItem == null) {
                     if (catId == 0) {
+                        source = 0;
                         getSearchDetails();
                     } else {
+                        source = 1;
                         getCategoryDetail();
                     }
                 } else {
+                    source = 2;
                     getExploreDetails();
                 }
             }
@@ -223,7 +269,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         progressBar.setVisibility(View.GONE);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
         for (int i = 0; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()),i), categories.get(i));
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -253,6 +299,25 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         }
         viewPager.setCurrentItem(clickPosition);
+        POSITION_OF_VIEW_PAGER = clickPosition;
+        ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), clickPosition);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                POSITION_OF_VIEW_PAGER = position;
+                ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void setupViewPagerAndTabs() {
@@ -261,9 +326,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems,0), categories.get(0));
+        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems, 0), categories.get(0));
         for (int i = 1; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()),i), categories.get(i));
+            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
         }
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -309,15 +374,36 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
             }
         }
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                exploreItem.setDefaultPositionOfViewPager(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        if (exploreItem != null) {
+            viewPager.setCurrentItem(exploreItem.getDefaultPositionOfViewPager());
+        }
     }
 
     public void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         if (response.body() != null) {
@@ -338,6 +424,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     public void onFailure(Call<SearchDetailResponse> call, Throwable t) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }
@@ -345,12 +432,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
                             userItems.addAll(response.body().getMyBoxItems());
@@ -365,16 +454,19 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
     }
 
     public void getExploreDetails() {
+        connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override
                     public void onResponse(Call<ExploreBoxResponse> call, Response<ExploreBoxResponse> response) {
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
@@ -387,6 +479,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     @Override
                     public void onFailure(Call<ExploreBoxResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(false);
                     }
                 });
     }
@@ -430,8 +523,23 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
+        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), MainActivity.class)
+                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+            }
+        });
+        ((MainActivity) getActivity()).getSearchAction().setImageResource(R.drawable.menu_icon);
+        ((MainActivity) getActivity()).getSearchAction().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
+            }
+        });
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
@@ -444,6 +552,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Override
     public void onOffsetChange(int offset, int dOffset) {
         fabHolder.setTranslationY(-offset);
+        specialCardView.setTranslationY(-offset);
     }
 
     private void setupAppBarObserver() {
@@ -457,7 +566,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
     }
 
-
     @Subscribe
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
@@ -465,28 +573,33 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                     @Override
                     public void onComplete() {
-                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items of your current session are here in the cart", fabHolder);
+                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                         tabLayout.setScrollPosition(clickPosition, 0, true);
                         shouldMoveMore = false;
                     }
                 });
     }
 
+    @Subscribe
+    public void showSpecialCard() {
+
+    }
+
     private boolean shouldMoveMore = true;
 
     public void moveViewPager(final int position) {
-        if(shouldMoveMore) {
+        if (shouldMoveMore) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     viewPager.setCurrentItem(position);
-                    if(position>=1) {
-                        moveViewPager(position-1);
-                    }else {
-                        moveViewPager(position+1);
+                    if (position >= 1) {
+                        moveViewPager(position - 1);
+                    } else {
+                        moveViewPager(position + 1);
                     }
                 }
-            },1000);
+            }, 1000);
         }
     }
 
@@ -500,5 +613,32 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         } else {
             numberOfItemsInCart.setVisibility(View.GONE);
         }
+    }
+
+    @Subscribe
+    public void showSpecialCardEvent(ShowSpecialCardEvent showSpecialCardEvent) {
+        if (previousScrollAction != showSpecialCardEvent.isVisible()) {
+            if (showSpecialCardEvent.isVisible()) {
+                specialCardView.setVisibility(View.VISIBLE);
+                fabHolder.setVisibility(View.GONE);
+                int noOfItemsInCart = CartHelper.getNumberOfItemsInCart() + 1;
+                if (noOfItemsInCart == 1) {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of item in your cart");
+                } else {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of items in your cart");
+                }
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+
+            } else {
+                specialCardView.setVisibility(View.GONE);
+                fabHolder.setVisibility(View.VISIBLE);
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+            }
+            previousScrollAction = showSpecialCardEvent.isVisible();
+        }
+
+
     }
 }

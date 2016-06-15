@@ -44,6 +44,10 @@ public class Order extends RealmObject implements Serializable {
     private boolean cart;
     @SerializedName("useritems")
     private RealmList<UserItem> userItems;
+    @SerializedName("cod")
+    private boolean cod;
+    @SerializedName("successful")
+    private boolean successful;
 
     public Order() {
     }
@@ -204,5 +208,29 @@ public class Order extends RealmObject implements Serializable {
 
     public void setOpen(boolean open) {
         this.open = open;
+    }
+
+    public int getTotalPriceOfUserItems() {
+        int total = 0;
+        for (int i = 0; i < userItems.size(); i++) {
+            total = total + userItems.get(i).getBoxItem().getItemConfigById(userItems.get(i).getSelectedConfigId()).getPrice() * userItems.get(i).getQuantity();
+        }
+        return total;
+    }
+
+    public boolean isCod() {
+        return cod;
+    }
+
+    public void setCod(boolean cod) {
+        this.cod = cod;
+    }
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
 }

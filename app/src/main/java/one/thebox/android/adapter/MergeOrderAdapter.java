@@ -126,7 +126,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orders.size();
+        return orders.size()>=4?4:orders.size();
     }
 
     @Override
@@ -166,6 +166,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
                 dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
                 timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+                radioButton.setClickable(false);
                 if (getAdapterPosition() == currentSelection) {
                     radioButton.setChecked(true);
                 } else {

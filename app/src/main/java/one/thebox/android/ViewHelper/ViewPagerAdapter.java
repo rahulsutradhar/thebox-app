@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -79,8 +80,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
         title.setText(mFragmentCategoryList.get(position).getTitle());
-        numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
-        Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).into(icon);
+        if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " item");
+        } else {
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
+        }
+        Picasso.with(context).load(mFragmentCategoryList.get(position)
+                .getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(icon);
         if (isSelected) {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 48);

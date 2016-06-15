@@ -23,14 +23,14 @@ public class OnBoardingActivity extends AppIntro {
     public void init(Bundle savedInstanceState) {
         showSkipButton(false);
         ((Button) doneButton).setTextColor(getResources().getColor(R.color.primary_text_color));
-        //doneButton.setVisibility(View.GONE);
+        //doneButton.isVisible(View.GONE);
         setImageNextButton(null);
         addSlide(IntroSlide.newInstance(R.layout.intro_slide1));
         addSlide(IntroSlide.newInstance(R.layout.intro_slide2));
         addSlide(IntroSlide.newInstance(R.layout.intro_slide3));
         //  addSlide(IntroSlide.newInstance(R.layout.intro_slide4));
         setSeparatorColor(getResources().getColor(R.color.transparent));
-        setIndicatorColor(getResources().getColor(R.color.transparent_black), getResources().getColor(R.color.transparent_black));
+        setIndicatorColor(getResources().getColor(R.color.md_grey_700), getResources().getColor(R.color.md_grey_400));
         initStatusBarColor();
         setCustomTransformer(new ViewPageTransformer(ViewPageTransformer.TransformType.FLOW));
     }
@@ -55,7 +55,7 @@ public class OnBoardingActivity extends AppIntro {
 
     @Override
     public void onDonePressed() {
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, SignInActivity.class));
         finish();
     }
 
