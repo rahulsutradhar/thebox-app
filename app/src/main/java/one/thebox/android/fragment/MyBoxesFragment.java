@@ -61,17 +61,23 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, final Intent intent) {
             if (getActivity() == null) {
                 return;
             }
-            int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
-            if (noOfTabs > 0) {
-                noOfItemsInCart.setVisibility(View.VISIBLE);
-                noOfItemsInCart.setText(String.valueOf(noOfTabs));
-            } else {
-                noOfItemsInCart.setVisibility(View.GONE);
-            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
+                    if (noOfTabs > 0) {
+                        noOfItemsInCart.setVisibility(View.VISIBLE);
+                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
+                    } else {
+                        noOfItemsInCart.setVisibility(View.GONE);
+                    }
+                }
+            });
+
         }
     };
 

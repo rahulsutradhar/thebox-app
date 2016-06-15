@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
@@ -336,6 +337,7 @@ public class DelayDeliveryBottomSheet {
                                         if (response.body() != null) {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
+                                                OrderHelper.addAndNotify(response.body().getOrders());
                                                 bottomSheetDialog.dismiss();
                                                 onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
                                                 dialog.dismiss();
@@ -383,6 +385,7 @@ public class DelayDeliveryBottomSheet {
                                         if (response.body() != null) {
                                             Toast.makeText(mContext, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             if (response.body().isSuccess()) {
+                                                OrderHelper.addAndNotify(response.body().getOrders());
                                                 bottomSheetDialog.dismiss();
                                                 onDelayActionCompleted.onDelayActionCompleted(null);
                                                 dialog.dismiss();

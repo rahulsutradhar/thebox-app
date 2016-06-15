@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.ApiResponse;
@@ -23,6 +25,8 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
     private UserItem userItem;
     @SerializedName("rest_of_the_categories")
     private List<Category> restCategories;
+    @SerializedName("orders")
+    private RealmList<Order> orders;
 
     public List<Category> getRestCategories() {
         return restCategories;
@@ -54,5 +58,13 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
 
     public void setUserItem(UserItem userItem) {
         this.userItem = userItem;
+    }
+
+    public RealmList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(RealmList<Order> orders) {
+        this.orders = orders;
     }
 }

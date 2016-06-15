@@ -67,8 +67,6 @@
                         android:src="@drawable/menu_icon" />
 
 
-
-
                     <one.thebox.android.ViewHelper.MontserratEditText
                         android:id="@+id/search"
                         android:layout_width="match_parent"
@@ -82,9 +80,9 @@
                         android:imeOptions="actionSearch"
                         android:inputType="text"
                         android:paddingBottom="10dp"
+                        android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingTop="10dp"
-                        android:paddingLeft="10dp"
                         android:textColor="@color/primary_text_color"
                         android:textColorHint="@color/manatee" />
 
@@ -128,19 +126,6 @@
         app:itemTextColor="@color/primary_text_color"
         app:menu="@menu/drawer">
 
-        <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/terms_of_use"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:layout_gravity="bottom"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            android:text="Terms of use"
-            android:textColor="@color/primary_text_color"
-            android:textSize="@dimen/text_small3" />
 
     </android.support.design.widget.NavigationView>
 

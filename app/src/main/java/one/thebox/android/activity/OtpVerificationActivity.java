@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
@@ -89,6 +90,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                         PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                         CartHelper.saveOrdersToRealm(response.body().getCart());
+                                        OrderHelper.addAndNotify(response.body().getOrders());
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
                                             finish();
@@ -143,6 +145,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                                 PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
                                                 PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                                 CartHelper.saveOrdersToRealm(response.body().getCart());
+                                                OrderHelper.addAndNotify(response.body().getOrders());
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
                                                     finish();

@@ -621,17 +621,20 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
                 fabHolder.setVisibility(View.GONE);
-                int noOfItemsInCart = CartHelper.getNumberOfItemsInCart()+1;
-                if(noOfItemsInCart == 1) {
-                    itemsInCart.setText("You have " + noOfItemsInCart + " item "+ "in the card");
-                }else {
-                    itemsInCart.setText("You have " + noOfItemsInCart + " items "+ "in the card");
+                int noOfItemsInCart = CartHelper.getNumberOfItemsInCart() + 1;
+                if (noOfItemsInCart == 1) {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of item in your cart");
+                } else {
+                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of items in your cart");
                 }
-                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.animation_show));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+
             } else {
                 specialCardView.setVisibility(View.GONE);
                 fabHolder.setVisibility(View.VISIBLE);
-                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.animation_show));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }

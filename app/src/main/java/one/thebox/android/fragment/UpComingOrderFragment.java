@@ -118,45 +118,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         int id = v.getId();
     }
 
-    public void getAllOrders() {
-        //progressBar.setVisibility(View.VISIBLE);
-        MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(getActivity()))
-                .enqueue(new Callback<OrdersApiResponse>() {
-                             @Override
-                             public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
-                                // progressBar.setVisibility(View.GONE);
-                                 if (response.body() != null) {
-                                     if (response.body().isSuccess()) {
-                                         if (!orders.equals(response.body().getOrders())) {
-                                             orders.clear();
-                                             for (int i = 0; i < response.body().getOrders().size(); i++) {
-                                                 Log.d("logs", response.body().getOrders().toString());
-                                                 if (!response.body().getOrders().get(i).isCart())
-                                                     orders.add(response.body().getOrders().get(i));
-                                             }
-                                             if (orders.isEmpty()) {
-                                                 clearDatabase();
-                                             } else {
-                                                 storeToRealm();
-                                             }
-                                             setupRecyclerView();
-                                         }
-                                     }
-                                 }
-                             }
-
-                             @Override
-                             public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
-                                 Log.d("exception logs", t.toString());
-                                 //progressBar.setVisibility(View.GONE);
-                                /* progressBar.isVisible(View.GONE);
-                                 holder.isVisible(View.VISIBLE);*/
-                             }
-                         }
-
-                );
-    }
-
     private void clearDatabase() {
         Realm realm = MyApplication.getRealm();
         realm.beginTransaction();
@@ -199,7 +160,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    getAllOrders();
+                    initVariables();
+                    setupRecyclerView();
                 }
             });
         }
@@ -220,6 +182,5 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
-        getAllOrders();
     }
 }

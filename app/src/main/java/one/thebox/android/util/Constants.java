@@ -6,7 +6,7 @@ import one.thebox.android.Models.Locality;
  * Created by Ajeet Kumar Meena on 29-04-2016.
  */
 public class Constants {
-    public static final String[] DATE_RANGE = {"12:00 A.M - 03:00 P.M",
+    public static final String[] DATE_RANGE = {"12:00 P.M - 03:00 P.M",
             "03:00 P.M - 06:00 P.M", "06:00 P.M - 09:00 P.M"};
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";

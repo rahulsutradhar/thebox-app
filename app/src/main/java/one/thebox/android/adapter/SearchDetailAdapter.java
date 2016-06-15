@@ -32,8 +32,8 @@ import io.realm.RealmList;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ItemConfig;
@@ -576,7 +576,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                 openCancelDialog(userItem, getAdapterPosition());
                                             }
-                                        }).content("By unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                        }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                         dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                         dialog.show();
                     } else {
@@ -632,7 +632,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             } else {
                 try {
                     long days = DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
-                    if (days == 0) {
+                    if (days <= 1) {
                         int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
                         if (DateTimeUtil.isArrivingToday(hours)) {
                             arrivingTime.setText("Arriving Today");
@@ -688,7 +688,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(0));
                                     int prevQuantity = userItems.get(position).getQuantity();
                                     if (quantity >= 1) {
                                         userItems.get(position).setQuantity(quantity);
@@ -702,6 +701,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (onUserItemChange != null) {
                                         onUserItemChange.onUserItemChange(userItems);
                                     }
+                                    OrderHelper.addAndNotify(response.body().getOrders());
                                     EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(position), position));
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
@@ -726,7 +726,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
                             if (response.body() != null) {
-                                EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(0));
                                 userItems.set(position, response.body().getUserItem());
                                 if (onUserItemChange != null) {
                                     onUserItemChange.onUserItemChange(userItems);
@@ -736,7 +735,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                 }
-                                EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(getAdapterPosition()), getAdapterPosition()));
+                                OrderHelper.addAndNotify(response.body().getOrders());
+                                if (getAdapterPosition() != -1)
+                                    EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(getAdapterPosition()), getAdapterPosition()));
                             }
                         }
 
@@ -776,13 +777,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (response.body() != null) {
                                         Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         if (response.body().isSuccess()) {
-                                            EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(0));
                                             userItems.remove(getAdapterPosition());
                                             if (onUserItemChange != null) {
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
+                                            OrderHelper.addAndNotify(response.body().getOrders());
                                             if (userItems != null && !userItems.isEmpty() && userItems.size() > positionInArrayList) {
                                                 EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(positionInArrayList), positionInArrayList));
                                             }

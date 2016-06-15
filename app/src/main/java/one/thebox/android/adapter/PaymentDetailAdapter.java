@@ -148,11 +148,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     public float getTotalDeliverCharges() {
-        float total = 0;
-        for (Order order : orders) {
-            total = order.getDeliveryCharges() + total;
-        }
-        return total;
+        return 0;
     }
 
     public float getTotalTax() {

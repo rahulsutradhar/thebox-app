@@ -87,7 +87,7 @@ public class ActionExecuter {
             }
             case ORDER_HAS_LOADED: {
                 PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
-                EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(0));
+
                 break;
             }
         }

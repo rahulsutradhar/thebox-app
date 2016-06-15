@@ -1,8 +1,10 @@
 package one.thebox.android.activity;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -19,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -57,6 +60,7 @@ import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -81,7 +85,6 @@ public class MainActivity extends BaseActivity implements
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction, searchAction;
     private EditText searchView;
-    private TextView termsOfUserTextView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
     private boolean callHasBeenCompleted = true;
@@ -131,7 +134,6 @@ public class MainActivity extends BaseActivity implements
         }
         attachMyBoxesFragment();
         initCart();
-        ShowCaseHelper.removeAllTutorial();
     }
 
     private void initCart() {
@@ -212,13 +214,6 @@ public class MainActivity extends BaseActivity implements
             }
         });
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        termsOfUserTextView = (TextView) findViewById(R.id.terms_of_use);
-        termsOfUserTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
-            }
-        });
         searchAction = (ImageView) findViewById(R.id.image_view_search_action);
     }
 
@@ -267,6 +262,8 @@ public class MainActivity extends BaseActivity implements
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
             startActivity(TermsOfUserActivity.getIntent(this, true));
+        } else if (name.equals("Terms of Use")) {
+            startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
             ExploreItem selectedExploreItem = null;
             for (ExploreItem exploreItem : exploreItems) {
@@ -277,8 +274,9 @@ public class MainActivity extends BaseActivity implements
             }
             attachExploreItemDetailFragment(selectedExploreItem);
         }
-
     }
+
+
 
     /*private void attachExploreBoxes() {
         clearBackStack();
@@ -637,7 +635,7 @@ public class MainActivity extends BaseActivity implements
             }
             if (exploreItems != null && !exploreItems.isEmpty()) {
                 menu.add("FAQs");
-                menu.add("");
+                menu.add("Terms of Use");
             }
 
         }

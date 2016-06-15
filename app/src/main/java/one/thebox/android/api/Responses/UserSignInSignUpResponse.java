@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.api.ApiResponse;
@@ -20,6 +21,8 @@ public class UserSignInSignUpResponse extends ApiResponse implements Serializabl
     private User user;
     @SerializedName("cart")
     private Order cart;
+    @SerializedName("orders")
+    private RealmList<Order> orders;
     public UserSignInSignUpResponse(boolean success, String info, User user) {
         this.success = success;
         this.info = info;
@@ -56,5 +59,13 @@ public class UserSignInSignUpResponse extends ApiResponse implements Serializabl
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public RealmList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(RealmList<Order> orders) {
+        this.orders = orders;
     }
 }

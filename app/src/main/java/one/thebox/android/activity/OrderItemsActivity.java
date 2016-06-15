@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,17 +13,23 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.DateTimeUtil;
 
 public class OrderItemsActivity extends BaseActivity {
 
@@ -48,6 +55,17 @@ public class OrderItemsActivity extends BaseActivity {
         order = realmResults.get(0);
         order = realm.copyFromRealm(order);
         userItems.addAll(order.getUserItems());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            Date date = null;
+            try {
+                date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+                toolbar.setSubtitle(AddressAndOrder.getDateString(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
