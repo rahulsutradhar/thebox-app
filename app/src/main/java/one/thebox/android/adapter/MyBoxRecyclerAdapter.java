@@ -128,7 +128,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
-        return R.layout.empty_space_header;
+        return R.layout.my_box_header;
     }
 
     @Override

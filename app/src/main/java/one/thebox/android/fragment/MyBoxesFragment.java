@@ -63,7 +63,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             initVariables();
             initViews();
             setupAppBarObserver();
-            setupNextOrderStatus();
+            setupNextOrderStatus("");
             if (!boxes.isEmpty()) {
                 setupRecyclerView();
             }
@@ -88,13 +88,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-    private void setupNextOrderStatus() {
+    private void setupNextOrderStatus(String next_order_status) {
         Activity activity = getActivity();
         LinearLayout explore_and_deliveries = (LinearLayout) activity.findViewById(R.id.explore_and_deliveries);
         explore_and_deliveries.setVisibility(View.VISIBLE);
 
         //Setting the order status
-        ((TextView) activity.findViewById(R.id.calendar)).setText("No orders yet");
+        ((TextView) activity.findViewById(R.id.calendar)).setText(next_order_status);
     }
 
 
@@ -191,7 +191,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
                                 setupRecyclerView();
-                                setupNextOrderStatus();
+                                setupNextOrderStatus(response.body().getNextOrderStatus());
                                 storeToRealm();
                             }
                         }

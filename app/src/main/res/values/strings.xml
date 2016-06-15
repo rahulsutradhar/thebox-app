@@ -33,5 +33,10 @@
     <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
     <string name="explore">Explore</string>
     <string name="calendar">Calendar</string>
+    <string name="total_items_heading">Items in My Box:</string>
+    <string name="monthly_spend_heading">Monthly Spend:</string>
+    <string name="my_summary">My Summary:</string>
+    <string name="total_items_no">20 items</string>
+    <string name="total_monthly_spend_no">Rs 200</string>
 </resources>
 
