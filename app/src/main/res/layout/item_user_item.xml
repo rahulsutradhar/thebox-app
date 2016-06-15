@@ -130,8 +130,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
+                    android:padding="8dp"
                     android:text="@string/change_button"
-                    android:textColor="@color/brilliant_rose"
+                    android:textColor="@color/md_green_500"
                     android:textSize="14sp" />
 
             </LinearLayout>
