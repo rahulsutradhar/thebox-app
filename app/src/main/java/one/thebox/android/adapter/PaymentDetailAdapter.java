@@ -142,7 +142,11 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             super(itemView);
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
             amount = (TextView) itemView.findViewById(R.id.amount);
-            deliveryCharge.setText("Rs " + getTotalDeliverCharges());
+            if(getTotalDeliverCharges() == 0) {
+                deliveryCharge.setText("No delivery charges for our early users :)");
+            } else {
+                deliveryCharge.setText("Rs " + getTotalDeliverCharges());
+            }
             amount.setText("Rs " + getFinalPaymentAmount());
         }
     }

@@ -183,5 +183,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+        onUpdateUpcomingDeliveries(new UpdateUpcomingDeliveriesEvent(3));
     }
 }

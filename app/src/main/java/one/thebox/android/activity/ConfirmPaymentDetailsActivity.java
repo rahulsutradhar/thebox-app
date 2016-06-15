@@ -42,7 +42,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailAdapter paymentDetailAdapter;
-    private CheckBox checkBox;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private TextView payButton;
     private User user;

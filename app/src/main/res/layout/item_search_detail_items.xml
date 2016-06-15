@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Repeats every:"
+                    android:text="Repeats Every:"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_medium1" />
 

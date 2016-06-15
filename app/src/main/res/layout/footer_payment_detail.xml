@@ -9,12 +9,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text = "Summary"
-        android:textColor="@color/primary_text_color"
         android:background="@color/light_white"
         android:gravity="center"
-        android:textSize="@dimen/text_medium1"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:text="Summary"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,12 +24,12 @@
         android:padding="16dp">
 
         <one.thebox.android.ViewHelper.MontserratTextView
-           android:layout_width="0dp"
-           android:layout_height="wrap_content"
-           android:layout_weight="1"
-           android:text="Delivery Charges"
-           android:textColor="@color/primary_text_color"
-            android:id="@+id/montserratTextView3" />
+            android:id="@+id/montserratTextView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Delivery Charges"
+            android:textColor="@color/primary_text_color" />
 
         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/delivery_charges"
@@ -40,8 +40,6 @@
     </LinearLayout>
 
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,21 +48,22 @@
         android:padding="16dp">
 
         <one.thebox.android.ViewHelper.MontserratTextView
-           android:layout_width="0dp"
-           android:layout_height="wrap_content"
-           android:layout_weight="1"
-           android:text="Total"
-            android:textSize="@dimen/text_medium1"
-           android:textColor="@color/black"
-            android:id="@+id/montserratTextView2" />
+            android:id="@+id/montserratTextView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1"
+            android:text="Total"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_medium1" />
 
         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1630 Rs"
-            android:textSize="@dimen/text_medium1"
             android:textColor="@color/accent"
+            android:textSize="@dimen/text_medium1"
             android:textStyle="bold" />
     </LinearLayout>
 
