@@ -257,7 +257,7 @@ public class BoxItem extends RealmObject implements Serializable {
         ItemConfig smallestItemConfig = itemConfigs.get(0);
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
-                smallestItemConfig = itemConfigs.get(i);
+              smallestItemConfig = itemConfigs.get(i);
             }
         }
         return smallestItemConfig;

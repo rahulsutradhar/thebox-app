@@ -108,20 +108,27 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private void mergeCartToOrder() {
         final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
-                .enqueue(new Callback<ApiResponse>() {
+                .enqueue(new Callback<PaymentResponse>() {
                     @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
                         dialog.dismiss();
                         if (response.body() != null) {
-                            PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                            CartHelper.clearCart();
-                            startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                            finish();
+                            if (response.body().isSuccess()) {
+                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                CartHelper.clearCart();
+                                RealmList<Order> orders = new RealmList<>();
+                                OrderHelper.addAndNotify(orders);
+                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                finish();
+                            } else {
+                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
                     }
                 });
@@ -142,7 +149,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 RealmList<Order> orders = new RealmList<>();
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                storeToRealm(response.body().getOrders());
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -156,28 +162,4 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     }
                 });
     }
-
-    private void storeToRealm(final Order order) {
-        final Realm superRealm = MyApplication.getRealm();
-        superRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(order);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-                // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-            }
-        });
-
-
-    }
-
-
 }

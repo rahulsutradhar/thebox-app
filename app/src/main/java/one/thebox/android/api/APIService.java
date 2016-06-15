@@ -150,7 +150,7 @@ public interface APIService {
     Call<CartResponse> getMyCart(@Header("authtoken") String authToken);
 
     @POST("add_cartitems_to_order")
-    Call<ApiResponse> mergeCartItemToOrder(@Header("authtoken") String authToken, @Body MergeCartToOrderRequestBody mergeCartToOrderRequestBody);
+    Call<PaymentResponse> mergeCartItemToOrder(@Header("authtoken") String authToken, @Body MergeCartToOrderRequestBody mergeCartToOrderRequestBody);
 
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);

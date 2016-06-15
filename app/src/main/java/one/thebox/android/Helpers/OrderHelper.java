@@ -30,7 +30,7 @@ public class OrderHelper {
         saveToRealm(orders);
     }
 
-    public static void getOrderAndNotify(RealmList<Order> orders) {
+    public static void getOrderAndNotify() {
         MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(MyApplication.getInstance())).enqueue(
                 new Callback<OrdersApiResponse>() {
                     @Override
