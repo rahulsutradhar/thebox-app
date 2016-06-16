@@ -146,7 +146,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     @Override
     public int getItemsCount() {
         if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-            return orders.size() > 1 ? 1 : 0;
+            return orders.size() >= 1 ? 1 : 0;
         } else {
             return orders.size();
         }

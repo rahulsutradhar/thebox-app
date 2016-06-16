@@ -391,7 +391,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    EventBus.getDefault().post(new ShowSpecialCardEvent(true));
                                     //Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                     boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
@@ -421,14 +420,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void updateQuantity(final int position, final int quantity) {
+        private void updateQuantity(int position, final int quantity) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             int userItemId;
             if (userItems == null || userItems.isEmpty()) {
-                userItemId = boxItems.get(getAdapterPosition()).getUserItemId();
-            } else {
-                userItemId = boxItems.get(position).getUserItemId();
+                position = getAdapterPosition();
             }
+            userItemId = boxItems.get(position).getUserItemId();
+            final int finalPosition = position;
             MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
@@ -436,18 +435,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    boxItems.get(position).setQuantity(quantity);
+                                    boxItems.get(finalPosition).setQuantity(quantity);
                                     if (quantity >= 1) {
-                                        response.body().getUserItem().setBoxItem(boxItems.get(position));
+                                        response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem());
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
-                                        CartHelper.removeUserItem(boxItems.get(position).getUserItemId());
+                                        CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId());
                                         if (shouldRemoveBoxItemOnEmptyQuantity) {
                                             boxItems.remove(getAdapterPosition());
                                             notifyItemRemoved(getAdapterPosition());
                                         } else {
-                                            boxItems.get(position).setUserItemId(0);
+                                            boxItems.get(finalPosition).setUserItemId(0);
                                             notifyItemChanged(getAdapterPosition());
                                         }
                                     }

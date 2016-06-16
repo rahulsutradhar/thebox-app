@@ -23,6 +23,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.PaymentDetailAdapter;
 import one.thebox.android.api.ApiResponse;
@@ -120,6 +121,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -150,6 +152,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
