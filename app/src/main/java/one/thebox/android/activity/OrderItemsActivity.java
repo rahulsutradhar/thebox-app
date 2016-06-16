@@ -116,9 +116,9 @@ public class OrderItemsActivity extends BaseActivity {
 
     public float getTotalPrice() {
         int total = 0;
-        for (int i = 0; i < order.getUserItems().size(); i++) {
-            ItemConfig selectedItemConfig = order.getUserItems().get(i).getBoxItem().getItemConfigById(order.getUserItems().get(i).getSelectedConfigId());
-            total = total + selectedItemConfig.getPrice() * order.getUserItems().get(i).getQuantity();
+        for (int i = 0; i < userItemRecyclerAdapter.getUserItems().size(); i++) {
+            ItemConfig selectedItemConfig = userItemRecyclerAdapter.getUserItems().get(i).getBoxItem().getItemConfigById(userItemRecyclerAdapter.getUserItems().get(i).getSelectedConfigId());
+            total = total + selectedItemConfig.getPrice() * userItemRecyclerAdapter.getUserItems().get(i).getQuantity();
         }
         return total;
     }
