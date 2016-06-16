@@ -5,6 +5,8 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
@@ -48,6 +50,20 @@ public class OrderHelper {
                     }
                 }
         );
+    }
+
+
+    public static void getOrderAndNotifySynchronusly() {
+        try {
+            RealmList<Order> realmList = MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(MyApplication.getInstance())).execute().body().getOrders();
+            Realm realm = MyApplication.getRealm();
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(realmList);
+            realm.commitTransaction();
+            sendUpdateOrderItemBroadcast();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void saveToRealm(final RealmList<Order> orders) {

@@ -117,6 +117,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
+                                orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 finish();
@@ -146,6 +147,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                 Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
+                                orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 finish();

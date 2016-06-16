@@ -46,6 +46,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
+import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
@@ -127,11 +128,9 @@ public class MainActivity extends BaseActivity implements
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-/*
-            attachExploreBoxes();
-*/
             getAllAddresses();
         }
+        startService(new Intent(this, UpdateOrderService.class));
         attachMyBoxesFragment();
         initCart();
     }

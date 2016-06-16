@@ -130,17 +130,16 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(nextSlotDate));
         try {
-            timeHolderLinearLayout.setOnClickListener(null);
-            timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-            timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(
-                    DateTimeUtil.convertStringToDate(currentSelectedOrder.getDeliveryScheduleAt())));
-            dropDownIcon.setVisibility(View.GONE);
-            textViewSelectDate.setText("Arriving on:");
+            currentSelectedDate = DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt());
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
+        timeHolderLinearLayout.setOnClickListener(null);
+        timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        dropDownIcon.setVisibility(View.GONE);
+        textViewSelectDate.setText("Arriving on:");
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {

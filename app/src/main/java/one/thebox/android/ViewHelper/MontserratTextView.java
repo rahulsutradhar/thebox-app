@@ -21,7 +21,6 @@ import one.thebox.android.app.MyApplication;
 public class MontserratTextView extends TextView {
 
     private Context context;
-    private Tracker tracker;
 
     public MontserratTextView(Context context) {
         super(context);

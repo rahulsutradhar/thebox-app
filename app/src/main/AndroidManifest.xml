@@ -25,9 +25,9 @@
 
     <uses-permission android:name="one.thebox.android.permission.C2D_MESSAGE" />
 
-    <android:uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".app.MyApplication"
@@ -138,6 +138,8 @@
             android:name=".activity.ConfirmTimeSlotActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.OrderItemsActivity" />
+
+        <service android:enabled="true" android:name=".Services.UpdateOrderService" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.

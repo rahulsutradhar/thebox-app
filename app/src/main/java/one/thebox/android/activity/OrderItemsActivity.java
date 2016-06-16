@@ -145,18 +145,8 @@ public class OrderItemsActivity extends BaseActivity {
 
     @Subscribe
     public void onUpdateOrderItemEvent(UpdateOrderItemEvent updateOrderItemEvent) {
-        this.userItems = userItemRecyclerAdapter.getUserItems();
         if (!order.isPaid())
             payTextView.setText("Pay Rs " + getTotalPrice());
-
-        order.getUserItems().get(updateOrderItemEvent.getPosition()).setQuantity(updateOrderItemEvent.getUserItem().getQuantity());
-        order.getUserItems().get(updateOrderItemEvent.getPosition()).setSelectedConfigId(updateOrderItemEvent.getUserItem().getSelectedConfigId());
-        Realm realm = MyApplication.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(order);
-        realm.commitTransaction();
-
-
     }
 
 }
