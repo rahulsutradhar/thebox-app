@@ -132,6 +132,7 @@ public class MainActivity extends BaseActivity implements
         }
         attachMyBoxesFragment();
         initCart();
+        ShowCaseHelper.removeAllTutorial();
     }
 
     private void initCart() {

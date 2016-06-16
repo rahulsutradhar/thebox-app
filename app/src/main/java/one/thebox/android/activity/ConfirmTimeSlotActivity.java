@@ -145,7 +145,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentSelectedDate = addressAndOrders.get(0).getOderDate();
                 Date orderDate = getDateWithTimeSlot(currentSelectedDate,
                         timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
                 for (int i = 0; i < addressAndOrders.size(); i++) {

@@ -702,7 +702,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         onUserItemChange.onUserItemChange(userItems);
                                     }
                                     OrderHelper.addAndNotify(response.body().getOrders());
-                                    EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(position), position));
+                                    EventBus.getDefault().post(new UpdateOrderItemEvent());
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -737,7 +737,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 }
                                 OrderHelper.addAndNotify(response.body().getOrders());
                                 if (getAdapterPosition() != -1)
-                                    EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(getAdapterPosition()), getAdapterPosition()));
+                                    EventBus.getDefault().post(new UpdateOrderItemEvent());
                             }
                         }
 
@@ -784,9 +784,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
                                             OrderHelper.addAndNotify(response.body().getOrders());
-                                            if (userItems != null && !userItems.isEmpty() && userItems.size() > positionInArrayList) {
-                                                EventBus.getDefault().post(new UpdateOrderItemEvent(userItems.get(positionInArrayList), positionInArrayList));
-                                            }
+                                            EventBus.getDefault().post(new UpdateOrderItemEvent());
+                                            
                                         }
                                     }
                                 }
