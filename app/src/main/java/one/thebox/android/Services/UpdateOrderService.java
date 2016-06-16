@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.util.Constants;
@@ -28,11 +27,9 @@ public class UpdateOrderService extends Service {
 
     @Override
     public void onCreate() {
-        Toast.makeText(this, "Congrats! MyService Created", Toast.LENGTH_LONG).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(UpdateOrderService.this, "7 Sec Done.", Toast.LENGTH_LONG).show();
                 if (PrefUtils.getBoolean(UpdateOrderService.this, Constants.PREF_IS_ORDER_IS_LOADING, false)) {
                     PrefUtils.putBoolean(UpdateOrderService.this, Constants.PREF_IS_ORDER_IS_LOADING,
                             false);
@@ -46,14 +43,12 @@ public class UpdateOrderService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        Toast.makeText(this, "My Service Started", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onStart");
         //Note: You can start a new thread and use it for long background processing from here.
     }
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "MyService Stopped", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onDestroy");
     }
 

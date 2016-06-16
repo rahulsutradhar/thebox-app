@@ -26,7 +26,7 @@ import retrofit2.Response;
 
 public class OrderHelper {
     public static void addAndNotify(RealmList<Order> orders) {
-        if (orders == null || orders.isEmpty()) {
+        if (orders == null) {
             return;
         }
         saveToRealm(orders);
@@ -68,23 +68,15 @@ public class OrderHelper {
 
     private static void saveToRealm(final RealmList<Order> orders) {
         Realm realm = MyApplication.getRealm();
-        realm.executeTransactionAsync
-                (new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(orders);
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        sendUpdateOrderItemBroadcast();
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
+        realm.beginTransaction();
+        if (orders.isEmpty()) {
+            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+        } else {
+            realm.copyToRealmOrUpdate(orders);
+        }
+        realm.commitTransaction();
+        sendUpdateOrderItemBroadcast();
 
-                    }
-                });
 
     }
 

@@ -130,7 +130,6 @@ public class MainActivity extends BaseActivity implements
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
-        startService(new Intent(this, UpdateOrderService.class));
         attachMyBoxesFragment();
         initCart();
     }

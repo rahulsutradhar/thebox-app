@@ -103,16 +103,20 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private int source;
     public static int POSITION_OF_VIEW_PAGER;
     private boolean previousScrollAction = false;
+    private int noOfTabs;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (getActivity() == null) {
                 return;
             }
-            int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
+            int temp = noOfTabs;
+            noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
             if (noOfTabs > 0) {
                 numberOfItemsInCart.setVisibility(View.VISIBLE);
                 numberOfItemsInCart.setText(String.valueOf(noOfTabs));
+                if (temp != noOfTabs)
+                    showSpecialCardEvent(new ShowSpecialCardEvent(true));
             } else {
                 numberOfItemsInCart.setVisibility(View.GONE);
             }
@@ -617,16 +621,15 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Subscribe
     public void showSpecialCardEvent(ShowSpecialCardEvent showSpecialCardEvent) {
+        if (noOfTabs == 1) {
+            itemsInCart.setText("You have " + noOfTabs + " item in your cart");
+        } else {
+            itemsInCart.setText("You have " + noOfTabs + " items in your cart");
+        }
         if (previousScrollAction != showSpecialCardEvent.isVisible()) {
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
                 fabHolder.setVisibility(View.GONE);
-                int noOfItemsInCart = CartHelper.getNumberOfItemsInCart() + 1;
-                if (noOfItemsInCart == 1) {
-                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of item in your cart");
-                } else {
-                    itemsInCart.setText("You have " + noOfItemsInCart + " no. of items in your cart");
-                }
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
                 fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
 

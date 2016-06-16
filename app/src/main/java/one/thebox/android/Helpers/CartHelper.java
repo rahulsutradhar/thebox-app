@@ -5,8 +5,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 
+import org.greenrobot.eventbus.EventBus;
+
 import io.realm.Realm;
 import io.realm.RealmList;
+import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
