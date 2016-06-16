@@ -3,6 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginBottom="4dp"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
@@ -130,9 +131,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
+                    android:padding="8dp"
                     android:text="@string/change_button"
-                    android:textColor="@color/brilliant_rose"
-                    android:textSize="14sp" />
+                    app:typeface="montserratSemiBold"
+                    android:textColor="@color/md_green_500"
+                    android:textSize="@dimen/text_medium1" />
 
             </LinearLayout>
 

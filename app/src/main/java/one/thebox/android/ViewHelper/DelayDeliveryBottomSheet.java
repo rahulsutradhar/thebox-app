@@ -156,7 +156,7 @@ public class DelayDeliveryBottomSheet {
                     notifyItemChanged(currentSelection + 1);
                 }
             });
-            itemViewHolder.setupViews(reasonString.contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
+            itemViewHolder.setupViews(reasonString.get(position).contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
         }
 
         @Override

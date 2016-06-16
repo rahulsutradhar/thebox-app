@@ -16,7 +16,7 @@ public class AdjustDeliveryResponse extends ApiResponse implements Serializable 
     private boolean success;
     @SerializedName("info")
     private String info;
-    @SerializedName("order_after_next_order")
+    @SerializedName("orders_after_next_order")
     private RealmList<Order> nextOrder;
     @SerializedName("orders_before_next_order")
     private RealmList<Order> ordersBeforeNextOrder;

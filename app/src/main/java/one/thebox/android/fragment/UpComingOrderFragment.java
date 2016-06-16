@@ -160,6 +160,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    orders.clear();
                     initVariables();
                     setupRecyclerView();
                 }
@@ -182,5 +183,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+        onUpdateUpcomingDeliveries(new UpdateUpcomingDeliveriesEvent(3));
     }
 }

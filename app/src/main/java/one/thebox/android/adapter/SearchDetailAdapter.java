@@ -625,6 +625,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
             if (isHasUneditableUserItem()) {
                 arrivingTime.setVisibility(View.GONE);
+                adjustButton.setVisibility(View.GONE);
             }
             if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
                 arrivingTime.setText("Item is added to your cart");

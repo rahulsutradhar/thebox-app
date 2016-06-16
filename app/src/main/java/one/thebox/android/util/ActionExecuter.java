@@ -9,6 +9,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.app.MyApplication;
 
 
@@ -86,8 +87,10 @@ public class ActionExecuter {
                 break;
             }
             case ORDER_HAS_LOADED: {
-                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
-
+                if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+                    OrderHelper.getOrderAndNotify();
+                    PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
+                }
                 break;
             }
         }
