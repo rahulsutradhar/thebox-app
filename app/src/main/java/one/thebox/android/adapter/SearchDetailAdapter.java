@@ -218,6 +218,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
+            if(userItems==null || userItems.isEmpty()) {
+                getAdapterPosition();
+            }
             RealmList<ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
             Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
                 @Override
