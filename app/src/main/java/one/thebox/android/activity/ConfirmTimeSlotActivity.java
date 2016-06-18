@@ -97,7 +97,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(nextSlotDate));
+        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,7 +252,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         String am_pm = timeSlot.substring(6, 7);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.set(Calendar.HOUR, hour);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         if (am_pm.equals("A")) {
             cal.set(Calendar.AM_PM, Calendar.AM);
