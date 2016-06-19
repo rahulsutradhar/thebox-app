@@ -86,7 +86,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         }
         Picasso.with(context).load(mFragmentCategoryList.get(position)
-                .getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(icon);
+                .getIconUrl()).into(icon);
         if (isSelected) {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 48);

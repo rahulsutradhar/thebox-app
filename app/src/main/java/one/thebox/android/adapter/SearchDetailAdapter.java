@@ -591,7 +591,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
             //userItem.getBoxItem().getSelectedItemConfig();
             price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-            frequency.setText("Repeats every " + itemConfig.getSubscriptionType().toLowerCase());
+            frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
             adjustButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -26,6 +26,8 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.GeneralIntegerArrayList;
+import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
@@ -141,7 +143,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         private RealmList<Category> categories;
         private boolean isSearchDetailItemFragment;
+        private RealmList<UserCategory> my_catIds;
         private Box box;
+
+        public RemainingCategoryAdapter(Context context, RealmList<Category> categories,RealmList<UserCategory> my_catIds) {
+            super(context);
+            this.categories = categories;
+            this.my_catIds = my_catIds;
+        }
 
         public RemainingCategoryAdapter(Context context, RealmList<Category> categories) {
             super(context);
@@ -201,6 +210,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                         ArrayList<Integer> catIds = new ArrayList<>();
                         for (Category category : categories) {
                             catIds.add(category.getId());
+                        }
+                        if (!my_catIds.isEmpty()) {
+                            for (UserCategory usercategory : my_catIds) {
+                                catIds.add(usercategory.getCategory().getId());
+                            }
                         }
                         Intent intent = new Intent(mContext, MainActivity.class)
                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
@@ -392,7 +406,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
                 RealmList<Category> categories = new RealmList<>();
                 categories.addAll(box.getRemainingCategories());
-                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories);
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories, box.getUserCategories());
                 this.remainingCategoryAdapter.setBox(boxes.get(getAdapterPosition()));
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }

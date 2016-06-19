@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -44,7 +45,7 @@ public class Box extends RealmObject implements Serializable {
     public Box() {
     }
 
-    public Box(int id, int userId, int boxId, RealmList<Category> remainingCategories, RealmList<UserCategory> userCategories, BoxDetail box) {
+    public Box(int id, int userId, int boxId, RealmList<Category> remainingCategories, RealmList<UserCategory> userCategories, RealmList<GeneralIntegerArrayList> my_catIds, BoxDetail box) {
         this.id = id;
         this.userId = userId;
         this.boxId = boxId;
@@ -109,7 +110,7 @@ public class Box extends RealmObject implements Serializable {
         this.remainingCategories = remainingCategories;
     }
 
-    public List<UserCategory> getUserCategories() {
+    public RealmList<UserCategory> getUserCategories() {
         return userCategories;
     }
 
