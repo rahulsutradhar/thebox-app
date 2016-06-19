@@ -20,6 +20,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -27,6 +30,8 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.TabEvent;
+import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
@@ -161,11 +166,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
     }
@@ -254,4 +254,33 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             noOfItemsInCart.setVisibility(View.GONE);
         }
     }
+
+    private boolean isRegistered;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Subscribe
+    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getMyBoxes();
+                }
+            });
+        }
+    }
+
 }

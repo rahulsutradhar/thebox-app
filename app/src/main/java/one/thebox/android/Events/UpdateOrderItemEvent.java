@@ -7,27 +7,9 @@ import one.thebox.android.Models.UserItem;
  */
 
 public class UpdateOrderItemEvent {
-    private UserItem userItem;
-    private int position;
 
-    public UpdateOrderItemEvent(UserItem userItem, int position) {
-        this.userItem = userItem;
-        this.position = position;
+    public UpdateOrderItemEvent() {
+
     }
 
-    public UserItem getUserItem() {
-        return userItem;
-    }
-
-    public void setUserItem(UserItem userItem) {
-        this.userItem = userItem;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
 }
