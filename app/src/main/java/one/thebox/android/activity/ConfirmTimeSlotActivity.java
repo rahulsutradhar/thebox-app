@@ -252,18 +252,31 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         int hour = Integer.parseInt(timeSlot.substring(0, 2));
         int minute = Integer.parseInt(timeSlot.substring(3, 5));
         String am_pm = timeSlot.substring(6, 7);
+
         Calendar cal = Calendar.getInstance();
-//        cal.setTime(date);
         cal.set(Calendar.YEAR, date.getYear()+1900);
         cal.set(Calendar.MONTH, date.getMonth());
         cal.set(Calendar.DAY_OF_MONTH, date.getDate());
-        cal.set(Calendar.HOUR, hour);
-        cal.set(Calendar.MINUTE, minute);
+        //Date added_date = cal.getTime();
         if (am_pm.equals("A")) {
-            cal.set(Calendar.AM_PM, Calendar.AM);
+            //cal.set(Calendar.AM_PM, Calendar.AM);
+            cal.set(Calendar.HOUR_OF_DAY, hour);
         } else {
-            cal.set(Calendar.AM_PM, Calendar.PM);
+            if (hour == 12){
+                cal.set(Calendar.HOUR_OF_DAY, hour);
+            }
+            else{
+                Integer hr_format_hour =  hour+12;
+                cal.set(Calendar.HOUR_OF_DAY, hr_format_hour);
+            }
+            //cal.set(Calendar.AM_PM, Calendar.PM);
         }
+
+
+        //Date added_hour = cal.getTime();
+        cal.set(Calendar.MINUTE, minute);
+        //Date added_minute = cal.getTime();
+
         return cal.getTime();
     }
 
