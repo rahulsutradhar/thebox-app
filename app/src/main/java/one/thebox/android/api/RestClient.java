@@ -19,7 +19,7 @@ public class RestClient {
         Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl(BuildConfig.DEBUG ? STAGING_URL : BASE_URL)
 //                .baseUrl(LOCAL_URL)
-                .baseUrl(LOCAL_URL)
+                .baseUrl(STAGING_URL)
                 .client(MyApplication.getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

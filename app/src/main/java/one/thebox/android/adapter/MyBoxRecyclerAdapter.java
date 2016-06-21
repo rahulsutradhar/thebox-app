@@ -216,15 +216,17 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                         for (Category category : categories) {
                             catIds.add(category.getId());
                         }
+                        ArrayList<Integer> user_catIds = new ArrayList<>();
                         if (!my_catIds.isEmpty()) {
                             for (UserCategory usercategory : my_catIds) {
-                                catIds.add(usercategory.getCategory().getId());
+                                user_catIds.add(usercategory.getCategory().getId());
                             }
                         }
                         Intent intent = new Intent(mContext, MainActivity.class)
                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
                                 .putExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(
-                                        catIds)).putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
+                                        catIds)).putExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(
+                                        user_catIds)).putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
                                 .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
                         mContext.startActivity(intent);
                     }

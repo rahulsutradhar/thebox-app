@@ -534,9 +534,10 @@ public class MainActivity extends BaseActivity implements
             }
         });
         ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
+        ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
         int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
         String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, selectedPosition, boxName);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
         fragmentTransaction.commit();

@@ -70,7 +70,7 @@
                             android:layout_height="wrap_content"
                             android:text="Arriving on "
                             android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_medium1" />
+                            android:textSize="@dimen/text_small3" />
 
                         <one.thebox.android.ViewHelper.MontserratTextView
                             android:id="@+id/text_date"
@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:text="Sun 14 Feb"
                             android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_medium1" />
+                            android:textSize="@dimen/text_small3" />
 
                     </LinearLayout>
 

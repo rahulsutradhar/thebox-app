@@ -74,6 +74,7 @@ import retrofit2.Response;
 public class SearchDetailFragment extends BaseFragment implements AppBarObserver.OnOffsetChangeListener {
 
     public static final String EXTRA_MY_BOX_CATEGORIES_ID = "my_box_category_click_event";
+    public static final String EXTRA_MY_BOX_USER_CATEGORIES_ID = "my_box_user_category_click_event";
     public static final String EXTRA_CLICK_POSITION = "extra_click_position";
     public static final String BOX_NAME = "box_name";
     private static final String EXTRA_QUERY = "extra_query";
@@ -95,6 +96,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds;
+    private ArrayList<Integer> user_catIds;
     private int clickPosition;
     private TextView numberOfItemsInCart, noResultFound, itemsInCart, savings;
     private FrameLayout fabHolder;
@@ -127,10 +129,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         // Required empty public constructor
     }
 
-    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, int clickPosition, String boxName) {
+    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds,ArrayList<Integer> user_catIds, int clickPosition, String boxName) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
         bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
+        bundle.putString(EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(user_catIds));
         bundle.putString(BOX_NAME, boxName);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
@@ -159,6 +162,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         catId = getArguments().getInt(EXTRA_CAT_ID);
         exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
         catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
+        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
         clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
         if (catIds != null && !catIds.isEmpty()) {
             setCategories();
@@ -177,6 +181,18 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
         RealmResults<Category> realmResults = query.findAll();
         for (Category category : realmResults) {
+            categories.add(category);
+        }
+        RealmQuery<Category> query_user_cat = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
+        for (int i = 0; i < user_catIds.size(); i++) {
+            if (user_catIds.size() - 1 == i) {
+                query_user_cat.equalTo(Category.FIELD_ID, user_catIds.get(i));
+            } else {
+                query_user_cat.equalTo(Category.FIELD_ID, user_catIds.get(i)).or();
+            }
+        }
+        RealmResults<Category> realmResults_user_cat = query_user_cat.findAll();
+        for (Category category : realmResults_user_cat) {
             categories.add(category);
         }
     }
