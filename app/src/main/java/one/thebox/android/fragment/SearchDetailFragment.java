@@ -161,8 +161,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         query = getArguments().getString(EXTRA_QUERY);
         catId = getArguments().getInt(EXTRA_CAT_ID);
         exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
-        catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
-        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
+        catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
+        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
         clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
         if (catIds != null && !catIds.isEmpty()) {
             setCategories();
@@ -402,7 +402,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
             @Override
             public void onPageSelected(int position) {
-                exploreItem.setDefaultPositionOfViewPager(position);
+                if (exploreItem != null) {
+                    exploreItem.setDefaultPositionOfViewPager(position);
+                }
             }
 
             @Override
