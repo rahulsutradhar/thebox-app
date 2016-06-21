@@ -32,5 +32,8 @@
     <string name="search_hint">Search</string>
     <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
     <string name="no_connection_error">Please check your internet connection and retry</string>
+    <string name="sign_out">Sign out</string>
+    <string name="enter_details"><u>Enter Details</u></string>
+
 </resources>
 

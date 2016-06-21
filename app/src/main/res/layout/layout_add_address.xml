@@ -10,28 +10,44 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-         <one.thebox.android.ViewHelper.MontserratTextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_horizontal"
-            android:text="Add Address"
-            android:textColor="@color/primary_text_color"
-            android:textSize="20dp" />
+            android:layout_marginTop="8dp">
 
-         <one.thebox.android.ViewHelper.MontserratTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Type"
-            android:textColor="@color/primary_text_color"
-            android:textSize="16sp" />
+            <one.thebox.android.ViewHelper.MontserratTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/enter_details"
+                android:textColor="@color/primary_text_color"
+                android:paddingTop="4dp"
+                android:textSize="20sp" />
+
+            <one.thebox.android.ViewHelper.MontserratTextView
+                android:id="@+id/button_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/grey_borders"
+                android:paddingBottom="4dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="4dp"
+                android:text="Done"
+                android:textColor="@color/primary_text_color"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+
 
         <RadioGroup
             android:id="@+id/radio_group_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="24dp"
             android:checkedButton="@+id/home_radio_buttom"
             android:orientation="horizontal">
 
@@ -63,7 +79,7 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:layout_marginTop="8dp"
             android:textColorHint="@color/dim_gray">
 
             <one.thebox.android.ViewHelper.MontserratEditText
@@ -76,14 +92,15 @@
                 android:background="@drawable/black_underline_edit_text"
                 android:hint="Flat/House/Office"
                 android:padding="8dp"
+                android:textSize="@dimen/text_small3"
                 android:textColor="@color/primary_text_color" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textColorHint="@color/dim_gray">
+            android:textColorHint="@color/dim_gray"
+            android:layout_marginTop="8dp">
 
             <one.thebox.android.ViewHelper.MontserratEditText
                 android:id="@+id/street_edit_text"
@@ -91,16 +108,18 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/black_underline_edit_text"
                 android:hint="Street/Office Name"
+                android:textColorHint="@color/md_grey_50"
                 android:inputType="textCapSentences"
                 android:padding="8dp"
+                android:textSize="@dimen/text_small3"
                 android:textColor="@color/primary_text_color" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textColorHint="@color/dim_gray">
+            android:textColorHint="@color/dim_gray"
+            android:layout_marginTop="8dp">
 
             <one.thebox.android.ViewHelper.MontserratEditText
                 android:id="@+id/society_edit_text"
@@ -110,6 +129,7 @@
                 android:hint="Society"
                 android:inputType="textCapSentences"
                 android:padding="8dp"
+                android:textSize="@dimen/text_small3"
                 android:textColor="@color/primary_text_color" />
         </android.support.design.widget.TextInputLayout>
 
@@ -134,7 +154,7 @@
                 android:id="@+id/locality_text_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:paddingTop="8dp"
                 android:textColorHint="@color/dim_gray">
 
                 <AutoCompleteTextView
@@ -146,6 +166,7 @@
                     android:inputType="textCapSentences"
                     android:padding="8dp"
                     android:textColor="@color/primary_text_color"
+                    android:textSize="@dimen/text_small3"
                     android:textColorHint="@color/primary_text_color" />
             </android.support.design.widget.TextInputLayout>
 
@@ -156,27 +177,12 @@
             android:id="@+id/check_box_primary_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_gravity="center_horizontal"
             android:buttonTint="@color/primary_text_color"
             android:checked="true"
             android:text="Make as primary address"
+            android:textSize="@dimen/text_small3"
             android:textColor="@color/primary_text_color" />
-
-         <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/button_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="32dp"
-            android:background="@drawable/grey_borders"
-            android:paddingBottom="8dp"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp"
-            android:paddingTop="8dp"
-            android:text="Add"
-            android:textColor="@color/primary_text_color"
-            android:textSize="16sp" />
-
 
     </LinearLayout>
 </ScrollView>

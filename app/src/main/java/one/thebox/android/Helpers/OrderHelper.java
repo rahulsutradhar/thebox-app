@@ -69,11 +69,12 @@ public class OrderHelper {
     private static void saveToRealm(final RealmList<Order> orders) {
         Realm realm = MyApplication.getRealm();
         realm.beginTransaction();
-        if (orders.isEmpty()) {
+//        if (orders.isEmpty()) {
+//            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+//        } else {
             realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
-        } else {
             realm.copyToRealmOrUpdate(orders);
-        }
+//        }
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();
 

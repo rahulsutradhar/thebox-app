@@ -31,9 +31,11 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
+import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.
@@ -92,14 +94,18 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
-        new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
-                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                    @Override
-                    public void onComplete() {
-                        new ShowCaseHelper((Activity) mContext, 3)
-                                .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
-                    }
-                });
+
+        if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true)) {
+            new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
+                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                        @Override
+                        public void onComplete() {
+                            PrefUtils.putBoolean(MyApplication.getInstance(), "home_tutorial", false);
+                            new ShowCaseHelper((Activity) mContext, 3)
+                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+                        }
+                    });
+        }
     }
 
     @Override

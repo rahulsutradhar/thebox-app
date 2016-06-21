@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.sql.Time;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -251,8 +253,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         int minute = Integer.parseInt(timeSlot.substring(3, 5));
         String am_pm = timeSlot.substring(6, 7);
         Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, hour);
+//        cal.setTime(date);
+        cal.set(Calendar.YEAR, date.getYear()+1900);
+        cal.set(Calendar.MONTH, date.getMonth());
+        cal.set(Calendar.DAY_OF_MONTH, date.getDate());
+        cal.set(Calendar.HOUR, hour);
         cal.set(Calendar.MINUTE, minute);
         if (am_pm.equals("A")) {
             cal.set(Calendar.AM_PM, Calendar.AM);

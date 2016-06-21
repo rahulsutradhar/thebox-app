@@ -342,22 +342,25 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
                             moveRecyclerView(true);
                         }
-                        new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                                    @Override
-                                    public void onComplete() {
-                                        PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
-                                        new ShowCaseHelper((Activity) mContext, 2)
-                                                .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                                                    @Override
-                                                    public void onComplete() {
-                                                        EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                    }
-                                                });
-                                    }
-                                });
-                        moveRecyclerView(true);
+                        if (PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) {
+                            new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                        @Override
+                                        public void onComplete() {
+                                            PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
+                                            PrefUtils.putBoolean(MyApplication.getInstance(), "store_tutorial", false);
+                                            new ShowCaseHelper((Activity) mContext, 2)
+                                                    .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                                        @Override
+                                                        public void onComplete() {
+                                                            EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                        }
+                                                    });
+                                        }
+                                    });
+                            moveRecyclerView(true);
+                        }
                     }
                 }
             } else {
