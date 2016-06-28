@@ -54,6 +54,7 @@ import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.util.DateTimeUtil;
+import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -185,7 +186,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView addButton, subtractButton;
         private TextView changeButton, noOfItemSelected;
         private LinearLayout savingHolder, savingAmountHolder;
-        private TextView productName, productBrand, size, savings;
+        private TextView productName, productBrand, size, savings, no_of_options_holder;
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
         private LinearLayout addButtonViewHolder, updateQuantityViewHolder;
@@ -209,6 +210,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             productName = (TextView) itemView.findViewById(R.id.product_name);
             productBrand = (TextView) itemView.findViewById(R.id.product_brand);
             size = (TextView) itemView.findViewById(R.id.text_view_size);
+            no_of_options_holder = (TextView) itemView.findViewById(R.id.no_of_options);
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
             savings = (TextView) itemView.findViewById(R.id.text_view_savings);
             savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
@@ -369,12 +371,34 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             productName.setText(boxItem.getTitle());
             productBrand.setText(boxItem.getBrand());
+
+            //Updating Savings
             if (boxItem.getSavings() == 0) {
                 savingAmountHolder.setVisibility(View.GONE);
             } else {
                 savingAmountHolder.setVisibility(View.VISIBLE);
                 savings.setText(boxItem.getSavings() + " Rs Savings");
             }
+
+            //Updating no. of SKU's
+            if (boxItem.getNo_of_sku() < 2) {
+                no_of_options_holder.setVisibility(View.GONE);
+                changeButton.setVisibility(View.GONE);
+            }
+            else if (boxItem.getNo_of_sku() == 2)
+            {
+                no_of_options_holder.setVisibility(View.VISIBLE);
+                changeButton.setVisibility(View.VISIBLE);
+                no_of_options_holder.setText(" + 1 option");
+            }
+            else
+            {
+                no_of_options_holder.setVisibility(View.VISIBLE);
+                changeButton.setVisibility(View.VISIBLE);
+                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1)  + " options");
+            }
+
+
             if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
                 if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
                     size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
@@ -382,7 +406,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
             }
-            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).into(productImage);
+            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
+            //Integer image_size = DisplayUtil.dpToPx(mContext, 116);
+            //Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).resize(image_size,image_size).into(productImage);
         }
 
         private void addItemToBox(final int position) {
@@ -524,7 +550,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView);
             adjustButton = (TextView) itemView.findViewById(R.id.adjust);
             productName = (TextView) itemView.findViewById(R.id.product_name);
-            brand = (TextView) itemView.findViewById(R.id.product_brand);
             arrivingTime = (TextView) itemView.findViewById(R.id.arriving_time);
             config = (TextView) itemView.findViewById(R.id.config);
             savings = (TextView) itemView.findViewById(R.id.savings);
@@ -626,7 +651,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 config.setText(itemConfig.getCorrectQuantity() + " x " +
                         itemConfig.getSize() + " " + itemConfig.getSizeUnit());
             }
-            brand.setText(userItem.getBoxItem().getBrand());
             savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
             if (isHasUneditableUserItem()) {
                 arrivingTime.setVisibility(View.GONE);
@@ -652,7 +676,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     e.printStackTrace();
                 }
             }
-            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).into(productImageView);
+            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+            //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
         private void addItemToBox(final int position) throws IllegalStateException {

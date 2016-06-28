@@ -33,9 +33,10 @@
                 android:id="@+id/product_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,8 +49,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
                     android:text="Purifying Neem"
-                    android:textColor="@color/primary_text_color"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
 
                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/product_brand"
@@ -57,33 +58,41 @@
                     android:layout_height="wrap_content"
                     android:text="By Himalaya"
                     android:textColor="@color/primary_text_color"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-
+                    android:layout_marginTop="4dp"
                     android:orientation="horizontal">
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/text_view_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:text="55ml"
                         android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/no_of_options"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" + 5 options"
+                        android:textColor="@color/dim_gray"
+                        android:textSize="10sp" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/button_change"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
                         android:padding="8dp"
                         android:text="@string/change_button"
-                        app:typeface="montserratRegular"
+                        app:typeface="montserratSemiBold"
                         android:textColor="@color/md_green_500"
-                        android:textSize="@dimen/text_medium1" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -91,10 +100,10 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Repeats Every:"
+                    android:layout_marginTop="4dp"
+                    android:text="Repeat Every:"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_medium1"
+                    android:textSize="14sp"
                     app:typeface="montserratSemiBold" />
 
                 <android.support.v7.widget.RecyclerView
@@ -107,7 +116,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="4dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -119,7 +128,7 @@
                             android:id="@+id/holder_add_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/grey_borders"
+                            android:background="@drawable/green_borders"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
@@ -130,9 +139,10 @@
                                 android:layout_marginLeft="12dp"
                                 android:layout_marginRight="12dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Subscribe"
-                                android:textColor="@color/dim_gray"
-                                android:textSize="@dimen/text_medium1" />
+                                android:text="@string/subscribe"
+                                android:textColor="@color/md_green_500"
+                                android:textSize="12sp"
+                                app:typeface="montserratSemiBold" />
 
 
                         </LinearLayout>
@@ -152,7 +162,7 @@
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="-"
-                                android:textColor="@color/primary_text_color" />
+                                android:textColor="@color/md_green_500" />
 
                             <one.thebox.android.ViewHelper.MontserratTextView
                                 android:id="@+id/no_of_item_selected"
@@ -174,7 +184,7 @@
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="+"
-                                android:textColor="@color/primary_text_color" />
+                                android:textColor="@color/md_green_500" />
 
                         </LinearLayout>
 
@@ -243,7 +253,8 @@
                     android:layout_height="wrap_content"
                     android:text="Suggested Categories"
                     android:textColor="@color/primary_text_color"
-                    android:textSize="14sp" />
+                    android:textSize="16sp"
+                    app:typeface="montserratSemiBold" />
 
             </LinearLayout>
 

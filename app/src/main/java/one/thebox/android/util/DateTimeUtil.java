@@ -32,7 +32,7 @@ public class DateTimeUtil {
         try {
             return dateFormat.parse(dateStr);
         } catch (ParseException e) {
-            Log.e(TAG, "ParseException", e);
+            //Log.e(TAG, "ParseException", e);
             return null;
         }
     }

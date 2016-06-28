@@ -50,11 +50,11 @@
 
         <ImageView
             android:id="@+id/product_image_view"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="116dp"
+            android:layout_height="116dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -70,15 +70,8 @@
                 android:layout_marginTop="12dp"
                 android:text="Purifying Neem"
                 android:textColor="@color/primary_text_color"
-                android:textSize="@dimen/text_medium1" />
+                android:textSize="@dimen/text_small3" />
 
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:id="@+id/product_brand"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="by Himalaya"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="@dimen/text_small2" />
 
             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/delivery_time"
@@ -95,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/delivery_time"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:text="Arriving in 6 days"
                 android:textColor="@color/md_green_500"
@@ -106,11 +99,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:lines="1"
                 android:text="Repeats every two monts"
                 android:textColor="@color/secondary_text_color"
-                android:textSize="@dimen/text_medium1" />
+                android:textSize="@dimen/text_small2" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -124,18 +117,18 @@
                     android:layout_height="wrap_content"
                     android:text="55ml Tube"
                     android:textColor="@color/secondary_text_color"
-                    android:textSize="@dimen/text_medium1" />
+                    android:textSize="@dimen/text_small2" />
 
                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:id="@+id/button_change"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:padding="8dp"
-                    android:text="@string/change_button"
+                    android:layout_marginLeft="4dp"
+
+                    android:text="@string/select_button"
                     app:typeface="montserratSemiBold"
                     android:textColor="@color/md_green_500"
-                    android:textSize="@dimen/text_medium1" />
+                    android:textSize="@dimen/text_small3" />
 
             </LinearLayout>
 
@@ -148,14 +141,14 @@
                 android:lines="1"
                 android:text="Rs 55"
                 android:textColor="@color/secondary_text_color"
-                android:textSize="@dimen/text_medium1" />
+                android:textSize="@dimen/text_small2" />
 
 
             <LinearLayout
                 android:id="@+id/layout_quantity_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -204,8 +197,8 @@
                     android:paddingLeft="24dp"
                     android:paddingRight="24dp"
                     android:paddingTop="8dp"
-                    android:text="Adjust"
-                    android:textColor="@color/primary_text_color"
+                    android:text="@string/adjust"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_small3" />
 
 

@@ -297,12 +297,15 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
             public void setViewHolder(Category category) {
                 if (isSearchDetailItemFragment) {
-                    categoryNameTextView.setText(category.getTitle());
+                    categoryNameTextView.setText(category.getMinititle());
                 } else {
-                    categoryNameTextView.setText(category.getTitle());
+                    categoryNameTextView.setText(category.getMinititle());
                 }
                 noOfItems.setText(category.getNoOfItems() + " Items");
-                Picasso.with(mContext).load(category.getIconUrl()).into(categoryIcon);
+                Picasso.with(mContext).load(category.getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
+                //Picasso.with(mContext).load(category.getIconUrl()).resize(72,72).into(categoryIcon);
+                //Integer image_size = DisplayUtil.dpToPx(mContext, 72);
+                //Picasso.with(mContext).load(category.getIconUrl()).resize(image_size,image_size).into(categoryIcon);
             }
         }
     }
@@ -404,7 +407,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 noOfItemSubscribed.setOnClickListener(viewItemsListener);
             }
 
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).into(boxImageView);
+            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(boxImageView);
+            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(42,42).into(boxImageView);
+            //Integer image_size = DisplayUtil.dpToPx(mContext, 42);
+            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(image_size,image_size).into(boxImageView);
+
 
             if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
                 this.recyclerViewCategories.setVisibility(View.GONE);

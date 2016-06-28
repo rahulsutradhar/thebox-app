@@ -85,8 +85,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         } else {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         }
-        Picasso.with(context).load(mFragmentCategoryList.get(position)
-                .getIconUrl()).into(icon);
+        Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).fit().into(icon);
+        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(42,42).into(icon);
+        //Integer image_size = DisplayUtil.dpToPx(context, 42);
+        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(image_size,image_size).into(icon);
+
         if (isSelected) {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 48);

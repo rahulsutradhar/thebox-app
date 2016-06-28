@@ -3,7 +3,7 @@ package one.thebox.android.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.squareup.leakcanary.LeakCanary;
+//import com.squareup.leakcanary.LeakCanary;
 import com.squareup.okhttp.Cache;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.NetworkPolicy;
@@ -112,7 +112,7 @@ public class MyApplication extends Application {
         myApplication = this;
         mContext = getApplicationContext();
         ACRA.init(this);
-        LeakCanary.install(this);
+        //LeakCanary.install(this);
         ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
         Picasso.Builder builder = new Picasso.Builder(this);

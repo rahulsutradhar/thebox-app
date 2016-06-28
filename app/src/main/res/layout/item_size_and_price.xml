@@ -5,9 +5,9 @@
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="12dp"
-    android:paddingRight="24dp"
-    android:paddingTop="12dp">
+    android:paddingBottom="8dp"
+    android:paddingRight="16dp"
+    android:paddingTop="8dp">
 
      <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/text_view_frequency"
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Monthly"
         android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_medium1" />
+        android:textSize="@dimen/text_small1" />
 
      <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/text_view_price"
@@ -24,7 +24,7 @@
         android:layout_marginTop="2dp"
         android:text="Rs 52"
         android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_medium1" />
+        android:textSize="@dimen/text_small1" />
 
     <View
         android:id="@+id/selector"

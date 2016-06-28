@@ -10,4 +10,7 @@
     <dimen name="text_small3">14sp</dimen>
     <dimen name="text_small2">13sp</dimen>
     <dimen name="text_small1">12sp</dimen>
+    <dimen name="text_extra_small3">10sp</dimen>
+    <dimen name="text_extra_small2">9sp</dimen>
+    <dimen name="text_extra_small1">8sp</dimen>
 </resources>

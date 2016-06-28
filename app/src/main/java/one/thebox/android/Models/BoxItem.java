@@ -36,6 +36,8 @@ public class BoxItem extends RealmObject implements Serializable {
     private String brand;
     @SerializedName("savings")
     private int savings;
+    @SerializedName("no_of_sku")
+    private int no_of_sku;
     @SerializedName("smart_item")
     private boolean isSmartItems;
     @SerializedName("category_id")
@@ -135,6 +137,14 @@ public class BoxItem extends RealmObject implements Serializable {
 
     public void setSavings(int savings) {
         this.savings = savings;
+    }
+
+    public int getNo_of_sku() {
+        return no_of_sku;
+    }
+
+    public void setNo_of_sku(int no_of_sku) {
+        this.no_of_sku = no_of_sku;
     }
 
     public boolean isSmartItems() {

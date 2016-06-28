@@ -11,8 +11,8 @@ android {
         minSdkVersion 15
 
         targetSdkVersion 23
-        versionCode 10
-        versionName "1.1.0"
+        versionCode 12
+        versionName "1.1.2"
     }
     buildTypes {
         release {
@@ -61,8 +61,9 @@ dependencies {
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
-  compile 'com.eftimoff:androidplayer:1.0.3@aar'
+    compile 'com.eftimoff:androidplayer:1.0.3@aar'
     compile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

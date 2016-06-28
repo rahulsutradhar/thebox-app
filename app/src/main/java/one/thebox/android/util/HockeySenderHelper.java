@@ -59,7 +59,7 @@ public class HockeySenderHelper implements ReportSender {
         String url = BASE_URL + formKey + CRASHES_PATH;
 
 
-        Log.e("Crashes 2", url);
+        //Log.e("Crashes 2", url);
 
         try {
 

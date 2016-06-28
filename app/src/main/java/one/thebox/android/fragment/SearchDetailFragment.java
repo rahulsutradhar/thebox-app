@@ -191,9 +191,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 query_user_cat.equalTo(Category.FIELD_ID, user_catIds.get(i)).or();
             }
         }
-        RealmResults<Category> realmResults_user_cat = query_user_cat.findAll();
-        for (Category category : realmResults_user_cat) {
-            categories.add(category);
+        if (user_catIds.size() != 0) {
+            RealmResults<Category> realmResults_user_cat = query_user_cat.findAll();
+            for (Category category : realmResults_user_cat) {
+                categories.add(category);
+            }
         }
     }
 
