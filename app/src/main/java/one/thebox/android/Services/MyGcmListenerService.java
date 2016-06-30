@@ -5,10 +5,13 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.ActionExecuter;
+import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.NotificationHelper;
 import one.thebox.android.util.NotificationInfo;
+import one.thebox.android.util.PrefUtils;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -28,6 +31,8 @@ public class MyGcmListenerService extends GcmListenerService {
         String notificationInfoString = data.getString("notification_info");
         NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
         if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
+            //Updating Prefrences
+            PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
             ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
         } else {
             new NotificationHelper(this, notificationInfo).show();

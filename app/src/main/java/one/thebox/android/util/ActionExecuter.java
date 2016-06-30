@@ -88,8 +88,8 @@ public class ActionExecuter {
             }
             case ORDER_HAS_LOADED: {
                 if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-                    OrderHelper.getOrderAndNotify();
                     PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
+                    OrderHelper.getOrderAndNotify();
                 }
                 break;
             }
