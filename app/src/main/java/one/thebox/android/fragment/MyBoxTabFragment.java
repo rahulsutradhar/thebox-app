@@ -31,9 +31,7 @@ public class MyBoxTabFragment extends Fragment {
     private GifImageView progressBar;
     private LinearLayout holder;
 
-
     public MyBoxTabFragment() {
-
     }
 
     @Override
@@ -45,10 +43,11 @@ public class MyBoxTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
+        Integer default_position = getArguments().getInt("default_position");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_box_tabs, container, false);
             initViews();
-            setupViewPagerAndTabs();
+            setupViewPagerAndTabs(default_position);
         }
         return rootView;
     }
@@ -70,7 +69,7 @@ public class MyBoxTabFragment extends Fragment {
         super.onDetach();
     }
 
-    private void setupViewPagerAndTabs() {
+    private void setupViewPagerAndTabs(int default_position) {
         if (getActivity() == null) {
             return;
         }
@@ -81,6 +80,7 @@ public class MyBoxTabFragment extends Fragment {
         adapter.addFragment(UpComingOrderFragment.newInstance(), "My Deliveries");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+        viewPager.setCurrentItem(default_position);
     }
 
     @Override

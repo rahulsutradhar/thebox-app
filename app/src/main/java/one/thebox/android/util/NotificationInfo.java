@@ -12,7 +12,7 @@ public class NotificationInfo {
     public final static int INDEX_ACTION_POSITIVE_BUTTON = 1;
     public final static int INDEX_ACTION_NEGATIVE_BUTTON = 2;
     public final static int INDEX_ICON_NOTIFICATION = 0;
-    public final static int[] ICON_IDS = {R.drawable.ic_box};
+    public final static int[] ICON_IDS = {R.drawable.ic_logo};
     List<NotificationAction> notificationActions;
     private int notificationId;
     private int positiveButtonIconId;

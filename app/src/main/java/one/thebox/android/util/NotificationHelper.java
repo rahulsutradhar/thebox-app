@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.squareup.picasso.Picasso;
@@ -23,7 +24,7 @@ import one.thebox.android.activity.MainActivity;
  * Created by Ajeet Kumar Meena on 11-02-2016.
  */
 public class NotificationHelper {
-    private static final int BACKGROUND_COLOR = R.color.primary;
+    private static final int BACKGROUND_COLOR = R.color.md_red_800;
     private static final int MAX_PROGRESS = 100;
     private NotificationInfo notificationInfo;
     private Context context;
@@ -205,11 +206,21 @@ public class NotificationHelper {
         if (notificationInfo.getNotificationActions() != null && !notificationInfo.getNotificationActions().isEmpty()
                 && notificationInfo.getNotificationActions().size() >= index + 1) {
             Intent intent = new Intent(context, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra(ActionExecuter.FLAG_NOTIFICATION, true);
-            intent.putExtra(ActionExecuter.ACTION_ID, notificationInfo.getNotificationActions().get(index).getActionId());
-            intent.putExtra(ActionExecuter.ACTION_EXTRA, notificationInfo.getNotificationActions().get(index).getActionExrta());
-            return PendingIntent.getActivity(context, notificationInfo.getNotificationId() + index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+//          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+//            Bundle bundle = new Bundle();
+//            bundle.putInt(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+//            intent.putExtras(bundle);
+
+//            intent.putExtra(ActionExecuter.FLAG_NOTIFICATION, true);
+//            intent.putExtra(ActionExecuter.ACTION_ID, notificationInfo.getNotificationActions().get(index).getActionId());
+//            intent.putExtra(ActionExecuter.ACTION_EXTRA, notificationInfo.getNotificationActions().get(index).getActionExrta());
+//            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO,notificationInfo.getNotificationActions().get(index).getActionId());
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            return PendingIntent.getActivity(context, notificationInfo.getNotificationId() + index, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         }
         return null;
     }

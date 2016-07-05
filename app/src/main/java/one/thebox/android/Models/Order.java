@@ -46,7 +46,7 @@ public class Order extends RealmObject implements Serializable {
     private RealmList<UserItem> userItems;
     @SerializedName("cod")
     private boolean cod;
-    @SerializedName("successful")
+    @SerializedName("successfull")
     private boolean successful;
 
     public Order() {

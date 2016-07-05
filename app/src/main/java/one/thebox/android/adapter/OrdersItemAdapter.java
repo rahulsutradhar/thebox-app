@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,13 +176,14 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message;
+        private TextView dateTextView, text_order_state, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message;
         private LinearLayout linearLayout;
         private CardView cardView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
+            text_order_state = (TextView) itemView.findViewById(R.id.text_order_state);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
@@ -210,23 +213,56 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             }
             itemsNameTextView.setText(order.getUserItems().size() + " items in the order");
 
-            if (!order.isOpen()) {
+            // Order has been unsuccessfull
+            // State 2c
+            if (!order.isSuccessful()){
+                message.setText("Order was not confirmed by the user");
+                message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
+                text_order_state.setText("Was scheduled on");
+                amountTobePaidTextView.setVisibility(View.GONE);
+            }
+            // Order has been closed
+            // State 3
+            else if (!order.isOpen()) {
                 message.setText("Thank you for choosing us");
                 message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid via COD");
                 amountTobePaidTextView.setOnClickListener(null);
-            } else if (order.isCod()) {
-                message.setText("Please pay the amount to delivery boy");
+                if (order.isCod()) {
+                    amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid via COD");
+                }
+                else {
+                    amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid Online");
+                }
+
+            }
+            // Order was choosen to be cod and was delivered but payment was not collected
+            //<TODO> Change this to "Pay Online" Button after Payment Gateway integration
+            // State 2a'
+            else if (order.isCod() && order.isDelivered() && !order.isPaid()) {
+                message.setText("Payment Pending. Please pay in next delivery.");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " COD to be paid");
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " to be paid");
                 amountTobePaidTextView.setOnClickListener(null);
-            } else if (order.isPaid()) {
-                message.setText("Payment Confirm");
-                message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid online");
-            } else if (!order.isPaid() && !order.isCod()) {
+            }
+            // Order was choosen to be cod and is not delivered yet
+            // State 2a
+            else if (order.isCod() && !order.isDelivered()) {
+                message.setText("Please pay the delivery boy");
+                message.setTextColor(mContext.getResources().getColor(R.color.md_orange_500));
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " to be paid via COD");
+            }
+            // Order was paid online and is not delivered yet
+            // State 2b
+            else if (order.isPaid() && !order.isCod() && !order.isDelivered()) {
+                message.setText("Payment complete");
+                message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + "to be paid Online");
+            }
+            //Order made not confirmed yet
+            //State 1
+            else if (!order.isPaid() && !order.isCod()) {
                 message.setText("Please confirm delivery");
-                message.setTextColor(mContext.getResources().getColor(R.color.black));
+                message.setTextColor(mContext.getResources().getColor(R.color.md_orange_800));
                 amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
                 amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                     @Override

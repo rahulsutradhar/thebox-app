@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -130,7 +131,7 @@ public class MainActivity extends BaseActivity implements
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
-        attachMyBoxesFragment();
+        attachMyBoxesFragment(0);
         initCart();
         ShowCaseHelper.removeAllTutorial();
     }
@@ -237,7 +238,7 @@ public class MainActivity extends BaseActivity implements
     public boolean handleDrawer(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
-                attachMyBoxesFragment();
+                attachMyBoxesFragment(0);
                 return true;
             case R.id.my_account:
                 attachMyAccountFragment();
@@ -314,9 +315,14 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachMyBoxesFragment() {
+    private void attachMyBoxesFragment(int default_position) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("default_position", default_position);
+
+        fragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
         fragmentTransaction.commit();
@@ -324,7 +330,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragmentWithBackStack() {
-        attachMyBoxesFragment();
+        attachMyBoxesFragment(0);
     }
 
     private void attachSearchResultFragment() {
@@ -349,7 +355,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment();
+                attachMyBoxesFragment(0);
             }
         });
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
@@ -370,7 +376,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment();
+                attachMyBoxesFragment(0);
             }
         });
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
@@ -492,7 +498,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 1: {
-                attachMyBoxesFragment();
+                attachMyBoxesFragment(0);
                 break;
             }
             case 3: {
@@ -518,6 +524,10 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragmentWithBackStack();
                 break;
             }
+            case 11: {
+                attachMyBoxesFragment(1);
+                break;
+            }
         }
     }
 
@@ -530,7 +540,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment();
+                attachMyBoxesFragment(0);
             }
         });
         ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
