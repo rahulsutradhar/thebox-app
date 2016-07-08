@@ -78,6 +78,10 @@ public class ActionExecuter {
                 actionName = ActionName.MAIN_ACTIVITY;
                 break;
             }
+            case 9: {
+                actionName = ActionName.ORDER_HAS_BEEN_UPDATED_NOTIFY_USER;
+                break;
+            }
         }
         performAction(context, actionName, actionExtra);
     }
@@ -90,7 +94,14 @@ public class ActionExecuter {
             case ORDER_HAS_LOADED: {
                 if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
                     PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
-                    OrderHelper.getOrderAndNotify();
+                    OrderHelper.getOrderAndNotify(false);
+                }
+                break;
+            }
+            case ORDER_HAS_BEEN_UPDATED_NOTIFY_USER: {
+                if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+                    PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
+                    OrderHelper.getOrderAndNotify(true);
                 }
                 break;
             }
@@ -107,7 +118,8 @@ public class ActionExecuter {
 
     public enum ActionName {
         ORDER_HAS_LOADED(0),
-        MAIN_ACTIVITY(1);
+        MAIN_ACTIVITY(1),
+        ORDER_HAS_BEEN_UPDATED_NOTIFY_USER(99);
 
         private final int actionId;
 

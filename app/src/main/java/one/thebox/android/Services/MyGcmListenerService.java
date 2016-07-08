@@ -35,7 +35,6 @@ public class MyGcmListenerService extends GcmListenerService {
             PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
             ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
         } else {
-//            notificationInfo.TYPE_FLAG_AUTO_CANCEL =
             new NotificationHelper(this, notificationInfo).show();
         }
     }

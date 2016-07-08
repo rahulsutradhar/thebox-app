@@ -33,7 +33,7 @@ public class UpdateOrderService extends Service {
                 if (PrefUtils.getBoolean(UpdateOrderService.this, Constants.PREF_IS_ORDER_IS_LOADING, false)) {
                     PrefUtils.putBoolean(UpdateOrderService.this, Constants.PREF_IS_ORDER_IS_LOADING,
                             false);
-                    OrderHelper.getOrderAndNotify();
+                    OrderHelper.getOrderAndNotify(false);
                 }
                 stopSelf();
             }

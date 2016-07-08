@@ -2,6 +2,7 @@ package one.thebox.android.Helpers;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -15,6 +16,8 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.util.NotificationHelper;
+import one.thebox.android.util.NotificationInfo;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +35,16 @@ public class OrderHelper {
         saveToRealm(orders);
     }
 
-    public static void getOrderAndNotify() {
+    public static void build_and_show_order_delivered_notification(){
+        NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10,"");
+
+        NotificationInfo notificationInfo = new NotificationInfo(10,"Delivery Done","Why don't you add more items for next delivery?",0,content_action);
+
+        new NotificationHelper(MyApplication.getInstance(), notificationInfo).show();
+        Log.v("Notification shown","Here");
+    }
+
+    public static void getOrderAndNotify(final Boolean show_notification) {
         MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(MyApplication.getInstance())).enqueue(
                 new Callback<OrdersApiResponse>() {
                     @Override
@@ -40,6 +52,9 @@ public class OrderHelper {
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
                                 addAndNotify(response.body().getOrders());
+                                if (show_notification == true) {
+                                    build_and_show_order_delivered_notification();
+                                }
                             }
                         }
                     }

@@ -11,7 +11,7 @@ public class RestClient {
     private static final boolean IS_LOCAL_URL = false;
     private static final String STAGING_URL = "https://tranquil-springs-65978.herokuapp.com/";
     private static final String BASE_URL = "https://theboxprod.herokuapp.com/";
-    private static final String LOCAL_URL = "http://60806ef4.ngrok.io";
+    private static final String LOCAL_URL = "http://9dbdf8bc.ngrok.io";
     private APIService apiService;
 
     public RestClient() {

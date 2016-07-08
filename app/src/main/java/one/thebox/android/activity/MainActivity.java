@@ -131,7 +131,24 @@ public class MainActivity extends BaseActivity implements
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
             getAllAddresses();
         }
-        attachMyBoxesFragment(0);
+
+        // Doing it for notification so "My Deliveries" fragment can be attached by default
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+            if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 11)
+            {
+                attachMyBoxesFragment(1);
+            }
+            else if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 10)
+            {
+                attachMyBoxesFragment(0);
+            }
+        }
+        else
+        {
+            attachMyBoxesFragment(0);
+        }
+
         initCart();
         ShowCaseHelper.removeAllTutorial();
     }
@@ -321,6 +338,7 @@ public class MainActivity extends BaseActivity implements
 
         Bundle bundle = new Bundle();
         bundle.putInt("default_position", default_position);
+
 
         fragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -522,6 +540,10 @@ public class MainActivity extends BaseActivity implements
             }
             case 7: {
                 attachMyBoxesFragmentWithBackStack();
+                break;
+            }
+            case 10: {
+                attachMyBoxesFragment(0);
                 break;
             }
             case 11: {
