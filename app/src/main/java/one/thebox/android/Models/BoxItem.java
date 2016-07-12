@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import one.thebox.android.R;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.IntStringComparator;
 
@@ -36,6 +37,8 @@ public class BoxItem extends RealmObject implements Serializable {
     private String brand;
     @SerializedName("savings")
     private int savings;
+    @SerializedName("in_stock")
+    private boolean in_stock;
     @SerializedName("no_of_sku")
     private int no_of_sku;
     @SerializedName("smart_item")
@@ -155,6 +158,14 @@ public class BoxItem extends RealmObject implements Serializable {
         isSmartItems = smartItems;
     }
 
+    public boolean is_in_stock() {
+        return in_stock;
+    }
+
+    public void set_in_stock(boolean it_is_in_stock) {
+        in_stock = it_is_in_stock;
+    }
+
     public int getCategoryId() {
         return categoryId;
     }
@@ -263,8 +274,11 @@ public class BoxItem extends RealmObject implements Serializable {
         return 0;
     }
 
-    public ItemConfig getSmallestItemConfig() {
+    public ItemConfig getSmallestInStockItemConfig() {
+
         ItemConfig smallestItemConfig = itemConfigs.get(0);
+
+
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
               smallestItemConfig = itemConfigs.get(i);

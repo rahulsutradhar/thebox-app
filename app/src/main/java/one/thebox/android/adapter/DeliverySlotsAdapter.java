@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
@@ -112,6 +113,8 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
                                     if (response.body().isSuccess()) {
                                         bottomSheetDialog.dismiss();
                                         onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                        OrderHelper.addAndNotify(response.body().getOrders());
+
                                     }
                                 }
                             }

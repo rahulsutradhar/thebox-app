@@ -36,4 +36,6 @@ public class AdjustDeliveryResponse extends ApiResponse implements Serializable 
     public RealmList<Order> getOrdersBeforeNextOrder() {
         return ordersBeforeNextOrder;
     }
+
+
 }

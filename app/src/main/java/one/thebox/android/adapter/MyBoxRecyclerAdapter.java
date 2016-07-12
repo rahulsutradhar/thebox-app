@@ -382,7 +382,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             this.boxImageView.setOnClickListener(openBoxListener);
             if (box.getAllItemInTheBox().size() == 0) {
                 this.subTitle.setText("Suggestions for you");
-            } else {
+            }
+            else if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
+                this.subTitle.setText("All Box Categories Subscribed");
+            }
+            else {
                 this.subTitle.setText("Remaining Categories");
             }
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {

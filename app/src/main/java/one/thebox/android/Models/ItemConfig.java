@@ -27,6 +27,8 @@ public class ItemConfig extends RealmObject implements Serializable {
     private int subscriptionTypeUnit;
     @SerializedName("correct_quantity")
     private String correctQuantity;
+    @SerializedName("in_stock")
+    private boolean in_stock;
 
     public ItemConfig() {
     }
@@ -81,6 +83,14 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public String getSubscriptionType() {
         return subscriptionType;
+    }
+
+    public boolean is_in_stock() {
+        return in_stock;
+    }
+
+    public void set_in_stock(boolean it_is_in_stock) {
+        in_stock = it_is_in_stock;
     }
 
     public void setSubscriptionType(String subscriptionType) {

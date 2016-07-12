@@ -2,6 +2,7 @@ package one.thebox.android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -163,7 +164,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
         if (boxItems.get(position).getSelectedItemConfig() == null) {
-            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestItemConfig());
+            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
         }
         searchedItemViewHolder.setViews(boxItems.get(position), position, false);
     }
@@ -184,7 +185,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private RecyclerView recyclerViewFrequency;
         private MyBoxRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
-        private TextView changeButton, noOfItemSelected;
+        private TextView changeButton, noOfItemSelected, repeat_every, out_of_stock;
         private LinearLayout savingHolder, savingAmountHolder;
         private TextView productName, productBrand, size, savings, no_of_options_holder;
         private ImageView productImage;
@@ -202,6 +203,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             changeButton = (TextView) itemView.findViewById(R.id.button_change);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
+            repeat_every = (TextView) itemView.findViewById(R.id.repeat_every);
+            out_of_stock = (TextView) itemView.findViewById(R.id.out_of_stock);
             savingHolder = (LinearLayout) itemView.findViewById(R.id.saving_holder);
             recyclerViewFrequency = (RecyclerView) itemView.findViewById(R.id.recycler_view_frequency);
             recyclerViewFrequency.setItemViewCacheSize(20);
@@ -285,29 +288,43 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
+
             this.position = arrayListPosition;
-            addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addItemToBox(position);
+            productName.setText(boxItem.getTitle());
+            productBrand.setText(boxItem.getBrand());
+
+            //Updating Savings
+            if (boxItem.getSavings() == 0) {
+                savingAmountHolder.setVisibility(View.GONE);
+            } else {
+                savingAmountHolder.setVisibility(View.VISIBLE);
+                savings.setText(boxItem.getSavings() + " Rs Savings");
+            }
+
+            //Updating no. of SKU's
+            if (boxItem.getNo_of_sku() < 2) {
+                no_of_options_holder.setVisibility(View.GONE);
+                changeButton.setVisibility(View.GONE);
+            } else if (boxItem.getNo_of_sku() == 2) {
+                no_of_options_holder.setVisibility(View.VISIBLE);
+                changeButton.setVisibility(View.VISIBLE);
+                no_of_options_holder.setText(" + 1 option");
+            } else {
+                no_of_options_holder.setVisibility(View.VISIBLE);
+                changeButton.setVisibility(View.VISIBLE);
+                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " options");
+            }
+
+
+            if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
+                if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
+                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                } else {
+                    size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
-            });
-            addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateQuantity(position, boxItem.getQuantity() + 1);
-                }
-            });
-            subtractButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (boxItem.getQuantity() > 0) {
-                        updateQuantity(position, boxItem.getQuantity() - 1);
-                    } else {
-                        Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+            }
+            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
+
             changeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -328,87 +345,90 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
                 }
             });
-            setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-            noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-            if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
-                setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
-                savingHolder.setVisibility(View.VISIBLE);
-            } else {
-                savingHolder.setVisibility(View.GONE);
-            }
-            if (boxItem.getQuantity() == 0) {
-                addButtonViewHolder.setVisibility(View.VISIBLE);
-                updateQuantityViewHolder.setVisibility(View.GONE);
-                if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
-                    if (getAdapterPosition() == 0) {
-                        if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
-                            moveRecyclerView(true);
-                        }
-                        if (PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) {
-                            new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                                        @Override
-                                        public void onComplete() {
-                                            PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
-                                            PrefUtils.putBoolean(MyApplication.getInstance(), "store_tutorial", false);
-                                            new ShowCaseHelper((Activity) mContext, 2)
-                                                    .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                                                        @Override
-                                                        public void onComplete() {
-                                                            EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                        }
-                                                    });
-                                        }
-                                    });
-                            moveRecyclerView(true);
+
+            // Checking if item is in stock
+            if (boxItem.is_in_stock()) {
+
+                addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        addItemToBox(position);
+                    }
+                });
+                addButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updateQuantity(position, boxItem.getQuantity() + 1);
+                    }
+                });
+                subtractButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (boxItem.getQuantity() > 0) {
+                            updateQuantity(position, boxItem.getQuantity() - 1);
+                        } else {
+                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                         }
                     }
-                }
-            } else {
-                addButtonViewHolder.setVisibility(View.GONE);
-                updateQuantityViewHolder.setVisibility(View.VISIBLE);
-            }
-            productName.setText(boxItem.getTitle());
-            productBrand.setText(boxItem.getBrand());
+                });
 
-            //Updating Savings
-            if (boxItem.getSavings() == 0) {
-                savingAmountHolder.setVisibility(View.GONE);
-            } else {
-                savingAmountHolder.setVisibility(View.VISIBLE);
-                savings.setText(boxItem.getSavings() + " Rs Savings");
-            }
+                setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
 
-            //Updating no. of SKU's
-            if (boxItem.getNo_of_sku() < 2) {
-                no_of_options_holder.setVisibility(View.GONE);
-                changeButton.setVisibility(View.GONE);
-            }
-            else if (boxItem.getNo_of_sku() == 2)
-            {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                changeButton.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + 1 option");
-            }
-            else
-            {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                changeButton.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1)  + " options");
-            }
+                noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
 
-
-            if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
-                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
+                    setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
+                    savingHolder.setVisibility(View.VISIBLE);
                 } else {
-                    size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    savingHolder.setVisibility(View.GONE);
+                }
+                if (boxItem.getQuantity() == 0) {
+                    addButtonViewHolder.setVisibility(View.VISIBLE);
+                    updateQuantityViewHolder.setVisibility(View.GONE);
+                    if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
+                        if (getAdapterPosition() == 0) {
+                            if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
+                                moveRecyclerView(true);
+                            }
+                            if (PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) {
+                                new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                            @Override
+                                            public void onComplete() {
+                                                PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
+                                                PrefUtils.putBoolean(MyApplication.getInstance(), "store_tutorial", false);
+                                                new ShowCaseHelper((Activity) mContext, 2)
+                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                                            @Override
+                                                            public void onComplete() {
+                                                                EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                moveRecyclerView(true);
+                            }
+                        }
+                    }
+                } else {
+                    addButtonViewHolder.setVisibility(View.GONE);
+                    updateQuantityViewHolder.setVisibility(View.VISIBLE);
                 }
             }
-            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
-            //Integer image_size = DisplayUtil.dpToPx(mContext, 116);
-            //Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).resize(image_size,image_size).into(productImage);
+
+            // If Item is not in stock
+            else{
+                addButtonViewHolder.setVisibility(View.GONE);
+                addButton.setVisibility(View.GONE);
+                subtractButton.setVisibility(View.GONE);
+                savingHolder.setVisibility(View.GONE);
+                repeat_every.setVisibility(View.GONE);
+                out_of_stock.setVisibility(View.VISIBLE);
+
+                // Disable the change button
+                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+            }
         }
 
         private void addItemToBox(final int position) {

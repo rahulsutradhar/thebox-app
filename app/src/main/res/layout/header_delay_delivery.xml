@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Delivered to you every week"
+        android:text="Repeats every week"
+        android:textSize="@dimen/text_medium1"
         android:textColor="@color/primary_text_color" />
 
     <one.thebox.android.ViewHelper.MontserratTextView
@@ -22,8 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/md_listitem_vertical_margin"
         android:text="Arriving in 3 days"
-        android:textColor="@color/brilliant_rose" />
+        android:textSize="@dimen/text_medium2"
+        android:textColor="@color/md_green_800" />
 
 
     <View

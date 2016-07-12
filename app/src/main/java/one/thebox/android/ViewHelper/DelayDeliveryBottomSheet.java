@@ -80,10 +80,10 @@ public class DelayDeliveryBottomSheet {
     public void setupRecyclerView() {
         ArrayList<String> reasonString = new ArrayList<>();
         if (beforeNextDeliveryOrders != null && !beforeNextDeliveryOrders.isEmpty()) {
-            reasonString.add("If you want this item early, Combine with the following deliveries:");
+            reasonString.add("Item Finished. I want it early");
         }
         if (nextOrder != null && !nextOrder.isEmpty()) {
-            reasonString.add("If you want this item later, Combine with following deliveries:");
+            reasonString.add("Item Not Finished Yet. I want to delay delivery");
         }
         adjustDeliverySlotAdapter = new AdjustDeliverySlotAdapter(context, reasonString);
         recyclerView.setHasFixedSize(true);
@@ -262,7 +262,7 @@ public class DelayDeliveryBottomSheet {
                     arrivingTextView.setText("This item is in cart. Order this item now.");
                 } else {
                     int days = (int) DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), orderDate);
-                    if(days == 0) {
+                    if(days != 0) {
                         arrivingTextView.setText("Arriving in " + days+" days");
                     }else {
                         int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), orderDate);
@@ -275,7 +275,7 @@ public class DelayDeliveryBottomSheet {
                 }
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
                 deliveryTextView
-                        .setText("Delivered to you every " + itemConfig.getSubscriptionType());
+                        .setText("Repeats every " + itemConfig.getSubscriptionType());
 
             }
 

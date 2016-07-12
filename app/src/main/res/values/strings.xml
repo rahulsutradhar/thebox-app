@@ -21,7 +21,7 @@
     <string name="view_items">View Items</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="adjust"><b>Adjust</b></string>
+    <string name="adjust"><b>Reschedule</b></string>
     <string name="change_button"><b><u>Select</u></b></string>
     <string name="select_button"><b><u>Change</u></b></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -32,6 +32,7 @@
     <string name="delay_delivery">Delay Delivery</string>
     <string name="app_label">explore</string>
     <string name="subscribe"><b>Subscribe</b></string>
+    <string name="out_of_stock"><b>Out of Stock</b></string>
     <string name="search_hint">Search</string>
     <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
     <string name="no_connection_error">Please check your internet connection and retry</string>

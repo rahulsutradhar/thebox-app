@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmList;
+import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.ApiResponse;
 
@@ -18,6 +20,9 @@ public class MergeSubscriptionResponse extends ApiResponse implements Serializab
     private boolean success;
     @SerializedName("info")
     private String info;
+    @SerializedName("orders")
+    private RealmList<Order> orders;
+
 
     public UserItem getUserItem() {
         return userItem;
@@ -30,4 +35,13 @@ public class MergeSubscriptionResponse extends ApiResponse implements Serializab
     public String getInfo() {
         return info;
     }
+
+    public RealmList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(RealmList<Order> orders) {
+        this.orders = orders;
+    }
+
 }
