@@ -29,9 +29,13 @@ import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+<<<<<<< HEAD
 import one.thebox.android.ViewHelper.Montserrat;
 import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
+=======
+import one.thebox.android.ViewHelper.ShowcaseHelper;
+>>>>>>> adding_buttons_to_My_Boxes
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
@@ -97,6 +101,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
+<<<<<<< HEAD
 
 
 
@@ -111,6 +116,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                         }
                     });
         }
+=======
+        new ShowcaseHelper((Activity) mContext, 3).show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+>>>>>>> adding_buttons_to_My_Boxes
     }
 
     @Override
@@ -136,7 +144,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
+<<<<<<< HEAD
         return 0;
+=======
+        return R.layout.my_box_header;
+>>>>>>> adding_buttons_to_My_Boxes
     }
 
     @Override

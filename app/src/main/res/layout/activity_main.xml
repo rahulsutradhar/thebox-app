@@ -105,6 +105,46 @@
 
             </FrameLayout>
 
+            <LinearLayout
+                android:id="@+id/explore_and_deliveries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="10">
+
+                <TextView
+                    android:id="@+id/explore"
+                    android:layout_weight="5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_small"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_small"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="4dp"
+                    android:drawableLeft="@drawable/explore"
+                    android:drawablePadding="@dimen/activity_horizontal_margin_medium"
+                    android:textSize="@dimen/text_medium2"
+                    android:text="@string/explore" />
+
+                <TextView
+                    android:id="@+id/calendar"
+                    android:layout_weight="5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="@dimen/activity_vertical_margin_small"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_small"
+                    android:gravity="center_vertical"
+                    android:drawableLeft="@drawable/calendar"
+                    android:drawablePadding="@dimen/activity_horizontal_margin_medium"
+                    android:textSize="@dimen/text_medium2"
+                    android:text="@string/calendar" />
+
+
+
+                </LinearLayout>
 
         </android.support.design.widget.AppBarLayout>
 

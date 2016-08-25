@@ -16,8 +16,12 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
     @SerializedName("userbox")
     private RealmList<Box> boxes;
 
+    @SerializedName("next_order_status")
+    private String next_order_status;
+
     public MyBoxResponse(RealmList<Box> boxes) {
         this.boxes = boxes;
+        this.next_order_status = next_order_status;
     }
 
     public RealmList<Box> getBoxes() {
@@ -25,6 +29,14 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
     }
 
     public void setBoxes(RealmList<Box> boxes) {
+        this.boxes = boxes;
+    }
+
+    public String getNextOrderStatus() {
+        return next_order_status;
+    }
+
+    public void setNextOrderStatus(String next_order_status) {
         this.boxes = boxes;
     }
 }

@@ -13,7 +13,11 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
+<<<<<<< HEAD
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
+=======
+import one.thebox.android.ViewHelper.CustomShowcaseView;
+>>>>>>> adding_buttons_to_My_Boxes
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.api.Responses.ExploreItemResponse;
