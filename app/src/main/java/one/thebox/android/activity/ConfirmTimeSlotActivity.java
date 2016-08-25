@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -21,20 +22,33 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.Services.UpdateOrderService;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.adapter.MergeOrderAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
+import one.thebox.android.api.RequestBodies.PaymentRequestBody;
+import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
+import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.api.Responses.RescheduleResponseBody;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
+import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmTimeSlotActivity extends BaseActivity {
 
     public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
+    private static final String IS_RESCHEDULING = "is_rescheduling";
     boolean isCart;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private RealmList<Order> mergeOrders;
@@ -48,9 +62,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private Order currentSelectedOrder;
     private ImageView dropDownIcon;
     private MergeOrderAdapter mergeOrderAdapter;
+    private boolean is_rescheduling = false;
 
-    public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
-        return new Intent(context, ConfirmTimeSlotActivity.class).putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders));
+    public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
+        return new Intent(context, ConfirmTimeSlotActivity.class)
+                .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
+                .putExtra(IS_RESCHEDULING, is_rescheduling);
     }
 
     @Override
@@ -58,21 +75,30 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         initMergeOrders();
         initVariable();
-        if (hasPreviousOrder() && isCart()) {
-            setContentView(R.layout.confirm_time_slot_when_user_have_orders);
-            setTitle("Merge Delivery Time Slots");
-            initViewsCase1();
-            setupMergeDeliveryRecyclerView();
-        } else if (!hasPreviousOrder() && isCart()) {
+
+        if (is_rescheduling == true) {
             setContentView(R.layout.activity_confirm_time_slot);
-            setTitle("Select Time Slots");
-            initViewCase2();
+            setTitle("Reschedule Order");
+            initViewCase4();
             setupTimeSlotRecyclerView();
-        } else {
-            setContentView(R.layout.activity_confirm_time_slot);
-            setTitle("Select Time Slot");
-            initViewsCase3();
-            setupTimeSlotRecyclerView();
+        }
+        else {
+                if (hasPreviousOrder() && isCart()) {
+                    setContentView(R.layout.confirm_time_slot_when_user_have_orders);
+                    setTitle("Merge Delivery Time Slots");
+                    initViewsCase1();
+                    setupMergeDeliveryRecyclerView();
+                } else if (!hasPreviousOrder() && isCart()) {
+                    setContentView(R.layout.activity_confirm_time_slot);
+                    setTitle("Select Time Slots");
+                    initViewCase2();
+                    setupTimeSlotRecyclerView();
+                } else {
+                    setContentView(R.layout.activity_confirm_time_slot);
+                    setTitle("Select Time Slot");
+                    initViewsCase3();
+                    setupTimeSlotRecyclerView();
+                }
         }
     }
 
@@ -132,11 +158,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        try {
-            currentSelectedDate = DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        currentSelectedDate = DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt());
         timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
         timeHolderLinearLayout.setOnClickListener(null);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
@@ -157,6 +179,38 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         });
     }
 
+    public void initViewCase4() {
+        textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
+        dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
+        timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
+        timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
+        timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
+                    @Override
+                    public void onTimePicked(Date date, Order order) {
+                        currentSelectedDate = date;
+                        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+                    }
+                }).showTimeSlotBottomSheet();
+            }
+        });
+        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setText("Reschedule");
+        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date reschedule_to= getDateWithTimeSlot(currentSelectedDate,
+                        timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
+
+                reSchedule (reschedule_to);
+            }
+        });
+    }
+
     public void setupMergeDeliveryRecyclerView() {
         mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
         ArrayList<String> timeSlotArrayList = new ArrayList<>();
@@ -170,15 +224,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         RealmQuery<Order> query = realm.where(Order.class);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
-            try {
                 if (Calendar.getInstance().getTime()
                         .compareTo
                                 (DateTimeUtil.convertStringToDate(realmResults.get(i).getDeliveryScheduleAt())) == -1) {
                     mergeOrders.add(realmResults.get(i));
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
 
 
@@ -195,6 +245,37 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         return addressAndOrders.get(0).getOrder().isCart();
     }
 
+    public void reSchedule(Date reschedule_to){
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MyApplication.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to))
+                .enqueue(new Callback<RescheduleResponseBody>() {
+                    @Override
+                    public void onResponse(Call<RescheduleResponseBody> call, Response<RescheduleResponseBody> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+
+                                Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                OrderHelper.addAndNotify(response.body().getOrders());
+
+                                startActivity(new Intent(ConfirmTimeSlotActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+
+                                finish();
+                            } else {
+                                Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RescheduleResponseBody> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+
+    }
+
     private void setupTimeSlotRecyclerView() {
         timeSlotAdapter = new TimeSlotAdapter(this);
         ArrayList<String> timeSlotArrayList = new ArrayList<>();
@@ -208,7 +289,16 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     private void initVariable() {
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
-        nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
+
+        if (getIntent().getBooleanExtra(IS_RESCHEDULING,false)){
+            is_rescheduling = true;
+            nextSlotDate = getNextSlotDate(DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt()));
+        }
+        else{
+            nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
+        }
+
+
         currentSelectedDate = nextSlotDate;
         for (int i = 0; i < addressAndOrders.size(); i++) {
             addressAndOrders.get(i).setOderDate(nextSlotDate);

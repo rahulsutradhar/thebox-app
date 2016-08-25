@@ -51,20 +51,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private OrdersItemAdapter ordersItemAdapter;
     private RealmList<Order> orders = new RealmList<>();
     private TextView emptyOrderText;
-    //private GifImageView progressBar;
 
     public UpComingOrderFragment() {
     }
 
     public static UpComingOrderFragment newInstance() {
         UpComingOrderFragment fragment = new UpComingOrderFragment();
-      /*  Bundle args = new Bundle();
-        ArrayList<Integer> orderIds = new ArrayList<>();
-        for (Order order : orders) {
-            orderIds.add(order.getId());
-        }
-        args.putString(EXTRA_ORDER_ARRAY, CoreGsonUtils.toJson(orderIds));
-        fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -99,8 +91,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         emptyOrderText = (TextView) rootView.findViewById(R.id.empty_order_text_view);
-        //progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
-
     }
 
     @Override

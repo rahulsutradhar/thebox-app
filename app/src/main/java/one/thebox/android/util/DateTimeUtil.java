@@ -47,9 +47,14 @@ public class DateTimeUtil {
         return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
-    public static Date convertStringToDate(String date) throws ParseException {
+    public static Date convertStringToDate(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        return formatter.parse(date);
+        try {
+            return formatter.parse(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static boolean checkIsLieBetweenDates(Date date, Date dateStart, Date dateEnd) {

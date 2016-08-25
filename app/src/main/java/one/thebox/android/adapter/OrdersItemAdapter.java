@@ -40,20 +40,17 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         super(context);
         this.orders = orders;
 
-        try {
-            String previousMonth = "";
-            for (int i = 0; i < orders.size(); i++) {
-                Order order = orders.get(i);
-                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                String currentMonth = new SimpleDateFormat("MMMM").format(date);
-                if (!previousMonth.equals(currentMonth)) {
-                    monthPrintPosition.add(i);
-                }
-                previousMonth = currentMonth;
+        String previousMonth = "";
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+            String currentMonth = new SimpleDateFormat("MMMM").format(date);
+            if (!previousMonth.equals(currentMonth)) {
+                monthPrintPosition.add(i);
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
+            previousMonth = currentMonth;
         }
+
         if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
             mViewType = RECYCLER_VIEW_TYPE_FOOTER;
         } else {
@@ -113,7 +110,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViewHolder(orders.get(position));
+        itemViewHolder.setViewHolder(orders.get(position), position);
         itemViewHolder.viewItemsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,7 +173,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, text_order_state, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message;
+        private TextView dateTextView, text_order_state, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message, reschedule_order_button;
         private LinearLayout linearLayout;
         private CardView cardView;
 
@@ -184,6 +181,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
             text_order_state = (TextView) itemView.findViewById(R.id.text_order_state);
+            reschedule_order_button = (TextView) itemView.findViewById(R.id.reschdule_order_button);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.holder);
@@ -194,23 +192,32 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             message = (TextView) itemView.findViewById(R.id.message);
         }
 
-        public void setViewHolder(final Order order) {
+        public void setViewHolder(final Order order,int position) {
 
-            try {
-                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
-                String currentMonth = new SimpleDateFormat("MMMM").format(date);
-                if (monthPrintPosition.contains(getAdapterPosition())) {
-                    month.setVisibility(View.VISIBLE);
-                    month.setText(currentMonth);
-                } else {
-                    month.setVisibility(View.GONE);
-                }
-
-            } catch (ParseException e) {
-                e.printStackTrace();
+            // Rescheduling the order
+            if (position == 0){
+                reschedule_order_button.setVisibility(View.VISIBLE);
+                reschedule_order_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        RealmList<Order> orders = new RealmList<>();
+                        orders.add(order);
+                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders,true));
+                    }
+                });
             }
+
+            Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+            dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+            timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
+            String currentMonth = new SimpleDateFormat("MMMM").format(date);
+            if (monthPrintPosition.contains(getAdapterPosition())) {
+                month.setVisibility(View.VISIBLE);
+                month.setText(currentMonth);
+            } else {
+                month.setVisibility(View.GONE);
+            }
+
             itemsNameTextView.setText(order.getUserItems().size() + " items in the order");
 
             // Order has been unsuccessfull
@@ -269,7 +276,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     public void onClick(View v) {
                         RealmList<Order> orders = new RealmList<>();
                         orders.add(order);
-                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders));
+                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders,false));
                     }
                 });
             }

@@ -35,6 +35,14 @@ public class OrderHelper {
         saveToRealm(orders);
     }
 
+    public static void addAndNotify(Order order) {
+        if (order == null) {
+            return;
+        }
+        saveToRealm(order);
+    }
+
+
     public static void build_and_show_order_delivered_notification(){
         NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10,"");
 
@@ -89,6 +97,18 @@ public class OrderHelper {
 //        } else {
             realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
             realm.copyToRealmOrUpdate(orders);
+//        }
+        realm.commitTransaction();
+        sendUpdateOrderItemBroadcast();
+
+
+    }
+
+
+    private static void saveToRealm(final Order order) {
+        Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(order);
 //        }
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();

@@ -97,7 +97,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             public void onClick(View v) {
                 RealmList<Order> orders = new RealmList<>();
                 orders.add(order);
-                startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders));
+                startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders,false));
             }
         });
         emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);

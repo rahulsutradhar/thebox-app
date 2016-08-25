@@ -162,7 +162,6 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(final Order order) {
-            try {
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
                 dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
                 timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
@@ -172,9 +171,6 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
                 } else {
                     radioButton.setChecked(false);
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

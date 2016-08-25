@@ -46,7 +46,9 @@ public class OrderItemsActivity extends BaseActivity {
     }
 
     private void initVariables() {
-        orderId = getIntent().getIntExtra(EXTRA_USER_ITEM_ARRAY_LIST, 0);
+        if (getIntent().hasExtra(EXTRA_USER_ITEM_ARRAY_LIST)){
+            orderId = getIntent().getIntExtra(EXTRA_USER_ITEM_ARRAY_LIST, 0);
+        }
         Realm realm = MyApplication.getRealm();
         RealmQuery<Order> query = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_ID, orderId);
@@ -54,17 +56,13 @@ public class OrderItemsActivity extends BaseActivity {
         RealmResults<Order> realmResults = query.findAll();
         order = realmResults.get(0);
         order = realm.copyFromRealm(order);
-        userItems.addAll(order.getUserItems());
+        userItems = order.getUserItems();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             Date date = null;
-            try {
-                date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                toolbar.setSubtitle(AddressAndOrder.getDateString(date));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
+            toolbar.setSubtitle(AddressAndOrder.getDateString(date));
         }
     }
 
@@ -108,7 +106,7 @@ public class OrderItemsActivity extends BaseActivity {
                 public void onClick(View v) {
                     RealmList<Order> orders = new RealmList<>();
                     orders.add(order);
-                    startActivity(ConfirmAddressActivity.getInstance(OrderItemsActivity.this, orders));
+                    startActivity(ConfirmAddressActivity.getInstance(OrderItemsActivity.this, orders, false));
                 }
             });
         }
@@ -126,6 +124,7 @@ public class OrderItemsActivity extends BaseActivity {
     private void setupRecyclerView() {
         userItemRecyclerAdapter = new SearchDetailAdapter(this);
         userItemRecyclerAdapter.setBoxItems(null, userItems);
+        userItemRecyclerAdapter.setUserItemQuantities(order.getId(), order.getUserItemQuantities());
         userItemRecyclerAdapter.setHasUneditableUserItem(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userItemRecyclerAdapter);
@@ -145,8 +144,15 @@ public class OrderItemsActivity extends BaseActivity {
 
     @Subscribe
     public void onUpdateOrderItemEvent(UpdateOrderItemEvent updateOrderItemEvent) {
-        if (!order.isPaid())
-            payTextView.setText("Pay Rs " + getTotalPrice());
+        if (OrderItemsActivity.this != null) {
+            OrderItemsActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    orderId = order.getId();
+                    initVariables();
+                    setPayButton();
+                }
+            });
+        }
     }
-
 }

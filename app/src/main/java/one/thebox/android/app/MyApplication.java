@@ -4,11 +4,13 @@ import android.app.Application;
 import android.content.Context;
 
 //import com.squareup.leakcanary.LeakCanary;
+import com.facebook.stetho.Stetho;
 import com.squareup.okhttp.Cache;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
@@ -122,5 +124,17 @@ public class MyApplication extends Application {
         Picasso built = builder.memoryCache(memoryCache).build();
         Picasso.setSingletonInstance(built);
 
+//        Stetho.initializeWithDefaults(this);
+
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build());
+
+
     }
+
+
+    public static Context getAppContext(){return mContext;}
 }

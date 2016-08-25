@@ -52,6 +52,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
+import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.CartFragment;
@@ -78,7 +79,7 @@ public class MainActivity extends BaseActivity implements
         , View.OnClickListener, OnFragmentInteractionListener,
         FragmentManager.OnBackStackChangedListener {
 
-    public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
+    public static final String  EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
@@ -150,7 +151,11 @@ public class MainActivity extends BaseActivity implements
         }
 
         initCart();
-        ShowCaseHelper.removeAllTutorial();
+
+        if (!RestClient.is_in_development){
+                ShowCaseHelper.removeAllTutorial();
+        }
+
     }
 
     private void initCart() {

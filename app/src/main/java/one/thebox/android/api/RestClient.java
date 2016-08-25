@@ -11,7 +11,8 @@ public class RestClient {
     private static final boolean IS_LOCAL_URL = false;
     private static final String STAGING_URL = "https://tranquil-springs-65978.herokuapp.com/";
     private static final String BASE_URL = "https://theboxprod.herokuapp.com/";
-    private static final String LOCAL_URL = "http://d389d41b.ngrok.io";
+    private static final String LOCAL_URL = "http://0581321c.ngrok.io";
+    public static final boolean is_in_development = true;
     private APIService apiService;
 
     public RestClient() {
@@ -29,4 +30,6 @@ public class RestClient {
     public APIService getApiService() {
         return apiService;
     }
+
+    public boolean Is_in_Development() {return is_in_development;}
 }

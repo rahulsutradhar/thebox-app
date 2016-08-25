@@ -252,12 +252,7 @@ public class DelayDeliveryBottomSheet {
 
             public void setViewHolder(UserItem userItem) {
                 Date orderDate = null;
-                try {
-                    orderDate = DateTimeUtil.convertStringToDate
-                            (userItem.getNextDeliveryScheduledAt());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                orderDate = DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt());
                 if (userItem.getNextDeliveryScheduledAt() == null) {
                     arrivingTextView.setText("This item is in cart. Order this item now.");
                 } else {

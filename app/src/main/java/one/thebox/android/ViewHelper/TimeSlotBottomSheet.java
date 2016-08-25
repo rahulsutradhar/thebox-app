@@ -40,6 +40,8 @@ public class TimeSlotBottomSheet {
     private TimeSlotAdapter timeSlotAdapterDay;
     private int currentSelectedPosition;
     private Date currentSelectedDate;
+    private Date endDate = null;
+    private Date startDate = null;
 
     public TimeSlotBottomSheet(Activity context, Date currentSelectedDate, OnTimePicked onTimePicked) {
         this.context = context;
@@ -81,24 +83,25 @@ public class TimeSlotBottomSheet {
     }
 
     private void showTimeBottomSheet() {
-        Date endDate = null;
-        Date startDate = null;
-        daySlots.add("Today");
-        daySlots.add("Tomorrow");
+
+
         try {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
             endDate = fmt.parse("2016-12-30");
-            startDate = fmt.parse(fmt.format(calendar.getTime()));
+            startDate = fmt.parse(fmt.format(currentSelectedDate));
+
+            //Adding date
+            calendar.setTime(startDate);
+            calendar.add(Calendar.DATE, 7);
+            endDate = fmt.parse(fmt.format(calendar.getTime()));
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        daySlots = getDateArrayList(startDate, endDate);
-/*
-        daySlots.add((date + 2) + ", " + month_name);
-*/
+        daySlots.addAll( getDateArrayList(startDate, endDate) );
+
         for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
             timeSlots.add(Constants.DATE_RANGE[i]);
         }
@@ -110,19 +113,19 @@ public class TimeSlotBottomSheet {
             @Override
             public void onItemClicked(int position) {
 
-                try {
-                    int currentYear = 2016;
-                    String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
-                    String[] strings = dayMonth.split(",");
-                    int day = Integer.parseInt(strings[0]);
-                    int month = 0;
-                    month = getMonthInt(strings[1].trim());
-                    Date date = getDate(currentYear, month, day);
-                    onTimePicked.onTimePicked(date, null);
-                    bottomSheetDialog.dismiss();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            try {
+                int currentYear = 2016;
+                String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
+                String[] strings = dayMonth.split(",");
+                int day = Integer.parseInt(strings[0]);
+                int month = 0;
+                month = getMonthInt(strings[1].trim());
+                Date date = getDate(currentYear, month, day);
+                onTimePicked.onTimePicked(date, null);
+                bottomSheetDialog.dismiss();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             }
         });
         timeSlotAdapterDay.setCurrentSelection(currentSelectedPosition);

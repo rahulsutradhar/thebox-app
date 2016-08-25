@@ -3,6 +3,8 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -44,6 +46,8 @@ public class Order extends RealmObject implements Serializable {
     private boolean cart;
     @SerializedName("useritems")
     private RealmList<UserItem> userItems;
+    @SerializedName("useritem_quantites")
+    private RealmList<Invoice> useritem_quantites;
     @SerializedName("cod")
     private boolean cod;
     @SerializedName("successfull")
@@ -68,9 +72,16 @@ public class Order extends RealmObject implements Serializable {
             this.userItems = new RealmList<>();
             this.userItems.addAll(order.getUserItems());
         }
+
+        if (order.getUserItemQuantities() != null) {
+            this.useritem_quantites = new RealmList<>();
+            this.useritem_quantites.addAll(order.getUserItemQuantities());
+        }
+
+
     }
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, boolean paid, boolean delivered, boolean open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems) {
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, boolean paid, boolean delivered, boolean open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems, RealmList<Invoice> useritem_quantites) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -83,6 +94,7 @@ public class Order extends RealmObject implements Serializable {
         this.tax = tax;
         this.cart = cart;
         this.userItems = userItems;
+        this.useritem_quantites = useritem_quantites;
     }
 
     public RealmList<UserItem> getUserItems() {
@@ -91,6 +103,14 @@ public class Order extends RealmObject implements Serializable {
 
     public void setUserItems(RealmList<UserItem> userItems) {
         this.userItems = userItems;
+    }
+
+    public RealmList<Invoice> getUserItemQuantities() {
+        return useritem_quantites;
+    }
+
+    public void setUserItemQuantities(RealmList<Invoice> useritem_quantites) {
+        this.useritem_quantites = useritem_quantites;
     }
 
     public RealmList<BoxItem> getBoxItemsObjectFromUserItem() {

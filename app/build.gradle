@@ -24,9 +24,11 @@ android {
     }
     repositories {
         maven {
-            url "https://jitpack.io"
+            url 'https://jitpack.io'
         }
-
+        maven {
+            url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+        }
     }
 }
 
@@ -63,7 +65,8 @@ dependencies {
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
     compile 'com.eftimoff:androidplayer:1.0.3@aar'
     compile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-
+    compile 'com.facebook.stetho:stetho:1.3.1'
+    compile 'com.uphyca:stetho_realm:0.9.0'
 }
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'

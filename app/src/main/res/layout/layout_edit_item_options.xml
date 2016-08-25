@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/reschedule_delivery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="@dimen/md_listitem_vertical_margin_choice"
+        android:paddingBottom="@dimen/md_listitem_vertical_margin_choice"
+        android:textColor="@color/md_black_1000"
+        android:text="Reschedule"
+        android:drawableTop="@drawable/calendar"
+        android:drawablePadding="@dimen/margin_vertical_between_non_co_element"
+        android:background="@color/md_white_1000"
+        />
+
+    <Button
+        android:id="@+id/change_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="@dimen/md_listitem_vertical_margin_choice"
+        android:paddingBottom="@dimen/md_listitem_vertical_margin_choice"
+        android:textColor="@color/md_black_1000"
+        android:text="Change Size"
+        android:drawableTop="@drawable/shuffle"
+        android:drawablePadding="@dimen/margin_vertical_between_non_co_element"
+        android:background="@color/md_white_1000"
+        />
+
+</LinearLayout>

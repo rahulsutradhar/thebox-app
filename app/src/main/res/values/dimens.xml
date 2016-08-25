@@ -13,4 +13,19 @@
     <dimen name="text_extra_small3">10sp</dimen>
     <dimen name="text_extra_small2">9sp</dimen>
     <dimen name="text_extra_small1">8sp</dimen>
+
+
+    <!-- Margins -->
+    <dimen name="margin_from_bottom_of_card">8dp</dimen>
+    <dimen name="margin_from_top_of_card">8dp</dimen>
+    <dimen name="margin_from_right_of_card">16dp</dimen>
+    <dimen name="margin_from_left_of_card">8dp</dimen>
+    <dimen name="margin_vertical_between_co_element">2dp</dimen>
+    <dimen name="margin_vertical_between_non_co_element">8dp</dimen>
+    <dimen name="margin_horizontal_between_co_element">4dp</dimen>
+    <dimen name="margin_horizontal_between_non_co_element">8dp</dimen>
+
+    <!-- Button Margins -->
+    <dimen name="small_button_vertical_margin">2dp</dimen>
+    <dimen name="small_button_horizontal_margin">4dp</dimen>
 </resources>

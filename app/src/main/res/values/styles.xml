@@ -26,6 +26,14 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
+    <style name="AnnouncementTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorAccent">@color/md_red_800</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
     <style name="AppTheme.NoAnimation" parent="AppTheme">
         <item name="android:windowAnimationStyle">@null</item>
     </style>

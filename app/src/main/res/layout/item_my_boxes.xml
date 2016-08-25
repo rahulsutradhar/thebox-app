@@ -5,137 +5,24 @@
     android:orientation="vertical">
 
 
-    <RelativeLayout
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp">
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-
-            <TextView
-                android:id="@+id/view_items"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="1"
-                android:text="View My Items"
-                android:textColor="@color/md_green_500"
-                android:textSize="@dimen/text_medium2" />
-
-            <TextView
-                android:id="@+id/no_of_item_subscribed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="1"
-                android:text="5 items sub"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="@dimen/text_small1" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/box_image_view"
-            android:layout_toLeftOf="@+id/linearLayout3"
-            android:layout_toRightOf="@+id/box_image_view"
-            android:orientation="vertical">
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="The"
-                android:textColor="@color/primary_text_color" />
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Hygeine Box"
-                android:textColor="@color/primary_text_color"
-                android:textSize="@dimen/text_medium2"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/box_image_view"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="8dp"
-            android:scaleType="centerCrop" />
-
-
-    </RelativeLayout>
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_vertical"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_margin="4dp"
-            android:background="@color/brilliant_rose" />
-
-        <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/saving_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Savings upto 800 per month waiting for you"
-            android:textColor="@color/brilliant_rose" />
-
-    </LinearLayout>
+        android:paddingTop="@dimen/margin_from_top_of_card"
+        android:paddingBottom="@dimen/margin_from_bottom_of_card"
+        android:gravity="center_horizontal"
+        android:background="@color/md_grey_200"
+        android:text="Hygeine Box"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1"
+        android:textStyle="bold"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/expanded_list_recycler_view"
+        android:id="@+id/useritem_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />
-
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/sub_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="sub_title"
-        android:textColor="@color/secondary_text_color"
-        android:textSize="@dimen/text_small2" />
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/relatedCategories"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp" />
-
 
 </LinearLayout>
 

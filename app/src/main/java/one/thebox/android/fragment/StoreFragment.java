@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -18,8 +19,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -27,13 +31,15 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.MyBoxRecyclerAdapter;
+import one.thebox.android.adapter.StoreRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
@@ -45,13 +51,10 @@ import retrofit2.Response;
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
 
-/**
- * Created by vaibhav on 17/08/16.
- */
-public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
+public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     private RecyclerView recyclerView;
-    private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
+    private StoreRecyclerAdapter storeRecyclerAdapter;
     private View rootLayout;
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
@@ -84,7 +87,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     };
 
 
-    public MyBoxesFragment() {
+    public StoreFragment() {
 
     }
 
@@ -92,7 +95,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootLayout == null) {
-            rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+            rootLayout = inflater.inflate(R.layout.fragment_store, container, false);
             initVariables();
             initViews();
             getMyBoxes();
@@ -129,9 +132,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         recyclerView.setVisibility(View.VISIBLE);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-        myBoxRecyclerAdapter.setBoxes(boxes);
-        recyclerView.setAdapter(myBoxRecyclerAdapter);
+        storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity());
+        storeRecyclerAdapter.setBoxes(boxes);
+        recyclerView.setAdapter(storeRecyclerAdapter);
     }
 
     private void initViews() {

@@ -107,6 +107,19 @@
 
 
                     </LinearLayout>
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/reschdule_order_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:paddingLeft="16dp"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/adjust"
+                        android:textColor="@color/md_green_500"
+                        android:textSize="@dimen/text_medium1"
+                        android:visibility="gone"/>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -152,10 +165,10 @@
                 android:id="@+id/text_amount_to_be_paid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/grey_borders"
+                android:layout_gravity="center_horizontal"
                 android:padding="8dp"
+                android:background="@drawable/grey_borders"
                 android:text="Pay Rs. 200"
                 android:textColor="@color/primary_text_color" />
 

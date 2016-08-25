@@ -157,13 +157,7 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
 
         public void setViews(Order order) {
             Date orderDate = null;
-            try {
-                orderDate = DateTimeUtil.convertStringToDate
-                        (order.getDeliveryScheduleAt());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
+            orderDate = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
             timeTextView.setText(AddressAndOrder.getDateString(orderDate));
             arrivingTextView.setText("Arriving in " + DateTimeUtil.getDifferenceAsDay(
                     Calendar.getInstance().getTime(), orderDate

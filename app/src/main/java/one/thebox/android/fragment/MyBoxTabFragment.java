@@ -76,7 +76,8 @@ public class MyBoxTabFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         holder.setVisibility(View.VISIBLE);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(new MyBoxesFragment(), "My Boxes");
+        adapter.addFragment(new MyBoxesFragment(), "My Items");
+        adapter.addFragment(new StoreFragment(), "Store");
         adapter.addFragment(UpComingOrderFragment.newInstance(), "My Deliveries");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

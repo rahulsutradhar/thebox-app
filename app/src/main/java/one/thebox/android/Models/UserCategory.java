@@ -17,6 +17,8 @@ public class UserCategory extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+    @SerializedName("no_of_items")
+    private int no_of_items;
     @SerializedName("noncart_susbcribed_useritems")
     private RealmList<UserItem> userItems;
     @SerializedName("category")
@@ -25,10 +27,11 @@ public class UserCategory extends RealmObject implements Serializable {
     public UserCategory() {
     }
 
-    public UserCategory(int id, RealmList<UserItem> userItems, Category category) {
+    public UserCategory(int id,int no_of_items, RealmList<UserItem> userItems, Category category) {
         this.id = id;
         this.userItems = userItems;
         this.category = category;
+        this.no_of_items = no_of_items;
     }
 
     @Override
@@ -49,6 +52,12 @@ public class UserCategory extends RealmObject implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getNo_of_items() {return no_of_items;}
+
+    public void setNo_of_items(int no_of_items) {
+        this.no_of_items = no_of_items;
     }
 
     public RealmList<UserItem> getUserItems() {

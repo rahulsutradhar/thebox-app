@@ -16,59 +16,57 @@
     card_view:cardElevation="10dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         >
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <FrameLayout
+            android:id="@+id/icon_parent"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:layout_alignParentTop="true"
+            >
 
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/icon"
-            android:layout_toRightOf="@+id/icon"
-            android:orientation="vertical"
-            android:visibility="gone">
-
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity = "center"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="2dp"
+                android:scaleType="centerCrop" />
 
             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/number_of_item"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="10 items"
-                android:textColor="@color/brilliant_rose"
-                android:textSize="@dimen/text_small2"
-                android:visibility="gone" />
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:layout_gravity = "bottom"
+                android:gravity="center"
+                android:maxLines="2"
+                android:background="@drawable/my_categories_background"
+                android:text="10 items subscribed"
+                android:textColor="@color/md_black_1000"
+                android:textSize="@dimen/text_small1"
+                android:visibility="invisible"
+                />
 
-        </LinearLayout>
+        </FrameLayout>
 
         <one.thebox.android.ViewHelper.MontserratTextView
             android:id="@+id/text_view_category_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/icon"
+            android:layout_below="@+id/icon_parent"
             android:gravity="center_horizontal"
             android:maxLines="1"
-            android:padding="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:text="Body Wash"
             android:textColor="@color/black"
             android:textSize="@dimen/text_small3" />
-
-
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_alignTop="@+id/linearLayout"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="2dp"
-            android:scaleType="centerCrop" />
-
 
     </RelativeLayout>
 

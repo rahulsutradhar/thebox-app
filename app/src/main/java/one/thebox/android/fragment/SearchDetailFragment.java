@@ -59,6 +59,7 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
+import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.AnimationUtil;
 import one.thebox.android.util.CoreGsonUtils;
@@ -593,15 +594,18 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Subscribe
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
-        new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
-                    @Override
-                    public void onComplete() {
-                        new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
-                        tabLayout.setScrollPosition(clickPosition, 0, true);
-                        shouldMoveMore = false;
-                    }
-                });
+
+        if (!RestClient.is_in_development) {
+            new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
+                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                        @Override
+                        public void onComplete() {
+                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
+                            tabLayout.setScrollPosition(clickPosition, 0, true);
+                            shouldMoveMore = false;
+                        }
+                    });
+        }
     }
 
     @Subscribe

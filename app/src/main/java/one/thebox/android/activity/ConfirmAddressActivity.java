@@ -31,19 +31,23 @@ import one.thebox.android.util.PrefUtils;
 public class ConfirmAddressActivity extends BaseActivity {
 
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
+    private static final String IS_RESCHEDULING = "is_rescheduling";
     ArrayList<Integer> orderIds = new ArrayList<>();
     private TextView selectAddress;
     private RecyclerView recyclerView;
     private SelectDeliveryAddressAdapter selectDeliveryAddressAdapter;
     private User user;
     private RealmList<Order> orders = new RealmList<>();
+    private boolean is_rescheuling = false;
 
-    public static Intent getInstance(Context context, RealmList<Order> orders) {
+    public static Intent getInstance(Context context, RealmList<Order> orders,boolean is_rescheduling) {
         ArrayList<Integer> orderIds = new ArrayList<>();
         for (Order order : orders) {
             orderIds.add(order.getId());
         }
-        return new Intent(context, ConfirmAddressActivity.class).putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orderIds));
+        return new Intent(context, ConfirmAddressActivity.class)
+                    .putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(orderIds))
+                    .putExtra(IS_RESCHEDULING, is_rescheduling);
     }
 
     private void initVariables() {
@@ -67,6 +71,11 @@ public class ConfirmAddressActivity extends BaseActivity {
         for (Order order : realmResults) {
             orders.add(order);
         }
+
+        if (getIntent().getBooleanExtra(IS_RESCHEDULING,false)){
+            is_rescheuling = true;
+        }
+
     }
 
 
@@ -87,7 +96,12 @@ public class ConfirmAddressActivity extends BaseActivity {
             for (Order order : orders) {
                 addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
             }
-            startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+            if (is_rescheuling == true) {
+                startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders, true));
+            }
+            else{
+                startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders, false));
+            }
             finish();
         }
     }
@@ -121,7 +135,7 @@ public class ConfirmAddressActivity extends BaseActivity {
                     for (Order order : orders) {
                         addressAndOrders.add(new AddressAndOrder(selectDeliveryAddressAdapter.getAddresses().get(selectDeliveryAddressAdapter.getCurrentSelection()).getId(), order.getId()));
                     }
-                    startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders));
+                    startActivity(ConfirmTimeSlotActivity.newInstance(ConfirmAddressActivity.this, addressAndOrders,false));
                     finish();
 
                 }

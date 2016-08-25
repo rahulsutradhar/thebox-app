@@ -10,11 +10,13 @@ import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
+import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
+import one.thebox.android.api.RequestBodies.UpdateOrderItemQuantityRequestBody;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.AdjustDeliveryResponse;
@@ -29,8 +31,10 @@ import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.api.Responses.RescheduleResponseBody;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
+import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -108,6 +112,10 @@ public interface APIService {
     Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,
                                                   @Body UpdateItemQuantityRequestBody updateItemQuantityRequestBody);
 
+    @POST("/updateorderitemquantity")
+    Call<UpdateOrderItemResponse> updateOrderQuantity(@Header("authtoken") String authToken,
+                                                      @Body UpdateOrderItemQuantityRequestBody updateItemQuantityRequestBody);
+
     @POST("/updateitemconfig")
     Call<UpdateItemConfigResponse> updateItemConfig(@Header("authtoken") String authToken,
                                                     @Body UpdateItemConfigurationRequest updateItemConfigurationRequest);
@@ -129,6 +137,11 @@ public interface APIService {
     @POST("/payfortheseorders")
     Call<PaymentResponse> payOrders(@Header("authtoken") String authToken,
                                     @Body PaymentRequestBody paymentRequestBody);
+
+    @POST("/reschedulethisorder")
+    Call<RescheduleResponseBody> reschedulethisOrder(@Header("authtoken") String authToken,
+                                                     @Body RescheduleRequestBody rescheduleRequestBody);
+
 
     @POST("/cancel_subscription")
     Call<CancelSubscriptionResponse> cancelSubscription(@Header("authtoken") String authToken,

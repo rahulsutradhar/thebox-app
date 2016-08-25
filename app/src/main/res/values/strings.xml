@@ -21,7 +21,7 @@
     <string name="view_items">View Items</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="adjust"><b>Reschedule</b></string>
+    <string name="adjust"><b><u>Reschedule</u></b></string>
     <string name="change_button"><b><u>Select</u></b></string>
     <string name="select_button"><b><u>Change</u></b></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -38,6 +38,13 @@
     <string name="no_connection_error">Please check your internet connection and retry</string>
     <string name="sign_out">Sign out</string>
     <string name="enter_details"><u>Enter Details</u></string>
+
+
+    <!-- Announcement String -->
+    <string name="useritem_quantity_change_from_box_title">Hey</string>
+    <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
+    <string name="useritem_quantity_change_from_box_agree_button">Change for all</string>
+    <string name="useritem_quantity_change_from_box_disagree_button">Choose Delivery</string>
 
 </resources>
 
