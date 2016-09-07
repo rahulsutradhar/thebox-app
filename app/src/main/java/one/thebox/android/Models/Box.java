@@ -37,8 +37,6 @@ public class Box extends RealmObject implements Serializable {
     @SerializedName("box")
     private BoxDetail box;
     @Ignore
-    private boolean isExpandedListVisible;
-    @Ignore
     private RealmList<UserItem> allItemsInTheBox;
 
 
@@ -120,14 +118,6 @@ public class Box extends RealmObject implements Serializable {
 
     public BoxDetail getBoxDetail() {
         return box;
-    }
-
-    public boolean isExpandedListVisible() {
-        return isExpandedListVisible;
-    }
-
-    public void setExpandedListVisible(boolean expandedListVisible) {
-        isExpandedListVisible = expandedListVisible;
     }
 
     public RealmList<UserItem> getAllItemInTheBox() {

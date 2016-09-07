@@ -52,12 +52,8 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
-<<<<<<< HEAD
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
-=======
-import one.thebox.android.ViewHelper.ShowcaseHelper;
->>>>>>> adding_buttons_to_My_Boxes
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -598,8 +594,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Subscribe
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
-<<<<<<< HEAD
-
         if (!RestClient.is_in_development) {
             new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
                     .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
@@ -616,17 +610,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Subscribe
     public void showSpecialCard() {
 
-=======
-        new ShowcaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                    @Override
-                    public void onComplete() {
-                        new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items of your current session are here in the cart", fabHolder);
-                        tabLayout.setScrollPosition(clickPosition, 0, true);
-                        shouldMoveMore = false;
-                    }
-                });
->>>>>>> adding_buttons_to_My_Boxes
     }
 
     private boolean shouldMoveMore = true;

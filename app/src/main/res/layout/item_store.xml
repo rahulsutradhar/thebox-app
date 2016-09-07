@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -13,54 +13,24 @@
         android:paddingRight="16dp"
         android:paddingTop="16dp">
 
-
-        <LinearLayout
-            android:id="@+id/linearLayout3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-
-            <TextView
-                android:id="@+id/view_items"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="1"
-                android:text="View My Items"
-                android:textColor="@color/md_green_500"
-                android:textSize="@dimen/text_medium1" />
-
-            <TextView
-                android:id="@+id/no_of_item_subscribed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="1"
-                android:text="5 items sub"
-                android:textColor="@color/secondary_text_color"
-                android:textSize="@dimen/text_small1" />
-
-
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/box_image_view"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:id="@+id/linearLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/box_image_view"
-            android:layout_toLeftOf="@+id/linearLayout3"
-            android:layout_toRightOf="@+id/box_image_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
             android:orientation="vertical">
 
             <one.thebox.android.ViewHelper.MontserratTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="The"
+                android:gravity="center_vertical"
                 android:textColor="@color/primary_text_color" />
 
             <one.thebox.android.ViewHelper.MontserratTextView
@@ -68,24 +38,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hygeine Box"
+                android:gravity="center"
                 android:textColor="@color/primary_text_color"
                 android:textSize="@dimen/text_medium1"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/box_image_view"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="8dp"
-            android:scaleType="centerCrop" />
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/add_more_items"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingLeft="@dimen/padding_small_button_horizontal"
+            android:paddingRight="@dimen/padding_small_button_horizontal"
+            android:paddingTop="@dimen/padding_small_button_vertical"
+            android:paddingBottom="@dimen/padding_small_button_vertical"
+            android:background="@drawable/green_borders"
+            android:text="@string/add_more_items"
+            android:textColor="@color/md_black_1000"
+            android:textSize="@dimen/text_small3" />
 
-
-    </RelativeLayout>
+    </LinearLayout>
 
 
     <LinearLayout
@@ -104,27 +80,6 @@
 
 
     </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/expanded_list_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-    <!-- TODO:- Add how many saving are waiting for him -->
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/sub_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Savings upto 800 per month waiting for you"
-        android:textColor="@color/secondary_text_color"
-        android:textSize="@dimen/text_small2"
-        android:visibility="gone"/>
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/relatedCategories"

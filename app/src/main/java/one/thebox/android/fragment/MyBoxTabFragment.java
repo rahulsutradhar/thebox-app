@@ -1,6 +1,7 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,17 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import one.thebox.android.Events.OnCategorySelectEvent;
+import one.thebox.android.Events.OnHomeTabChangeEvent;
+import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.util.CoreGsonUtils;
 import pl.droidsonroids.gif.GifImageView;
 
 /**
@@ -87,11 +95,13 @@ public class MyBoxTabFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -107,5 +117,10 @@ public class MyBoxTabFragment extends Fragment {
         ((MainActivity) getActivity()).getSearchAction().setOnClickListener(null);
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(((BaseActivity) getActivity()).getContentView().getWindowToken(), 0);
+    }
+
+    @Subscribe
+    public void OnHomeTabChangeEvent(OnHomeTabChangeEvent onHomeTabChangeEvent) {
+        viewPager.setCurrentItem(onHomeTabChangeEvent.getPosition());
     }
 }

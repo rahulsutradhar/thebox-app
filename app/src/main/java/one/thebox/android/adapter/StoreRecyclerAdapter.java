@@ -308,7 +308,13 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 categoryNameTextView.setText(userCategory.getCategory().getMinititle());
 
                 noOfItems.setVisibility(View.VISIBLE);
-                noOfItems.setText(userCategory.getNo_of_items()+ " items subscribed");
+
+                if (userCategory.getNo_of_items() == 1) {
+                    noOfItems.setText("1 item subscribed");
+                }
+                else {
+                    noOfItems.setText(userCategory.getNo_of_items() + " items subscribed");
+                }
 
                 categoryIcon.setMaxWidth(noOfItems.getWidth());
 
@@ -341,8 +347,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private RemainingCategoryAdapter remainingCategoryAdapter;
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
-        private RecyclerView recyclerViewUserItems;
-        private TextView title, savings, viewItems, noOfItemSubscribed;
+        private TextView title, add_more_items;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
@@ -359,7 +364,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private View.OnClickListener viewItemsListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boxes.get(getAdapterPosition()).setExpandedListVisible(!boxes.get(getAdapterPosition()).isExpandedListVisible());
                 notifyItemChanged(getAdapterPosition());
             }
         };
@@ -367,28 +371,25 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.recyclerViewCategories = (RecyclerView) itemView.findViewById(R.id.relatedCategories);
-            this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.expanded_list_recycler_view);
+
             recyclerViewCategories.setItemViewCacheSize(20);
             recyclerViewCategories.setDrawingCacheEnabled(true);
             recyclerViewCategories.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             recyclerViewCategories.setNestedScrollingEnabled(false);
-            recyclerViewUserItems.setNestedScrollingEnabled(false);
-            recyclerViewUserItems.setItemViewCacheSize(20);
-            recyclerViewUserItems.setDrawingCacheEnabled(true);
-            recyclerViewUserItems.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
             this.title = (TextView) itemView.findViewById(R.id.title);
 
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
-            this.viewItems = (TextView) itemView.findViewById(R.id.view_items);
-            this.noOfItemSubscribed = (TextView) itemView.findViewById(R.id.no_of_item_subscribed);
+            this.add_more_items = (TextView) itemView.findViewById(R.id.add_more_items);
         }
 
         public void setViews(Box box) {
             this.title.setText(box.getBoxDetail().getTitle().substring(4));
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);
+            this.add_more_items.setOnClickListener(openBoxListener);
 
 //<!-- TODO:- Add how many saving are waiting for him -->
 //            if (box.getAllItemInTheBox().size() == 0) {
@@ -400,29 +401,28 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 //            else {
 //                this.subTitle.setText("Remaining Categories");
 //            }
-
-
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                viewItems.setText("Add Items");
-                viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-                noOfItemSubscribed.setText("     Empty Box    ");
-                viewItems.setOnClickListener(openBoxListener);
-                noOfItemSubscribed.setOnClickListener(openBoxListener);
-            } else {
-                if (box.isExpandedListVisible()) {
-                    viewItems.setText("Hide My Items");
-                } else {
-                    viewItems.setText("View My Items");
-                }
-                viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
-                if (box.getAllItemInTheBox().size() == 1) {
-                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " item subscribed");
-                } else {
-                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
-                }
-                viewItems.setOnClickListener(viewItemsListener);
-                noOfItemSubscribed.setOnClickListener(viewItemsListener);
-            }
+//
+//            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+//                viewItems.setText("Add Items");
+//                viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+//                noOfItemSubscribed.setText("     Empty Box    ");
+//                viewItems.setOnClickListener(openBoxListener);
+//                noOfItemSubscribed.setOnClickListener(openBoxListener);
+//            } else {
+//                if (box.isExpandedListVisible()) {
+//                    viewItems.setText("Hide My Items");
+//                } else {
+//                    viewItems.setText("View My Items");
+//                }
+//                viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
+//                if (box.getAllItemInTheBox().size() == 1) {
+//                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " item subscribed");
+//                } else {
+//                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
+//                }
+//                viewItems.setOnClickListener(viewItemsListener);
+//                noOfItemSubscribed.setOnClickListener(viewItemsListener);
+//            }
 
             Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(boxImageView);
             //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(42,42).into(boxImageView);
@@ -439,27 +439,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.remainingCategoryAdapter.setBox(boxes.get(getAdapterPosition()));
             this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
 
-            if (box.isExpandedListVisible()) {
-                if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                    this.recyclerViewUserItems.setVisibility(View.GONE);
-                } else {
-                    this.recyclerViewUserItems.setVisibility(View.VISIBLE);
-                    this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-                    this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
-                    this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
-                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
-                        @Override
-                        public void onUserItemChange(RealmList<UserItem> userItems) {
-                            boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
-                            setViews(boxes.get(getAdapterPosition()));
-                        }
-                    });
-                    this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
-                }
-
-            } else {
-                this.recyclerViewUserItems.setVisibility(View.GONE);
-            }
         }
     }
 }

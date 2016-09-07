@@ -9,15 +9,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestClient {
 
     private static final boolean IS_LOCAL_URL = false;
-<<<<<<< HEAD
     private static final String STAGING_URL = "https://tranquil-springs-65978.herokuapp.com/";
     private static final String BASE_URL = "https://theboxprod.herokuapp.com/";
-    private static final String LOCAL_URL = "http://0581321c.ngrok.io";
+    private static final String LOCAL_URL = "http://5040a26a.ngrok.io";
     public static final boolean is_in_development = true;
-=======
-    private static final String BASE_URL = "https://tranquil-springs-65978.herokuapp.com/";
-    private static final String LOCAL_URL = "http://50ef0c1e.ngrok.io/";
->>>>>>> adding_buttons_to_My_Boxes
     private APIService apiService;
 
     public RestClient() {

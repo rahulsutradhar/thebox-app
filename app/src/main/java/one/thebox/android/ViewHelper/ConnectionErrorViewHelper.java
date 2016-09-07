@@ -15,22 +15,18 @@ import one.thebox.android.R;
  */
 
 public class ConnectionErrorViewHelper {
-    private TextView connectionErrorTextView, retryButtonTextView;
+
     private LinearLayout holder;
     private View.OnClickListener onClickListener;
 
     public ConnectionErrorViewHelper(Activity activity, View.OnClickListener onClickListener) {
         this.holder = (LinearLayout) activity.findViewById(R.id.holder_connection_error);
-        this.connectionErrorTextView = (TextView) activity.findViewById(R.id.connection_error_text_view);
-        this.connectionErrorTextView = (TextView) activity.findViewById(R.id.connection_error_button);
-        this.connectionErrorTextView.setOnClickListener(onClickListener);
+        this.holder.setOnClickListener(onClickListener);
     }
 
     public ConnectionErrorViewHelper(View rootView, View.OnClickListener onClickListener) {
         this.holder = (LinearLayout) rootView.findViewById(R.id.holder_connection_error);
-        this.connectionErrorTextView = (TextView) rootView.findViewById(R.id.connection_error_text_view);
-        this.retryButtonTextView = (TextView) rootView.findViewById(R.id.connection_error_button);
-        this.retryButtonTextView.setOnClickListener(onClickListener);
+        this.holder.setOnClickListener(onClickListener);
     }
 
     public void isVisible(boolean isVisible) {

@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
@@ -50,7 +52,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private RecyclerView recyclerView;
     private OrdersItemAdapter ordersItemAdapter;
     private RealmList<Order> orders = new RealmList<>();
-    private TextView emptyOrderText;
+    private LinearLayout no_orders_subscribed_view_holder;
 
     public UpComingOrderFragment() {
     }
@@ -77,10 +79,17 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void setupRecyclerView() {
         if (orders == null || orders.isEmpty()) {
-            emptyOrderText.setVisibility(View.VISIBLE);
+            no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
+            // Adding Onclick listener directing to Store Fragment
+            no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
+                }
+            });
         } else {
-            emptyOrderText.setVisibility(View.GONE);
+            no_orders_subscribed_view_holder.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -90,7 +99,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void initViews() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        emptyOrderText = (TextView) rootView.findViewById(R.id.empty_order_text_view);
+        no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
     }
 
     @Override

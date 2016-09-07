@@ -123,12 +123,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
             }
         });
-        itemViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
-            }
-        });
     }
 
     @Override
@@ -218,7 +212,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 month.setVisibility(View.GONE);
             }
 
-            itemsNameTextView.setText(order.getUserItems().size() + " items in the order");
+            itemsNameTextView.setText(order.getUserItems().size() + " items");
 
             // Order has been unsuccessfull
             // State 2c

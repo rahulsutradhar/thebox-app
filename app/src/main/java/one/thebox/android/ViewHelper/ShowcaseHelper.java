@@ -26,7 +26,7 @@ import one.thebox.android.util.PrefUtils;
  * Created by 32 on 30-05-2016.
  */
 
-public class ShowcaseHelper {
+public class ShowCaseHelper {
 
     private Activity context;
     private int id;
@@ -40,12 +40,12 @@ public class ShowcaseHelper {
     private int bottomPadding;
     private int rightPadding;
 
-    public ShowcaseHelper(Activity context, int id) {
+    public ShowCaseHelper(Activity context, int id) {
         this.context = context;
         this.id = id;
     }
 
-<<<<<<< HEAD
+
     public ShowCaseHelper setTopPadding(int topPadding) {
         this.topPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), topPadding);
         return this;
@@ -76,9 +76,7 @@ public class ShowcaseHelper {
     }
 
     public ShowCaseHelper show(final String title, final String description, final View view) {
-=======
-    public ShowcaseHelper show(final String title, final String description, final View view) {
->>>>>>> adding_buttons_to_My_Boxes
+
         if (PrefUtils.getBoolean(context, PREF_SHOW_CASE_STATUS + id, true)) {
             build(title, description, view);
         }

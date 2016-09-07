@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -18,23 +19,84 @@
         android:src="@drawable/loader"
         android:visibility="gone" />
 
+    <LinearLayout
+        android:id="@+id/no_orders_subscribed_view_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:orientation="vertical"
 
-    <FrameLayout
-        android:id="@+id/holder_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        >
 
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:src="@drawable/calendar"/>
 
         <one.thebox.android.ViewHelper.MontserratTextView
-            android:id="@+id/empty_order_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Orders Found"
-            android:textColor="@color/primary_text_color"
-            android:visibility="gone" />
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/no_orders_yet"
+            app:typeface="montserratSemiBold"
+            android:textSize="@dimen/text_medium1"
+            android:textColor="@color/md_black_1000"
+            />
+
+        <!---    -->
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/empty_view_margin_from_top"
+            android:gravity="center"
+            android:text="@string/subscribe_and_forget"
+            app:typeface="montserratSemiBold"
+            android:textSize="@dimen/text_large1"
+            android:textColor="@color/md_pink_500"
+            />
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_vertical_between_co_element"
+            android:gravity="center"
+            android:text="@string/never_run_out_hassle_free_delivery"
+            android:textSize="@dimen/text_small1"
+            android:textColor="@color/md_grey_800"
+            />
 
 
-    </FrameLayout>
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add"
+            android:background="@drawable/circular_background_pink"/>
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Lets start building your list"
+            android:textSize="@dimen/text_small1"
+            android:textColor="@color/md_grey_800"
+            />
+
+    </LinearLayout>
 
 </FrameLayout>

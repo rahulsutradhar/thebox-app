@@ -21,7 +21,7 @@
     <string name="view_items">View Items</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="adjust"><b><u>Reschedule</u></b></string>
+    <string name="adjust">Reschedule</string>
     <string name="change_button"><b><u>Select</u></b></string>
     <string name="select_button"><b><u>Change</u></b></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -35,8 +35,8 @@
     <string name="out_of_stock"><b>Out of Stock</b></string>
     <string name="search_hint">Search</string>
     <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
-<<<<<<< HEAD
-    <string name="no_connection_error">Please check your internet connection and retry</string>
+    <string name="no_connection_error">No internet Connection</string>
+    <string name="tap_to_retry">Tap to retry</string>
     <string name="sign_out">Sign out</string>
     <string name="enter_details"><u>Enter Details</u></string>
 
@@ -46,8 +46,7 @@
     <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
     <string name="useritem_quantity_change_from_box_agree_button">Change for all</string>
     <string name="useritem_quantity_change_from_box_disagree_button">Choose Delivery</string>
-
-=======
+    <string name="add_more_items">Add Items</string>
     <string name="explore">Explore</string>
     <string name="calendar">Calendar</string>
     <string name="total_items_heading">Items in My Box:</string>
@@ -55,6 +54,14 @@
     <string name="my_summary">My Summary:</string>
     <string name="total_items_no">20 items</string>
     <string name="total_monthly_spend_no">Rs 200</string>
->>>>>>> adding_buttons_to_My_Boxes
+    <string name="empty_my_items_header">Missed Something in the Breakfast Today?</string>
+    <string name="no_orders_yet">No Deliveries Scheduled Yet</string>
+    <string name="subscribe_and_forget">Subscribe and Forget</string>
+    <string name="never_run_out_hassle_free_delivery">Never Run Out. Hassle Free Delivery.</string>
+
+    <!-- Sample DataUnits -->
+    <string name="sample_date">Sun 14 Feb, Wednesday</string>
+    <string name="sample_slot">10:00 A.M - 11:30 A.M</string>
+
 </resources>
 
