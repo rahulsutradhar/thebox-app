@@ -68,6 +68,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private LinearLayout no_item_subscribed_view_holder;
     private User user;
+    private String monthly_bill;
+    private String total_no_of_items;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -158,6 +160,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             recyclerView.setLayoutManager(linearLayoutManager);
             myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
             myBoxRecyclerAdapter.setBoxes(boxes);
+            myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+            myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
             recyclerView.setAdapter(myBoxRecyclerAdapter);
         }
     }
@@ -231,6 +235,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                                 setupRecyclerView();
                                 storeToRealm();
                             }
+                            monthly_bill = response.body().getMonthly_bill();
+                            total_no_of_items = response.body().getTotal_no_of_items();
                         }
                     }
 

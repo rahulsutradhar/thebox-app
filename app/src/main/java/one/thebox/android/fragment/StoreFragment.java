@@ -201,6 +201,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
+
                                 setupRecyclerView();
                                 storeToRealm();
                             }

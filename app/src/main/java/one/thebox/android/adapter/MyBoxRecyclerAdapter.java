@@ -45,6 +45,8 @@ import one.thebox.android.util.PrefUtils;
  */
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
+    private String monthly_bill;
+    private String total_no_of_items;
     private RealmList<Box> boxes;
     private int stickyHeaderHeight = 0;
     private SparseIntArray boxHeights = new SparseIntArray();
@@ -64,6 +66,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
     }
+
+    public String getMonthly_bill(){return monthly_bill;}
+
+    public void setMonthly_bill(String monthly_bill){this.monthly_bill = monthly_bill;}
+
+    public String getTotal_no_of_items(){return total_no_of_items;}
+
+    public void setTotal_no_of_items(String total_no_of_items){this.total_no_of_items = total_no_of_items;}
 
     public int getStickyHeaderHeight() {
         return stickyHeaderHeight;
@@ -85,7 +95,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected HeaderHolder getHeaderHolder(View view) {
-        return null;
+        return new HeaderViewHolder(view);
     }
 
     @Override
@@ -95,6 +105,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
+
+
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
 
@@ -113,6 +125,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
+
+        HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+        headerViewHolder.setViews(monthly_bill,total_no_of_items);
 
     }
 
@@ -134,7 +149,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
-        return 0;
+        return R.layout.item_my_boxes_header;
     }
 
     @Override
@@ -206,5 +221,30 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 }
             }
         }
+
+    public class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
+
+        private MontserratTextView monthly_bill;
+        private MontserratTextView total_no_of_items;
+
+
+        public HeaderViewHolder(View itemView) {
+            super(itemView);
+
+            this.monthly_bill = (MontserratTextView) itemView.findViewById(R.id.monthly_bill);
+            this.total_no_of_items = (MontserratTextView) itemView.findViewById(R.id.total_no_of_items);
+
+
+        }
+
+        public void setViews(String monthly_bill,String total_no_of_items) {
+
+            this.monthly_bill.setText(monthly_bill);
+            this.total_no_of_items.setText(total_no_of_items);
+
+        }
     }
+    }
+
+
 
