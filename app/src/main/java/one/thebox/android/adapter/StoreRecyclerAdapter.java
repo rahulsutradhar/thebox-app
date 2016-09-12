@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -149,7 +150,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private RealmList<UserCategory> my_catIds;
         private Box box;
 
-        public RemainingCategoryAdapter(Context context, RealmList<Category> categories,RealmList<UserCategory> my_catIds) {
+        public RemainingCategoryAdapter(Context context, RealmList<Category> categories, RealmList<UserCategory> my_catIds) {
             super(context);
             this.categories = categories;
             this.my_catIds = my_catIds;
@@ -204,10 +205,9 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         public void onBindViewItemHolder(ItemHolder holder, final int position) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
 
-            if (position < categories.size()){
+            if (position < categories.size()) {
                 itemViewHolder.setViewHolder(categories.get(position));
-            }
-            else {
+            } else {
                 itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()));
             }
 
@@ -252,10 +252,9 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
         @Override
         public int getItemsCount() {
-            if (my_catIds == null){
+            if (my_catIds == null) {
                 return categories.size();
-            }
-            else{
+            } else {
                 return (categories.size() + my_catIds.size());
             }
         }
@@ -298,7 +297,14 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 } else {
                     categoryNameTextView.setText(category.getMinititle());
                 }
-                Picasso.with(mContext).load(category.getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
+
+                Glide.with(mContext)
+                        .load(category.getIconUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(categoryIcon);
+
+//                Picasso.with(mContext).load(category.getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
                 //Picasso.with(mContext).load(category.getIconUrl()).resize(72,72).into(categoryIcon);
                 //Integer image_size = DisplayUtil.dpToPx(mContext, 72);
                 //Picasso.with(mContext).load(category.getIconUrl()).resize(image_size,image_size).into(categoryIcon);
@@ -311,14 +317,19 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
                 if (userCategory.getNo_of_items() == 1) {
                     noOfItems.setText("1 item subscribed");
-                }
-                else {
+                } else {
                     noOfItems.setText(userCategory.getNo_of_items() + " items subscribed");
                 }
 
                 categoryIcon.setMaxWidth(noOfItems.getWidth());
 
-                Picasso.with(mContext).load(userCategory.getCategory().getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
+                Glide.with(mContext)
+                        .load(userCategory.getCategory().getIconUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(categoryIcon);
+
+//                Picasso.with(mContext).load(userCategory.getCategory().getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
                 //Picasso.with(mContext).load(category.getIconUrl()).resize(72,72).into(categoryIcon);
                 //Integer image_size = DisplayUtil.dpToPx(mContext, 72);
                 //Picasso.with(mContext).load(category.getIconUrl()).resize(image_size,image_size).into(categoryIcon);
@@ -424,11 +435,18 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 //                noOfItemSubscribed.setOnClickListener(viewItemsListener);
 //            }
 
-            Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(boxImageView);
+
+            Glide.with(mContext)
+                    .load(box.getBoxDetail().getPhotoUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(boxImageView);
+
+
+            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(boxImageView);
             //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(42,42).into(boxImageView);
             //Integer image_size = DisplayUtil.dpToPx(mContext, 42);
             //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(image_size,image_size).into(boxImageView);
-
 
 
             this.recyclerViewCategories.setVisibility(View.VISIBLE);
