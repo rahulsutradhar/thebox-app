@@ -139,6 +139,12 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activity.OrderItemsActivity" />
 
+        <activity android:name=".activity.UniversalSearchActivity"
+            android:screenOrientation="portrait"/>
+
+        <!--Activity of RazorPay in order to integrate payment integration.-->
+        <activity android:name="com.razorpay.CheckoutActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
+
         <service android:enabled="true" android:name=".Services.UpdateOrderService" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for

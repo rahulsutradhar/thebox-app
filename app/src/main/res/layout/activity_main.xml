@@ -30,14 +30,55 @@
                 android:gravity="center_vertical"
                 app:layout_scrollFlags="scroll|enterAlways">
 
-                <ImageView
-                    android:id="@+id/button_special_action"
+                <one.thebox.android.ViewHelper.MontserratEditText
+                    android:id="@+id/searchToolbarEditText"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:padding="16dp"
-                    android:src="@drawable/ic_edit"
-                    android:visibility="gone" />
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:padding="10dp"
+                    android:hint="Search and Add"
+                    android:layout_toLeftOf="@+id/llSpecialIcons"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:visibility="gone"
+
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@color/manatee" />
+
+
+                <LinearLayout
+                    android:id="@+id/llSpecialIcons"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_gravity="end">
+
+
+                    <ImageView
+                        android:id="@+id/btn_search"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="16dp"
+                        android:src="@drawable/ic_search_icon"
+                        android:visibility="visible" />
+
+
+                    <ImageView
+                        android:id="@+id/button_special_action"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="16dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+
+                        android:paddingTop="16dp"
+                        android:src="@drawable/ic_edit"
+                        android:visibility="visible" />
+
+                </LinearLayout>
 
 
             </android.support.v7.widget.Toolbar>
@@ -51,6 +92,7 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:layout_marginTop="12dp"
+                android:visibility="gone"
                 android:background="@drawable/search_view_background">
 
                 <LinearLayout

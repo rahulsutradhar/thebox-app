@@ -52,7 +52,7 @@ public class AutoCompleteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).getToolbar().setTitle("Search");
+//        ((MainActivity) getActivity()).getToolbar().setTitle("Search");
         rootView = inflater.inflate(R.layout.fragment_all_items, container, false);
         initViews();
         setupRecyclerView();
@@ -128,6 +128,7 @@ public class AutoCompleteFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
