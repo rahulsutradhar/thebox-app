@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -85,7 +86,14 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         } else {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         }
-        Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).fit().into(icon);
+
+        Glide.with(context)
+                .load(mFragmentCategoryList.get(position).getIconUrl())
+                .centerCrop()
+                .crossFade()
+                .into(icon);
+
+        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).fit().into(icon);
         //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(42,42).into(icon);
         //Integer image_size = DisplayUtil.dpToPx(context, 42);
         //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(image_size,image_size).into(icon);

@@ -86,7 +86,7 @@ public class MainActivity extends BaseActivity implements
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction, searchAction;
+    private ImageView buttonSpecialAction, searchAction,btn_search;
     private EditText searchView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
@@ -114,6 +114,8 @@ public class MainActivity extends BaseActivity implements
     private User user;
     private FragmentManager fragmentManager;
     private AppBarLayout appBarLayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +160,15 @@ public class MainActivity extends BaseActivity implements
         }
 
 
-        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                attachSearchResultFragment();
+            }
+        });
+
+
+//        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -202,6 +212,7 @@ public class MainActivity extends BaseActivity implements
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
+        btn_search =(ImageView) findViewById(R.id.btn_search);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
@@ -233,11 +244,16 @@ public class MainActivity extends BaseActivity implements
                         call.enqueue(searchAutoCompleteResponseCallback);
                     }
                 } else {
+
                     getSupportFragmentManager().popBackStackImmediate();
                     progressBar.setVisibility(View.GONE);
                 }
             }
         });
+
+
+
+
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         searchAction = (ImageView) findViewById(R.id.image_view_search_action);
     }
@@ -367,7 +383,7 @@ public class MainActivity extends BaseActivity implements
 
         if (!isSearchFragmentIsAttached) {
             isSearchFragmentIsAttached = true;
-            getToolbar().setTitle("Search");
+            getToolbar().setTitle(null);
             AutoCompleteFragment fragment = new AutoCompleteFragment();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
@@ -380,8 +396,12 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-        searchViewHolder.setVisibility(View.VISIBLE);
+//        searchViewHolder.setVisibility(View.VISIBLE);
+        searchViewHolder.setVisibility(View.GONE);
+        btn_search.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -402,7 +422,9 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-        searchViewHolder.setVisibility(View.VISIBLE);
+//        searchViewHolder.setVisibility(View.VISIBLE);
+        searchViewHolder.setVisibility(View.GONE);
+        btn_search.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -541,6 +563,7 @@ public class MainActivity extends BaseActivity implements
                 attachSearchDetailFragment
                         (CoreGsonUtils.fromJson
                                 (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), SearchResult.class));
+
                 break;
             }
             case 5: {
@@ -571,7 +594,9 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-        searchViewHolder.setVisibility(View.VISIBLE);
+//        searchViewHolder.setVisibility(View.VISIBLE);
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -631,6 +656,10 @@ public class MainActivity extends BaseActivity implements
 
     public ImageView getButtonSpecialAction() {
         return buttonSpecialAction;
+    }
+
+    public ImageView getButtonSearch() {
+        return btn_search;
     }
 
     public EditText getSearchView() {

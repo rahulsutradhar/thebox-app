@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -348,7 +349,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         arrivingTime.setText("Arriving in " + days + " days");
                     }
             }
-            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+
+            Glide.with(mContext)
+                    .load(itemConfig.getPhotoUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(productImageView);
+
+
+//            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
             //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
@@ -534,7 +543,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
             }
-            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
+//            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
+            Glide.with(mContext)
+                    .load(boxItem.getSelectedItemConfig().getPhotoUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(productImage);
+
 
             changeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -995,7 +1010,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         arrivingTime.setText("Arriving in " + days + " days");
                     }
             }
-            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+            Glide.with(mContext)
+                    .load(itemConfig.getPhotoUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(productImageView);
+
+//            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
             //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 

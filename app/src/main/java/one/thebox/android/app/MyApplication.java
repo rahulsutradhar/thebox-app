@@ -117,12 +117,12 @@ public class MyApplication extends Application {
         //LeakCanary.install(this);
         ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
-        Picasso.Builder builder = new Picasso.Builder(this);
-        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
-
-        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
-        Picasso built = builder.memoryCache(memoryCache).build();
-        Picasso.setSingletonInstance(built);
+//        Picasso.Builder builder = new Picasso.Builder(this);
+//        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
+//
+//        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
+//        Picasso built = builder.memoryCache(memoryCache).build();
+//        Picasso.setSingletonInstance(built);
 
 //        Stetho.initializeWithDefaults(this);
 

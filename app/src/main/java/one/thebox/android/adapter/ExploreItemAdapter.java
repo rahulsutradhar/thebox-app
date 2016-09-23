@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Cache;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.LruCache;
@@ -141,7 +142,14 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
             Cache memoryCache = new LruCache(24000);
             Picasso mPicasso = new Picasso.Builder(MyApplication.getInstance())
                     .downloader(downloader).memoryCache(memoryCache).build();*/
-            Picasso.with(mContext).load(exploreItem.getImageUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(imageView);
+//            Picasso.with(mContext).load(exploreItem.getImageUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(imageView);
+
+            Glide.with(mContext)
+                    .load(exploreItem.getImageUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(imageView);
+
         }
     }
 
