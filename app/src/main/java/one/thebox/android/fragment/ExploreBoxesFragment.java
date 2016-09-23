@@ -113,7 +113,9 @@ public class ExploreBoxesFragment extends Fragment {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchView().getText().clear();
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+//        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
     }

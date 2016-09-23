@@ -51,6 +51,7 @@ public class MyBoxTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
+
         Integer default_position = getArguments().getInt("default_position");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_box_tabs, container, false);
@@ -109,8 +110,10 @@ public class MyBoxTabFragment extends Fragment {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+//        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
         ((MainActivity) getActivity()).getSearchView().getText().clear();
         ((MainActivity) getActivity()).getSearchAction().setVisibility(View.GONE);
