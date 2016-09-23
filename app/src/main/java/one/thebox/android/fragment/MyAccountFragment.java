@@ -172,6 +172,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageResource(R.drawable.ic_edit);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {

@@ -1,10 +1,12 @@
 package one.thebox.android.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -12,6 +14,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.api.Api;
+import com.razorpay.Checkout;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -96,11 +101,14 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         payButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mergeOrderId == 0) {
-                    pay();
-                } else {
-                    mergeCartToOrder();
-                }
+
+                startPayment(String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()*100),"Subscribe and Forget",user.getEmail(),user.getPhoneNumber(),user.getName());
+
+//                if (mergeOrderId == 0) {
+//                    pay();
+//                } else {
+//                    mergeCartToOrder();
+//                }
             }
         });
     }
@@ -166,4 +174,75 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                     }
                 });
     }
+
+
+
+
+
+
+    public void startPayment(String amount,String description,String email,String phonenumber,String name){
+
+        /**
+         * Put your key id generated in Razorpay dashboard here
+         */
+        String your_key_id = "rzp_test_5C5hEs59JtakdV";
+
+        Checkout razorpayCheckout = new Checkout();
+        razorpayCheckout.setKeyID(your_key_id);
+
+        /**
+         * Image for checkout form can passed as reference to a drawable
+         */
+        razorpayCheckout.setImage(R.mipmap.ic_launcher);
+
+        /**
+         * Reference to current activity
+         */
+        Activity activity = this;
+
+        try{
+            JSONObject options = new JSONObject("{" +
+                    "description: '"+description+"'," +
+                    "currency: 'INR'}"
+            );
+
+            options.put("amount", amount);
+            options.put("name", "The Box Cart");
+            options.put("prefill", new JSONObject("{email: '"+email+"', contact: '"+phonenumber+"', name: '"+name+"'}"));
+
+            razorpayCheckout.open(activity, options);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void onPaymentSuccess(String razorpayPaymentID){
+
+        if (mergeOrderId == 0) {
+            pay();
+        } else {
+            mergeCartToOrder();
+        }
+
+
+//        try {
+//            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+//        }
+//        catch (Exception e){
+//            Log.e("com.merchant", e.getMessage(), e);
+//        }
+    }
+
+
+    public void onPaymentError(int code, String response){
+        try {
+            Toast.makeText(this, "Payment failed: " + Integer.toString(code) + " " + response, Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e){
+            Log.e("com.merchant", e.getMessage(), e);
+        }
+    }
+
+
 }

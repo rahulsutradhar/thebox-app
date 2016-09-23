@@ -547,7 +547,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+//        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
         ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
