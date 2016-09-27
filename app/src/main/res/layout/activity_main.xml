@@ -30,24 +30,6 @@
                 android:gravity="center_vertical"
                 app:layout_scrollFlags="scroll|enterAlways">
 
-                <one.thebox.android.ViewHelper.MontserratEditText
-                    android:id="@+id/searchToolbarEditText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:padding="10dp"
-                    android:hint="Search and Add"
-                    android:layout_toLeftOf="@+id/llSpecialIcons"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:visibility="gone"
-
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@color/manatee" />
-
-
                 <LinearLayout
                     android:id="@+id/llSpecialIcons"
                     android:layout_width="wrap_content"
