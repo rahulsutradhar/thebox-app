@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.haha.perflib.Main;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -164,6 +166,14 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
 //                attachSearchResultFragment();
+
+                Intent intent = new Intent(MainActivity.this,UniversalSearchActivity.class);
+                startActivityForResult(intent,4511);
+
+
+
+
+
             }
         });
 
