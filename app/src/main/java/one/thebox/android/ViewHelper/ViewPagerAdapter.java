@@ -80,18 +80,42 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         TextView numberOfItems = (TextView) view.findViewById(R.id.number_of_item);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
-        title.setText(mFragmentCategoryList.get(position).getTitle());
+                title.setText(mFragmentCategoryList.get(position).getTitle());
         if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " item");
         } else {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         }
 
-        Glide.with(context)
-                .load(mFragmentCategoryList.get(position).getIconUrl())
-                .centerCrop()
-                .crossFade()
-                .into(icon);
+        if(mFragmentCategoryList.get(position).getTitle().contentEquals("CARD"))
+        {
+            icon.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_card));
+        }
+        else if(mFragmentCategoryList.get(position).getTitle().contentEquals("CASH"))
+        {
+            icon.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_cash));
+        }
+        else {
+
+            Glide.with(context)
+                    .load(mFragmentCategoryList.get(position).getIconUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .into(icon);
+        }
+
+
+
+        if(mFragmentCategoryList.get(position).getTitle().contentEquals("CARD"))
+        {
+            numberOfItems.setVisibility(View.GONE);
+        }
+        else if(mFragmentCategoryList.get(position).getTitle().contentEquals("CASH"))
+        {
+            numberOfItems.setVisibility(View.GONE);
+        }
+
+
 
         //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).fit().into(icon);
         //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(42,42).into(icon);

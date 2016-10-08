@@ -46,6 +46,9 @@ import retrofit2.Response;
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
+    private static final String EXTRA_TOTAL_CART_AMOUNT="total_cart_amount";
+
+
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailAdapter paymentDetailAdapter;
     private ArrayList<AddressAndOrder> addressAndOrders;
@@ -92,7 +95,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         paymentDetailAdapter.setOrders(orders);
         recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
-        payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay (Cash on Delivery)");
+        payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay");
     }
 
     private void initViews() {
@@ -102,7 +105,13 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                startPayment(String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()*100),"Subscribe and Forget",user.getEmail(),user.getPhoneNumber(),user.getName());
+                Intent intent = new Intent(ConfirmPaymentDetailsActivity.this,PaymentOptionActivity.class);
+                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT,String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()));
+                intent.putExtra(EXTRA_ARRAY_LIST_ORDER,getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
+                intent.putExtra(EXTRA_MERGE_ORDER_ID,getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
+                startActivity(intent);
+
+//                startPayment(String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()*100),"Subscribe and Forget",user.getEmail(),user.getPhoneNumber(),user.getName());
 
 //                if (mergeOrderId == 0) {
 //                    pay();
@@ -113,136 +122,136 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         });
     }
 
-    private void mergeCartToOrder() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
-                .enqueue(new Callback<PaymentResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                CartHelper.clearCart();
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
-                                finish();
-                            } else {
-                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
-
-    private void pay() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
-                .enqueue(new Callback<PaymentResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                CartHelper.clearCart();
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
-                                finish();
-                            } else {
-                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
-
-
-
-
-
-
-    public void startPayment(String amount,String description,String email,String phonenumber,String name){
-
-        /**
-         * Put your key id generated in Razorpay dashboard here
-         */
-        String your_key_id = "rzp_test_5C5hEs59JtakdV";
-
-        Checkout razorpayCheckout = new Checkout();
-        razorpayCheckout.setKeyID(your_key_id);
-
-        /**
-         * Image for checkout form can passed as reference to a drawable
-         */
-        razorpayCheckout.setImage(R.mipmap.ic_launcher);
-
-        /**
-         * Reference to current activity
-         */
-        Activity activity = this;
-
-        try{
-            JSONObject options = new JSONObject("{" +
-                    "description: '"+description+"'," +
-                    "currency: 'INR'}"
-            );
-
-            options.put("amount", amount);
-            options.put("name", "The Box Cart");
-            options.put("prefill", new JSONObject("{email: '"+email+"', contact: '"+phonenumber+"', name: '"+name+"'}"));
-
-            razorpayCheckout.open(activity, options);
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void onPaymentSuccess(String razorpayPaymentID){
-
-        if (mergeOrderId == 0) {
-            pay();
-        } else {
-            mergeCartToOrder();
-        }
-
-
+//    private void mergeCartToOrder() {
+//        final BoxLoader dialog = new BoxLoader(this).show();
+//        MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
+//                .enqueue(new Callback<PaymentResponse>() {
+//                    @Override
+//                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+//                        dialog.dismiss();
+//                        if (response.body() != null) {
+//                            if (response.body().isSuccess()) {
+//                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+//                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                CartHelper.clearCart();
+//                                RealmList<Order> orders = new RealmList<>();
+//                                orders.add(response.body().getOrders());
+//                                OrderHelper.addAndNotify(orders);
+//                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+//                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
+//                                finish();
+//                            } else {
+//                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//    }
+//
+//    private void pay() {
+//        final BoxLoader dialog = new BoxLoader(this).show();
+//        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
+//                .enqueue(new Callback<PaymentResponse>() {
+//                    @Override
+//                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+//                        dialog.dismiss();
+//                        if (response.body() != null) {
+//                            if (response.body().isSuccess()) {
+//                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+//                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                CartHelper.clearCart();
+//                                RealmList<Order> orders = new RealmList<>();
+//                                orders.add(response.body().getOrders());
+//                                OrderHelper.addAndNotify(orders);
+//                                startActivity(new Intent(ConfirmPaymentDetailsActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+//                                startService(new Intent(ConfirmPaymentDetailsActivity.this, UpdateOrderService.class));
+//                                finish();
+//                            } else {
+//                                Toast.makeText(ConfirmPaymentDetailsActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//    }
+//
+//
+//
+//
+//
+//
+//    public void startPayment(String amount,String description,String email,String phonenumber,String name){
+//
+//        /**
+//         * Put your key id generated in Razorpay dashboard here
+//         */
+//        String your_key_id = "rzp_test_5C5hEs59JtakdV";
+//
+//        Checkout razorpayCheckout = new Checkout();
+//        razorpayCheckout.setKeyID(your_key_id);
+//
+//        /**
+//         * Image for checkout form can passed as reference to a drawable
+//         */
+//        razorpayCheckout.setImage(R.mipmap.ic_launcher);
+//
+//        /**
+//         * Reference to current activity
+//         */
+//        Activity activity = this;
+//
+//        try{
+//            JSONObject options = new JSONObject("{" +
+//                    "description: '"+description+"'," +
+//                    "currency: 'INR'}"
+//            );
+//
+//            options.put("amount", amount);
+//            options.put("name", "The Box Cart");
+//            options.put("prefill", new JSONObject("{email: '"+email+"', contact: '"+phonenumber+"', name: '"+name+"'}"));
+//
+//            razorpayCheckout.open(activity, options);
+//
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void onPaymentSuccess(String razorpayPaymentID){
+//
+//        if (mergeOrderId == 0) {
+//            pay();
+//        } else {
+//            mergeCartToOrder();
+//        }
+//
+//
+////        try {
+////            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+////        }
+////        catch (Exception e){
+////            Log.e("com.merchant", e.getMessage(), e);
+////        }
+//    }
+//
+//
+//    public void onPaymentError(int code, String response){
 //        try {
-//            Toast.makeText(this, "Payment Successful: " + razorpayPaymentID, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Payment failed: " + Integer.toString(code) + " " + response, Toast.LENGTH_SHORT).show();
 //        }
 //        catch (Exception e){
 //            Log.e("com.merchant", e.getMessage(), e);
 //        }
-    }
-
-
-    public void onPaymentError(int code, String response){
-        try {
-            Toast.makeText(this, "Payment failed: " + Integer.toString(code) + " " + response, Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
-            Log.e("com.merchant", e.getMessage(), e);
-        }
-    }
+//    }
 
 
 }
