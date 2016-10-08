@@ -142,6 +142,11 @@
         <activity android:name=".activity.UniversalSearchActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".activity.PaymentOptionActivity"
+            android:screenOrientation="portrait"/>
+
+
+
         <!--Activity of RazorPay in order to integrate payment integration.-->
         <activity android:name="com.razorpay.CheckoutActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
 
@@ -155,6 +160,9 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".activity.TermsOfUserActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="665cdae5acaaa2e82414353e279c0dcb34ae5b03" />
     </application>
 
 </manifest>

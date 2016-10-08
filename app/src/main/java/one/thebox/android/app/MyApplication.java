@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 //import com.squareup.leakcanary.LeakCanary;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.squareup.okhttp.Cache;
 import com.squareup.picasso.LruCache;
@@ -12,6 +13,7 @@ import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import io.fabric.sdk.android.Fabric;
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
@@ -111,6 +113,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         myApplication = this;
         mContext = getApplicationContext();
         ACRA.init(this);
