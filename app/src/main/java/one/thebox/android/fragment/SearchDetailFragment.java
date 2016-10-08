@@ -163,7 +163,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         catId = getArguments().getInt(EXTRA_CAT_ID);
         exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
         catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
-        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
+         user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
         clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
         if (catIds != null && !catIds.isEmpty()) {
             setCategories();
