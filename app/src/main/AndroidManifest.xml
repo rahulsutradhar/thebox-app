@@ -18,13 +18,13 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <permission
         android:name="one.thebox.android.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="one.thebox.android.permission.C2D_MESSAGE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -138,14 +138,18 @@
             android:name=".activity.ConfirmTimeSlotActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.OrderItemsActivity" />
+        <activity
+            android:name=".activity.UniversalSearchActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".activity.UniversalSearchActivity"
-            android:screenOrientation="portrait"/>
+        <!-- Activity of RazorPay in order to integrate payment integration. -->
+        <activity
+            android:name="com.razorpay.CheckoutActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
 
-        <!--Activity of RazorPay in order to integrate payment integration.-->
-        <activity android:name="com.razorpay.CheckoutActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
-
-        <service android:enabled="true" android:name=".Services.UpdateOrderService" />
+        <service
+            android:name=".Services.UpdateOrderService"
+            android:enabled="true" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -154,7 +158,8 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".activity.TermsOfUserActivity"></activity>
+        <activity android:name=".activity.TermsOfUserActivity" />
+        <activity android:name=".activity.ContactUsActivity" />
     </application>
 
 </manifest>
