@@ -68,3 +68,6 @@ public class SplashActivity extends Activity {
         finish();
     }
 }
+/*
+Testing commit
+ */

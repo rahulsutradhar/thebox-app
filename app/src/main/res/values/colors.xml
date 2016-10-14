@@ -32,8 +32,7 @@
     <color name="very_light_white">#f6f6f6</color>
     <color name="isabelline">#ededed</color>
     <color name="transparent">#00000000</color>
-
-
+    <color name="green_navigation_contact_us">#ff3bb44a</color>
     <!--reds-->
     <color name="md_red_50">#FFEBEE</color>
     <color name="md_red_100">#FFCDD2</color>

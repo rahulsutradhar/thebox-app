@@ -136,24 +136,55 @@
             android:id="@+id/frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            >
+
 
         </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/white"
-        app:headerLayout="@layout/drawer_header"
-        app:itemTextAppearance="@style/NavigationDrawerStyle"
-        app:itemTextColor="@color/primary_text_color"
-        app:menu="@menu/drawer">
+            <android.support.design.widget.NavigationView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start">
+                <android.support.design.widget.NavigationView
+                    android:id="@+id/navigation_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:background="@color/white"
+                    app:headerLayout="@layout/drawer_header"
+                    app:itemTextAppearance="@style/NavigationDrawerStyle"
+                    app:itemTextColor="@color/primary_text_color"
+                    app:menu="@menu/drawer"
+                    android:layout_marginBottom="50dp"
+                    >
+
+                </android.support.design.widget.NavigationView>
+                <LinearLayout
+                    android:id="@+id/navigation_drawer_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:layout_gravity="bottom"
+                    android:background="@color/green_navigation_contact_us">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/contact_us"
+                        android:textAppearance="@style/NavigationDrawerStyle"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:foregroundGravity="center"
+                        android:textColor="@color/white"
+                        />
+                </LinearLayout>
+
+            </android.support.design.widget.NavigationView>
 
 
-    </android.support.design.widget.NavigationView>
+
+
 
 </android.support.v4.widget.DrawerLayout>
