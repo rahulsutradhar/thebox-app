@@ -85,6 +85,7 @@
     <style name="NavigationDrawerStyle">
         <item name="android:textSize">18sp</item>
         <item name="android:typeface">monospace</item>
+
     </style>
 
 </resources>

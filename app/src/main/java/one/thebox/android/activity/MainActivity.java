@@ -18,15 +18,18 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +90,8 @@ public class MainActivity extends BaseActivity implements
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
+    private LinearLayout navigationViewBottom;
+
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction, searchAction,btn_search;
     private EditText searchView;
@@ -159,6 +164,7 @@ public class MainActivity extends BaseActivity implements
 
         if (!RestClient.is_in_development){
                 ShowCaseHelper.removeAllTutorial();
+
         }
 
 
@@ -188,6 +194,7 @@ public class MainActivity extends BaseActivity implements
     public void setupNavigationDrawer() {
         fragmentManager.addOnBackStackChangedListener(this);
         navigationView.setNavigationItemSelectedListener(this);
+        //navigationViewBottom.setNavigationItemSelectedListener(this);
         this.menu = navigationView.getMenu();
         addBoxesToMenu();
         View headerView = navigationView.getHeaderView(0);
@@ -220,6 +227,7 @@ public class MainActivity extends BaseActivity implements
     private void initViews() {
         searchView = (EditText) findViewById(R.id.search);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
         btn_search =(ImageView) findViewById(R.id.btn_search);
@@ -266,6 +274,7 @@ public class MainActivity extends BaseActivity implements
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         searchAction = (ImageView) findViewById(R.id.image_view_search_action);
+        navigationViewBottom.setOnClickListener(this);
     }
 
     @Override
@@ -301,7 +310,6 @@ public class MainActivity extends BaseActivity implements
                 attachExploreBoxes();
                 return true;
             }*/
-
             default: {
                 String menuName = (String) menuItem.getTitle();
                 openBoxByName(menuName);
@@ -367,6 +375,10 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.replace(R.id.frame, fragment, "My Account");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
+    }
+    private void openContactUsActivity() {
+        startActivity(new Intent(MainActivity.this,ContactUsActivity.class));
+        drawerLayout.closeDrawers();
     }
 
     private void attachMyBoxesFragment(int default_position) {
@@ -459,6 +471,9 @@ public class MainActivity extends BaseActivity implements
             case R.id.search: {
                 break;
             }
+            case R.id.navigation_drawer_bottom:
+                openContactUsActivity();
+                break;
         }
     }
 
