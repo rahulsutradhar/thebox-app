@@ -27,7 +27,7 @@
             <ImageView
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:src="@drawable/illustration"
+                android:src="@drawable/ill_customer_support_talk"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 />
@@ -55,7 +55,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:id="@+id/iv_support"
-                android:src="@drawable/letter"
+                android:src="@drawable/ic_letter"
                 android:paddingLeft="4dp"
                 android:layout_centerVertical="true"
                 />
@@ -64,7 +64,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/support_thebox.one"
                 android:textSize="32sp"
-                android:layout_marginLeft="4dp"
+                android:textColor="@color/md_white_1000"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_toRightOf="@id/iv_support"
                 android:layout_centerVertical="true"/>
 
@@ -119,7 +120,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/messenger"
+                    android:src="@drawable/ic_messenger"
                     android:layout_gravity="center"
                     />
             </android.support.v7.widget.CardView>
@@ -134,7 +135,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/phone"
+                    android:src="@drawable/ic_phone"
                     android:layout_gravity="center"
                     />
             </android.support.v7.widget.CardView>
