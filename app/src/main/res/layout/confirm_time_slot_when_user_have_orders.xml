@@ -31,7 +31,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:text="Merge item with these deliveries:"
+        android:text="You have following deliveries scheduled:"
         android:textColor="@color/primary_text_color"
         android:textSize="@dimen/text_medium1" />
 

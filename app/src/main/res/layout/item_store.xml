@@ -23,6 +23,8 @@
             android:id="@+id/linearLayout4"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/margin_horizontal_between_co_element"
+            android:layout_marginRight="@dimen/margin_horizontal_between_co_element"
             android:layout_weight="0.7"
             android:orientation="vertical">
 

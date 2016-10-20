@@ -7,6 +7,7 @@ import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
+import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
@@ -137,6 +138,10 @@ public interface APIService {
     @POST("/payfortheseorders")
     Call<PaymentResponse> payOrders(@Header("authtoken") String authToken,
                                     @Body PaymentRequestBody paymentRequestBody);
+
+    @POST("/capturepayment_for_order")
+    Call<PaymentResponse> payOrderOnline(@Header("authtoken") String authToken,
+                                    @Body OnlinePaymentRequest onlinepaymentRequestBody);
 
     @POST("/reschedulethisorder")
     Call<RescheduleResponseBody> reschedulethisOrder(@Header("authtoken") String authToken,

@@ -48,7 +48,8 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT="total_cart_amount";
 
-
+    private Order cart;
+    private Context context;
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailAdapter paymentDetailAdapter;
     private ArrayList<AddressAndOrder> addressAndOrders;
@@ -84,6 +85,15 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
         mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
+
+        int cartId = PrefUtils.getUser(this).getCartId();
+        Realm realm = MyApplication.getRealm();
+        Order cart = realm.where(Order.class)
+                .notEqualTo(Order.FIELD_ID, 0)
+                .equalTo(Order.FIELD_ID, cartId).findFirst();
+        if(cart!=null) {
+            this.cart = realm.copyFromRealm(cart);
+        }
     }
 
     private void setupRecyclerAdapter() {
@@ -95,7 +105,15 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         paymentDetailAdapter.setOrders(orders);
         recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
-        payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay");
+
+
+        if (mergeOrderId == 0) {
+            payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay");
+        }
+        else {
+            payButton.setText("Total: Rs " + cart.getTotalPriceOfUserItems() + "\n" + "Pay");
+                }
+
     }
 
     private void initViews() {
@@ -106,7 +124,13 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             public void onClick(View v) {
 
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this,PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT,String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()));
+                if (mergeOrderId == 0) {
+                    intent.putExtra(EXTRA_TOTAL_CART_AMOUNT,String.valueOf(paymentDetailAdapter.getFinalPaymentAmount()));
+                }
+                else {
+                    intent.putExtra(EXTRA_TOTAL_CART_AMOUNT,String.valueOf(cart.getTotalPriceOfUserItems()));
+                }
+
                 intent.putExtra(EXTRA_ARRAY_LIST_ORDER,getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
                 intent.putExtra(EXTRA_MERGE_ORDER_ID,getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
                 startActivity(intent);

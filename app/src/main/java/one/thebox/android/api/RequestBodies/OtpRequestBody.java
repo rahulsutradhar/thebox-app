@@ -20,9 +20,9 @@ public class OtpRequestBody implements Serializable {
         @SerializedName("phonenumber")
         private String phoneNumber;
         @SerializedName("otp")
-        private int otp;
+        private String otp;
 
-        public User(String phoneNumber, int otp) {
+        public User(String phoneNumber, String otp) {
             this.phoneNumber = phoneNumber;
             this.otp = otp;
         }

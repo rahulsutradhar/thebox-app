@@ -85,12 +85,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         else {
                 if (hasPreviousOrder() && isCart()) {
                     setContentView(R.layout.confirm_time_slot_when_user_have_orders);
-                    setTitle("Merge Delivery Time Slots");
+                    setTitle("Merge with future deliveries");
                     initViewsCase1();
                     setupMergeDeliveryRecyclerView();
                 } else if (!hasPreviousOrder() && isCart()) {
                     setContentView(R.layout.activity_confirm_time_slot);
-                    setTitle("Select Time Slots");
+                    setTitle("Select Time Slot");
                     initViewCase2();
                     setupTimeSlotRecyclerView();
                 } else {

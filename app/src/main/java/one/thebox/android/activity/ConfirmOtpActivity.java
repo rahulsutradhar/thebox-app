@@ -34,7 +34,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
     EditText otpVerificationEditText;
     TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
     String phoneNumber;
-    private int otp;
+    private String otp;
     private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
     private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
     private boolean isSignUpActivity;
@@ -74,8 +74,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
         if (smsEvent.getMessage().contains("awesome")) {
-            String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
-            otp = Integer.parseInt(otpString);
+            otp = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             final BoxLoader dialog = new BoxLoader(this).show();
             MyApplication.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
@@ -232,7 +231,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
             otpVerificationEditText.setError("Otp could not be empty");
             return false;
         }
-        otp = Integer.parseInt(otpVerificationEditText.getText().toString());
+        otp = otpVerificationEditText.getText().toString();
         return true;
     }
 }

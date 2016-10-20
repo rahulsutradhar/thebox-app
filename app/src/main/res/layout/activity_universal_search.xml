@@ -26,8 +26,7 @@
             android:layout_toRightOf="@+id/imgsearchBack"
             android:background="@null"
             android:textColor="@android:color/black"
-            android:textStyle="bold"
-            android:textColorHint="@color/primary_light"
+            android:textColorHint="@color/light_grey"
             android:hint="Search item, brand or category"
             android:layout_toLeftOf="@+id/imgSearchCancel"
             android:layout_toStartOf="@+id/imgSearchCancel" />

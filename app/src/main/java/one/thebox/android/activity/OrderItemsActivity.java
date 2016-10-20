@@ -2,6 +2,7 @@ package one.thebox.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -93,12 +94,9 @@ public class OrderItemsActivity extends BaseActivity {
 
     private void setPayButton() {
         if (order.isPaid()) {
-            payTextView.setText("Paid");
-            payTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
+            payTextView.setText("Payment Complete");
+            payTextView.setBackgroundColor(Color.LTGRAY);
+            payTextView.setOnClickListener(null);
         } else {
             payTextView.setText("Pay Rs " + order.getTotalPrice());
             payTextView.setOnClickListener(new View.OnClickListener() {

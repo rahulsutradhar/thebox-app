@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/item_info"
+        android:id="@+id/section_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text = "Newly Added Item"
@@ -14,7 +14,22 @@
         android:background="@color/light_white"
         android:gravity="center"
         android:textSize="@dimen/text_medium1"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:visibility="gone"/>
+
+
+    <TextView
+        android:id="@+id/payment_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
+        android:padding="@dimen/padding_small_button_vertical"
+        android:gravity="center"
+        android:background="@color/light_white"
+        android:textColor="@color/accent"
+        android:textSize="@dimen/text_small1"
+        android:visibility="gone"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -34,6 +34,7 @@ import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
+import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.app.MyApplication;
@@ -179,9 +180,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
         else if(POSITION_OF_VIEW_PAGER==1)
         {
             if (mergeOrderId == 0) {
-                pay();
+                pay_offline();
             } else {
-                mergeCartToOrder();
+                merge_cart_to_order_and_pay();
             }
         }
     }
@@ -196,7 +197,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
 
-    private void mergeCartToOrder() {
+    private void merge_cart_to_order_and_pay() {
         final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
                 .enqueue(new Callback<PaymentResponse>() {
@@ -227,9 +228,41 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 });
     }
 
-    private void pay() {
+    private void pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
+                .enqueue(new Callback<PaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                CartHelper.clearCart();
+                                RealmList<Order> orders = new RealmList<>();
+                                orders.add(response.body().getOrders());
+                                OrderHelper.addAndNotify(orders);
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                finish();
+                            } else {
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+
+    private void pay_online(String razorpayPaymentID) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MyApplication.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString()))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -268,7 +301,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         /**
          * Put your key id generated in Razorpay dashboard here
          */
-        String your_key_id = "rzp_test_5C5hEs59JtakdV";
+        String your_key_id = "rzp_test_R4R82jOEbvmNDW";
 
         Checkout razorpayCheckout = new Checkout();
         razorpayCheckout.setKeyID(your_key_id);
@@ -300,21 +333,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
     }
 
+
+
     public void onPaymentSuccess(String razorpayPaymentID){
-
-        if (mergeOrderId == 0) {
-            pay();
-        } else {
-            mergeCartToOrder();
-        }
-
-
+        pay_online(razorpayPaymentID);
     }
 
 
     public void onPaymentError(int code, String response){
         try {
-            Toast.makeText(this, "Payment failed: " + Integer.toString(code) + " " + response, Toast.LENGTH_SHORT).show();
+            Log.e("Payment failed", "Code is " + Integer.toString(code) + " " + response);
+            Toast.makeText(this, "Payment failed, Try Cash on Delivery " , Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
             Log.e("com.merchant", e.getMessage(), e);

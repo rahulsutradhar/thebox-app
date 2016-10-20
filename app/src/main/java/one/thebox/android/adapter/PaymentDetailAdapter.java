@@ -13,12 +13,14 @@ import one.thebox.android.R;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
+    private Context context;
     private ArrayList<Order> orders = new ArrayList<>();
     private RealmList<UserItem> userItems = new RealmList<>();
     private boolean shouldShowPreviouslyAddedItemHeader = true;
 
     public PaymentDetailAdapter(Context context) {
         super(context);
+        this.context = context;
         mViewType = RECYCLER_VIEW_TYPE_FOOTER;
     }
 
@@ -95,13 +97,14 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     class ItemViewHolder extends ItemHolder {
-        private TextView itemText, amountText, itemInfo;
+        private TextView itemText, amountText, section_heading,payment_status;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             itemText = (TextView) itemView.findViewById(R.id.item_text);
             amountText = (TextView) itemView.findViewById(R.id.amount_text);
-            itemInfo = (TextView) itemView.findViewById(R.id.item_info);
+            section_heading = (TextView) itemView.findViewById(R.id.section_heading);
+            payment_status = (TextView) itemView.findViewById(R.id.payment_status);
         }
 
         public void setViewHolder(UserItem userItem) {
@@ -117,19 +120,21 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             if (orders.size() > 1) {
                 if (getAdapterPosition() == 0) {
                     if (userItem.getNextDeliveryScheduledAt() == null) {
-                        itemInfo.setVisibility(View.VISIBLE);
-                        itemInfo.setText("Newly Added Items");
+                        section_heading.setVisibility(View.VISIBLE);
+                        section_heading.setText("Newly Added Items");
                     }
 
                 } else if (getAdapterPosition() != 0 && userItem.getNextDeliveryScheduledAt() != null && shouldShowPreviouslyAddedItemHeader) {
                     shouldShowPreviouslyAddedItemHeader = false;
-                    itemInfo.setVisibility(View.VISIBLE);
-                    itemInfo.setText("Previous Items");
-                } else {
-                    itemInfo.setVisibility(View.GONE);
+                    section_heading.setVisibility(View.VISIBLE);
+                    section_heading.setText("Previous Items");
+
+                    if (orders.get(1).isPaid()){
+                        payment_status.setVisibility(View.VISIBLE);
+                        payment_status.setText("Payment done");
+                    }
+
                 }
-            } else {
-                itemInfo.setVisibility(View.GONE);
             }
         }
     }
@@ -143,7 +148,8 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
             amount = (TextView) itemView.findViewById(R.id.amount);
             if(getTotalDeliverCharges() == 0) {
-                deliveryCharge.setText("No delivery charges for our early users :)");
+                deliveryCharge.setText("Free");
+                deliveryCharge.setTextColor(context.getResources().getColor(R.color.md_green_800));
             } else {
                 deliveryCharge.setText("Rs " + getTotalDeliverCharges());
             }
@@ -163,10 +169,8 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     public float getTotalPrice() {
         float total = 0;
         for (Order order : orders) {
-            if (!order.isCart()) {
+            if (!order.isPaid()) {
                 total = order.getTotalPriceOfUserItems() + total;
-            } else {
-                total = total + order.getTotalPriceOfUserItems();
             }
         }
         return total;

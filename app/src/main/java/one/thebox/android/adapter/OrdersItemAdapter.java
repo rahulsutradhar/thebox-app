@@ -1,6 +1,7 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -229,10 +230,10 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
                 amountTobePaidTextView.setOnClickListener(null);
                 if (order.isCod()) {
-                    amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid via COD");
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid via COD");
                 }
                 else {
-                    amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " paid Online");
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid Online");
                 }
 
             }
@@ -242,7 +243,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             else if (order.isCod() && order.isDelivered() && !order.isPaid()) {
                 message.setText("Payment Pending. Please pay in next delivery.");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " to be paid");
+                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid");
                 amountTobePaidTextView.setOnClickListener(null);
             }
             // Order was choosen to be cod and is not delivered yet
@@ -250,21 +251,22 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             else if (order.isCod() && !order.isDelivered()) {
                 message.setText("Please pay the delivery boy");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_orange_500));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + " to be paid via COD");
+                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid via COD");
             }
             // Order was paid online and is not delivered yet
             // State 2b
             else if (order.isPaid() && !order.isCod() && !order.isDelivered()) {
                 message.setText("Payment complete");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                amountTobePaidTextView.setText("Rs " + order.getTotalPrice() + "to be paid Online");
+                amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid online");
             }
             //Order made not confirmed yet
             //State 1
             else if (!order.isPaid() && !order.isCod()) {
                 message.setText("Please confirm delivery");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_orange_800));
-                amountTobePaidTextView.setText("Pay Rs " + order.getTotalPrice());
+                amountTobePaidTextView.setText("Pay Rs " + Math.round(order.getTotalPrice()) );
                 amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -37,7 +37,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     private EditText otpVerificationEditText;
     private TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
     private String phoneNumber;
-    private int otp;
+    private String otp;
     private boolean isSignUpActivity;
 
     public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
@@ -76,10 +76,10 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     public void onSmsEvent(SmsEvent smsEvent) {
         if (smsEvent.getMessage().contains("awesome") || smsEvent.getMessage().toLowerCase().contains("the box")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
-            otp = Integer.parseInt(otpString);
+            otp = otpString;
             final BoxLoader dialog = new BoxLoader(this).show();
             MyApplication.getAPIService()
-                    .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
+                    .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otpString)))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
                         @Override
                         public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
@@ -209,7 +209,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
             otpVerificationEditText.setError("Otp could not be empty");
             return false;
         }
-        otp = Integer.parseInt(otpVerificationEditText.getText().toString());
+        otp = otpVerificationEditText.getText().toString();
         return true;
     }
 }

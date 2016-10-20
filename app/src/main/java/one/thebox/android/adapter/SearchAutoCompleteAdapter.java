@@ -21,9 +21,11 @@ import one.thebox.android.util.CoreGsonUtils;
 public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
+    private Context context;
 
     public SearchAutoCompleteAdapter(Context context) {
         super(context);
+        this.context = context;
     }
 
     public void addSearchResult(SearchResult searchResult) {
@@ -127,8 +129,9 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
             if (searchResult.getId() == 0) {
                 searchResultText.setText(searchResult.getResult());
             } else {
+                searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
                 SpannableStringBuilder str = new SpannableStringBuilder("See All " + searchResult.getResult());
-                str.setSpan(new android.text.style.StyleSpan(Typeface.ITALIC), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                str.setSpan(new android.text.style.ForegroundColorSpan(context.getResources().getColor(R.color.light_grey)), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 searchResultText.setText(str);
             }
         }
