@@ -2,6 +2,7 @@ package one.thebox.android.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -63,8 +64,9 @@ public class UniversalSearchActivity extends Activity {
     LinearLayout llNoResult;
 
     private String query;
+    public Typeface type;
 
-
+    TextView progress_bar_text;
     private Call<SearchAutoCompleteResponse> call;
     private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
@@ -78,6 +80,7 @@ public class UniversalSearchActivity extends Activity {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
             progressBar.setVisibility(View.GONE);
+            progress_bar_text.setVisibility(View.GONE);
             callHasBeenCompleted = true;
             if (response.body() != null) {
                 onSearchEvent(new SearchEvent(query, response.body()));
@@ -87,6 +90,7 @@ public class UniversalSearchActivity extends Activity {
         @Override
         public void onFailure(Call<SearchAutoCompleteResponse> call, Throwable t) {
             progressBar.setVisibility(View.GONE);
+            progress_bar_text.setVisibility(View.GONE);
             callHasBeenCompleted = true;
         }
     };
@@ -96,9 +100,10 @@ public class UniversalSearchActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_universal_search);
+        progress_bar_text = (TextView) findViewById(R.id.progress_bar_text);
         ButterKnife.bind(this);
-
         progressBar.setVisibility(View.GONE);
+        progress_bar_text.setVisibility(View.GONE);
 
         initViews();
         setupRecyclerView();
@@ -131,6 +136,7 @@ public class UniversalSearchActivity extends Activity {
                 if (s.length() > 0) {
                     imgSearchCancel.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
+                    progress_bar_text.setVisibility(View.VISIBLE);
                     searchRecyclerView.setVisibility(View.GONE);
                     llNoResult.setVisibility(View.GONE);
                     if (callHasBeenCompleted) {
@@ -147,6 +153,7 @@ public class UniversalSearchActivity extends Activity {
                     searchRecyclerView.setVisibility(View.GONE);
                     llNoResult.setVisibility(View.GONE);
                     progressBar.setVisibility(View.GONE);
+                    progress_bar_text.setVisibility(View.GONE);
                 }
             }
         });
@@ -172,7 +179,8 @@ public class UniversalSearchActivity extends Activity {
     }
 
     private void initViews() {
-
+        type=Typeface.createFromAsset(getAssets(),"fonts/AvenirLTStd-Book.otf");
+        progress_bar_text.setTypeface(type);
         searchRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
