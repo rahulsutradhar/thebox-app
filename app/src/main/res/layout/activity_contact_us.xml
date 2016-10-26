@@ -19,6 +19,7 @@
         android:orientation="vertical"
         android:id="@+id/llcontactimage"
         android:layout_below="@id/toolbar">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +28,7 @@
             <ImageView
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:src="@drawable/ill_customer_support_talk"
+                android:src="@drawable/illustration"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 />
@@ -55,20 +56,37 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:id="@+id/iv_support"
-                android:src="@drawable/ic_letter"
+                android:src="@drawable/letter"
                 android:paddingLeft="4dp"
                 android:layout_centerVertical="true"
                 />
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/support_thebox.one"
-                android:textSize="32sp"
-                android:textColor="@color/md_white_1000"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:orientation="vertical"
                 android:layout_toRightOf="@id/iv_support"
-                android:layout_centerVertical="true"/>
-
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/tv_support"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="support"
+                    android:textSize="40sp"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/iv_support"
+                    />
+                <TextView
+                    android:id="@+id/tv_support_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_support"
+                    android:text="\@thebox.one"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_toRightOf="@id/iv_support" />
+            </LinearLayout>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
@@ -86,7 +104,7 @@
             android:text="@string/reach_us_at"
             android:id="@+id/tv_reach_us_at"
             android:textSize="24sp"
-            android:textColor="@color/davy_grey"
+            android:textColor="#575757"
             android:layout_marginLeft="8dp"
 
             />
@@ -99,7 +117,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_below="@id/tv_reach_us_at"
-            ></LinearLayout>
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="64dp"
@@ -120,7 +138,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_messenger"
+                    android:src="@drawable/messenger"
                     android:layout_gravity="center"
                     />
             </android.support.v7.widget.CardView>
@@ -135,18 +153,12 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_phone"
+                    android:src="@drawable/phone"
                     android:layout_gravity="center"
                     />
             </android.support.v7.widget.CardView>
         </LinearLayout>
 
 
-
     </RelativeLayout>
-
-
-
-
-
 </RelativeLayout>
