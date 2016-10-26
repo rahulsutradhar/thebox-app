@@ -3,8 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/centre_anchor"
+        android:layout_centerInParent="true">
 
-
+    </RelativeLayout>
     <RelativeLayout
         android:id="@+id/headerSearch"
         android:layout_width="match_parent"
@@ -41,6 +46,32 @@
             android:visibility="gone"/>
 
 
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/centre_anchor"
+        android:layout_below="@id/headerSearch"
+        >
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/progress_bar"
+            style="?android:attr/android:progressBarStyleSmall"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:src="@drawable/loader" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_message"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_below="@id/progress_bar"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/progress_bar_text"
+            android:layout_marginTop="16dp"/>
     </RelativeLayout>
 
     <View
@@ -111,16 +142,5 @@
         android:layout_below="@+id/headerSearch" />
 
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/progress_bar"
-        style="?android:attr/android:progressBarStyleSmall"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        android:gravity="center"
-        android:src="@drawable/loader" />
 
 </RelativeLayout>

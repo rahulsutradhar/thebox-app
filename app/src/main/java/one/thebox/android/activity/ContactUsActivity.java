@@ -1,12 +1,12 @@
 package one.thebox.android.activity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import one.thebox.android.R;
@@ -14,7 +14,10 @@ import one.thebox.android.R;
 public class ContactUsActivity extends BaseActivity implements View.OnClickListener{
     public CardView cvsupport;
     public CardView cvcall;
+    public TextView reach_us_at;
+    public TextView support;
     public CardView cvmessage;
+    public Typeface type;
     public final String MOBILE_NUMBER = "8408995347";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,12 @@ public class ContactUsActivity extends BaseActivity implements View.OnClickListe
         cvsupport = (CardView) findViewById(R.id.cvsupport);
         cvcall = (CardView) findViewById(R.id.cvcall);
         cvmessage = (CardView) findViewById(R.id.cvmessage);
+        reach_us_at=(TextView) findViewById(R.id.tv_reach_us_at);
+        support=(TextView) findViewById(R.id.tv_reach_us_at);
+        type=Typeface.createFromAsset(getAssets(),"fonts/AvenirLTStd-Book.otf");
+        reach_us_at.setTypeface(type);
+        reach_us_at.setTypeface(type);
+
     }
 
     @Override
