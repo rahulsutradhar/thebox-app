@@ -167,8 +167,11 @@ public interface APIService {
     @GET("getmycart")
     Call<CartResponse> getMyCart(@Header("authtoken") String authToken);
 
-    @POST("add_cartitems_to_order")
-    Call<PaymentResponse> mergeCartItemToOrder(@Header("authtoken") String authToken, @Body MergeCartToOrderRequestBody mergeCartToOrderRequestBody);
+    @POST("merge_cartitems_with_order_payment_offline")
+    Call<PaymentResponse> merge_cart_items_to_order_payment_offline(@Header("authtoken") String authToken, @Body MergeCartToOrderRequestBody mergeCartToOrderRequestBody);
+
+    @POST("merge_cartitems_with_order_payment_online")
+    Call<PaymentResponse> merge_cart_items_to_order_payment_online(@Header("authtoken") String authToken, @Body OnlinePaymentRequest mergeCartToOrderRequestBody);
 
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);

@@ -52,6 +52,8 @@ public class Order extends RealmObject implements Serializable {
     private boolean cod;
     @SerializedName("successfull")
     private boolean successful;
+    @SerializedName("payment_amount_remaining")
+    private int payment_amount_remaining;
 
     public Order() {
     }
@@ -68,6 +70,7 @@ public class Order extends RealmObject implements Serializable {
         this.deliveryCharges = order.getDeliveryCharges();
         this.tax = order.getDeliveryCharges();
         this.cart = order.isCart();
+        this.payment_amount_remaining = order.get_payment_amount_remaining();
         if (order.getUserItems() != null) {
             this.userItems = new RealmList<>();
             this.userItems.addAll(order.getUserItems());
@@ -81,7 +84,7 @@ public class Order extends RealmObject implements Serializable {
 
     }
 
-    public Order(int id, int userId, int addressId, String deliveryScheduleAt, boolean paid, boolean delivered, boolean open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems, RealmList<Invoice> useritem_quantites) {
+    public Order(int id, int userId, int addressId, String deliveryScheduleAt, boolean paid, boolean delivered, boolean open, float totalPrice, float deliveryCharges, float tax, boolean cart, RealmList<UserItem> userItems, RealmList<Invoice> useritem_quantites, int payment_amount_remaining) {
         this.id = id;
         this.userId = userId;
         this.addressId = addressId;
@@ -95,8 +98,21 @@ public class Order extends RealmObject implements Serializable {
         this.cart = cart;
         this.userItems = userItems;
         this.useritem_quantites = useritem_quantites;
+        this.payment_amount_remaining = payment_amount_remaining;
     }
 
+    public boolean is_partial_payment_amount_remaining() {
+        if (this.payment_amount_remaining > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int get_payment_amount_remaining(){
+        return payment_amount_remaining;
+    }
     public RealmList<UserItem> getUserItems() {
         return userItems;
     }

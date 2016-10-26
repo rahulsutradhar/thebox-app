@@ -216,7 +216,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             itemsNameTextView.setText(order.getUserItems().size() + " items");
 
             // Order has been unsuccessfull
-            // State 2c
+            // State 3a
             if (!order.isSuccessful()){
                 message.setText("Order was not confirmed by the user");
                 message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
@@ -224,7 +224,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 amountTobePaidTextView.setVisibility(View.GONE);
             }
             // Order has been closed
-            // State 3
+            // State 3b
             else if (!order.isOpen()) {
                 message.setText("Thank you for choosing us");
                 message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
@@ -241,7 +241,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             //<TODO> Change this to "Pay Online" Button after Payment Gateway integration
             // State 2a'
             else if (order.isCod() && order.isDelivered() && !order.isPaid()) {
-                message.setText("Payment Pending. Please pay in next delivery.");
+                message.setText("Payment Pending. Please pay next delivery.");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
                 amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid");
                 amountTobePaidTextView.setOnClickListener(null);
@@ -251,15 +251,42 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             else if (order.isCod() && !order.isDelivered()) {
                 message.setText("Please pay the delivery boy");
                 message.setTextColor(mContext.getResources().getColor(R.color.md_orange_500));
-                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid via COD");
+                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid");
+                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        RealmList<Order> orders = new RealmList<>();
+                        orders.add(order);
+                        mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders,false));
+                    }
+                });
             }
-            // Order was paid online and is not delivered yet
-            // State 2b
+            // Order was paid online atleast once (more items may have been added and is not delivered yet
             else if (order.isPaid() && !order.isCod() && !order.isDelivered()) {
-                message.setText("Payment complete");
-                message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                amountTobePaidTextView.setBackgroundColor(Color.WHITE);
-                amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid online");
+                if (order.is_partial_payment_amount_remaining()) {
+
+                    // State 2b
+                    message.setText("Partial payment complete. Rs. " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) +
+                            " were paid online. New items worth " +  Math.round(order.get_payment_amount_remaining()) + " were added to your subscription");
+                    message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                    amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) + "to be paid");
+                    amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RealmList<Order> orders = new RealmList<>();
+                            orders.add(order);
+                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders,false));
+                        }
+                    });
+                }
+                else{
+                    //State 2c
+                    message.setText("Payment complete");
+                    message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                    amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid online");
+                }
             }
             //Order made not confirmed yet
             //State 1

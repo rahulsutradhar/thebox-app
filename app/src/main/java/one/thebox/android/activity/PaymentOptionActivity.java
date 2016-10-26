@@ -182,7 +182,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
             if (mergeOrderId == 0) {
                 pay_offline();
             } else {
-                merge_cart_to_order_and_pay();
+                merge_cart_to_order_and_pay_offline();
             }
         }
     }
@@ -197,9 +197,40 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
 
-    private void merge_cart_to_order_and_pay() {
+    private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().mergeCartItemToOrder(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
+        MyApplication.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
+                .enqueue(new Callback<PaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                CartHelper.clearCart();
+                                RealmList<Order> orders = new RealmList<>();
+                                orders.add(response.body().getOrders());
+                                OrderHelper.addAndNotify(orders);
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
+                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                finish();
+                            } else {
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+    }
+
+    private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MyApplication.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId,razorpayPaymentID))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -336,7 +367,13 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     public void onPaymentSuccess(String razorpayPaymentID){
-        pay_online(razorpayPaymentID);
+
+        if (mergeOrderId == 0) {
+            pay_online(razorpayPaymentID);
+        } else {
+            merge_cart_to_order_and_pay_online(razorpayPaymentID);
+        }
+
     }
 
 

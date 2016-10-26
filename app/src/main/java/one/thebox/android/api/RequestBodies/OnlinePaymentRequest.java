@@ -22,4 +22,9 @@ public class OnlinePaymentRequest implements Serializable {
         this.razorpay_payment_id = razorpay_payment_id;
         this.order_date = order_date;
     }
+
+    public OnlinePaymentRequest(int merge_to_this_order_id,String razorpay_payment_id) {
+        this.order_id = merge_to_this_order_id;
+        this.razorpay_payment_id = razorpay_payment_id;
+    }
 }
