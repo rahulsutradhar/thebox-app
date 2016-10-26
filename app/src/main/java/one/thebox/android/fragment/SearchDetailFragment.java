@@ -96,8 +96,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ArrayList<UserItem> userItems = new ArrayList<>();
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
     private ExploreItem exploreItem;
-    private ArrayList<Integer> catIds;
-    private ArrayList<Integer> user_catIds;
+    private ArrayList<Integer> catIds = new ArrayList<>();
+    private ArrayList<Integer> user_catIds = new ArrayList<>();
     private int clickPosition;
     private TextView numberOfItemsInCart, noResultFound, itemsInCart, savings;
     private FrameLayout fabHolder;
@@ -163,9 +163,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         catId = getArguments().getInt(EXTRA_CAT_ID);
         exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
         catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
-         user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
+        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
         clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
-        if (catIds != null && !catIds.isEmpty()) {
+        if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
             setCategories();
         }
     }
@@ -252,7 +252,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         initVariables();
-        if (catIds != null && !catIds.isEmpty()) {
+        if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
             ((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
         } else {
             if (exploreItem != null) {
@@ -265,7 +265,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
             setupAppBarObserver();
-            if (catIds != null && !catIds.isEmpty()) {
+            if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
                 setupViewPagerAndTabsMyBox();
             } else {
                 if (exploreItem == null) {

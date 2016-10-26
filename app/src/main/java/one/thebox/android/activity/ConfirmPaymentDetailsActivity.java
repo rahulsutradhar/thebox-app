@@ -108,10 +108,10 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
 
         if (mergeOrderId == 0) {
-            payButton.setText("Total: Rs " + paymentDetailAdapter.getFinalPaymentAmount() + "\n" + "Pay");
+            payButton.setText("Pay: Rs " + paymentDetailAdapter.getFinalPaymentAmount());
         }
         else {
-            payButton.setText("Total: Rs " + cart.getTotalPriceOfUserItems() + "\n" + "Pay");
+            payButton.setText("Pay: Rs " + cart.getTotalPriceOfUserItems());
                 }
 
     }
