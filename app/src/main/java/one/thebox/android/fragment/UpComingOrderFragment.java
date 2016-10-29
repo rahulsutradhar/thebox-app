@@ -148,6 +148,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         Realm realm = MyApplication.getRealm();
         RealmQuery<Order> query = realm.where(Order.class);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
+
+        orders.clear();
         for (int i = 0; i < realmResults.size(); i++) {
             orders.add(realmResults.get(i));
         }

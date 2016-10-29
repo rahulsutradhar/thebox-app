@@ -86,6 +86,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context mContext;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
     private boolean hasUneditableUserItem;
+    private boolean hide_quantity_selector_in_this_order_item_view = false;
     private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
     private int order_id;
@@ -124,6 +125,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public SearchDetailAdapter(Context context) {
         this.mContext = context;
+    }
+
+    public boolean isHide_quantity_selector_in_this_order_item_view(){
+        return hide_quantity_selector_in_this_order_item_view;
+    }
+
+    public void setHide_quantity_selector_in_this_order_item_view(boolean hide_quantity_selector_in_this_order_item_view){
+        this.hide_quantity_selector_in_this_order_item_view = hide_quantity_selector_in_this_order_item_view;
     }
 
     public boolean isHasUneditableUserItem() {
@@ -267,51 +276,62 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
 
-            quantityHolder.setVisibility(View.VISIBLE);
+            if (isHide_quantity_selector_in_this_order_item_view()) {
 
-            addButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateQuantity(getAdapterPosition(),quantity_for_this_order + 1);
-                }
-            });
+                quantityHolder.setVisibility(View.GONE);
+                addButton.setVisibility(View.GONE);
+                subtractButton.setVisibility(View.GONE);
 
-            subtractButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (quantity_for_this_order > 1) {
-                        updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
-                    } else if (quantity_for_this_order == 1) {
-                        MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                title("Remove " + userItem.getBoxItem().getTitle())
-                                .positiveText("Cancel")
-                                .negativeText("Remove")
-                                .content( userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
-                                .callback(new MaterialDialog.ButtonCallback() {
-                                    @Override
-                                    public void onPositive(MaterialDialog materialDialog) {
+            }
+            else {
+                quantityHolder.setVisibility(View.VISIBLE);
 
-                                        // Dismiss the dialog
-                                        materialDialog.cancel();
-                                    }
-
-                                    @Override
-                                    public void onNegative(MaterialDialog materialDialog) {
-
-                                        // Making update call
-                                        updateQuantity(getAdapterPosition(), 0);
-
-                                    }
-                                })
-                                .build();
-                        dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                        dialog.show();
-                    } else {
-                        Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                addButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
                     }
+                });
 
-                }
-            });
+                subtractButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (quantity_for_this_order > 1) {
+                            updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
+                        } else if (quantity_for_this_order == 1) {
+                            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                    title("Remove " + userItem.getBoxItem().getTitle())
+                                    .positiveText("Cancel")
+                                    .negativeText("Remove")
+                                    .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
+                                    .callback(new MaterialDialog.ButtonCallback() {
+                                        @Override
+                                        public void onPositive(MaterialDialog materialDialog) {
+
+                                            // Dismiss the dialog
+                                            materialDialog.cancel();
+                                        }
+
+                                        @Override
+                                        public void onNegative(MaterialDialog materialDialog) {
+
+                                            // Making update call
+                                            updateQuantity(getAdapterPosition(), 0);
+
+                                        }
+                                    })
+                                    .build();
+                            dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                            dialog.show();
+                        } else {
+                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+            }
+
+
 
 
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
@@ -324,11 +344,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (itemConfig.getCorrectQuantity().equals("NA")) {
                 config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
             } else {
-                config.setText(itemConfig.getCorrectQuantity() + " x " +
+                config.setText(itemConfig.
+                        getCorrectQuantity() + " x " +
                         itemConfig.getSize() + " " + itemConfig.getSizeUnit());
             }
 
             savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+
+
+
+
             if (isHasUneditableUserItem()) {
                 arrivingTime.setVisibility(View.GONE);
 
@@ -1068,10 +1093,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     int prevQuantity = userItems.get(position).getQuantity();
                                     if (quantity >= 1) {
                                         userItems.get(position).setQuantity(quantity);
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(),null);
+                                        //CartHelper.addOrUpdateUserItem(response.body().getUserItem(),null);
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
-                                        CartHelper.removeUserItem(userItems.get(position).getId(),null);
+                                        //CartHelper.removeUserItem(userItems.get(position).getId(),null);
                                         userItems.remove(position);
                                         notifyItemRemoved(getAdapterPosition());
                                     }

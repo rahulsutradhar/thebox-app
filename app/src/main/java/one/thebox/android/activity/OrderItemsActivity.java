@@ -124,6 +124,9 @@ public class OrderItemsActivity extends BaseActivity {
         userItemRecyclerAdapter.setBoxItems(null, userItems);
         userItemRecyclerAdapter.setUserItemQuantities(order.getId(), order.getUserItemQuantities());
         userItemRecyclerAdapter.setHasUneditableUserItem(true);
+        if (order.isPaid()){
+            userItemRecyclerAdapter.setHide_quantity_selector_in_this_order_item_view(true);
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userItemRecyclerAdapter);
     }
