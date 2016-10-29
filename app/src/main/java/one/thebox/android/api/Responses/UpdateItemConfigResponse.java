@@ -27,6 +27,8 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
     private List<Category> restCategories;
     @SerializedName("orders")
     private RealmList<Order> orders;
+    @SerializedName("cart")
+    private Order cart;
 
     public List<Category> getRestCategories() {
         return restCategories;
@@ -62,6 +64,14 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
 
     public RealmList<Order> getOrders() {
         return orders;
+    }
+
+    public void set_cart(Order cart) {
+        this.cart = cart;
+    }
+
+    public Order get_cart() {
+        return cart;
     }
 
     public void setOrders(RealmList<Order> orders) {

@@ -4,10 +4,16 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:paddingTop="16dp">
 
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/arriving_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/sample_text_arriving_in_x_days"
+        android:textSize="@dimen/text_medium2"
+        android:textColor="@color/black" />
 
     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/delivery_schedule_text_view"
@@ -16,17 +22,7 @@
         android:layout_gravity="center_horizontal"
         android:text="Repeats every week"
         android:textSize="@dimen/text_medium1"
-        android:textColor="@color/primary_text_color" />
-
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/arriving_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/md_listitem_vertical_margin"
-        android:text="Arriving in 3 days"
-        android:textSize="@dimen/text_medium2"
-        android:textColor="@color/md_green_800" />
+        android:textColor="@color/light_grey" />
 
 
     <View

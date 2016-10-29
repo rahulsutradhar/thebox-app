@@ -676,7 +676,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                     suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                     boxItems.get(position).setSuggestedCategory(suggestedCategories);
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                     int temp = currentPositionOfSuggestedCategory;
                                     currentPositionOfSuggestedCategory = position;
                                     if (temp != -1) {
@@ -716,10 +716,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     boxItems.get(finalPosition).setQuantity(quantity);
                                     if (quantity >= 1) {
                                         response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
-                                        CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId());
+                                        CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
                                         if (shouldRemoveBoxItemOnEmptyQuantity) {
                                             boxItems.remove(getAdapterPosition());
                                             notifyItemRemoved(getAdapterPosition());
@@ -755,7 +755,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
                                 boxItems.get(position).setSuggestedCategory(suggestionsCategories);
                                 notifyItemChanged(getAdapterPosition());
-                                CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                             }
                         }
 
@@ -1035,7 +1035,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     userItems.set(position, response.body().getUserItem());
                                     notifyItemChanged(getAdapterPosition());
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(),null);
                                 } else {
                                     Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
@@ -1062,10 +1062,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     int prevQuantity = userItems.get(position).getQuantity();
                                     if (quantity >= 1) {
                                         userItems.get(position).setQuantity(quantity);
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(),null);
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
-                                        CartHelper.removeUserItem(userItems.get(position).getId());
+                                        CartHelper.removeUserItem(userItems.get(position).getId(),null);
                                         userItems.remove(position);
                                         notifyItemRemoved(getAdapterPosition());
                                     }
@@ -1104,7 +1104,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 notifyItemChanged(getAdapterPosition());
                                 if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
                                         || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem());
+                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(),null);
                                 }
                                 OrderHelper.addAndNotify(response.body().getOrders());
                                 if (getAdapterPosition() != -1)

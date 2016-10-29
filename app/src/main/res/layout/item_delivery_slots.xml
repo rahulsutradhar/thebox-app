@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Combine with delivery on"
-        android:textSize="@dimen/text_small3"
+        android:textSize="@dimen/text_small1"
         android:textColor="@color/md_grey_800"
         />
 
@@ -29,7 +29,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:text="7:30 - 9:00, 13 Feb, Wednesday"
-            android:textSize="@dimen/text_medium1"
+            android:textSize="@dimen/text_small3"
             android:textColor="@color/md_green_800"
             android:lineSpacingExtra="2dp"
              />

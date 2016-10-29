@@ -1,10 +1,14 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,8 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import io.realm.Realm;
 import io.realm.RealmList;
+import one.thebox.android.Events.UpdateCartEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -23,6 +31,9 @@ import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.PrefUtils;
 
+import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
+import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
+
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     private Order order;
@@ -31,6 +42,23 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
     private TextView emptyCartText;
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initVariables();
+                    setupRecyclerView();
+                }
+            });
+
+        }
+    };
 
     public CartFragment() {
     }
@@ -108,6 +136,20 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         proceedToPayment.setTranslationY(-offset);
     }
 
+
+    @Subscribe
+    public void onUpdateCart(UpdateCartEvent UpdateCartEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initVariables();
+                    setupRecyclerView();
+                }
+            });
+        }
+    }
+
     private void setupAppBarObserver() {
         AppBarObserver appBarObserver;
         Activity activity = getActivity();
@@ -136,5 +178,10 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
+                new IntentFilter(BROADCAST_EVENT_TAB));
+
+        onUpdateCart(new UpdateCartEvent(3));
     }
 }

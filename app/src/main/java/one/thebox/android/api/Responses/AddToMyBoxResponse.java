@@ -25,6 +25,8 @@ public class AddToMyBoxResponse extends ApiResponse implements Serializable {
     private ArrayList<Category> restOfTheCategoriesInTheBox;
     @SerializedName("rest_of_the_categories_in_other_boxes")
     private ArrayList<Category> restOfTheCategoriesInOtherBox;
+    @SerializedName("cart")
+    private Order cart;
 
     public boolean isSuccess() {
         return success;
@@ -49,6 +51,10 @@ public class AddToMyBoxResponse extends ApiResponse implements Serializable {
     public void setUserItem(UserItem userItem) {
         this.userItem = userItem;
     }
+
+    public Order get_cart(){return cart; }
+
+    public void set_cart(Order cart) {this.cart = cart;}
 
     public ArrayList<Category> getRestOfTheCategoriesInTheBox() {
         return restOfTheCategoriesInTheBox;

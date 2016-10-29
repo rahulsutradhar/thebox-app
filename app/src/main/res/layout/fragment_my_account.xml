@@ -214,7 +214,7 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/grey_borders"
+                android:background="@drawable/green_borders"
                 android:paddingBottom="8dp"
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"

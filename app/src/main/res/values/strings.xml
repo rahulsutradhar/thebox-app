@@ -77,5 +77,6 @@
   <string name="support_thebox.one">support
 @thebox.one</string>
   <string name="search_message">Looking it Up</string>
+  <string name="sample_text_arriving_in_x_days">Arriving in 10 days</string>
 </resources>
 

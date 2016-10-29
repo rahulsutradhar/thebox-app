@@ -257,7 +257,7 @@ public class DelayDeliveryBottomSheet {
                     arrivingTextView.setText("This item is in cart. Order this item now.");
                 } else {
                     int days = (int) DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), orderDate);
-                    if(days != 0) {
+                    if(days > 1) {
                         arrivingTextView.setText("Arriving in " + days+" days");
                     }else {
                         int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), orderDate);
