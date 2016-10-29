@@ -722,6 +722,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
                                         if (shouldRemoveBoxItemOnEmptyQuantity) {
                                             boxItems.remove(getAdapterPosition());
+                                            notifyItemChanged(getAdapterPosition());
                                             notifyItemRemoved(getAdapterPosition());
                                         } else {
                                             boxItems.get(finalPosition).setUserItemId(0);

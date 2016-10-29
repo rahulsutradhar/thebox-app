@@ -79,6 +79,7 @@ public class CartHelper {
 
         if (cart != null){
             OrderHelper.addAndNotify(cart);
+            sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
         }
 
 
@@ -119,35 +120,36 @@ public class CartHelper {
         Realm realm = MyApplication.getRealm();
         if (cart != null){
             OrderHelper.addAndNotify(cart);
+            sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
         }
 
-        realm.executeTransactionAsync
-                (new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Order order = realm.where(Order.class).equalTo(Order.FIELD_ID, cartId).findFirst();
-                        RealmList<UserItem> userItems = order.getUserItems();
-                        boolean arrayContainsUserItem = false;
-                        for (int i = 0; i < userItems.size(); i++) {
-                            if (userItemId == userItems.get(i).getId()) {
-                                if (userItems.get(i).getNextDeliveryScheduledAt() != null) {
-                                    return;
-                                }
-                                userItems.remove(i);
-                            }
-                        }
-                        sendUpdateNoItemsInCartBroadcast(userItems.size());
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });
+//        realm.executeTransactionAsync
+//                (new Realm.Transaction() {
+//                    @Override
+//                    public void execute(Realm realm) {
+//                        Order order = realm.where(Order.class).equalTo(Order.FIELD_ID, cartId).findFirst();
+//                        RealmList<UserItem> userItems = order.getUserItems();
+//                        boolean arrayContainsUserItem = false;
+//                        for (int i = 0; i < userItems.size(); i++) {
+//                            if (userItemId == userItems.get(i).getId()) {
+//                                if (userItems.get(i).getNextDeliveryScheduledAt() != null) {
+//                                    return;
+//                                }
+//                                userItems.remove(i);
+//                            }
+//                        }
+//                        sendUpdateNoItemsInCartBroadcast(userItems.size());
+//                    }
+//                }, new Realm.Transaction.OnSuccess() {
+//                    @Override
+//                    public void onSuccess() {
+//                    }
+//                }, new Realm.Transaction.OnError() {
+//                    @Override
+//                    public void onError(Throwable error) {
+//
+//                    }
+//                });
     }
 
     public static void clearCart() {
