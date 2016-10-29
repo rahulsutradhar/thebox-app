@@ -65,6 +65,7 @@ import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.fragment.SearchDetailItemsFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
@@ -716,6 +717,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     boxItems.get(finalPosition).setQuantity(quantity);
                                     if (quantity >= 1) {
                                         response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
+
+                                        //Updating the SearchDetailitem fragment's data if change is made in cart
+                                        //SearchDetailItemsFragment.update_boxitem(response.body().getUserItem().getSelectedItemId(),response.body().getUserItem().getQuantity());
+
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
