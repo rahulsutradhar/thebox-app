@@ -104,7 +104,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         } else {
             emptyCartText.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
-            proceedToPayment.setText("Total Cost: Rs "+ order.getTotalPriceOfUserItems() + "\n"+"Proceed to Payment");
+            proceedToPayment.setText("Total Cost: Rs "+ order.getTotalPrice() + "\n"+"Proceed to Payment");
         }
 
         userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());

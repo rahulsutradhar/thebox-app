@@ -185,6 +185,12 @@ public class SearchDetailItemsFragment extends Fragment {
         recyclerView.setAdapter(searchDetailAdapter);
     }
 
+    public void update_boxitem(int box_item_id,int quantity){
+
+
+
+    }
+
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
