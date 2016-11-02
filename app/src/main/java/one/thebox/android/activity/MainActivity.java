@@ -172,14 +172,8 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
 //                attachSearchResultFragment();
-
                 Intent intent = new Intent(MainActivity.this,UniversalSearchActivity.class);
                 startActivityForResult(intent,4511);
-
-
-
-
-
             }
         });
 
@@ -262,7 +256,6 @@ public class MainActivity extends BaseActivity implements
                         call.enqueue(searchAutoCompleteResponseCallback);
                     }
                 } else {
-
                     getSupportFragmentManager().popBackStackImmediate();
                     progressBar.setVisibility(View.GONE);
                 }
