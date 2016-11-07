@@ -1,9 +1,13 @@
 package one.thebox.android.fragment;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,11 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowSpecialCardEvent;
+import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.SearchResult;
@@ -34,6 +40,9 @@ import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
+import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
 
 
 public class SearchDetailItemsFragment extends Fragment {
@@ -93,6 +102,22 @@ public class SearchDetailItemsFragment extends Fragment {
         return searchDetailItemsFragment;
     }
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            if (getActivity() == null) {
+                return;
+            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getDataBasedOnSource();
+                }
+            });
+
+        }
+    };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,22 +131,28 @@ public class SearchDetailItemsFragment extends Fragment {
             initVariables();
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
             initViews();
-            switch (source) {
-                case SOURCE_CATEGORY: {
-                    getCategoryDetail();
-                    break;
-                }
-                case SOURCE_NON_CATEGORY: {
-                    getSearchDetails();
-                    break;
-                }
-                case SOURCE_SEARCH: {
-                    setupRecyclerView();
-                    break;
-                }
-            }
+            getDataBasedOnSource();
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
+                    new IntentFilter(BROADCAST_EVENT_TAB));
         }
         return rootView;
+    }
+
+    private void getDataBasedOnSource(){
+        switch (source) {
+            case SOURCE_CATEGORY: {
+                getCategoryDetail();
+                break;
+            }
+            case SOURCE_NON_CATEGORY: {
+                getSearchDetails();
+                break;
+            }
+            case SOURCE_SEARCH: {
+                setupRecyclerView();
+                break;
+            }
+        }
     }
 
     private void initVariables() {
@@ -200,6 +231,7 @@ public class SearchDetailItemsFragment extends Fragment {
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
+                            clearData();
                             userItems.add(response.body().getMySearchItem());
                             userItems.addAll(response.body().getMyNonSearchedItems());
                             boxItems.add(response.body().getSearchedItem());
@@ -219,6 +251,12 @@ public class SearchDetailItemsFragment extends Fragment {
                 });
     }
 
+    private void clearData(){
+        userItems.clear();
+        boxItems.clear();
+        categories.clear();
+    }
+
     private void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -229,6 +267,7 @@ public class SearchDetailItemsFragment extends Fragment {
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
+                            clearData();
                             userItems.addAll(response.body().getMyBoxItems());
                             boxItems.addAll(response.body().getNormalBoxItems());
                             categories.add(response.body().getSelectedCategory());
@@ -245,5 +284,17 @@ public class SearchDetailItemsFragment extends Fragment {
                         connectionErrorViewHelper.isVisible(true);
                     }
                 });
+    }
+
+    @Subscribe
+    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    getDataBasedOnSource();
+                }
+            });
+        }
     }
 }

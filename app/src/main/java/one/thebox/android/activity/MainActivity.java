@@ -380,8 +380,6 @@ public class MainActivity extends BaseActivity implements
 
         Bundle bundle = new Bundle();
         bundle.putInt("default_position", default_position);
-
-
         fragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
