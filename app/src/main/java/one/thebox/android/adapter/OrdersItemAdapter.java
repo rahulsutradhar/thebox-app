@@ -274,7 +274,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                             " were paid online. New items worth " +  Math.round(order.get_payment_amount_remaining()) + " were added to your subscription");
                     message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
                     amountTobePaidTextView.setBackgroundColor(Color.WHITE);
-                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) + "to be paid");
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.get_payment_amount_remaining()) + " to be paid via COD");
                     amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
