@@ -230,13 +230,19 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
-                                boxes.clear();
-                                boxes.addAll(response.body().getBoxes());
-                                setupRecyclerView();
-                                storeToRealm();
+//                                boxes.clear();
+//                                boxes.addAll(response.body().getBoxes());
+//                                storeToRealm();
+//                                setupRecyclerView();
+
                             }
+                            boxes.clear();
                             monthly_bill = response.body().getMonthly_bill();
                             total_no_of_items = response.body().getTotal_no_of_items();
+                            boxes.addAll(response.body().getBoxes());
+                            storeToRealm();
+                            setupRecyclerView();
+
                         }
                     }
 

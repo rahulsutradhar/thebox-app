@@ -11,6 +11,7 @@ import java.io.IOException;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
+import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
@@ -120,5 +121,6 @@ public class OrderHelper {
     private static void sendUpdateOrderItemBroadcast() {
         EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(1));
         EventBus.getDefault().post(new UpdateCartEvent(1));
+        EventBus.getDefault().post(new UpdateOrderItemEvent());
     }
 }
