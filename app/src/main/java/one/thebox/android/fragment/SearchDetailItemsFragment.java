@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,17 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import io.realm.RealmModel;
+import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.Order;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -62,7 +69,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private LinearLayout linearLayoutHolder;
     private GifImageView progressBar;
     private String query;
-    private int catId;
+    private int catId = -1;
     private RealmList<Category> categories = new RealmList<>();
     private RealmList<UserItem> userItems = new RealmList<>();
     private RealmList<BoxItem> boxItems = new RealmList<>();
@@ -102,21 +109,6 @@ public class SearchDetailItemsFragment extends Fragment {
         return searchDetailItemsFragment;
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    getDataBasedOnSource();
-                }
-            });
-
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,13 +124,16 @@ public class SearchDetailItemsFragment extends Fragment {
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
             initViews();
             getDataBasedOnSource();
-            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                    new IntentFilter(BROADCAST_EVENT_TAB));
+            initDataChangeListener();
         }
         return rootView;
     }
 
-    private void getDataBasedOnSource(){
+    public void initDataChangeListener() {
+        RealmChangeManager.getInstance().addBoxItemListener(boxItemChangeListener);
+    }
+
+    private void getDataBasedOnSource() {
         switch (source) {
             case SOURCE_CATEGORY: {
                 getCategoryDetail();
@@ -154,6 +149,28 @@ public class SearchDetailItemsFragment extends Fragment {
             }
         }
     }
+
+    private void fillAllUserItems() {
+        if (catId != -1) {
+            Realm realm = MyApplication.getRealm();
+            RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("userCategoryId", catId).findAll();
+            userItems.clear();
+            userItems.addAll(items);
+            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
+            boxItems.clear();
+            boxItems.addAll(boxes);
+            setupRecyclerView();
+        } else {
+            getDataBasedOnSource();
+        }
+    }
+
+    private RealmChangeManager.DBChangeListener boxItemChangeListener = new RealmChangeManager.DBChangeListener() {
+        @Override
+        public void onDBChanged() {
+            fillAllUserItems();
+        }
+    };
 
     private void initVariables() {
         source = getArguments().getInt(EXTRA_SOURCE);
@@ -195,7 +212,7 @@ public class SearchDetailItemsFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(dy!=0){
+                if (dy != 0) {
 
                     EventBus.getDefault().post(new ShowSpecialCardEvent(false));
                 }
@@ -208,6 +225,8 @@ public class SearchDetailItemsFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         if (boxItems.isEmpty() && userItems.isEmpty()) {
             emptyText.setVisibility(View.VISIBLE);
+        } else {
+            emptyText.setVisibility(View.GONE);
         }
         searchDetailAdapter = new SearchDetailAdapter(getActivity());
         searchDetailAdapter.setPositionInViewPager(positionInViewPager);
@@ -216,8 +235,7 @@ public class SearchDetailItemsFragment extends Fragment {
         recyclerView.setAdapter(searchDetailAdapter);
     }
 
-    public void update_boxitem(int box_item_id,int quantity){
-
+    public void update_boxitem(int box_item_id, int quantity) {
 
 
     }
@@ -251,7 +269,7 @@ public class SearchDetailItemsFragment extends Fragment {
                 });
     }
 
-    private void clearData(){
+    private void clearData() {
         userItems.clear();
         boxItems.clear();
         categories.clear();
@@ -286,15 +304,4 @@ public class SearchDetailItemsFragment extends Fragment {
                 });
     }
 
-    @Subscribe
-    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    getDataBasedOnSource();
-                }
-            });
-        }
-    }
 }

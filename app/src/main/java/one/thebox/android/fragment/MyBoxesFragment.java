@@ -31,6 +31,7 @@ import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
@@ -112,6 +113,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     setupRecyclerView();
             }
             onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+            RealmChangeManager.getInstance();
         }
         return rootLayout;
     }

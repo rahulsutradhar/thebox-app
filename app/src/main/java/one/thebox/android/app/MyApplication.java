@@ -27,6 +27,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
@@ -71,7 +72,7 @@ public class MyApplication extends Application {
     public static RealmConfiguration getRealmConfiguration() {
         if (realmConfiguration == null) {
             realmConfiguration = new RealmConfiguration.Builder(getInstance())
-                    .deleteRealmIfMigrationNeeded().schemaVersion(1).build();
+                    .deleteRealmIfMigrationNeeded().schemaVersion(2).build();
             return realmConfiguration;
         }
         return realmConfiguration;
@@ -129,12 +130,15 @@ public class MyApplication extends Application {
 
 //        Stetho.initializeWithDefaults(this);
 
+        getRealm();
+
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                         .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                         .build());
 
+        RealmChangeManager.getInstance();
 
     }
 
