@@ -67,13 +67,21 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         this.boxes = boxes;
     }
 
-    public String getMonthly_bill(){return monthly_bill;}
+    public String getMonthly_bill() {
+        return monthly_bill;
+    }
 
-    public void setMonthly_bill(String monthly_bill){this.monthly_bill = monthly_bill;}
+    public void setMonthly_bill(String monthly_bill) {
+        this.monthly_bill = monthly_bill;
+    }
 
-    public String getTotal_no_of_items(){return total_no_of_items;}
+    public String getTotal_no_of_items() {
+        return total_no_of_items;
+    }
 
-    public void setTotal_no_of_items(String total_no_of_items){this.total_no_of_items = total_no_of_items;}
+    public void setTotal_no_of_items(String total_no_of_items) {
+        this.total_no_of_items = total_no_of_items;
+    }
 
     public int getStickyHeaderHeight() {
         return stickyHeaderHeight;
@@ -127,7 +135,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
 
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        headerViewHolder.setViews(monthly_bill,total_no_of_items);
+        headerViewHolder.setViews(monthly_bill, total_no_of_items);
 
     }
 
@@ -199,28 +207,28 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(Box box) {
-                if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                    this.recyclerViewUserItems.setVisibility(View.GONE);
-                    this.title.setVisibility(View.GONE);
-                } else {
-                    this.recyclerViewUserItems.setVisibility(View.VISIBLE);
-                    this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                this.recyclerViewUserItems.setVisibility(View.GONE);
+                this.title.setVisibility(View.GONE);
+            } else {
+                this.recyclerViewUserItems.setVisibility(View.VISIBLE);
+                this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
 
-                    this.title.setText(box.getBoxDetail().getTitle());
+                this.title.setText(box.getBoxDetail().getTitle());
 
-                    this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
-                    this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
-                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
-                        @Override
-                        public void onUserItemChange(RealmList<UserItem> userItems) {
-                            boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
-                            setViews(boxes.get(getAdapterPosition()));
-                        }
-                    });
-                    this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
-                }
+                this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
+                this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
+                this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
+                    @Override
+                    public void onUserItemChange(RealmList<UserItem> userItems) {
+                        boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
+                        setViews(boxes.get(getAdapterPosition()));
+                    }
+                });
+                this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
             }
         }
+    }
 
     public class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
 
@@ -237,14 +245,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViews(String monthly_bill,String total_no_of_items) {
+        public void setViews(String monthly_bill, String total_no_of_items) {
 
             this.monthly_bill.setText(monthly_bill);
             this.total_no_of_items.setText(total_no_of_items);
 
         }
     }
-    }
+}
 
 
 
