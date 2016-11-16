@@ -370,7 +370,7 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
     private void openContactUsActivity() {
-        startActivity(new Intent(MainActivity.this,ContactUsActivity.class));
+        startActivity(new Intent(MainActivity.this,HotLineActivity.class));
         drawerLayout.closeDrawers();
     }
 

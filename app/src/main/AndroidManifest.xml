@@ -141,6 +141,11 @@
         <activity
             android:name=".activity.UniversalSearchActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.HotLineActivity"
+            android:screenOrientation="portrait" />
+
+
 
         <activity android:name=".activity.PaymentOptionActivity"
             android:screenOrientation="portrait"/>

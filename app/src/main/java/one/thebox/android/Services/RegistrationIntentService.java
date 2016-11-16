@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.freshdesk.hotline.Hotline;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
@@ -58,6 +59,7 @@ public class RegistrationIntentService extends IntentService {
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(gcm_token);
+            Hotline.getInstance(this).updateGcmRegistrationToken(gcm_token);
 
             // Subscribe to topic channels
             subscribeTopics(gcm_token);

@@ -3,6 +3,7 @@ package one.thebox.android.Services;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.freshdesk.hotline.Hotline;
 import com.google.android.gms.gcm.GcmListenerService;
 
 import one.thebox.android.app.MyApplication;
@@ -27,15 +28,28 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        Log.d("message received", data.toString());
-        String notificationInfoString = data.getString("notification_info");
-        NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
-        if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
-            //Updating Prefrences
-            PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-            ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
+
+
+
+        Hotline instance = Hotline.getInstance(this);
+        if(instance.isHotlineNotification(data)) {
+            instance.handleGcmMessage(data);
+            return;
         } else {
-            new NotificationHelper(this, notificationInfo).show();
+            Log.d("message received", data.toString());
+            String notificationInfoString = data.getString("notification_info");
+            NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
+            if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
+                //Updating Prefrences
+                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+                ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
+            } else {
+                new NotificationHelper(this, notificationInfo).show();
+            }
         }
+
+
+
+
     }
 }
