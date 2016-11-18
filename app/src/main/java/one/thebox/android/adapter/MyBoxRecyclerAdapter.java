@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
@@ -220,7 +221,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
                 this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
                     @Override
-                    public void onUserItemChange(RealmList<UserItem> userItems) {
+                    public void onUserItemChange(List<UserItem> userItems) {
                         boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
                         setViews(boxes.get(getAdapterPosition()));
                     }

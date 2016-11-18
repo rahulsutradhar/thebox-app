@@ -77,6 +77,10 @@ public class CartHelper {
         final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
         Realm realm = MyApplication.getRealm();
 
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
+
         if (cart != null){
             OrderHelper.addAndNotify(cart);
             sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());

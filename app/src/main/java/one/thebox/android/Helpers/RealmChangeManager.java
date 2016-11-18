@@ -62,7 +62,7 @@ public class RealmChangeManager {
     }
 
     public void setOrderChangeListener() {
-        RealmResults<Order> orderRealmResults = realm.where(Order.class).findAllAsync();
+        RealmResults<Order> orderRealmResults = realm.where(Order.class).findAll();
         orderRealmResults.addChangeListener(new RealmChangeListener<RealmResults<Order>>() {
             @Override
             public void onChange(RealmResults<Order> element) {

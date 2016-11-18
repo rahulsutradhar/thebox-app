@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -30,6 +33,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.RealmChangeManager;
+import one.thebox.android.Helpers.RealmController;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
@@ -71,8 +75,8 @@ public class SearchDetailItemsFragment extends Fragment {
     private String query;
     private int catId = -1;
     private RealmList<Category> categories = new RealmList<>();
-    private RealmList<UserItem> userItems = new RealmList<>();
-    private RealmList<BoxItem> boxItems = new RealmList<>();
+    private List<UserItem> userItems = new ArrayList<>();
+    private List<BoxItem> boxItems = new ArrayList<>();
     private int source;
     private TextView emptyText;
     private int positionInViewPager;
@@ -124,14 +128,30 @@ public class SearchDetailItemsFragment extends Fragment {
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
             initViews();
             getDataBasedOnSource();
-            initDataChangeListener();
         }
         return rootView;
     }
 
     public void initDataChangeListener() {
-        RealmChangeManager.getInstance().addBoxItemListener(boxItemChangeListener);
+        Realm realm = MyApplication.getRealm();
+        realm.addChangeListener(realmListener);
     }
+
+    private RealmChangeListener realmListener = new RealmChangeListener() {
+
+        @Override
+        public void onChange(Object element) {
+            Log.d("RealmChanged", "RealmData Changed");
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fillAllUserItems();
+                    }
+                });
+            }
+        }
+    };
 
     private void getDataBasedOnSource() {
         switch (source) {
@@ -153,13 +173,8 @@ public class SearchDetailItemsFragment extends Fragment {
     private void fillAllUserItems() {
         if (catId != -1) {
             Realm realm = MyApplication.getRealm();
-            RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("userCategoryId", catId).findAll();
-            userItems.clear();
-            userItems.addAll(items);
-            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
-            boxItems.clear();
-            boxItems.addAll(boxes);
-            setupRecyclerView();
+            RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
+            setBoxItemsBasedOnUserItems(items, boxItems);
         } else {
             getDataBasedOnSource();
         }
@@ -286,11 +301,15 @@ public class SearchDetailItemsFragment extends Fragment {
                         connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             clearData();
-                            userItems.addAll(response.body().getMyBoxItems());
+//                            RealmController.addAllBoxItems(response.body().getNormalBoxItems());
+//                            RealmController.addAllUserItems(response.body().getMyBoxItems());
+//                            userItems.addAll(response.body().getMyBoxItems());
                             boxItems.addAll(response.body().getNormalBoxItems());
+                            setBoxItemsBasedOnUserItems(response.body().getMyBoxItems(), boxItems);
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
-                            setupRecyclerView();
+                            initDataChangeListener();
+//                            fillAllUserItems();
                         }
                     }
 
@@ -303,5 +322,36 @@ public class SearchDetailItemsFragment extends Fragment {
                     }
                 });
     }
+
+    private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems){
+        LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
+        for (BoxItem item : bItems) {
+            map.put(item.getId(), item);
+        }
+        userItems.clear();
+//            boxItems.clear();
+        for (UserItem item : items) {
+            if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
+                userItems.add(item);
+            } else {
+                BoxItem boxItem = item.getBoxItem();
+                if (map.containsKey(boxItem.getId())) {
+                    BoxItem box = map.get(boxItem.getId());
+                    box.setQuantity(item.getQuantity());
+                    map.put(box.getId(), box);
+                }else{
+                    boxItem.setQuantity(item.getQuantity());
+                    map.put(boxItem.getId(), boxItem);
+                }
+
+            }
+        }
+        boxItems.clear();
+        boxItems.addAll(map.values());
+//            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
+//            boxItems.addAll(boxes);
+        setupRecyclerView();
+    }
+
 
 }

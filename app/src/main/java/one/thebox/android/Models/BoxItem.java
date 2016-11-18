@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 import one.thebox.android.R;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.IntStringComparator;
@@ -25,10 +26,11 @@ import one.thebox.android.util.IntStringComparator;
  */
 public class BoxItem extends RealmObject implements Serializable {
 
-    @Ignore
+    @SerializedName("quantity")
     private int quantity;
     @Ignore
     private int userItemId;
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("title")
