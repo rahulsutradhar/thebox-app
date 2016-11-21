@@ -47,10 +47,12 @@ public class HotLineActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_hotline);
         ButterKnife.bind(this);
-        setTitle("Contact Us");
+        setTitle("Chat");
         user = PrefUtils.getUser(this);
 
         HotlineUser hlUser=Hotline.getInstance(getApplicationContext()).getUser();
@@ -62,35 +64,36 @@ public class HotLineActivity extends BaseActivity {
 
         Hotline.getInstance(getApplicationContext()).updateUser(hlUser);
 
+        Hotline.showConversations(getApplicationContext());
 
-        txtContactSupport.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Hotline.showConversations(getApplicationContext());
-            }
-        });
-
-
-        txtFaq.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Hotline.showFAQs(getApplicationContext());
-            }
-        });
-
-
-        txtFaqOptions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FaqOptions faqOptions = new FaqOptions()
-                        .showFaqCategoriesAsGrid(true)
-                        .showContactUsOnAppBar(true)
-                        .showContactUsOnFaqScreens(false)
-                        .showContactUsOnFaqNotHelpful(false);
-
-                Hotline.showFAQs(HotLineActivity.this, faqOptions);
-            }
-        });
+//        txtContactSupport.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Hotline.showConversations(getApplicationContext());
+//            }
+//        });
+//
+//
+//        txtFaq.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Hotline.showFAQs(getApplicationContext());
+//            }
+//        });
+//
+//
+//        txtFaqOptions.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                FaqOptions faqOptions = new FaqOptions()
+//                        .showFaqCategoriesAsGrid(true)
+//                        .showContactUsOnAppBar(true)
+//                        .showContactUsOnFaqScreens(false)
+//                        .showContactUsOnFaqNotHelpful(false);
+//
+//                Hotline.showFAQs(HotLineActivity.this, faqOptions);
+//            }
+//        });
 
     }
 
