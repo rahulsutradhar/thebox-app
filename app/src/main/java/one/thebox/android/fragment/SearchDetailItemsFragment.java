@@ -243,11 +243,16 @@ public class SearchDetailItemsFragment extends Fragment {
         } else {
             emptyText.setVisibility(View.GONE);
         }
-        searchDetailAdapter = new SearchDetailAdapter(getActivity());
-        searchDetailAdapter.setPositionInViewPager(positionInViewPager);
-        searchDetailAdapter.setBoxItems(boxItems, userItems);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(searchDetailAdapter);
+        if (searchDetailAdapter == null) {
+            searchDetailAdapter = new SearchDetailAdapter(getActivity());
+            searchDetailAdapter.setPositionInViewPager(positionInViewPager);
+            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(searchDetailAdapter);
+        } else {
+            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            searchDetailAdapter.notifyDataSetChanged();
+        }
     }
 
     public void update_boxitem(int box_item_id, int quantity) {
@@ -323,7 +328,7 @@ public class SearchDetailItemsFragment extends Fragment {
                 });
     }
 
-    private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems){
+    private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems) {
         LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
         for (BoxItem item : bItems) {
             map.put(item.getId(), item);
@@ -339,7 +344,7 @@ public class SearchDetailItemsFragment extends Fragment {
                     BoxItem box = map.get(boxItem.getId());
                     box.setQuantity(item.getQuantity());
                     map.put(box.getId(), box);
-                }else{
+                } else {
                     boxItem.setQuantity(item.getQuantity());
                     map.put(boxItem.getId(), boxItem);
                 }

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +98,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private int order_id;
     private OnUserItemChange onUserItemChange;
     private Order order;
+    private List<Category> suggestedCategories = new ArrayList<>();
+    private int boxId;
 
     public List<UserItem> getUserItems() {
         return userItems;
@@ -113,6 +116,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void setUserItemQuantities(int order_id, RealmList<Invoice> useritems_quantities) {
         this.useritems_quantities = useritems_quantities;
         this.order_id = order_id;
+    }
+
+    private void setSuggestedCategoriesAndBoxId(int boxId, List<Category> suggestedCategories) {
+        this.boxId = boxId;
+        this.suggestedCategories.clear();
+        this.suggestedCategories.addAll(suggestedCategories);
     }
 
     public int getOrderId() {
@@ -527,7 +536,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
+        private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
             remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(MyApplication.getInstance(), suggestedCategories);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance(), LinearLayoutManager.HORIZONTAL, false));
@@ -629,12 +638,25 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
 
-                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
-                    setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
+//                New implementation
+                Log.d("Box ID:", "" + boxId);
+                Log.d("SuggestedCat Size:", "" + suggestedCategories.size());
+                Log.d("POsition:", "" + getAdapterPosition());
+                Log.d("POsitionVar:", "" + position);
+                Log.d("currentPosition:", "" + currentPositionOfSuggestedCategory);
+                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
+                    setupRecyclerViewSuggestedCategories(suggestedCategories);
                     savingHolder.setVisibility(View.VISIBLE);
                 } else {
                     savingHolder.setVisibility(View.GONE);
                 }
+                // Previous implementation
+//                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
+//                    setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
+//                    savingHolder.setVisibility(View.VISIBLE);
+//                } else {
+//                    savingHolder.setVisibility(View.GONE);
+//                }
 
                 if (boxItem.getQuantity() == 0) {
                     addButtonViewHolder.setVisibility(View.VISIBLE);
@@ -701,8 +723,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                     boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 //                                    RealmList<Category> suggestedCategories = new RealmList<Category>();
-//                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
-//                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
+                                    boxId = boxItems.get(position).getId();
+                                    suggestedCategories.clear();
+                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
+                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
+                                    currentPositionOfSuggestedCategory = position;
+                                    Log.d("Box ID ON Subscribe:", "" + boxId);
+                                    Log.d("POsition ON Subscribe:", "" + getAdapterPosition());
+                                    Log.d("POsitionVarSubscribe:", "" + position);
+                                    Log.d("currentPositionSubsc: ", "" + currentPositionOfSuggestedCategory);
 //                                    boxItems.get(position).setSuggestedCategory(suggestedCategories);
 
 //                                    int temp = currentPositionOfSuggestedCategory;
