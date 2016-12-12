@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -71,6 +73,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private User user;
     private String monthly_bill;
     private String total_no_of_items;
+    private boolean isLocallyUpdated;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -99,22 +102,52 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     }
 
+    public void initDataChangeListener() {
+        Realm realm = MyApplication.getRealm();
+        realm.addChangeListener(realmListener);
+    }
+
+    private void removeChangeListener() {
+        Realm realm = MyApplication.getRealm();
+        realm.removeChangeListener(realmListener);
+    }
+
+    private RealmChangeListener realmListener = new RealmChangeListener() {
+
+        @Override
+        public void onChange(Object element) {
+            Log.d("RealmChanged", "RealmData Changed");
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isLocallyUpdated) {
+                            isLocallyUpdated = true;
+                            getMyBoxes();
+                        }else{
+                            isLocallyUpdated = false;
+                        }
+                    }
+                });
+            }
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (rootLayout == null) {
-            rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
-            initVariables();
-            initViews();
-            getMyBoxes();
-            setupAppBarObserver();
+        rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+        initVariables();
+        initViews();
+        getMyBoxes();
+        setupAppBarObserver();
 
-            if (!boxes.isEmpty()) {
-                    setupRecyclerView();
-            }
-            onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
-            RealmChangeManager.getInstance();
+        if (!boxes.isEmpty()) {
+            setupRecyclerView();
         }
+        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        RealmChangeManager.getInstance();
+        initDataChangeListener();
         return rootLayout;
     }
 
@@ -154,8 +187,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
                 }
             });
-        }
-        else {
+        } else {
             progressBar.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -184,7 +216,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         });
         noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
-        no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder );
+        no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,10 +270,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 //                                setupRecyclerView();
 
                             }
+                            removeChangeListener();
                             boxes.clear();
                             monthly_bill = response.body().getMonthly_bill();
                             total_no_of_items = response.body().getTotal_no_of_items();
                             boxes.addAll(response.body().getBoxes());
+                            isLocallyUpdated = true;
                             storeToRealm();
                             setupRecyclerView();
 
@@ -268,7 +302,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
-                ((MainActivity) getActivity()).addBoxesToMenu();
+                if (null != getActivity()) {
+                    ((MainActivity) getActivity()).addBoxesToMenu();
+                    initDataChangeListener();
+                }
                 // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
@@ -311,6 +348,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Subscribe
+    public void UpdateOrderItemEvent(){
+//        getMyBoxes();
     }
 
     @Subscribe

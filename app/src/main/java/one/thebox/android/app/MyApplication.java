@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.fabric.sdk.android.Fabric;
+
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
@@ -117,9 +118,9 @@ public class MyApplication extends Application {
         Fabric.with(this, new Crashlytics());
         myApplication = this;
         mContext = getApplicationContext();
-        ACRA.init(this);
-        //LeakCanary.install(this);
-        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
+//        ACRA.init(this);
+//        //LeakCanary.install(this);
+//        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 //        Picasso.Builder builder = new Picasso.Builder(this);
 //        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
@@ -143,5 +144,7 @@ public class MyApplication extends Application {
     }
 
 
-    public static Context getAppContext(){return mContext;}
+    public static Context getAppContext() {
+        return mContext;
+    }
 }
