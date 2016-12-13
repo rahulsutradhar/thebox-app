@@ -5,152 +5,152 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white"
-        tools:context=".fragment.MyBoxesFragment">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:orientation="vertical"
+            tools:context=".fragment.MyBoxesFragment">
 
-        <FrameLayout
-            android:id="@+id/fab_holder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="72dp">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <FrameLayout
+                android:id="@+id/fab_holder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/ic_cart"
-                app:backgroundTint="@color/primary"
-                app:elevation="0dp"
-                app:layout_anchorGravity="bottom|right|end" />
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="72dp">
 
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:id="@+id/no_of_items_in_cart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/circular_background"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="@color/white" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_cart"
+                    app:backgroundTint="@color/primary"
+                    app:elevation="0dp"
+                    app:layout_anchorGravity="bottom|right|end" />
 
-        </FrameLayout>
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:id="@+id/no_of_items_in_cart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/circular_background"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="@color/white" />
+
+            </FrameLayout>
+
+
+            <include
+                android:id="@+id/holder_connection_error"
+                layout="@layout/layout_connection_error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/no_item_subscribed_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/ran_out_of_milk_and_eggs" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="@string/empty_my_items_header"
+                    android:textColor="@color/md_black_1000"
+                    android:textSize="@dimen/text_medium1"
+                    app:typeface="montserratSemiBold" />
+
+                <!---    -->
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/empty_view_margin_from_top"
+                    android:gravity="center"
+                    android:text="@string/subscribe_and_forget"
+                    android:textColor="@color/md_pink_500"
+                    android:textSize="@dimen/text_large1"
+                    app:typeface="montserratSemiBold" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_co_element"
+                    android:gravity="center"
+                    android:text="@string/never_run_out_hassle_free_delivery"
+                    android:textColor="@color/md_grey_800"
+                    android:textSize="@dimen/text_small1" />
+
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:background="@drawable/circular_background_pink"
+                    android:gravity="center"
+                    android:src="@drawable/ic_add" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:gravity="center"
+                    android:text="Lets start building your list"
+                    android:textColor="@color/md_grey_800"
+                    android:textSize="@dimen/text_small1" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
 
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/progress_bar"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:padding="8dp"
             android:src="@drawable/loader" />
-
-        <include
-            android:id="@+id/holder_connection_error"
-            layout="@layout/layout_connection_error"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/no_item_subscribed_view_holder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:orientation="vertical"
-            android:visibility="gone"
-            >
-
-            <ImageView
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:src="@drawable/ran_out_of_milk_and_eggs"/>
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-                android:gravity="center"
-                android:maxLines="2"
-                android:text="@string/empty_my_items_header"
-                app:typeface="montserratSemiBold"
-                android:textSize="@dimen/text_medium1"
-                android:textColor="@color/md_black_1000"
-                />
-
-            <!---    -->
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/empty_view_margin_from_top"
-                android:gravity="center"
-                android:text="@string/subscribe_and_forget"
-                app:typeface="montserratSemiBold"
-                android:textSize="@dimen/text_large1"
-                android:textColor="@color/md_pink_500"
-                />
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/margin_vertical_between_co_element"
-                android:gravity="center"
-                android:text="@string/never_run_out_hassle_free_delivery"
-                android:textSize="@dimen/text_small1"
-                android:textColor="@color/md_grey_800"
-                />
-
-
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_add"
-                android:background="@drawable/circular_background_pink"/>
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Lets start building your list"
-                android:textSize="@dimen/text_small1"
-                android:textColor="@color/md_grey_800"
-                />
-
-        </LinearLayout>
-
-
-
-
-    </LinearLayout>
-
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

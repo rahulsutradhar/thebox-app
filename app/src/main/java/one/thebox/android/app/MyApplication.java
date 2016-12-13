@@ -73,7 +73,7 @@ public class MyApplication extends Application {
     public static RealmConfiguration getRealmConfiguration() {
         if (realmConfiguration == null) {
             realmConfiguration = new RealmConfiguration.Builder(getInstance())
-                    .deleteRealmIfMigrationNeeded().schemaVersion(2).build();
+                    .deleteRealmIfMigrationNeeded().schemaVersion(3).build();
             return realmConfiguration;
         }
         return realmConfiguration;

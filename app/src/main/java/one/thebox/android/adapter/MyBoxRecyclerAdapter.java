@@ -48,7 +48,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private String monthly_bill;
     private String total_no_of_items;
-    private RealmList<Box> boxes;
+    private List<Box> boxes = new ArrayList<>();
     private int stickyHeaderHeight = 0;
     private SparseIntArray boxHeights = new SparseIntArray();
 
@@ -60,12 +60,13 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         boxes.add(box);
     }
 
-    public RealmList<Box> getBoxes() {
+    public List<Box> getBoxes() {
         return boxes;
     }
 
-    public void setBoxes(RealmList<Box> boxes) {
-        this.boxes = boxes;
+    public void setBoxes(List<Box> boxes) {
+        this.boxes.clear();
+        this.boxes.addAll(boxes);
     }
 
     public String getMonthly_bill() {

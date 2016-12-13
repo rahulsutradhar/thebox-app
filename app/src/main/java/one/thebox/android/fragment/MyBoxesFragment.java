@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,9 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -65,7 +70,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
     private TextView noOfItemsInCart;
-    private RealmList<Box> boxes = new RealmList<>();
+    private List<Box> boxes = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
@@ -124,7 +129,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         if (!isLocallyUpdated) {
                             isLocallyUpdated = true;
                             getMyBoxes();
-                        }else{
+                        } else {
                             isLocallyUpdated = false;
                         }
                     }
@@ -189,14 +194,24 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             });
         } else {
             progressBar.setVisibility(View.GONE);
+            fabHolder.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            recyclerView.setLayoutManager(linearLayoutManager);
-            myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-            myBoxRecyclerAdapter.setBoxes(boxes);
-            myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-            myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-            recyclerView.setAdapter(myBoxRecyclerAdapter);
+
+            if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
+                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                recyclerView.setLayoutManager(linearLayoutManager);
+                myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+                myBoxRecyclerAdapter.setBoxes(boxes);
+                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                recyclerView.setAdapter(myBoxRecyclerAdapter);
+            } else {
+                myBoxRecyclerAdapter.setBoxes(boxes);
+                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                myBoxRecyclerAdapter.notifyDataSetChanged();
+            }
+
         }
     }
 
@@ -208,12 +223,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
-            }
-        });
+        floatingActionButton.setOnClickListener(fabClickListener);
         noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
         fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
         no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);
@@ -224,6 +234,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             }
         });
     }
+
+    private View.OnClickListener fabClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -326,10 +343,15 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         if (getActivity() == null) {
             return;
         }
+        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
         if (tabEvent.getNumberOfItemsInCart() > 0) {
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
+            mFab.setOnClickListener(fabClickListener);
             noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
         } else {
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
+            mFab.setOnClickListener(null);
             noOfItemsInCart.setVisibility(View.GONE);
         }
     }
@@ -351,7 +373,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     @Subscribe
-    public void UpdateOrderItemEvent(){
+    public void UpdateOrderItemEvent() {
 //        getMyBoxes();
     }
 
@@ -361,7 +383,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    getMyBoxes();
+//                    getMyBoxes();
                 }
             });
         }
