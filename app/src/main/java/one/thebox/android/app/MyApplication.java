@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.fabric.sdk.android.Fabric;
+
 import org.acra.ACRA;
 import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
@@ -27,6 +28,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
@@ -71,7 +73,7 @@ public class MyApplication extends Application {
     public static RealmConfiguration getRealmConfiguration() {
         if (realmConfiguration == null) {
             realmConfiguration = new RealmConfiguration.Builder(getInstance())
-                    .deleteRealmIfMigrationNeeded().schemaVersion(1).build();
+                    .deleteRealmIfMigrationNeeded().schemaVersion(3).build();
             return realmConfiguration;
         }
         return realmConfiguration;
@@ -116,9 +118,9 @@ public class MyApplication extends Application {
         Fabric.with(this, new Crashlytics());
         myApplication = this;
         mContext = getApplicationContext();
-        ACRA.init(this);
-        //LeakCanary.install(this);
-        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
+//        ACRA.init(this);
+//        //LeakCanary.install(this);
+//        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
         FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 //        Picasso.Builder builder = new Picasso.Builder(this);
 //        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
@@ -129,15 +131,20 @@ public class MyApplication extends Application {
 
 //        Stetho.initializeWithDefaults(this);
 
+        getRealm();
+
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                         .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                         .build());
 
+        RealmChangeManager.getInstance();
 
     }
 
 
-    public static Context getAppContext(){return mContext;}
+    public static Context getAppContext() {
+        return mContext;
+    }
 }

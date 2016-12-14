@@ -111,9 +111,11 @@ public class OrderHelper {
         Realm realm = MyApplication.getRealm();
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(order);
-//        }
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();
+
+//        }
+
 
 
     }

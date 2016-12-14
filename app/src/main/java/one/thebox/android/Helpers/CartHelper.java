@@ -77,6 +77,10 @@ public class CartHelper {
         final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
         Realm realm = MyApplication.getRealm();
 
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
+
         if (cart != null){
             OrderHelper.addAndNotify(cart);
             sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
@@ -118,6 +122,9 @@ public class CartHelper {
     public static void removeUserItem(final int userItemId, Order cart) {
         final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
         Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+        realm.where(UserItem.class).equalTo("id", userItemId).findFirst().deleteFromRealm();
+        realm.commitTransaction();
         if (cart != null){
             OrderHelper.addAndNotify(cart);
             sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());

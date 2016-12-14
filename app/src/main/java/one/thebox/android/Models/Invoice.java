@@ -22,26 +22,43 @@ public class Invoice extends RealmObject implements Serializable {
     private int useritem_id;
     @SerializedName("quantity")
     private int quantity;
+    @SerializedName("order_id")
+    private int orderId;
 
-    public Invoice(){}
+    public int getOrderId() {
+        return orderId;
+    }
 
-    public Invoice(int id, int useritem_id,int quantity){
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public Invoice() {
+    }
+
+    public Invoice(int id, int useritem_id, int quantity) {
         this.id = id;
         this.quantity = quantity;
         this.useritem_id = useritem_id;
     }
 
-    public int getUseritem_id () {return useritem_id;}
+    public int getUseritem_id() {
+        return useritem_id;
+    }
 
-    public int getInvoice_quantity () {return quantity;}
+    public int getInvoice_quantity() {
+        return quantity;
+    }
 
-    public int getId(){return id;}
+    public int getId() {
+        return id;
+    }
 
     @Override
     public boolean equals(Object o) {
         Invoice invoice = (Invoice) o;
         return invoice != null && this.id == invoice.getId()
-                && useritem_id == invoice.getUseritem_id();
+                && useritem_id == invoice.getUseritem_id() && this.orderId == invoice.getOrderId();
     }
 
 }

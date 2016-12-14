@@ -249,7 +249,7 @@ public class Order extends RealmObject implements Serializable {
     public int getTotalPriceOfUserItems() {
         int total = 0;
         for (int i = 0; i < userItems.size(); i++) {
-            total = total + userItems.get(i).getBoxItem().getItemConfigById(userItems.get(i).getSelectedConfigId()).getPrice() * userItems.get(i).getQuantity();
+            total = total + userItems.get(i).getTotalPriceForAnOrder();
         }
         return total;
     }

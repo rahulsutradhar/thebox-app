@@ -33,6 +33,26 @@ public class UserItem extends RealmObject implements Serializable {
     private BoxItem boxItem;
     @SerializedName("cart_id")
     private int cartId;
+    @Ignore
+    private int orderItemQty;
+    @Ignore
+    private int orderId;
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getOrderItemQty() {
+        return orderItemQty;
+    }
+
+    public void setOrderItemQty(int orderItemQty) {
+        this.orderItemQty = orderItemQty;
+    }
 
     public UserItem() {
     }
@@ -153,8 +173,13 @@ public class UserItem extends RealmObject implements Serializable {
         return boxItem;
     }
 
-    public int getTotalPrice(){
+    public int getTotalPriceForAnOrder() {
         ItemConfig selectedItemConfig = getBoxItem().getItemConfigById(selectedConfigId);
-        return selectedItemConfig.getPrice()*getQuantity();
+        return selectedItemConfig.getPrice() * getOrderItemQty();
+    }
+
+    public int getTotalPrice() {
+        ItemConfig selectedItemConfig = getBoxItem().getItemConfigById(selectedConfigId);
+        return selectedItemConfig.getPrice() * getQuantity();
     }
 }
