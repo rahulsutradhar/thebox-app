@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,6 +188,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     public void getMyBoxes() {
+        Log.d("From Store", "Calling gogetmybox");
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))

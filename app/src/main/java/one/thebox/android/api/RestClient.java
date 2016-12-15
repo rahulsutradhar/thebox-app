@@ -10,6 +10,7 @@ public class RestClient {
 
     private static final boolean IS_LOCAL_URL = true;
     private static final String STAGING_URL = "https://tranquil-springs-65978.herokuapp.com/";
+    private static final String STAGING_URL_AWS = "http://staging.thebox.one/";
     private static final String BASE_URL = "https://theboxprod.herokuapp.com/";
     private static final String LOCAL_URL = "http://70b86c44.ngrok.io";
     private static final String TUNNEL_URL = "http://3cb3f615.ngrok.io";
