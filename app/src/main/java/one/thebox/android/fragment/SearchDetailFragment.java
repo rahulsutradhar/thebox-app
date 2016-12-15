@@ -642,7 +642,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
         FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
         if (tabEvent.getNumberOfItemsInCart() > 0) {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
             mFab.setOnClickListener(fabClickListener);
             numberOfItemsInCart.setVisibility(View.VISIBLE);
             numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));

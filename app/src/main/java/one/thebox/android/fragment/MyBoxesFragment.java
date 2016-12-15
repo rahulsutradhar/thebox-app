@@ -272,14 +272,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void getMyBoxes() {
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
+        MyApplication.getAPIService().getMyItems(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
                         progressBar.setVisibility(View.GONE);
 
-                        if (response.body() != null) {
+                        if (response.body() != null && response.body().getBoxes() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
 //                                boxes.clear();
 //                                boxes.addAll(response.body().getBoxes());
@@ -345,7 +345,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
         FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
         if (tabEvent.getNumberOfItemsInCart() > 0) {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
+            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
             mFab.setOnClickListener(fabClickListener);
             noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
