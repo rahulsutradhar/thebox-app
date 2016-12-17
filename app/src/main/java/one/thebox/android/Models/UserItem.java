@@ -38,13 +38,6 @@ public class UserItem extends RealmObject implements Serializable {
     @Ignore
     private int orderId;
 
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
 
     public int getOrderItemQty() {
         return orderItemQty;
@@ -181,5 +174,8 @@ public class UserItem extends RealmObject implements Serializable {
     public int getTotalPrice() {
         ItemConfig selectedItemConfig = getBoxItem().getItemConfigById(selectedConfigId);
         return selectedItemConfig.getPrice() * getQuantity();
+    }
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 }

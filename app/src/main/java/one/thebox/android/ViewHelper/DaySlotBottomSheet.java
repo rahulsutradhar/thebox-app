@@ -33,10 +33,10 @@ public class DaySlotBottomSheet {
             "Adapter implementation",
             "Simple List View In Android",
             "Create List View Android",
-            "Android Example",
+            "Android UserItemResponse",
             "List View Source Code",
             "List View Array Adapter",
-            "Android Example List View"
+            "Android UserItemResponse List View"
     };
 
     public DaySlotBottomSheet(Activity context, Date date, OnDayPicked onDayPicked) {

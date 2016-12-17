@@ -272,14 +272,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void getMyBoxes() {
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getMyItems(PrefUtils.getToken(getActivity()))
+        MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
                         progressBar.setVisibility(View.GONE);
 
-                        if (response.body() != null && response.body().getBoxes() != null) {
+                        if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
 //                                boxes.clear();
 //                                boxes.addAll(response.body().getBoxes());
