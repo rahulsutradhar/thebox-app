@@ -123,7 +123,7 @@ public class AddressBottomSheet {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(((BaseActivity)context).getContentView().getWindowToken(), 0);
+                imm.hideSoftInputFromWindow(((BaseActivity) context).getContentView().getWindowToken(), 0);
             }
         });
         bottomSheetDialog.show();
@@ -184,7 +184,7 @@ public class AddressBottomSheet {
                         localitySelected,
                         primaryAddress.isChecked(), Address.getAddressTypeName(type)
                 );
-
+                hideKeyboard();
                 if (AddressBottomSheet.this.address != null) {
                     updateAddress(address);
                 } else {
@@ -193,6 +193,14 @@ public class AddressBottomSheet {
 
             }
         });
+    }
+
+    private void hideKeyboard() {
+        View view = context.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void addAddress(final Address address) {
