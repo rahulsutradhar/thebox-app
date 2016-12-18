@@ -342,9 +342,11 @@ public class SearchDetailItemsFragment extends Fragment {
                 BoxItem boxItem = item.getBoxItem();
                 if (map.containsKey(boxItem.getId())) {
                     BoxItem box = map.get(boxItem.getId());
+                    box.setUserItemId(item.getId());
                     box.setQuantity(item.getQuantity());
                     map.put(box.getId(), box);
                 } else {
+                    boxItem.setUserItemId(item.getId());
                     boxItem.setQuantity(item.getQuantity());
                     map.put(boxItem.getId(), boxItem);
                 }
