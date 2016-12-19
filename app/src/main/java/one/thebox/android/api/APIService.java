@@ -106,10 +106,11 @@ public interface APIService {
     Call<ExploreBoxResponse> getExploreBox(@Header("authtoken") String authToken,
                                            @Query("id") int id);
 
-    @GET("/gogetmyuseritems")
+    @GET("/gogetmybox")
     Call<MyBoxResponse> getMyBoxes(@Header("authtoken") String authToken);
+
     @GET("/gogetmyuseritems")
-    Call<MyBoxResponse> getMyItems(@Header("authtoken") String authToken);
+    Call<MyBoxResponse> getMySItems(@Header("authtoken") String authToken);
 
     @POST("/updateitemquantity")
     Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,

@@ -47,10 +47,10 @@ public class BoxItem extends RealmObject implements Serializable {
     private boolean isSmartItems;
     @SerializedName("category_id")
     private int categoryId;
-    @SerializedName("photo_file_name")
-    private String photoFileName;
-    @SerializedName("photo_content_type")
-    private String photoContentType;
+//    @SerializedName("photo_file_name")
+//    private String photoFileName;
+//    @SerializedName("photo_content_type")
+//    private String photoContentType;
     @SerializedName("itemconfigs")
     private RealmList<ItemConfig> itemConfigs;
     @SerializedName("photo_url")
@@ -176,21 +176,21 @@ public class BoxItem extends RealmObject implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getPhotoFileName() {
-        return photoFileName;
-    }
+//    public String getPhotoFileName() {
+////        return photoFileName;
+////    }
+////
+////    public void setPhotoFileName(String photoFileName) {
+////        this.photoFileName = photoFileName;
+////    }
 
-    public void setPhotoFileName(String photoFileName) {
-        this.photoFileName = photoFileName;
-    }
-
-    public String getPhotoContentType() {
-        return photoContentType;
-    }
-
-    public void setPhotoContentType(String photoContentType) {
-        this.photoContentType = photoContentType;
-    }
+//    public String getPhotoContentType() {
+//        return photoContentType;
+//    }
+//
+//    public void setPhotoContentType(String photoContentType) {
+//        this.photoContentType = photoContentType;
+//    }
 
     public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
