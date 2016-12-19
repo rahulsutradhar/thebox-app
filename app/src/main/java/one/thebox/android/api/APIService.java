@@ -1,6 +1,7 @@
 package one.thebox.android.api;
 
 
+import one.thebox.android.Models.user.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
@@ -110,7 +111,7 @@ public interface APIService {
     Call<MyBoxResponse> getMyBoxes(@Header("authtoken") String authToken);
 
     @GET("/gogetmyuseritems")
-    Call<MyBoxResponse> getMySItems(@Header("authtoken") String authToken);
+    Call<UserItemResponse> getMyItems(@Header("authtoken") String authToken);
 
     @POST("/updateitemquantity")
     Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,
@@ -144,7 +145,7 @@ public interface APIService {
 
     @POST("/capturepayment_for_order")
     Call<PaymentResponse> payOrderOnline(@Header("authtoken") String authToken,
-                                    @Body OnlinePaymentRequest onlinepaymentRequestBody);
+                                         @Body OnlinePaymentRequest onlinepaymentRequestBody);
 
     @POST("/reschedulethisorder")
     Call<RescheduleResponseBody> reschedulethisOrder(@Header("authtoken") String authToken,

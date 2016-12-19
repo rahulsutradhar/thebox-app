@@ -126,17 +126,20 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (!isLocallyUpdated) {
-                            isLocallyUpdated = true;
-                            getMyBoxes();
-                        } else {
-                            isLocallyUpdated = false;
-                        }
+                        initVariables();
+                        setupRecyclerView();
+//                        if (!isLocallyUpdated) {
+//                            isLocallyUpdated = true;
+//                            getMyBoxes();
+//                        } else {
+//                            isLocallyUpdated = false;
+//                        }
                     }
                 });
             }
         }
     };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -163,6 +166,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
         RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
+        this.boxes.clear();
         this.boxes.addAll(realm.copyFromRealm(boxes));
     }
 
