@@ -110,6 +110,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         }
         return rootLayout;
     }
+
     private void setUpBoxes() {
         // Add to boxes list only if there are items in box
         Iterator<Box> iterator = this.boxes.iterator();
@@ -131,6 +132,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         list.addAll(items);
         return list;
     }
+
     private void initVariables() {
         Realm realm = MyApplication.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
@@ -315,8 +317,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initVariables();
-                    setupRecyclerView();
+//                    initVariables();
+//                    setupRecyclerView();
                 }
             });
         }
