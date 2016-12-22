@@ -663,7 +663,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                         if (getAdapterPosition() == 0) {
-                            if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
+                            if ((PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) && (!RestClient.is_in_development) ) {
                                 moveRecyclerView(true);
                             }
                             if ((PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
@@ -728,6 +728,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                     suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                     currentPositionOfSuggestedCategory = position;
+
                                     Log.d("Box ID ON Subscribe:", "" + boxId);
                                     Log.d("POsition ON Subscribe:", "" + getAdapterPosition());
                                     Log.d("POsitionVarSubscribe:", "" + position);
@@ -736,10 +737,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 //                                    int temp = currentPositionOfSuggestedCategory;
 //                                    currentPositionOfSuggestedCategory = position;
+
+
+                                    // We are showing suggested category section at most once in a category
+                                    // 1. At start "currentPositionOfSuggestedCategory" = -1 as defined
+                                    // 2. This section makes sure suggested caetgories are set of atmost one item
+
+
 //                                    if (temp != -1) {
 //                                        boxItems.get(temp).setSuggestedCategory(new RealmList<Category>());
 //                                        notifyItemChanged(temp);
 //                                    }
+
                                     notifyItemChanged(getAdapterPosition());
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                 } else {
@@ -953,7 +962,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     public void onClick(DialogInterface dialog, int id) {
                                         PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
                                         Intent intent = new Intent(mContext, MainActivity.class)
-                                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 11);
+                                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 2);
                                         mContext.startActivity(intent);
                                     }
                                 })

@@ -251,7 +251,6 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:gravity="center_vertical"
                 android:paddingTop="16dp">
 
@@ -259,14 +258,16 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:layout_marginRight="8dp"
+                    android:layout_gravity="center_horizontal"
                     android:background="@color/primary_text_color"
                     android:visibility="gone" />
 
                 <one.thebox.android.ViewHelper.MontserratTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Suggested Categories"
-                    android:textColor="@color/primary_text_color"
+                    android:layout_marginLeft="@dimen/margin_from_left_of_card"
+                    android:text="@string/suggested_categories"
+                    android:textColor="@color/black"
                     android:textSize="16sp"
                     app:typeface="montserratSemiBold" />
 
@@ -277,7 +278,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="4dp"
-                android:paddingRight="4dp" />
+                android:paddingRight="4dp"
+                android:paddingTop="8dp"/>
 
         </LinearLayout>
 
