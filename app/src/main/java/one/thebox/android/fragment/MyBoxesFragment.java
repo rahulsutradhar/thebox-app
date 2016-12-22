@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,6 +42,7 @@ import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
@@ -126,14 +128,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        initVariables();
-                        setupRecyclerView();
-//                        if (!isLocallyUpdated) {
-//                            isLocallyUpdated = true;
-//                            getMyBoxes();
-//                        } else {
-//                            isLocallyUpdated = false;
-//                        }
+//                        initVariables();
+//                        setupRecyclerView();
                     }
                 });
             }
@@ -168,6 +164,29 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         boxes.addAll(realmResults.subList(0, realmResults.size()));
         this.boxes.clear();
         this.boxes.addAll(realm.copyFromRealm(boxes));
+        setUpBoxes();
+    }
+
+    private void setUpBoxes() {
+        // Add to boxes list only if there are items in box
+        Iterator<Box> iterator = this.boxes.iterator();
+        while (iterator.hasNext()) {
+            Box box = iterator.next();
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                iterator.remove();
+            } else {
+                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
+            }
+        }
+
+    }
+
+    private List<UserItem> getUserItems(int boxId) {
+        Realm realm = MyApplication.getRealm();
+        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
+        List<UserItem> list = new ArrayList<>();
+        list.addAll(items);
+        return list;
     }
 
     private void setupAppBarObserver() {
@@ -183,7 +202,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     private void setupRecyclerView() {
         user = PrefUtils.getUser(this.getActivity());
-        if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
+        if (user.getAddresses() == null || user.getAddresses().isEmpty() || boxes == null || boxes.size() == 0) {
             no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
             fabHolder.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
@@ -285,10 +304,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
                         if (response.body() != null) {
                             if (!(boxes.equals(response.body().getBoxes()))) {
-//                                boxes.clear();
-//                                boxes.addAll(response.body().getBoxes());
-//                                storeToRealm();
-//                                setupRecyclerView();
 
                             }
                             removeChangeListener();
@@ -298,8 +313,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             boxes.addAll(response.body().getBoxes());
                             isLocallyUpdated = true;
                             storeToRealm();
+                            setUpBoxes();
                             setupRecyclerView();
-
                         }
                     }
 
@@ -318,6 +333,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                for (Box box : boxes) {
+                    List<UserItem> items = box.getAllItemInTheBox();
+                    for (UserItem item : items) {
+                        item.setBoxId(box.getBoxId());
+                    }
+                }
                 realm.copyToRealmOrUpdate(boxes);
             }
         }, new Realm.Transaction.OnSuccess() {
@@ -374,6 +395,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onStop() {
         super.onStop();
+        if (isRegistered) {
+            EventBus.getDefault().unregister(this);
+            isRegistered = false;
+        }
     }
 
     @Subscribe
@@ -388,6 +413,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 @Override
                 public void run() {
 //                    getMyBoxes();
+                    initVariables();
+                    setupRecyclerView();
                 }
             });
         }

@@ -1120,13 +1120,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     int prevQuantity = userItems.get(position).getQuantity();
+                                    UserItem item = response.body().getUserItem();
+                                    item.setBoxId(response.body().getBoxId());
                                     if (quantity >= 1) {
-//                                        userItems.get(position).setQuantity(quantity);
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
+                                        CartHelper.addOrUpdateUserItem(item, null);
                                         notifyItemChanged(getAdapterPosition());
                                     } else {
                                         CartHelper.removeUserItem(userItems.get(position).getId(), null);
-//                                        userItems.remove(position);
                                         notifyItemRemoved(getAdapterPosition());
                                     }
                                     if (onUserItemChange != null) {

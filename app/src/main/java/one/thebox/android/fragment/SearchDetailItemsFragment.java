@@ -255,10 +255,6 @@ public class SearchDetailItemsFragment extends Fragment {
         }
     }
 
-    public void update_boxitem(int box_item_id, int quantity) {
-
-
-    }
 
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);

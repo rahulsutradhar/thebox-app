@@ -241,10 +241,8 @@ public class UserItemHolder extends BaseHolder {
         });
         noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
         ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-        //userItem.getBoxItem().getSelectedItemConfig();
-//        ItemConfig itemConfig = userItem.getItemConfig();
         price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-//        frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+        frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
 
         productName.setText(userItem.getBoxItem().getTitle());
 

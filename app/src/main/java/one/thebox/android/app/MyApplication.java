@@ -71,12 +71,12 @@ public class MyApplication extends Application {
     }
 
     public static RealmConfiguration getRealmConfiguration() {
-        if (realmConfiguration == null) {
-            realmConfiguration = new RealmConfiguration.Builder(getInstance())
-                    .deleteRealmIfMigrationNeeded().schemaVersion(3).build();
-            return realmConfiguration;
-        }
+//        if (realmConfiguration == null) {
+        realmConfiguration = new RealmConfiguration.Builder(getInstance()).name("thebox.realm")
+                .deleteRealmIfMigrationNeeded().schemaVersion(6).build();
         return realmConfiguration;
+//        }
+//        return realmConfiguration;
     }
 
     public static synchronized MyApplication getInstance() {

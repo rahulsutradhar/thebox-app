@@ -215,7 +215,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                 this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-
+                this.title.setVisibility(View.VISIBLE);
                 this.title.setText(box.getBoxDetail().getTitle());
 
                 this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
@@ -240,11 +240,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-
             this.monthly_bill = (MontserratTextView) itemView.findViewById(R.id.monthly_bill);
             this.total_no_of_items = (MontserratTextView) itemView.findViewById(R.id.total_no_of_items);
-
-
         }
 
         public void setViews(String monthly_bill, String total_no_of_items) {
