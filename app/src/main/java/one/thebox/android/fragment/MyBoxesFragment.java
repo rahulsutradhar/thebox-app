@@ -186,6 +186,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
         List<UserItem> list = new ArrayList<>();
         list.addAll(items);
+        Log.d("MyBoxesFrag", "Size of user items for box id:"+list.size()+"");
         return list;
     }
 
