@@ -567,10 +567,19 @@ public class MainActivity extends BaseActivity implements
 */
                 break;
             }
+
+            //Attaching Myitems fragment
             case 1: {
                 attachMyBoxesFragment(0);
                 break;
             }
+
+            //Attaching MyDeliveries fragment
+            case 2: {
+                attachMyBoxesFragment(2);
+                break;
+            }
+
             case 3: {
                 attachOrderFragmentWithBackStack();
                 break;
@@ -595,12 +604,18 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragmentWithBackStack();
                 break;
             }
+
+            //Notifications
             case 10: {
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(1);
                 break;
             }
             case 11: {
                 attachMyBoxesFragment(1);
+                break;
+            }
+            case 12: {
+                attachMyBoxesFragment(2);
                 break;
             }
         }

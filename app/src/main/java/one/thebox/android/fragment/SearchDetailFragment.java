@@ -248,15 +248,15 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         });
         itemsInCart = (TextView) rootView.findViewById(R.id.items_in_cart);
         savings = (TextView) rootView.findViewById(R.id.savings);
-
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         initVariables();
-        if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
+        if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
             ((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
         } else {
             if (exploreItem != null) {
@@ -269,7 +269,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
             setupAppBarObserver();
-            if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
+            if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
                 setupViewPagerAndTabsMyBox();
             } else {
                 if (exploreItem == null) {

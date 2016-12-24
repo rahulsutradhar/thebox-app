@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -34,6 +37,7 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
@@ -107,13 +111,37 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         return rootLayout;
     }
 
+    private void setUpBoxes() {
+        // Add to boxes list only if there are items in box
+        Iterator<Box> iterator = this.boxes.iterator();
+        while (iterator.hasNext()) {
+            Box box = iterator.next();
+            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+                iterator.remove();
+            } else {
+                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
+            }
+        }
+
+    }
+
+    private List<UserItem> getUserItems(int boxId) {
+        Realm realm = MyApplication.getRealm();
+        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
+        List<UserItem> list = new ArrayList<>();
+        list.addAll(items);
+        return list;
+    }
+
     private void initVariables() {
         Realm realm = MyApplication.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
         RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
+        this.boxes.clear();
         this.boxes.addAll(realm.copyFromRealm(boxes));
+//        setUpBoxes();
     }
 
     private void setupAppBarObserver() {
@@ -187,6 +215,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     public void getMyBoxes() {
+        Log.d("From Store", "Calling gogetmybox");
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
         MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
@@ -200,9 +229,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
-
                                 setupRecyclerView();
-                                storeToRealm();
+//                                storeToRealm();
                             }
                         }
                     }
@@ -217,16 +245,27 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void storeToRealm() {
+        if(true){
+            return;
+        }
         final Realm superRealm = MyApplication.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                for (Box box : boxes) {
+                    List<UserItem> items = box.getAllItemInTheBox();
+                    for (UserItem item : items) {
+                        item.setBoxId(box.getBoxId());
+                    }
+                }
                 realm.copyToRealmOrUpdate(boxes);
             }
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
-                ((MainActivity) getActivity()).addBoxesToMenu();
+                if (null != getActivity()) {
+                    ((MainActivity) getActivity()).addBoxesToMenu();
+                }
                 // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
@@ -269,6 +308,10 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     @Override
     public void onStop() {
         super.onStop();
+        if (isRegistered) {
+            EventBus.getDefault().unregister(this);
+            isRegistered = false;
+        }
     }
 
     @Subscribe
@@ -277,7 +320,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    getMyBoxes();
+//                    initVariables();
+//                    setupRecyclerView();
                 }
             });
         }

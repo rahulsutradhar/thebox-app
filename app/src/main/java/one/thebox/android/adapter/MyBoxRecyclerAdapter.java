@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
@@ -47,7 +48,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private String monthly_bill;
     private String total_no_of_items;
-    private RealmList<Box> boxes;
+    private List<Box> boxes = new ArrayList<>();
     private int stickyHeaderHeight = 0;
     private SparseIntArray boxHeights = new SparseIntArray();
 
@@ -59,12 +60,13 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         boxes.add(box);
     }
 
-    public RealmList<Box> getBoxes() {
+    public List<Box> getBoxes() {
         return boxes;
     }
 
-    public void setBoxes(RealmList<Box> boxes) {
-        this.boxes = boxes;
+    public void setBoxes(List<Box> boxes) {
+        this.boxes.clear();
+        this.boxes.addAll(boxes);
     }
 
     public String getMonthly_bill() {
@@ -213,14 +215,14 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             } else {
                 this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                 this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-
+                this.title.setVisibility(View.VISIBLE);
                 this.title.setText(box.getBoxDetail().getTitle());
 
                 this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
                 this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
                 this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
                     @Override
-                    public void onUserItemChange(RealmList<UserItem> userItems) {
+                    public void onUserItemChange(List<UserItem> userItems) {
                         boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
                         setViews(boxes.get(getAdapterPosition()));
                     }
@@ -238,11 +240,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-
             this.monthly_bill = (MontserratTextView) itemView.findViewById(R.id.monthly_bill);
             this.total_no_of_items = (MontserratTextView) itemView.findViewById(R.id.total_no_of_items);
-
-
         }
 
         public void setViews(String monthly_bill, String total_no_of_items) {

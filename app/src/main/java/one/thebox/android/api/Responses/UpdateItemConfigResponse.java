@@ -29,6 +29,24 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
     private RealmList<Order> orders;
     @SerializedName("cart")
     private Order cart;
+    @SerializedName("box_id")
+    private int boxId;
+
+    public Order getCart() {
+        return cart;
+    }
+
+    public void setCart(Order cart) {
+        this.cart = cart;
+    }
+
+    public int getBoxId() {
+        return boxId;
+    }
+
+    public void setBoxId(int boxId) {
+        this.boxId = boxId;
+    }
 
     public List<Category> getRestCategories() {
         return restCategories;
@@ -55,6 +73,9 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
     }
 
     public UserItem getUserItem() {
+        if (userItem != null) {
+            userItem.setBoxId(boxId);
+        }
         return userItem;
     }
 

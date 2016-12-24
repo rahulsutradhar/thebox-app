@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 import one.thebox.android.R;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.IntStringComparator;
@@ -25,10 +26,11 @@ import one.thebox.android.util.IntStringComparator;
  */
 public class BoxItem extends RealmObject implements Serializable {
 
-    @Ignore
+    @SerializedName("quantity")
     private int quantity;
     @Ignore
     private int userItemId;
+    @PrimaryKey
     @SerializedName("id")
     private int id;
     @SerializedName("title")
@@ -45,10 +47,10 @@ public class BoxItem extends RealmObject implements Serializable {
     private boolean isSmartItems;
     @SerializedName("category_id")
     private int categoryId;
-    @SerializedName("photo_file_name")
-    private String photoFileName;
-    @SerializedName("photo_content_type")
-    private String photoContentType;
+//    @SerializedName("photo_file_name")
+//    private String photoFileName;
+//    @SerializedName("photo_content_type")
+//    private String photoContentType;
     @SerializedName("itemconfigs")
     private RealmList<ItemConfig> itemConfigs;
     @SerializedName("photo_url")
@@ -63,7 +65,7 @@ public class BoxItem extends RealmObject implements Serializable {
     }
 
     public ItemConfig getSelectedItemConfig() {
-        return selectedItemConfig;
+        return this.selectedItemConfig;
     }
 
     public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
@@ -174,21 +176,21 @@ public class BoxItem extends RealmObject implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getPhotoFileName() {
-        return photoFileName;
-    }
+//    public String getPhotoFileName() {
+////        return photoFileName;
+////    }
+////
+////    public void setPhotoFileName(String photoFileName) {
+////        this.photoFileName = photoFileName;
+////    }
 
-    public void setPhotoFileName(String photoFileName) {
-        this.photoFileName = photoFileName;
-    }
-
-    public String getPhotoContentType() {
-        return photoContentType;
-    }
-
-    public void setPhotoContentType(String photoContentType) {
-        this.photoContentType = photoContentType;
-    }
+//    public String getPhotoContentType() {
+//        return photoContentType;
+//    }
+//
+//    public void setPhotoContentType(String photoContentType) {
+//        this.photoContentType = photoContentType;
+//    }
 
     public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
@@ -281,7 +283,7 @@ public class BoxItem extends RealmObject implements Serializable {
 
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
-              smallestItemConfig = itemConfigs.get(i);
+                smallestItemConfig = itemConfigs.get(i);
             }
         }
         return smallestItemConfig;

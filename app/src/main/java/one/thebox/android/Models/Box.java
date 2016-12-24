@@ -37,7 +37,7 @@ public class Box extends RealmObject implements Serializable {
     @SerializedName("box")
     private BoxDetail box;
     @Ignore
-    private RealmList<UserItem> allItemsInTheBox;
+    private List<UserItem> allItemsInTheBox;
 
 
     public Box() {
@@ -120,8 +120,8 @@ public class Box extends RealmObject implements Serializable {
         return box;
     }
 
-    public RealmList<UserItem> getAllItemInTheBox() {
-        if(allItemsInTheBox == null) {
+    public List<UserItem> getAllItemInTheBox() {
+        if (allItemsInTheBox == null) {
             allItemsInTheBox = new RealmList<>();
             for (UserCategory userCategory : userCategories) {
                 allItemsInTheBox.addAll(userCategory.getUserItems());
@@ -131,7 +131,7 @@ public class Box extends RealmObject implements Serializable {
         return allItemsInTheBox;
     }
 
-    public void setAllItemsInTheBox(RealmList<UserItem> allItemsInTheBox) {
+    public void setAllItemsInTheBox(List<UserItem> allItemsInTheBox) {
         this.allItemsInTheBox = allItemsInTheBox;
     }
 

@@ -266,11 +266,15 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 if (order.is_partial_payment_amount_remaining()) {
 
                     // State 2b
+                    // COD was selected while merging items to this order
+                    // OR
+                    // This order was paid online earlier and items were subscribed to an earlier order and have been added to this order to complete subscription
+
                     message.setText("Partial payment complete. Rs. " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) +
                             " were paid online. New items worth " +  Math.round(order.get_payment_amount_remaining()) + " were added to your subscription");
                     message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
                     amountTobePaidTextView.setBackgroundColor(Color.WHITE);
-                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) + "to be paid");
+                    amountTobePaidTextView.setText("Rs " + Math.round(order.get_payment_amount_remaining()) + " to be paid via COD");
                     amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

@@ -74,7 +74,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if(order!=null) {
+        if (order != null) {
             this.order = realm.copyFromRealm(order);
         }
     }
@@ -104,14 +104,20 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         } else {
             emptyCartText.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
-            proceedToPayment.setText("Total Cost: Rs "+ order.getTotalPrice() + "\n"+"Proceed to Payment");
+            proceedToPayment.setText("Total Cost: Rs " + order.getTotalPrice() + "\n" + "Proceed to Payment");
         }
 
-        userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
-        userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-        userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(userItemRecyclerAdapter);
+        if (userItemRecyclerAdapter == null) {
+            userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
+            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+            userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(userItemRecyclerAdapter);
+        } else {
+            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+            userItemRecyclerAdapter.notifyDataSetChanged();
+        }
+
     }
 
     private void initViews() {
@@ -125,7 +131,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             public void onClick(View v) {
                 RealmList<Order> orders = new RealmList<>();
                 orders.add(order);
-                startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders,false));
+                startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders, false));
             }
         });
         emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);

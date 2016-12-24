@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
@@ -145,18 +146,18 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
-        private RealmList<Category> categories;
+        private List<Category> categories;
         private boolean isSearchDetailItemFragment;
         private RealmList<UserCategory> my_catIds;
         private Box box;
 
-        public RemainingCategoryAdapter(Context context, RealmList<Category> categories, RealmList<UserCategory> my_catIds) {
+        public RemainingCategoryAdapter(Context context, List<Category> categories, RealmList<UserCategory> my_catIds) {
             super(context);
             this.categories = categories;
             this.my_catIds = my_catIds;
         }
 
-        public RemainingCategoryAdapter(Context context, RealmList<Category> categories) {
+        public RemainingCategoryAdapter(Context context, List<Category> categories) {
             super(context);
             this.categories = categories;
         }
@@ -173,7 +174,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             isSearchDetailItemFragment = searchDetailItemFragment;
         }
 
-        public RealmList<Category> getCategories() {
+        public List<Category> getCategories() {
             return categories;
         }
 

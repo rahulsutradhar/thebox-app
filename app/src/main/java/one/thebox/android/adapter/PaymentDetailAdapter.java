@@ -1,12 +1,16 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import io.realm.RealmList;
+import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -15,8 +19,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     private Context context;
     private ArrayList<Order> orders = new ArrayList<>();
-    private RealmList<UserItem> userItems = new RealmList<>();
+    private List<UserItem> userItems = new ArrayList<>();
     private boolean shouldShowPreviouslyAddedItemHeader = true;
+    private HashMap<Integer, List<UserItem>> orderIdVsUserItems = new HashMap<>();
 
     public PaymentDetailAdapter(Context context) {
         super(context);
@@ -29,10 +34,28 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     public void setOrders(ArrayList<Order> orders) {
+        this.orders.clear();
         this.orders.addAll(orders);
-        for (Order order : orders) {
-            userItems.addAll(order.getUserItems());
+        for (Order order : this.orders) {
+            List<UserItem> items = new ArrayList<>();
+            for (UserItem item : order.getUserItems()) {
+                item.setOrderId(order.getId());
+                item.setOrderItemQty(getItemQuantityForOrderId(order, item.getId()));
+                items.add(item);
+
+            }
+            orderIdVsUserItems.put(order.getId(), items);
+            userItems.addAll(items);
         }
+    }
+
+    private int getItemQuantityForOrderId(Order order, int userItemId) {
+        for (Invoice i : order.getUserItemQuantities()) {
+            if (i.getUseritem_id() == userItemId) {
+                return i.getInvoice_quantity();
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -97,7 +120,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
     }
 
     class ItemViewHolder extends ItemHolder {
-        private TextView itemText, amountText, section_heading,payment_status;
+        private TextView itemText, amountText, section_heading, payment_status;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -109,7 +132,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(UserItem userItem) {
             itemText.setText(userItem.getBoxItem().getTitle());
-            amountText.setText("Rs " + userItem.getTotalPrice());
+            amountText.setText("Rs " + userItem.getTotalPriceForAnOrder());
             if (userItem.getNextDeliveryScheduledAt() == null) {
                 itemText.setTextColor(mContext.getResources().getColor(R.color.black));
                 amountText.setTextColor(mContext.getResources().getColor(R.color.md_red_700));
@@ -129,7 +152,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
                     section_heading.setVisibility(View.VISIBLE);
                     section_heading.setText("Previous Items");
 
-                    if (orders.get(1).isPaid()){
+                    if (orders.get(1).isPaid()) {
                         payment_status.setVisibility(View.VISIBLE);
                         payment_status.setText("Payment done");
                     }
@@ -147,7 +170,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
             super(itemView);
             deliveryCharge = (TextView) itemView.findViewById(R.id.delivery_charges);
             amount = (TextView) itemView.findViewById(R.id.amount);
-            if(getTotalDeliverCharges() == 0) {
+            if (getTotalDeliverCharges() == 0) {
                 deliveryCharge.setText("Free");
                 deliveryCharge.setTextColor(context.getResources().getColor(R.color.md_green_800));
             } else {
@@ -170,9 +193,19 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
         float total = 0;
         for (Order order : orders) {
             if (!order.isPaid()) {
-                total = order.getTotalPriceOfUserItems() + total;
+                total = getTotalPriceOfOrder(order) + total;
             }
         }
+        return total;
+    }
+
+    private float getTotalPriceOfOrder(Order order) {
+        float total = 0;
+        List<UserItem> items = orderIdVsUserItems.get(order.getId());
+        if (items != null)
+            for (UserItem item : items) {
+                total = total + item.getTotalPriceForAnOrder();
+            }
         return total;
     }
 
