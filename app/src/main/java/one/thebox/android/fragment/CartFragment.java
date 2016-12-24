@@ -97,7 +97,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     private void setupRecyclerView() {
-        if (order.getUserItems() == null || order.getUserItems().isEmpty()) {
+        if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
             emptyCartText.setVisibility(View.VISIBLE);
             proceedToPayment.setVisibility(View.GONE);
             return;

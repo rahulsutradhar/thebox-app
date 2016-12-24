@@ -6,12 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
@@ -130,7 +132,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         // Required empty public constructor
     }
 
-    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds,ArrayList<Integer> user_catIds, int clickPosition, String boxName) {
+    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
         bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
@@ -165,7 +167,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
         user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
         clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
-        if ( (!catIds.isEmpty()) || (!user_catIds.isEmpty()) ) {
+        if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
             setCategories();
         }
     }
@@ -200,16 +202,18 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
     }
 
+    private View.OnClickListener fabClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+        }
+    };
+
     private void initViews() {
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
-            }
-        });
+        floatingActionButton.setOnClickListener(fabClickListener);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
         numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
@@ -636,12 +640,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (getActivity() == null) {
             return;
         }
-        if (tabEvent.getNumberOfItemsInCart() > 0) {
-            numberOfItemsInCart.setVisibility(View.VISIBLE);
-            numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
-        } else {
-            numberOfItemsInCart.setVisibility(View.GONE);
-        }
+        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
+        mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
+        mFab.setOnClickListener(fabClickListener);
+        numberOfItemsInCart.setVisibility(View.VISIBLE);
+        numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
     }
 
     @Subscribe
@@ -654,13 +657,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (previousScrollAction != showSpecialCardEvent.isVisible()) {
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
-                fabHolder.setVisibility(View.GONE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
                 fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
 
             } else {
                 specialCardView.setVisibility(View.GONE);
-                fabHolder.setVisibility(View.VISIBLE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
                 fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
             }
