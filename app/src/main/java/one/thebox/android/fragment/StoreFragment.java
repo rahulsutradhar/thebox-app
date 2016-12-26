@@ -230,7 +230,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
                                 setupRecyclerView();
-//                                storeToRealm();
+                                storeToRealm();
                             }
                         }
                     }
@@ -245,9 +245,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void storeToRealm() {
-        if(true){
-            return;
-        }
         final Realm superRealm = MyApplication.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
