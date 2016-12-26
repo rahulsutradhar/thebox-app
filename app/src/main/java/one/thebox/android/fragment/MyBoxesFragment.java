@@ -175,7 +175,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                 iterator.remove();
             } else {
-                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
+//                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
             }
         }
 
