@@ -52,11 +52,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             previousMonth = currentMonth;
         }
 
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-            mViewType = RECYCLER_VIEW_TYPE_FOOTER;
-        } else {
-            mViewType = RECYCLER_VIEW_TYPE_NORMAL;
-        }
+        mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+
     }
 
     public boolean isTimeSlotOrderAdapter() {
@@ -105,7 +102,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected FooterHolder getFooterHolder(View view) {
-        return new FooterViewHolder(view);
+        return null;
     }
 
     @Override
@@ -128,8 +125,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-        // HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        //  headerViewHolder.setViews(!isAnyItemSelected);
     }
 
     @Override
@@ -139,11 +134,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-            return orders.size() >= 1 ? 1 : 0;
-        } else {
             return orders.size();
-        }
     }
 
     @Override
@@ -163,7 +154,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getFooterLayoutId() {
-        return R.layout.footer_order_loader;
+        return 0;
     }
 
     class ItemViewHolder extends ItemHolder {
@@ -327,10 +318,4 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    class FooterViewHolder extends FooterHolder {
-
-        public FooterViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
 }

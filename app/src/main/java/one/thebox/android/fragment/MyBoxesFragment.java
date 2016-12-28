@@ -348,12 +348,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     ((MainActivity) getActivity()).addBoxesToMenu();
                     initDataChangeListener();
                 }
-                // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-                //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         });
 

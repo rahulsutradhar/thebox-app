@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -53,6 +55,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private OrdersItemAdapter ordersItemAdapter;
     private RealmList<Order> orders = new RealmList<>();
     private LinearLayout no_orders_subscribed_view_holder;
+    private GifImageView progress_bar;
 
     public UpComingOrderFragment() {
     }
@@ -77,10 +80,29 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         return rootView;
     }
 
+    private void initViews() {
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
+        progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+    }
+
+    private void initVariables() {
+        Realm realm = MyApplication.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class);
+        RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
+
+        orders.clear();
+
+        for (int i = 0; i < realmResults.size(); i++) {
+            orders.add(realmResults.get(i));
+        }
+    }
+
     private void setupRecyclerView() {
         if (orders == null || orders.isEmpty()) {
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
+
             // Adding Onclick listener directing to Store Fragment
             no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -88,19 +110,33 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                     EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
                 }
             });
-        } else {
+        }
+        else {
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(ordersItemAdapter);
+
+            // If orders are not fetched completely, showing progress bar, fetching orders and removing progress bar
+            // If orders are being updated on server after payment they are not fetched
+            if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)){
+                progress_bar.setVisibility(View.VISIBLE);
+            }
+            else if(orders.size() < 4 ){
+                progress_bar.setVisibility(View.VISIBLE);
+                new OrderHelper(new OrderHelper.OnOrdersFetched() {
+                    @Override
+                    public void OnOrdersFetched() {
+                        initVariables();
+                        setupRecyclerView();
+                        progress_bar.setVisibility(View.GONE);
+                    }
+                });
+            }
         }
     }
 
-    private void initViews() {
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -117,44 +153,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         int id = v.getId();
     }
 
-//    private void clearDatabase() {
-//        Realm realm = MyApplication.getRealm();
-//        realm.beginTransaction();
-//        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(getActivity()).getCartId()).findAll().deleteAllFromRealm();
-//        realm.commitTransaction();
-//    }
-
-    private void storeToRealm() {
-        final Realm superRealm = MyApplication.getRealm();
-        superRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(orders);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-                // Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
-            }
-        });
-    }
-
-    private void initVariables() {
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class);
-        RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
-
-        orders.clear();
-        for (int i = 0; i < realmResults.size(); i++) {
-            orders.add(realmResults.get(i));
-        }
-    }
-
     @Subscribe
     public void onUpdateUpcomingDeliveries(UpdateUpcomingDeliveriesEvent UpdateUpcomingDeliveriesEvent) {
         if (getActivity() != null) {
@@ -164,6 +162,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                     orders.clear();
                     initVariables();
                     setupRecyclerView();
+                    progress_bar.setVisibility(View.GONE);
                 }
             });
         }

@@ -58,16 +58,9 @@ public class DaySlotBottomSheet {
         daySlotAdapter = new DaySlotAdapter(context, new DaySlotAdapter.OnDaySlotSelected() {
             @Override
             public void OnDaySlotSelected(String timeSlot) {
-//                    int currentYear = 2016;
                     String dayMonth = daySlotAdapter.getDayStrings()[daySlotAdapter.getCurrentSelection()];
-//                    String[] strings = dayMonth.split(",");
-//                    int day = Integer.parseInt(strings[0]);
-//                    int month = getMonthInt(strings[1].trim());
-//                    Date date = getDate(currentYear, month, day);
                     onDayPicked.OnDayPicked(dayMonth);
                     bottomSheetDialog.dismiss();
-
-
             }
         });
         daySlotAdapter.setDayStrings(daySlots);

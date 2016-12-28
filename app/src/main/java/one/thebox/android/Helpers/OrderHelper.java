@@ -30,6 +30,14 @@ import retrofit2.Response;
  */
 
 public class OrderHelper {
+
+    private OnOrdersFetched onOrdersFetched;
+
+    public OrderHelper(OnOrdersFetched onOrdersFetched){
+        this.onOrdersFetched = onOrdersFetched;
+        getOrderAndNotifyDuplicate(false);
+    }
+
     public static void addAndNotify(RealmList<Order> orders) {
         if (orders == null) {
             return;
@@ -44,12 +52,9 @@ public class OrderHelper {
         saveToRealm(order);
     }
 
-
     public static void build_and_show_order_delivered_notification(){
         NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10,"");
-
         NotificationInfo notificationInfo = new NotificationInfo(10,"Delivery Done","Why don't you add more items for next delivery?",0,content_action);
-
         new NotificationHelper(MyApplication.getInstance(), notificationInfo).show();
         Log.v("Notification shown","Here");
     }
@@ -77,6 +82,59 @@ public class OrderHelper {
         );
     }
 
+    public void getOrderAndNotifyDuplicate(final Boolean show_notification) {
+        MyApplication.getAPIService().getMyOrders(PrefUtils.getToken(MyApplication.getInstance())).enqueue(
+                new Callback<OrdersApiResponse>() {
+                    @Override
+                    public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                addAndNotify(response.body().getOrders());
+                                if (show_notification == true) {
+                                    build_and_show_order_delivered_notification();
+                                }
+                                onOrdersFetched.OnOrdersFetched();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+
+                    }
+                }
+        );
+    }
+
+    private static void saveToRealm(final RealmList<Order> orders) {
+        Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+            realm.copyToRealmOrUpdate(orders);
+        realm.commitTransaction();
+        sendUpdateOrderItemBroadcast();
+    }
+
+
+    private static void saveToRealm(final Order order) {
+        Realm realm = MyApplication.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(order);
+        realm.commitTransaction();
+        sendUpdateOrderItemBroadcast();
+    }
+
+    public interface OnOrdersFetched {
+        void OnOrdersFetched();
+    }
+
+    private static void sendUpdateOrderItemBroadcast() {
+        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(1));
+        EventBus.getDefault().post(new UpdateCartEvent(1));
+        EventBus.getDefault().post(new UpdateOrderItemEvent());
+    }
+
+
 
     public static void getOrderAndNotifySynchronusly() {
         try {
@@ -89,40 +147,5 @@ public class OrderHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static void saveToRealm(final RealmList<Order> orders) {
-        Realm realm = MyApplication.getRealm();
-        realm.beginTransaction();
-//        if (orders.isEmpty()) {
-//            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
-//        } else {
-            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId()).findAll().deleteAllFromRealm();
-            realm.copyToRealmOrUpdate(orders);
-//        }
-        realm.commitTransaction();
-        sendUpdateOrderItemBroadcast();
-
-
-    }
-
-
-    private static void saveToRealm(final Order order) {
-        Realm realm = MyApplication.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(order);
-        realm.commitTransaction();
-        sendUpdateOrderItemBroadcast();
-
-//        }
-
-
-
-    }
-
-    private static void sendUpdateOrderItemBroadcast() {
-        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent(1));
-        EventBus.getDefault().post(new UpdateCartEvent(1));
-        EventBus.getDefault().post(new UpdateOrderItemEvent());
     }
 }
