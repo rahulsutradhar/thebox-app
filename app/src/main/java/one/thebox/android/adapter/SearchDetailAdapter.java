@@ -1223,6 +1223,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             }
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
+                                            CartHelper.removeUserItem(userItem.getId(), null);
                                             OrderHelper.addAndNotify(response.body().getOrders());
                                             EventBus.getDefault().post(new UpdateOrderItemEvent());
 
