@@ -34,7 +34,6 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
@@ -46,8 +45,6 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
-import one.thebox.android.ViewHelper.Montserrat;
-import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
@@ -143,15 +140,21 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
         initVariables();
         initViews();
-        getMyBoxes();
+
+        //getMyBoxes();
+
         setupAppBarObserver();
 
         if (!boxes.isEmpty()) {
             setupRecyclerView();
         }
+
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+
         RealmChangeManager.getInstance();
+
         initDataChangeListener();
+
         return rootLayout;
     }
 
@@ -172,13 +175,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         Iterator<Box> iterator = this.boxes.iterator();
         while (iterator.hasNext()) {
             Box box = iterator.next();
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+            if (box.getAllItemInTheBox().isEmpty()) {
                 iterator.remove();
             } else {
                 box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
             }
         }
-
     }
 
     private List<UserItem> getUserItems(int boxId) {
@@ -304,9 +306,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         progressBar.setVisibility(View.GONE);
 
                         if (response.body() != null) {
-                            if (!(boxes.equals(response.body().getBoxes()))) {
-
-                            }
                             removeChangeListener();
                             boxes.clear();
                             monthly_bill = response.body().getMonthly_bill();
@@ -404,7 +403,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     @Subscribe
     public void UpdateOrderItemEvent() {
-//        getMyBoxes();
     }
 
     @Subscribe
@@ -413,7 +411,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    getMyBoxes();
                     initVariables();
                     setupRecyclerView();
                 }

@@ -111,7 +111,6 @@ public class MyBoxTabFragment extends Fragment {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
-//        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);

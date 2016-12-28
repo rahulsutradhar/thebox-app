@@ -256,6 +256,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         initVariables();
+
         if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
             ((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
         } else {
@@ -265,10 +266,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 ((MainActivity) getActivity()).getToolbar().setTitle(query);
             }
         }
+
+
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
             setupAppBarObserver();
+
             if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
                 setupViewPagerAndTabsMyBox();
             } else {
@@ -286,6 +290,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 }
             }
         }
+
         return rootView;
     }
 

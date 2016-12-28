@@ -171,14 +171,13 @@ public class MainActivity extends BaseActivity implements
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                attachSearchResultFragment();
                 Intent intent = new Intent(MainActivity.this,UniversalSearchActivity.class);
                 startActivityForResult(intent,4511);
             }
         });
 
 
-//        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+//      new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -327,20 +326,6 @@ public class MainActivity extends BaseActivity implements
             attachExploreItemDetailFragment(selectedExploreItem);
         }
     }
-
-
-
-    /*private void attachExploreBoxes() {
-        clearBackStack();
-        setTitle("Explore Boxes");
-        getToolbar().setSubtitle(null);
-        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
-        ExploreBoxesFragment fragment = new ExploreBoxesFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
-        fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
-    }*/
 
     private void attachOrderFragment() {
         clearBackStack();
@@ -625,7 +610,6 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-//        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -636,6 +620,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0);
             }
         });
+
         ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
         ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
         int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);

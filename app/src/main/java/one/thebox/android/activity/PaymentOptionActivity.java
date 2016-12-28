@@ -212,7 +212,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
@@ -243,7 +243,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
@@ -274,7 +274,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
@@ -306,7 +306,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
-                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 0));
+                                startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {

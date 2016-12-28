@@ -230,7 +230,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
                                 setupRecyclerView();
-//                                storeToRealm();
+                                storeToRealm();
                             }
                         }
                     }
@@ -245,9 +245,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void storeToRealm() {
-        if(true){
-            return;
-        }
+
         final Realm superRealm = MyApplication.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -266,12 +264,10 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                 if (null != getActivity()) {
                     ((MainActivity) getActivity()).addBoxesToMenu();
                 }
-                // Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-                //  Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         });
 
