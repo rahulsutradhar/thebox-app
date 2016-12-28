@@ -579,7 +579,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
             }
-//            Picasso.with(MyApplication.getInstance()).load(boxItem.getSelectedItemConfig().getPhotoUrl()).fit().into(productImage);
+
             Glide.with(mContext)
                     .load(boxItem.getSelectedItemConfig().getPhotoUrl())
                     .centerCrop()
@@ -638,19 +638,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
 
-//                New implementation
-                Log.d("Box ID:", "" + boxId);
-                Log.d("SuggestedCat Size:", "" + suggestedCategories.size());
-                Log.d("POsition:", "" + getAdapterPosition());
-                Log.d("POsitionVar:", "" + position);
-                Log.d("currentPosition:", "" + currentPositionOfSuggestedCategory);
                 if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
                     setupRecyclerViewSuggestedCategories(suggestedCategories);
                     savingHolder.setVisibility(View.VISIBLE);
                 } else {
                     savingHolder.setVisibility(View.GONE);
                 }
-                // Previous implementation
+
+// Previous implementation
 //                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
 //                    setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
 //                    savingHolder.setVisibility(View.VISIBLE);
@@ -856,7 +851,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, brand,
@@ -920,7 +914,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
                                             notifyItemRemoved(getAdapterPosition());
-                                        } else {
+                                        }
+                                        else {
                                             userItems.set(arrayListPosition, userItem);
                                             if (onUserItemChange != null) {
                                                 onUserItemChange.onUserItemChange(userItems);

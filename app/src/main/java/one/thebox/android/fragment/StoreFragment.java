@@ -315,8 +315,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    initVariables();
-//                    setupRecyclerView();
                 }
             });
         }

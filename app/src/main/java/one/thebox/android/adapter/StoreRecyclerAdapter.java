@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -150,16 +152,19 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private boolean isSearchDetailItemFragment;
         private RealmList<UserCategory> my_catIds;
         private Box box;
+        private Context context;
 
         public RemainingCategoryAdapter(Context context, List<Category> categories, RealmList<UserCategory> my_catIds) {
             super(context);
             this.categories = categories;
             this.my_catIds = my_catIds;
+            this.context = context;
         }
 
         public RemainingCategoryAdapter(Context context, List<Category> categories) {
             super(context);
             this.categories = categories;
+            this.context = context;
         }
 
         public void setBox(Box box) {
@@ -212,6 +217,11 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()));
             }
 
+            // When used in Search Detail Fragment
+            if (isSearchDetailItemFragment){
+            setAnimation(itemViewHolder.itemView);
+            }
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -240,6 +250,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     }
                 }
             });
+
         }
 
         @Override
@@ -248,7 +259,12 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
         @Override
         public void onBindViewFooterHolder(FooterHolder holder, int position) {
+        }
 
+        // Animations
+        private void setAnimation(View viewToAnimate){
+            Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right);
+            viewToAnimate.startAnimation(animation);
         }
 
         @Override
@@ -280,7 +296,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             return 0;
         }
 
-
         public class ItemViewHolder extends ItemHolder {
             private TextView categoryNameTextView, noOfItems;
             private ImageView categoryIcon;
@@ -305,10 +320,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                         .crossFade()
                         .into(categoryIcon);
 
-//                Picasso.with(mContext).load(category.getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
-                //Picasso.with(mContext).load(category.getIconUrl()).resize(72,72).into(categoryIcon);
-                //Integer image_size = DisplayUtil.dpToPx(mContext, 72);
-                //Picasso.with(mContext).load(category.getIconUrl()).resize(image_size,image_size).into(categoryIcon);
             }
 
             public void setViewHolder(UserCategory userCategory) {
@@ -330,10 +341,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                         .crossFade()
                         .into(categoryIcon);
 
-//                Picasso.with(mContext).load(userCategory.getCategory().getIconUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(categoryIcon);
-                //Picasso.with(mContext).load(category.getIconUrl()).resize(72,72).into(categoryIcon);
-                //Integer image_size = DisplayUtil.dpToPx(mContext, 72);
-                //Picasso.with(mContext).load(category.getIconUrl()).resize(image_size,image_size).into(categoryIcon);
             }
         }
     }
@@ -443,13 +450,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     .crossFade()
                     .into(boxImageView);
 
-
-            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).networkPolicy(NetworkPolicy.OFFLINE).fit().into(boxImageView);
-            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(42,42).into(boxImageView);
-            //Integer image_size = DisplayUtil.dpToPx(mContext, 42);
-            //Picasso.with(mContext).load(box.getBoxDetail().getPhotoUrl()).resize(image_size,image_size).into(boxImageView);
-
-
             this.recyclerViewCategories.setVisibility(View.VISIBLE);
             this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
             RealmList<Category> categories = new RealmList<>();
@@ -460,4 +460,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
     }
+
+
+
 }

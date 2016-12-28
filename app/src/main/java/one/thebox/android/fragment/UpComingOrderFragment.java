@@ -117,12 +117,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         int id = v.getId();
     }
 
-    private void clearDatabase() {
-        Realm realm = MyApplication.getRealm();
-        realm.beginTransaction();
-        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(getActivity()).getCartId()).findAll().deleteAllFromRealm();
-        realm.commitTransaction();
-    }
+//    private void clearDatabase() {
+//        Realm realm = MyApplication.getRealm();
+//        realm.beginTransaction();
+//        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(getActivity()).getCartId()).findAll().deleteAllFromRealm();
+//        realm.commitTransaction();
+//    }
 
     private void storeToRealm() {
         final Realm superRealm = MyApplication.getRealm();

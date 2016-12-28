@@ -118,7 +118,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
 
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(boxes.get(position));
+        itemViewHolder.setViews(boxes.get(position), position);
 
         if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
@@ -135,12 +135,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
-
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
         headerViewHolder.setViews(monthly_bill, total_no_of_items);
-
     }
-
 
     @Override
     public void onBindViewFooterHolder(FooterHolder holder, int position) {
@@ -208,7 +205,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViews(Box box) {
+        public void setViews(Box box,final int position) {
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
                 this.title.setVisibility(View.GONE);
@@ -223,8 +220,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
                     @Override
                     public void onUserItemChange(List<UserItem> userItems) {
-                        boxes.get(getAdapterPosition()).setAllItemsInTheBox(userItems);
-                        setViews(boxes.get(getAdapterPosition()));
+                        boxes.get(position).setAllItemsInTheBox(userItems);
+                        setViews(boxes.get(position),position);
                     }
                 });
                 this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
