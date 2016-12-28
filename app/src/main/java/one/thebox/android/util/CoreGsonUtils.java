@@ -106,19 +106,15 @@ public class CoreGsonUtils
 		T gfromat = null;
 		RealmList<T> localArrayList = new RealmList<>();
 		try {
-
 			JSONArray jsonInner = new JSONArray(string);
+
 			int i = 0;
 			while (i < jsonInner.length()) {
 				gfromat = gson.fromJson(jsonInner.get(i).toString(), model);
 				localArrayList.add(gfromat);
 				i++;
-
 			}
-
-		} catch (Exception e)
-
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
