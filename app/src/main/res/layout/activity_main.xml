@@ -23,7 +23,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="top"
                 android:background="@color/primary"
                 android:backgroundTint="@color/primary"
@@ -34,8 +34,8 @@
                     android:id="@+id/llSpecialIcons"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_gravity="end">
+                    android:layout_gravity="end"
+                    android:orientation="horizontal">
 
 
                     <ImageView
@@ -74,8 +74,8 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:layout_marginTop="12dp"
-                android:visibility="gone"
-                android:background="@drawable/search_view_background">
+                android:background="@drawable/search_view_background"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -87,10 +87,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:paddingBottom="4dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
                         android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
                         android:src="@drawable/menu_icon" />
 
 
@@ -136,55 +136,52 @@
             android:id="@+id/frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            >
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
         </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 
-            <android.support.design.widget.NavigationView
-                android:layout_width="wrap_content"
+    <android.support.design.widget.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:layout_marginBottom="50dp"
+            android:background="@color/white"
+            app:headerLayout="@layout/drawer_header"
+            app:itemTextAppearance="@style/NavigationDrawerStyle"
+            app:itemTextColor="@color/primary_text_color"
+            app:menu="@menu/drawer">
+
+        </android.support.design.widget.NavigationView>
+
+        <LinearLayout
+            android:id="@+id/navigation_drawer_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:background="@color/green_navigation_contact_us"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="start">
-                <android.support.design.widget.NavigationView
-                    android:id="@+id/navigation_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="top"
-                    android:background="@color/white"
-                    app:headerLayout="@layout/drawer_header"
-                    app:itemTextAppearance="@style/NavigationDrawerStyle"
-                    app:itemTextColor="@color/primary_text_color"
-                    app:menu="@menu/drawer"
-                    android:layout_marginBottom="50dp"
-                    >
+                android:layout_gravity="center"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:text="@string/contact_us"
+                android:textAppearance="@style/NavigationDrawerStyle"
+                android:textColor="@color/white" />
+        </LinearLayout>
 
-                </android.support.design.widget.NavigationView>
-                <LinearLayout
-                    android:id="@+id/navigation_drawer_bottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal"
-                    android:layout_gravity="bottom"
-                    android:background="@color/green_navigation_contact_us">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/contact_us"
-                        android:textAppearance="@style/NavigationDrawerStyle"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:foregroundGravity="center"
-                        android:textColor="@color/white"
-                        />
-                </LinearLayout>
-
-            </android.support.design.widget.NavigationView>
-
-
-
+    </android.support.design.widget.NavigationView>
 
 
 </android.support.v4.widget.DrawerLayout>
