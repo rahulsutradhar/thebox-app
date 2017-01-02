@@ -596,7 +596,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 11: {
-                attachMyBoxesFragment(1);
+                attachMyBoxesFragment(2);
                 break;
             }
             case 12: {
