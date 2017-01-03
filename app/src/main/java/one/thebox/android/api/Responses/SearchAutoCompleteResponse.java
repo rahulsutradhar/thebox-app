@@ -1,6 +1,7 @@
 package one.thebox.android.api.Responses;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.Category;
@@ -19,6 +20,12 @@ public class SearchAutoCompleteResponse extends ApiResponse implements Serializa
     }
 
     public List<String> getItems() {
+        if (this.items == null || this.items.size() == 0) {
+            items = new ArrayList<>();
+            for (Category cat : categories) {
+                items.addAll(cat.getItems());
+            }
+        }
         return items;
     }
 

@@ -3,7 +3,9 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -36,6 +38,17 @@ public class Category extends RealmObject implements Serializable {
     private int noOfItems;
     @SerializedName("icon_url")
     private String iconUrl;
+    @Ignore
+    @SerializedName("items")
+    private List<String> items;
+
+    public List<String> getItems() {
+        return items;
+    }
+
+    public void setItems(List<String> items) {
+        this.items = items;
+    }
 
     public Category() {
     }

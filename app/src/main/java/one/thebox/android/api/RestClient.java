@@ -20,7 +20,7 @@ public class RestClient {
 
         Retrofit retrofit = new Retrofit.Builder()
 //                .baseUrl(BuildConfig.DEBUG ? STAGING_URL : BASE_URL)
-                .baseUrl(STAGING_URL)
+                .baseUrl(STAGING_URL_AWS)
                 //.baseUrl(BASE_URL)
                 .client(MyApplication.getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
