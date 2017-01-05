@@ -31,7 +31,7 @@ import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MontserratTextView;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
@@ -167,7 +167,7 @@ public class UniversalSearchActivity extends Activity {
         });
 
         if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", headerSearch);
+            new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", headerSearch);
         }
 
 

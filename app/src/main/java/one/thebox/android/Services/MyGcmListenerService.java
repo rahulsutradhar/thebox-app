@@ -1,11 +1,15 @@
 package one.thebox.android.Services;
 
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.freshdesk.hotline.Hotline;
+import com.freshdesk.hotline.HotlineNotificationConfig;
 import com.google.android.gms.gcm.GcmListenerService;
 
+import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.ActionExecuter;
 import one.thebox.android.util.Constants;
@@ -32,6 +36,16 @@ public class MyGcmListenerService extends GcmListenerService {
 
 
         Hotline instance = Hotline.getInstance(this);
+        HotlineNotificationConfig notificationConfig = new HotlineNotificationConfig()
+                .setNotificationSoundEnabled(true)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(R.mipmap.ic_launcher)
+                .launchDeepLinkTargetOnNotificationClick(true)
+                .launchActivityOnFinish(MainActivity.class.getName())
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        Hotline.getInstance(getApplicationContext()).setNotificationConfig(notificationConfig);
+
         if(instance.isHotlineNotification(data)) {
             instance.handleGcmMessage(data);
             return;

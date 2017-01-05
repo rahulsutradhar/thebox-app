@@ -26,7 +26,7 @@ import one.thebox.android.util.PrefUtils;
  * Created by 32 on 30-05-2016.
  */
 
-public class ShowCaseHelper {
+public class ShowcaseHelper {
 
     private Activity context;
     private int id;
@@ -40,29 +40,29 @@ public class ShowCaseHelper {
     private int bottomPadding;
     private int rightPadding;
 
-    public ShowCaseHelper(Activity context, int id) {
+    public ShowcaseHelper(Activity context, int id) {
         this.context = context;
         this.id = id;
     }
 
 
-    public ShowCaseHelper setTopPadding(int topPadding) {
+    public ShowcaseHelper setTopPadding(int topPadding) {
         this.topPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), topPadding);
         return this;
     }
 
-    public ShowCaseHelper setLeftPadding(int leftPadding) {
+    public ShowcaseHelper setLeftPadding(int leftPadding) {
         this.leftPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), leftPadding);
         return this;
     }
 
-    public ShowCaseHelper setBottomPadding(int bottomPadding) {
+    public ShowcaseHelper setBottomPadding(int bottomPadding) {
         this.bottomPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), bottomPadding);
         return this;
     }
 
 
-    public ShowCaseHelper setRightPadding(int rightPadding) {
+    public ShowcaseHelper setRightPadding(int rightPadding) {
         this.rightPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), rightPadding);
         return this;
     }
@@ -75,7 +75,7 @@ public class ShowCaseHelper {
         this.shouldBeOnMiddle = shouldBeOnMiddle;
     }
 
-    public ShowCaseHelper show(final String title, final String description, final View view) {
+    public ShowcaseHelper show(final String title, final String description, final View view) {
 
         if (PrefUtils.getBoolean(context, PREF_SHOW_CASE_STATUS + id, true)) {
             build(title, description, view);

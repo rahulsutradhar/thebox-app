@@ -54,7 +54,7 @@ import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity implements
 
 
         if (!RestClient.is_in_development){
-                ShowCaseHelper.removeAllTutorial();
+                ShowcaseHelper.removeAllTutorial();
 
         }
 
@@ -178,7 +178,7 @@ public class MainActivity extends BaseActivity implements
         });
 
 
-//        new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+//        new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {

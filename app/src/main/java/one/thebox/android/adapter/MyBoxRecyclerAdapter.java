@@ -31,7 +31,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Montserrat;
 import one.thebox.android.ViewHelper.MontserratTextView;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
@@ -119,12 +119,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         itemViewHolder.setViews(boxes.get(position));
 
         if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
-                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+            new ShowcaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
+                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
                             PrefUtils.putBoolean(MyApplication.getInstance(), "home_tutorial", false);
-                            new ShowCaseHelper((Activity) mContext, 3)
+                            new ShowcaseHelper((Activity) mContext, 3)
                                     .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
                         }
                     });

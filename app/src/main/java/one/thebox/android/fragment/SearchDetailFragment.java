@@ -53,7 +53,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -597,11 +597,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
         if (!RestClient.is_in_development) {
-            new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+            new ShowcaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
+                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
+                            new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                             tabLayout.setScrollPosition(clickPosition, 0, true);
                             shouldMoveMore = false;
                         }
