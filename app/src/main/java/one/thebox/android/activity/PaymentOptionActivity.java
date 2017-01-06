@@ -18,6 +18,7 @@ import com.razorpay.Checkout;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -207,12 +208,23 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                // Updating "Behaviour Keys" Linked to Order Model
+                                PrefUtils.set_model_being_updated_on_server_details(
+                                        MyApplication.getInstance(),
+                                        Constants.PREF_IS_ORDER_IS_LOADING,
+                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
+                                        (new Date(System.currentTimeMillis())).getTime()
+                                );
+
+
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
@@ -238,12 +250,23 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                // Updating "Behaviour Keys" Linked to Order Model
+                                PrefUtils.set_model_being_updated_on_server_details(
+                                        MyApplication.getInstance(),
+                                        Constants.PREF_IS_ORDER_IS_LOADING,
+                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
+                                        (new Date(System.currentTimeMillis())).getTime()
+                                );
+
+
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
                                 //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
@@ -269,14 +292,24 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                // Updating "Behaviour Keys" Linked to Order Model
+                                PrefUtils.set_model_being_updated_on_server_details(
+                                        MyApplication.getInstance(),
+                                        Constants.PREF_IS_ORDER_IS_LOADING,
+                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
+                                        (new Date(System.currentTimeMillis())).getTime()
+                                );
+
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -301,14 +334,24 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                // Updating "Behaviour Keys" Linked to Order Model
+                                PrefUtils.set_model_being_updated_on_server_details(
+                                    MyApplication.getInstance(),
+                                    Constants.PREF_IS_ORDER_IS_LOADING,
+                                    Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
+                                    (new Date(System.currentTimeMillis())).getTime()
+                                );
+
                                 CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();

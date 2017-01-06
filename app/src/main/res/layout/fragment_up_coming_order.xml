@@ -19,7 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
     <LinearLayout
         android:id="@+id/no_orders_subscribed_view_holder"
         android:layout_width="match_parent"

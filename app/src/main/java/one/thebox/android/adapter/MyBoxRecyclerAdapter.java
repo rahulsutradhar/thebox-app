@@ -121,13 +121,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         itemViewHolder.setViews(boxes.get(position), position);
 
         if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowCaseHelper((Activity) mContext, 0).show("Search", "Search for an item, brand or category", ((MainActivity) mContext).getSearchView())
+            new ShowCaseHelper((Activity) mContext, 3)
+                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
                     .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
                             PrefUtils.putBoolean(MyApplication.getInstance(), "home_tutorial", false);
-                            new ShowCaseHelper((Activity) mContext, 3)
-                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
                         }
                     });
         }

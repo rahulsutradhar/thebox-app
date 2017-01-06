@@ -176,8 +176,6 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-
-//      new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -547,13 +545,11 @@ public class MainActivity extends BaseActivity implements
         super.onNewIntent(intent);
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
-/*
-                attachExploreBoxes();
-*/
                 break;
             }
 
-            //Attaching Myitems fragment, Called after payment is confirmed
+            //Attaching Myitems fragment
+            //Called after payment is confirmed
             case 1: {
                 attachMyBoxesFragment(0,true);
                 break;
@@ -573,7 +569,6 @@ public class MainActivity extends BaseActivity implements
                 attachSearchDetailFragment
                         (CoreGsonUtils.fromJson
                                 (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), SearchResult.class));
-
                 break;
             }
             case 5: {
@@ -603,6 +598,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(2,false);
                 break;
             }
+
         }
     }
 

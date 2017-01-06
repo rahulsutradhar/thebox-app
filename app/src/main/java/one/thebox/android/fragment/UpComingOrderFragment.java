@@ -49,7 +49,10 @@ import retrofit2.Response;
 
 public class UpComingOrderFragment extends Fragment implements View.OnClickListener {
 
-    ArrayList<Integer> orderIds = new ArrayList<>();
+    //Variables
+    public int scene_number = 0;
+
+    //Views
     private View rootView;
     private RecyclerView recyclerView;
     private OrdersItemAdapter ordersItemAdapter;
@@ -74,71 +77,78 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
-        initViews();
         initVariables();
-        setupRecyclerView();
+        initViews();
         return rootView;
-    }
-
-    private void initViews() {
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
-        progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
     }
 
     private void initVariables() {
         Realm realm = MyApplication.getRealm();
         RealmQuery<Order> query = realm.where(Order.class);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
-
         orders.clear();
-
         for (int i = 0; i < realmResults.size(); i++) {
             orders.add(realmResults.get(i));
+        }
+
+        //Setting scenes
+        if (orders.isEmpty()){
+            //No data available;show static content
+            //New User
+            scene_number = -1;
+        }
+        //Atleast one delivery scheduled by the user
+        else if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)) {
+            if (PrefUtils.should_i_fetch_model_data_from_server(MyApplication.getInstance(),0)) {
+                OrderHelper.getOrderAndNotify(false);
+                PrefUtils.clean_model_being_updated_on_server_details(MyApplication.getInstance(), 0);
+            }
+            scene_number = 1;
+        }
+        else if ((orders.size() < 4)){
+            scene_number = 1;
+        }
+        else {
+            scene_number = 0;
+        }
+    }
+
+    private void initViews() {
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
+        progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+
+        switch(scene_number){
+            case -1:{
+                no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
+                    }
+                });
+                break;
+            }
+            case 0:{
+                setupRecyclerView();
+                progress_bar.setVisibility(View.GONE);
+                break;
+            }
+            case 1:{
+                progress_bar.setVisibility(View.VISIBLE);
+                setupRecyclerView();
+                break;
+            }
         }
     }
 
     private void setupRecyclerView() {
-
-        //New User
-        if (orders.isEmpty()) {
-            no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-            // Adding Onclick listener directing to Store Fragment
-            no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
-                }
-            });
-        }
-
-        //Atleast one delivery scheduled by the user
-        else {
-            recyclerView.setVisibility(View.VISIBLE);
-            ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(ordersItemAdapter);
-
-            // If orders are not fetched completely, showing progress bar, fetching orders and removing progress bar
-            // If orders are being updated on server after payment they are not fetched
-            if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)){
-                progress_bar.setVisibility(View.VISIBLE);
-            }
-            // Just in case orders are not there
-            // Crash or
-            // Process removed while orders were being downloaded
-            else if(orders.size() < 4 ){
-                progress_bar.setVisibility(View.VISIBLE);
-                //Fetching Orders and Removing Loader
-                OrderHelper.getOrderAndNotify(false);
-                initVariables();
-                setupRecyclerView();
-                progress_bar.setVisibility(View.GONE);
-            }
-        }
+        recyclerView.setVisibility(View.VISIBLE);
+        ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(ordersItemAdapter);
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -163,8 +173,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 @Override
                 public void run() {
                     initVariables();
-                    setupRecyclerView();
-                    progress_bar.setVisibility(View.GONE);
+                    initViews();
                 }
             });
         }

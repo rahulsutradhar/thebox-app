@@ -166,8 +166,15 @@ public class UniversalSearchActivity extends Activity {
             }
         });
 
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", headerSearch);
+        if (PrefUtils.getBoolean(MyApplication.getInstance(), "search_bar_tutorial", true) && (!RestClient.is_in_development)) {
+            new ShowCaseHelper(this, 0)
+                    .show("Search", "Search for an item, brand or category", headerSearch)
+                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                        @Override
+                        public void onComplete() {
+                            PrefUtils.putBoolean(MyApplication.getInstance(), "search_bar_tutorial", false);
+                        }
+                    });;
         }
 
 

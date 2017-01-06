@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DateTimeUtil {
     private static String TAG = DateTimeUtil.class.getSimpleName();
+    private static final long fetch_after_miliseconds = 20000;
 
     public static String getNowDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -76,6 +77,11 @@ public class DateTimeUtil {
         cal.add(Calendar.HOUR_OF_DAY, hours);
         cal.getTime();
         return cal.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+    }
+
+    public static boolean should_i_fetch_model_data_from_server(long timestamp){
+        long time_difference = (new Date(System.currentTimeMillis())).getTime() - timestamp;
+        return ( ((time_difference > fetch_after_miliseconds))? true : false );
     }
 
 }

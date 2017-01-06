@@ -16,14 +16,14 @@ public class RestClient {
     private static final String PROD_URL_AWS = "http://api.thebox.one/";
     private static final String PROD_URL_HEROKU = "https://theboxprod.herokuapp.com/";
 
-    public static final boolean is_in_development = false;
+    public static final boolean is_in_development = true;
     private APIService apiService;
 
     public RestClient() {
 
         Retrofit retrofit = new Retrofit.Builder()
                 //.baseUrl(BuildConfig.DEBUG ? STAGING_URL_AWS : PROD_URL_AWS)
-                .baseUrl(PROD_URL_AWS)
+                .baseUrl(STAGING_URL_AWS)
                 //.baseUrl(BASE_URL)
                 .client(MyApplication.getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
