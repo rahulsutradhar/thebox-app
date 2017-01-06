@@ -5,8 +5,7 @@ package one.thebox.android.Events;
  */
 
 public class UpdateUpcomingDeliveriesEvent {
-    int temp;
-    public UpdateUpcomingDeliveriesEvent(int temp) {
-        this.temp = temp;
+
+    public UpdateUpcomingDeliveriesEvent() {
     }
 }

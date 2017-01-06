@@ -37,6 +37,7 @@ import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.PaymentSelectorFragment;
 import one.thebox.android.util.Constants;
@@ -213,7 +214,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -244,7 +245,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -275,7 +276,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -307,7 +308,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 startActivity(new Intent(PaymentOptionActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-                                startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
+                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -332,10 +333,16 @@ public class PaymentOptionActivity extends AppCompatActivity {
         /**
          * Put your key id generated in Razorpay dashboard here
          */
-        String your_key_id = "rzp_test_R4R82jOEbvmNDW";
+        String test_key_id = "rzp_test_R4R82jOEbvmNDW";
+        String live_key_id = "rzp_live_e1nfI8frHunaFM";
 
         Checkout razorpayCheckout = new Checkout();
-        razorpayCheckout.setKeyID(your_key_id);
+        if (RestClient.is_in_development) {
+            razorpayCheckout.setKeyID(test_key_id);
+        }
+        else{
+            razorpayCheckout.setKeyID(live_key_id);
+        }
 
         /**
          * Image for checkout form can passed as reference to a drawable

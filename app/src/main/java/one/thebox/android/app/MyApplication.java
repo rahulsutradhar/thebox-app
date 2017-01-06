@@ -48,7 +48,6 @@ public class MyApplication extends Application {
     private static Realm realm;
     private static Context mContext;
     private static RealmConfiguration realmConfiguration;
-    private static ErrorReporter errorReporterSingleton;
     public final String TAG = MyApplication.class.getSimpleName();
 
     private static RestClient getRestClient() {
@@ -71,12 +70,9 @@ public class MyApplication extends Application {
     }
 
     public static RealmConfiguration getRealmConfiguration() {
-//        if (realmConfiguration == null) {
         realmConfiguration = new RealmConfiguration.Builder(getInstance()).name("thebox.realm")
                 .deleteRealmIfMigrationNeeded().schemaVersion(6).build();
         return realmConfiguration;
-//        }
-//        return realmConfiguration;
     }
 
     public static synchronized MyApplication getInstance() {
@@ -118,18 +114,8 @@ public class MyApplication extends Application {
         Fabric.with(this, new Crashlytics());
         myApplication = this;
         mContext = getApplicationContext();
-//        ACRA.init(this);
-//        //LeakCanary.install(this);
-//        ACRA.getErrorReporter().setReportSender(new HockeySenderHelper());
-        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
-//        Picasso.Builder builder = new Picasso.Builder(this);
-//        com.squareup.picasso.Cache memoryCache = new LruCache(24000);
-//
-//        builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
-//        Picasso built = builder.memoryCache(memoryCache).build();
-//        Picasso.setSingletonInstance(built);
 
-//        Stetho.initializeWithDefaults(this);
+        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
         getRealm();
 

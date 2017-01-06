@@ -38,6 +38,8 @@ public class MyBoxTabFragment extends Fragment {
     private View rootView;
     private GifImageView progressBar;
     private LinearLayout holder;
+    private boolean show_loader;
+    private int default_position = 1;
 
     public MyBoxTabFragment() {
     }
@@ -52,11 +54,13 @@ public class MyBoxTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
 
-        Integer default_position = getArguments().getInt("default_position");
+        default_position = getArguments().getInt("default_position");
+        show_loader = getArguments().getBoolean("show_loader");
+
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_box_tabs, container, false);
             initViews();
-            setupViewPagerAndTabs(default_position);
+            setupViewPagerAndTabs(default_position,show_loader);
         }
         return rootView;
     }
@@ -78,16 +82,33 @@ public class MyBoxTabFragment extends Fragment {
         super.onDetach();
     }
 
-    private void setupViewPagerAndTabs(int default_position) {
+    private void setupViewPagerAndTabs(int default_position,boolean show_loader) {
         if (getActivity() == null) {
             return;
         }
         progressBar.setVisibility(View.GONE);
         holder.setVisibility(View.VISIBLE);
+
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(new MyBoxesFragment(), "My Items");
-        adapter.addFragment(new StoreFragment(), "Store");
-        adapter.addFragment(UpComingOrderFragment.newInstance(), "My Deliveries");
+        Bundle args = new Bundle();
+        args.putBoolean("show_loader", show_loader);
+
+        //Attaching "MyItems"
+        MyBoxesFragment my_box_fragment = new MyBoxesFragment();
+        my_box_fragment.setArguments(args);
+        adapter.addFragment( my_box_fragment , "My Items");
+
+        //Attaching Store
+        StoreFragment store_fragment = new StoreFragment();
+        store_fragment.setArguments(args);
+        adapter.addFragment(store_fragment, "Store");
+
+        //Attaching Deliveries
+        UpComingOrderFragment upcoming_deliveries_fragment = new UpComingOrderFragment();
+        upcoming_deliveries_fragment.setArguments(args);
+        adapter.addFragment(upcoming_deliveries_fragment, "My Deliveries");
+
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(default_position);

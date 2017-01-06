@@ -21,7 +21,6 @@ import org.greenrobot.eventbus.Subscribe;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;

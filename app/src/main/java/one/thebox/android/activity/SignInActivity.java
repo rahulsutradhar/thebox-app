@@ -133,7 +133,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     @OnNeverAskAgain({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void showNeverAskForCamera() {
-        Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

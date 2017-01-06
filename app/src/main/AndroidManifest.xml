@@ -162,7 +162,7 @@
         <activity android:name=".activity.TermsOfUserActivity"></activity>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="665cdae5acaaa2e82414353e279c0dcb34ae5b03" />
+            android:value="b64cedb83163da1ef4b796db1394544fda44f190" />
         <activity android:name=".activity.ContactUsActivity" />
     </application>
 

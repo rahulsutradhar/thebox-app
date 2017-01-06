@@ -74,10 +74,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private LinearLayout no_item_subscribed_view_holder;
-    private User user;
     private String monthly_bill;
     private String total_no_of_items;
+    private boolean show_loader_and_call = false;
+
+
     private boolean isLocallyUpdated;
+    private boolean has_one_or_more_subscribed_items = false;
+    private boolean show_loader = false;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -125,8 +129,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        initVariables();
-//                        setupRecyclerView();
                     }
                 });
             }
@@ -138,16 +140,21 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+
         initVariables();
+
         initViews();
 
-        //getMyBoxes();
+        //Fetching arguments
+        show_loader_and_call = getArguments().getBoolean("show_loader");
+
+        if (show_loader_and_call){
+            getMyBoxes();
+        }
 
         setupAppBarObserver();
 
-        if (!boxes.isEmpty()) {
-            setupRecyclerView();
-        }
+        setupRecyclerView();
 
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
 
@@ -159,7 +166,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private void initVariables() {
-        this.user = PrefUtils.getUser(this.getActivity());
+
+        //Setting up all the boxes
         Realm realm = MyApplication.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
@@ -168,6 +176,16 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         this.boxes.clear();
         this.boxes.addAll(realm.copyFromRealm(boxes));
         setUpBoxes();
+
+        //Checking if useritems are present
+        if (realm.where(UserItem.class).equalTo("stillSubscribed", true).isNotNull("nextDeliveryScheduledAt").findAll().size() > 0){
+            has_one_or_more_subscribed_items = true;
+        }
+        else{
+            has_one_or_more_subscribed_items = false;
+        }
+
+
     }
 
     private void setUpBoxes() {
@@ -178,7 +196,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             if (box.getAllItemInTheBox().isEmpty()) {
                 iterator.remove();
             } else {
-//                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
             }
         }
     }
@@ -204,8 +221,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
 
     private void setupRecyclerView() {
-        user = PrefUtils.getUser(this.getActivity());
-        if (user.getAddresses() == null || user.getAddresses().isEmpty() || boxes == null || boxes.size() == 0) {
+
+        // No items are subscribed
+        if (!has_one_or_more_subscribed_items) {
             no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
             fabHolder.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
@@ -218,27 +236,30 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
                 }
             });
-        } else {
-            progressBar.setVisibility(View.GONE);
-            fabHolder.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.VISIBLE);
-
-            if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
-                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                recyclerView.setLayoutManager(linearLayoutManager);
-                myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-                myBoxRecyclerAdapter.setBoxes(boxes);
-                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                recyclerView.setAdapter(myBoxRecyclerAdapter);
-            } else {
-                myBoxRecyclerAdapter.setBoxes(boxes);
-                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                myBoxRecyclerAdapter.notifyDataSetChanged();
-            }
-
         }
+
+        //One or more items are subscribed
+        else {
+                progressBar.setVisibility(View.GONE);
+                fabHolder.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
+
+                if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
+                    final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                    myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+                    myBoxRecyclerAdapter.setBoxes(boxes);
+                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                    recyclerView.setAdapter(myBoxRecyclerAdapter);
+                } else {
+                    myBoxRecyclerAdapter.setBoxes(boxes);
+                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                    myBoxRecyclerAdapter.notifyDataSetChanged();
+                }
+
+            }
     }
 
     private void initViews() {

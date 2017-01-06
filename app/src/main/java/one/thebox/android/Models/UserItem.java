@@ -26,7 +26,7 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("next_delivery_scheduled_at")
     private String nextDeliveryScheduledAt;
     @SerializedName("still_subscribed")
-    private String stillSubscribed;
+    private boolean stillSubscribed;
     @SerializedName("itemconfig_id")
     private int selectedConfigId;
     @SerializedName("item")
@@ -59,7 +59,7 @@ public class UserItem extends RealmObject implements Serializable {
     public UserItem() {
     }
 
-    public UserItem(int id, int userCategoryId, int selectedItemId, int userId, int quantity, String nextDeliveryScheduledAt, String stillSubscribed, int selectedConfigId, BoxItem boxItem) {
+    public UserItem(int id, int userCategoryId, int selectedItemId, int userId, int quantity, String nextDeliveryScheduledAt, boolean stillSubscribed, int selectedConfigId, BoxItem boxItem) {
         this.id = id;
         this.userCategoryId = userCategoryId;
         this.selectedItemId = selectedItemId;
@@ -87,7 +87,7 @@ public class UserItem extends RealmObject implements Serializable {
                 && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getUserId()
                 && quantity == userItem.getQuantity()
                 && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
-                && stillSubscribed.equals(userItem.getStillSubscribed())
+                && stillSubscribed == userItem.getStillSubscribed()
                 && selectedConfigId == userItem.getSelectedConfigId()
                 && boxItem.equals(userItem.getBoxItem())
                 && cartId == userItem.getCartId();
@@ -143,11 +143,11 @@ public class UserItem extends RealmObject implements Serializable {
         this.nextDeliveryScheduledAt = nextDeliveryScheduledAt;
     }
 
-    public String getStillSubscribed() {
+    public boolean getStillSubscribed() {
         return stillSubscribed;
     }
 
-    public void setStillSubscribed(String stillSubscribed) {
+    public void setStillSubscribed(boolean stillSubscribed) {
         this.stillSubscribed = stillSubscribed;
     }
 

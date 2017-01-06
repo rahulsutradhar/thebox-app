@@ -378,7 +378,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
-                            Toast.makeText(getContext(), finalView.getMeasuredWidth(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getContext(), finalView.getMeasuredWidth(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (NoSuchFieldException e) {

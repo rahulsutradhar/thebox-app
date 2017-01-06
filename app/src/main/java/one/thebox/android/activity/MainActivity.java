@@ -147,16 +147,16 @@ public class MainActivity extends BaseActivity implements
         if(extras !=null) {
             if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 11)
             {
-                attachMyBoxesFragment(2);
+                attachMyBoxesFragment(2,false);
             }
             else if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 10)
             {
-                attachMyBoxesFragment(1);
+                attachMyBoxesFragment(1,false);
             }
         }
         else
         {
-            attachMyBoxesFragment(1);
+            attachMyBoxesFragment(1,false);
         }
 
         initCart();
@@ -290,7 +290,7 @@ public class MainActivity extends BaseActivity implements
     public boolean handleDrawer(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(0,false);
                 return true;
             case R.id.my_account:
                 attachMyAccountFragment();
@@ -359,12 +359,13 @@ public class MainActivity extends BaseActivity implements
         drawerLayout.closeDrawers();
     }
 
-    private void attachMyBoxesFragment(int default_position) {
+    private void attachMyBoxesFragment(int default_position,boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
 
         Bundle bundle = new Bundle();
         bundle.putInt("default_position", default_position);
+        bundle.putBoolean("show_loader", show_loader);
         fragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
@@ -373,7 +374,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragmentWithBackStack() {
-        attachMyBoxesFragment(1);
+        attachMyBoxesFragment(1,false);
     }
 
     private void attachSearchResultFragment() {
@@ -394,7 +395,6 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-//        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
@@ -404,7 +404,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(0,false);
             }
         });
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
@@ -428,7 +428,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(0,false);
             }
         });
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
@@ -553,15 +553,15 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
 
-            //Attaching Myitems fragment
+            //Attaching Myitems fragment, Called after payment is confirmed
             case 1: {
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(0,true);
                 break;
             }
 
             //Attaching MyDeliveries fragment
             case 2: {
-                attachMyBoxesFragment(2);
+                attachMyBoxesFragment(2,false);
                 break;
             }
 
@@ -592,15 +592,15 @@ public class MainActivity extends BaseActivity implements
 
             //Notifications
             case 10: {
-                attachMyBoxesFragment(1);
+                attachMyBoxesFragment(1,false);
                 break;
             }
             case 11: {
-                attachMyBoxesFragment(2);
+                attachMyBoxesFragment(2,false);
                 break;
             }
             case 12: {
-                attachMyBoxesFragment(2);
+                attachMyBoxesFragment(2,false);
                 break;
             }
         }
@@ -617,7 +617,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0);
+                attachMyBoxesFragment(0,false);
             }
         });
 

@@ -150,7 +150,8 @@
             android:layout_height="72dp"
             android:layout_centerInParent="true"
             android:padding="8dp"
-            android:src="@drawable/loader" />
+            android:src="@drawable/loader"
+            android:visibility="gone"/>
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

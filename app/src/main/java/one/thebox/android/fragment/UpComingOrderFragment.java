@@ -99,10 +99,11 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void setupRecyclerView() {
-        if (orders == null || orders.isEmpty()) {
+
+        //New User
+        if (orders.isEmpty()) {
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-
             // Adding Onclick listener directing to Store Fragment
             no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -111,8 +112,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 }
             });
         }
+
+        //Atleast one delivery scheduled by the user
         else {
-            no_orders_subscribed_view_holder.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -123,16 +125,16 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)){
                 progress_bar.setVisibility(View.VISIBLE);
             }
+            // Just in case orders are not there
+            // Crash or
+            // Process removed while orders were being downloaded
             else if(orders.size() < 4 ){
                 progress_bar.setVisibility(View.VISIBLE);
-                new OrderHelper(new OrderHelper.OnOrdersFetched() {
-                    @Override
-                    public void OnOrdersFetched() {
-                        initVariables();
-                        setupRecyclerView();
-                        progress_bar.setVisibility(View.GONE);
-                    }
-                });
+                //Fetching Orders and Removing Loader
+                OrderHelper.getOrderAndNotify(false);
+                initVariables();
+                setupRecyclerView();
+                progress_bar.setVisibility(View.GONE);
             }
         }
     }
@@ -153,13 +155,13 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         int id = v.getId();
     }
 
+    // Called after Constants.PREF_IS_ORDER_IS_LOADING is switched from false to true
     @Subscribe
     public void onUpdateUpcomingDeliveries(UpdateUpcomingDeliveriesEvent UpdateUpcomingDeliveriesEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    orders.clear();
                     initVariables();
                     setupRecyclerView();
                     progress_bar.setVisibility(View.GONE);
@@ -183,6 +185,5 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
-        onUpdateUpcomingDeliveries(new UpdateUpcomingDeliveriesEvent(3));
     }
 }
