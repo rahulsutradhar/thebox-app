@@ -41,9 +41,11 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.adapter.StoreRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -231,6 +233,11 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 setupRecyclerView();
                                 storeToRealm();
                             }
+                        }
+                        else if (response.raw().code() == 401){
+                            (new AccountManager(getActivity()))
+                                    .delete_account_data();
+                            getActivity().finish();
                         }
                     }
 

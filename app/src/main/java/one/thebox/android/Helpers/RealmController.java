@@ -30,4 +30,10 @@ public class RealmController {
         }
         realm.commitTransaction();
     }
+
+    public static void clean_db(){
+        MyApplication.getRealm().close();
+        Realm.deleteRealm(MyApplication.getRealmConfiguration());
+        MyApplication.setRealm(null);
+    }
 }

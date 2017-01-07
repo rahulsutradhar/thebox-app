@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import one.thebox.android.Helpers.RealmController;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
@@ -25,6 +26,7 @@ import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.activity.UpdateProfileActivity;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +53,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        initvariables();
         ((MainActivity) getActivity()).getToolbar().setTitle("My Account");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
@@ -60,8 +64,26 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         return rootView;
     }
 
-    private void setupViews() {
+    private void initvariables(){
         user = PrefUtils.getUser(getActivity());
+    }
+
+    private void initViews() {
+        showAllAddressesButton = (TextView) rootView.findViewById(R.id.button_show_all_address);
+        showAllOrdersButton = (TextView) rootView.findViewById(R.id.button_show_all_orders);
+        showAllAddressesButton.setOnClickListener(this);
+        showAllOrdersButton.setOnClickListener(this);
+        userName = (TextView) rootView.findViewById(R.id.user_name_text_view);
+        email = (TextView) rootView.findViewById(R.id.email_text_view);
+        phoneNumber = (TextView) rootView.findViewById(R.id.phone_text_view);
+        address = (TextView) rootView.findViewById(R.id.address_text_view);
+        lastOrder = (TextView) rootView.findViewById(R.id.last_order_text_view);
+        signOut = (TextView) rootView.findViewById(R.id.button_sign_out);
+        signOut.setOnClickListener(this);
+    }
+
+    private void setupViews() {
+
         userName.setText(user.getName());
         email.setText(user.getEmail());
         phoneNumber.setText(user.getPhoneNumber());
@@ -85,22 +107,6 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             }
         }
     }
-
-
-    private void initViews() {
-        showAllAddressesButton = (TextView) rootView.findViewById(R.id.button_show_all_address);
-        showAllOrdersButton = (TextView) rootView.findViewById(R.id.button_show_all_orders);
-        showAllAddressesButton.setOnClickListener(this);
-        showAllOrdersButton.setOnClickListener(this);
-        userName = (TextView) rootView.findViewById(R.id.user_name_text_view);
-        email = (TextView) rootView.findViewById(R.id.email_text_view);
-        phoneNumber = (TextView) rootView.findViewById(R.id.phone_text_view);
-        address = (TextView) rootView.findViewById(R.id.address_text_view);
-        lastOrder = (TextView) rootView.findViewById(R.id.last_order_text_view);
-        signOut = (TextView) rootView.findViewById(R.id.button_sign_out);
-        signOut.setOnClickListener(this);
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -131,14 +137,9 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                             @Override
                             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                                 dialog.dismiss();
-                                PrefUtils.removeAll(getActivity());
-                                startActivity(new Intent(getActivity(), SplashActivity.class));
+                                (new AccountManager(getActivity()))
+                                        .delete_account_data();
                                 getActivity().finish();
-                                MyApplication.getRealm().close();
-                                Realm.deleteRealm(MyApplication.getRealmConfiguration());
-                                MyApplication.setRealm(null);
-
-
                             }
 
                             @Override
@@ -159,9 +160,12 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                 if (addresses == null || addresses.isEmpty()) {
                     addresses = new RealmList<Address>();
                 }
+
                 addresses.add(address);
                 user.setAddresses(addresses);
                 PrefUtils.saveUser(getActivity(), user);
+
+                initvariables();
                 setupViews();
             }
         }).show();

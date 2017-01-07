@@ -223,11 +223,11 @@ public class AddressBottomSheet {
                                 address.setId(response.body().getAddress().getId());
                                 onAddressAdded.onAddressAdded(address);
                                 Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            } else {
+                            }
+                            else {
                                 Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
                         }
-
                     }
 
                     @Override
