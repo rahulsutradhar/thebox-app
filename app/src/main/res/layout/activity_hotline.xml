@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:gravity="center"
     android:orientation="vertical">
 
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:background="@color/primary"
         android:backgroundTint="@color/primary"
@@ -24,62 +23,40 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
         android:orientation="vertical"
-        android:weightSum="3"
-        android:background="#009FFB">
-
+        android:background="@color/white">
 
         <TextView
             android:id="@+id/txtContactSupport"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_height="wrap_content"
             android:padding="10dp"
             android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:text="Contact Support" />
+            android:textColor="@color/black"
+            android:text="@string/chat" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/white"/>
+            android:layout_height="1dp"
+            android:background="@color/dim_gray"/>
 
 
         <TextView
             android:id="@+id/txtFaq"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
             android:layout_below="@id/txtContactSupport"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="FAQ" />
+            android:text="@string/faq"
+            android:textSize="20sp"
+            android:textColor="@color/black" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/white"/>
-
-        <TextView
-            android:id="@+id/txtFaqOptions"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@id/txtFaq"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:padding="10dp"
-            android:text="FAQ Options" />
-
+            android:layout_height="1dp"
+            android:background="@color/dim_gray"/>
 
 
     </LinearLayout>

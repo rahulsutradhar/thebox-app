@@ -37,11 +37,8 @@ public class HotLineActivity extends BaseActivity {
 
     @BindView(R.id.txtFaq)
     TextView txtFaq;
-    @BindView(R.id.txtFaqOptions)
-    TextView txtFaqOptions;
 
     private User user;
-
     static final String TAG = "THEBOX";
 
 
@@ -52,7 +49,7 @@ public class HotLineActivity extends BaseActivity {
 
         setContentView(R.layout.activity_hotline);
         ButterKnife.bind(this);
-        setTitle("Chat");
+        setTitle("Talk to us");
         user = PrefUtils.getUser(this);
 
         HotlineUser hlUser=Hotline.getInstance(getApplicationContext()).getUser();
@@ -64,36 +61,27 @@ public class HotLineActivity extends BaseActivity {
 
         Hotline.getInstance(getApplicationContext()).updateUser(hlUser);
 
-        Hotline.showConversations(getApplicationContext());
+//        Hotline.showConversations(getApplicationContext());
 
-//        txtContactSupport.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Hotline.showConversations(getApplicationContext());
-//            }
-//        });
-//
-//
-//        txtFaq.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Hotline.showFAQs(getApplicationContext());
-//            }
-//        });
-//
-//
-//        txtFaqOptions.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                FaqOptions faqOptions = new FaqOptions()
-//                        .showFaqCategoriesAsGrid(true)
-//                        .showContactUsOnAppBar(true)
-//                        .showContactUsOnFaqScreens(false)
-//                        .showContactUsOnFaqNotHelpful(false);
-//
-//                Hotline.showFAQs(HotLineActivity.this, faqOptions);
-//            }
-//        });
+        txtContactSupport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Hotline.showConversations(getApplicationContext());
+            }
+        });
+
+        txtFaq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FaqOptions faqOptions = new FaqOptions()
+                        .showFaqCategoriesAsGrid(true)
+                        .showContactUsOnAppBar(true)
+                        .showContactUsOnFaqScreens(false)
+                        .showContactUsOnFaqNotHelpful(false);
+                Hotline.showFAQs(getApplicationContext(),faqOptions);
+            }
+        });
+
 
     }
 
