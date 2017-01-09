@@ -441,7 +441,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private RecyclerView recyclerViewFrequency;
         private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
-        private TextView changeButton, noOfItemSelected, repeat_every, out_of_stock;
+        private TextView noOfItemSelected, repeat_every, out_of_stock;
         private LinearLayout savingHolder, savingAmountHolder;
         private TextView productName, productBrand, size, savings, no_of_options_holder;
         private ImageView productImage;
@@ -457,7 +457,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewSavings.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
-            changeButton = (TextView) itemView.findViewById(R.id.button_change);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
             repeat_every = (TextView) itemView.findViewById(R.id.repeat_every);
             out_of_stock = (TextView) itemView.findViewById(R.id.out_of_stock);
@@ -560,15 +559,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             //Updating no. of SKU's
             if (boxItem.getNo_of_sku() < 2) {
                 no_of_options_holder.setVisibility(View.GONE);
-                changeButton.setVisibility(View.GONE);
             } else if (boxItem.getNo_of_sku() == 2) {
                 no_of_options_holder.setVisibility(View.VISIBLE);
-                changeButton.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + 1 option");
+                no_of_options_holder.setText(" + 1 more option");
             } else {
                 no_of_options_holder.setVisibility(View.VISIBLE);
-                changeButton.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " options");
+                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
             }
 
 
@@ -587,7 +583,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .into(productImage);
 
 
-            changeButton.setOnClickListener(new View.OnClickListener() {
+            no_of_options_holder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
@@ -698,7 +694,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 out_of_stock.setVisibility(View.VISIBLE);
 
                 // Disable the change button
-                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                no_of_options_holder.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
             }
         }
 

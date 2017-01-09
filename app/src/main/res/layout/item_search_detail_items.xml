@@ -80,19 +80,11 @@
                         android:id="@+id/no_of_options"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" + 5 options"
-                        android:textColor="@color/dim_gray"
-                        android:textSize="10sp" />
-
-                    <one.thebox.android.ViewHelper.MontserratTextView
-                        android:id="@+id/button_change"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:text="@string/change_button"
+                        android:text=" + 5 more options"
                         app:typeface="montserratSemiBold"
                         android:textColor="@color/md_green_500"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"/>
 
                 </LinearLayout>
 
