@@ -276,7 +276,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
             quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
-            changeButton = (TextView) itemView.findViewById(R.id.button_change);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
         }

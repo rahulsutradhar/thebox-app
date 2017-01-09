@@ -6,15 +6,28 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:text="Choose Size and Frequency"
+        android:paddingTop="8dp"
+        android:text="I want this item every"
         android:textColor="@color/primary_inverse_text_color"
-        android:textSize="@dimen/text_medium1" />
+        android:textSize= "@dimen/text_large1"
+        android:textStyle="bold" />
+
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:paddingTop="8dp"
+        android:gravity="center_horizontal"
+        android:text="Choose Size and Subscription"
+        android:textColor="@color/primary_inverse_text_color"
+        android:textSize="@dimen/text_medium1"/>
 
     <one.thebox.android.ViewHelper.CustomTabLayout
         android:id="@+id/tabs"

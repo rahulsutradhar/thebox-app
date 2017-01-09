@@ -80,7 +80,9 @@
                         android:id="@+id/no_of_options"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="8dp"
+                        android:layout_marginLeft="@dimen/margin_horizontal_between_co_element"
+                        android:padding="4dp"
+                        android:background="@drawable/green_borders"
                         android:text=" + 5 more options"
                         app:typeface="montserratSemiBold"
                         android:textColor="@color/md_green_500"
@@ -120,7 +122,7 @@
                             android:id="@+id/holder_add_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/green_borders"
+                            android:background="@drawable/green_background"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
@@ -132,8 +134,8 @@
                                 android:layout_marginRight="12dp"
                                 android:layout_marginTop="8dp"
                                 android:text="@string/subscribe"
-                                android:textColor="@color/md_green_500"
-                                android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_medium1"
                                 app:typeface="montserratSemiBold" />
 
 
@@ -258,6 +260,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_from_left_of_card"
+                    android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
                     android:text="@string/suggested_categories"
                     android:textColor="@color/black"
                     android:textSize="16sp"
@@ -269,6 +272,7 @@
                 android:id="@+id/relatedCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/vector_background"
                 android:paddingLeft="4dp"
                 android:paddingRight="4dp"
                 android:paddingTop="8dp"/>
