@@ -1,6 +1,8 @@
 package one.thebox.android.fragment.dialog;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +17,8 @@ import com.squareup.picasso.Picasso;
 
 import one.thebox.android.Models.update.UpdatePopupDetails;
 import one.thebox.android.R;
+
+import static android.content.Intent.ACTION_VIEW;
 
 /**
  * Created by nbansal2211 on 03/01/17.
@@ -37,6 +41,7 @@ public class UpdateDialogFragment extends DialogFragment {
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_app_update, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(v);
+        builder.setCancelable(!isForceUpdate);
         initViews(v);
         return builder.create();
     }
@@ -49,6 +54,24 @@ public class UpdateDialogFragment extends DialogFragment {
         ImageView iconImage = (ImageView) v.findViewById(R.id.iv_update_icon);
         if (!TextUtils.isEmpty(details.getIcon_url())) {
             Picasso.with(getActivity()).load(details.getIcon_url()).placeholder(R.drawable.announcement).into(iconImage);
+        }
+        v.findViewById(R.id.tv_update_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(details.getRedirectUrl())) {
+                    openPlayStore(details.getRedirectUrl());
+                }
+            }
+        });
+    }
+
+    private void openPlayStore(String url) {
+        Intent i = new Intent();
+        i.setAction(ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+        if (!isForceUpdate) {
+            dismiss();
         }
     }
 

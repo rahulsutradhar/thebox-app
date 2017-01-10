@@ -309,7 +309,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         progressBar.setVisibility(View.GONE);
 
                         if (response.body() != null) {
-                            checkAppUpdate(response.body());
                             removeChangeListener();
                             boxes.clear();
                             monthly_bill = response.body().getMonthly_bill();
@@ -330,15 +329,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         connectionErrorViewHelper.isVisible(true);
                     }
                 });
-    }
-
-    private void checkAppUpdate(MyBoxResponse response) {
-        if (null != response.getSetting() && response.getSetting().isNew_version_available()) {
-            if (null != response.getUpdatePopupDetails()) {
-                UpdateDialogFragment f = UpdateDialogFragment.getInstance(response.getUpdatePopupDetails(), response.getSetting().isForce_update());
-                f.show(getActivity().getSupportFragmentManager(), "Update");
-            }
-        }
     }
 
     private void storeToRealm() {

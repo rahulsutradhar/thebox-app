@@ -41,6 +41,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
+import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
@@ -150,6 +151,13 @@ public class SearchDetailItemsFragment extends Fragment {
                     }
                 });
             }
+        }
+    };
+
+    EndlessRecyclerViewScrollListener listener = new EndlessRecyclerViewScrollListener() {
+        @Override
+        public void onLoadMore(int page, int totalItemsCount) {
+
         }
     };
 

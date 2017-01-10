@@ -7,11 +7,11 @@
 
     <ImageView
         android:id="@+id/iv_update_icon"
-        android:layout_marginTop="32dp"
         android:layout_width="wrap_content"
-        android:src="@drawable/announcement"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/announcement" />
 
     <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/tv_title"

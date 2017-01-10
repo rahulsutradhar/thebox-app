@@ -1,6 +1,7 @@
 package one.thebox.android.api;
 
 
+import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.Models.user.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -76,6 +77,13 @@ public interface APIService {
             @Header("authtoken") String authToken,
             @Query("query") String query
     );
+
+    @GET("/users/setting")
+    Call<SettingsResponse> getSettings(
+            @Header("authtoken") String authToken,
+            @Query("app_version") String appVersion
+    );
+
 
     @GET("/autocomplete")
     Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("authtoken") String authToken,
