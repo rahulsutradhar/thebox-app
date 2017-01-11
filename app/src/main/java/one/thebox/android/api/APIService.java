@@ -111,6 +111,10 @@ public interface APIService {
     Call<CategoryBoxItemsResponse> getCategoryBoxItems(@Header("authtoken") String authToken,
                                                        @Query("id") int id);
 
+    @GET("/items")
+    Call<CategoryBoxItemsResponse> getItems(@Header("authtoken") String authToken,
+                                            @Query("id") int id, @Query("page") int pageNumber, @Query("per_page") int perPage);
+
     @GET("/explore_box")
     Call<ExploreBoxResponse> getExploreBox(@Header("authtoken") String authToken,
                                            @Query("id") int id);

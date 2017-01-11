@@ -500,6 +500,9 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
+
+
+
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {

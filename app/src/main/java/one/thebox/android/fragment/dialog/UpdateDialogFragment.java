@@ -1,6 +1,7 @@
 package one.thebox.android.fragment.dialog;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,7 +45,23 @@ public class UpdateDialogFragment extends DialogFragment {
         builder.setView(v);
         builder.setCancelable(!isForceUpdate);
         initViews(v);
-        return builder.create();
+        Dialog dialog = builder.create();
+        dialog.setCancelable(!isForceUpdate);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK
+                        ) {
+                    // TODO do the "back pressed" work here
+                    if (isForceUpdate) {
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+        });
+        return dialog;
     }
 
     private void initViews(View v) {
@@ -82,5 +100,15 @@ public class UpdateDialogFragment extends DialogFragment {
         } else {
             tv.setText(text);
         }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }
