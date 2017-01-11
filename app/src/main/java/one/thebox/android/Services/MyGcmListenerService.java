@@ -1,10 +1,19 @@
 package one.thebox.android.Services;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import one.thebox.android.R;
+import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.ActionExecuter;
 import one.thebox.android.util.Constants;
@@ -38,4 +47,5 @@ public class MyGcmListenerService extends GcmListenerService {
             new NotificationHelper(this, notificationInfo).show();
         }
     }
+
 }
