@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -38,19 +39,27 @@ public class DateTimeUtil {
     }
 
     public static long getDifferenceAsDay(Date startDate, Date endDate) {
-        long diff =  endDate.getTime() - startDate.getTime();
+        long diff = endDate.getTime() - startDate.getTime();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     public static long getDifferenceAsHours(Date startDate, Date endDate) {
-        long diff =  endDate.getTime() - startDate.getTime();
+        long diff = endDate.getTime() - startDate.getTime();
         return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     public static Date convertStringToDate(String date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//        2016-01-29T09:00:00.000+05:30
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        TimeZone timeZone = TimeZone.getDefault();
+        sdf.setTimeZone(timeZone);
+
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         try {
-            return formatter.parse(date);
+            Date d = sdf.parse(date);
+            return d;
+//            return formatter.parse(date);
         } catch (java.text.ParseException e) {
             e.printStackTrace();
             return null;

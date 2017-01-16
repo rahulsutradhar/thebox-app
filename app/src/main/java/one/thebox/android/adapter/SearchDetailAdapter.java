@@ -477,6 +477,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
         }
 
+        private void setViewsBasedOnStock(boolean isOutOfStock) {
+            if (isOutOfStock) {
+                addButtonViewHolder.setVisibility(View.GONE);
+                addButton.setVisibility(View.GONE);
+                subtractButton.setVisibility(View.GONE);
+                savingHolder.setVisibility(View.GONE);
+                repeat_every.setVisibility(View.GONE);
+                out_of_stock.setVisibility(View.VISIBLE);
+
+                // Disable the change button
+                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+            } else {
+                addButtonViewHolder.setVisibility(View.VISIBLE);
+                addButton.setVisibility(View.VISIBLE);
+                subtractButton.setVisibility(View.VISIBLE);
+                savingHolder.setVisibility(View.VISIBLE);
+                repeat_every.setVisibility(View.VISIBLE);
+                out_of_stock.setVisibility(View.GONE);
+                // Disable the change button
+                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+            }
+        }
+
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             if (userItems == null || userItems.isEmpty()) {
@@ -610,7 +633,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // Checking if item is in stock
             if (boxItem.is_in_stock()) {
-
+                setViewsBasedOnStock(false);
                 addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -658,7 +681,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                         if (getAdapterPosition() == 0) {
-                            if ((PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) && (!RestClient.is_in_development) ) {
+                            if ((PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
                                 moveRecyclerView(true);
                             }
                             if ((PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
@@ -690,15 +713,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             // If Item is not in stock
             else {
-                addButtonViewHolder.setVisibility(View.GONE);
-                addButton.setVisibility(View.GONE);
-                subtractButton.setVisibility(View.GONE);
-                savingHolder.setVisibility(View.GONE);
-                repeat_every.setVisibility(View.GONE);
-                out_of_stock.setVisibility(View.VISIBLE);
-
-                // Disable the change button
-                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                setViewsBasedOnStock(true);
             }
         }
 
@@ -914,8 +929,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
                                             notifyItemRemoved(getAdapterPosition());
-                                        }
-                                        else {
+                                        } else {
                                             userItems.set(arrayListPosition, userItem);
                                             if (onUserItemChange != null) {
                                                 onUserItemChange.onUserItemChange(userItems);

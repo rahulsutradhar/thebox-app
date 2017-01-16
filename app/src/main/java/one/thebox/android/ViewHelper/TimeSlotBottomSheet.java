@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -43,9 +44,10 @@ public class TimeSlotBottomSheet {
     private Date endDate = null;
     private Date startDate = null;
 
-    public TimeSlotBottomSheet(Activity context, Date currentSelectedDate, OnTimePicked onTimePicked) {
+    public TimeSlotBottomSheet(Activity context, Date startDate, Date currentSelectedDate, OnTimePicked onTimePicked) {
         this.context = context;
         this.onTimePicked = onTimePicked;
+        this.startDate = startDate;
         this.currentSelectedDate = currentSelectedDate;
     }
 
@@ -89,18 +91,19 @@ public class TimeSlotBottomSheet {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
             endDate = fmt.parse("2016-12-30");
-            startDate = fmt.parse(fmt.format(currentSelectedDate));
+            startDate = fmt.parse(fmt.format(startDate));
 
+            Date prevSelectedDate = fmt.parse(fmt.format(currentSelectedDate));
             //Adding date
             calendar.setTime(startDate);
             calendar.add(Calendar.DATE, 7);
             endDate = fmt.parse(fmt.format(calendar.getTime()));
-
+            currentSelectedPosition = (int) getDifferenceDays(startDate, prevSelectedDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        daySlots.addAll( getDateArrayList(startDate, endDate) );
+        daySlots.addAll(getDateArrayList(startDate, endDate));
 
         for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
             timeSlots.add(Constants.DATE_RANGE[i]);
@@ -113,24 +116,29 @@ public class TimeSlotBottomSheet {
             @Override
             public void onItemClicked(int position) {
 
-            try {
-                int currentYear = 2016;
-                String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
-                String[] strings = dayMonth.split(",");
-                int day = Integer.parseInt(strings[0]);
-                int month = 0;
-                month = getMonthInt(strings[1].trim());
-                Date date = getDate(currentYear, month, day);
-                onTimePicked.onTimePicked(date, null);
-                bottomSheetDialog.dismiss();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+                try {
+                    int currentYear = 2016;
+                    String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
+                    String[] strings = dayMonth.split(",");
+                    int day = Integer.parseInt(strings[0]);
+                    int month = 0;
+                    month = getMonthInt(strings[1].trim());
+                    Date date = getDate(currentYear, month, day);
+                    onTimePicked.onTimePicked(date, null);
+                    bottomSheetDialog.dismiss();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
         timeSlotAdapterDay.setCurrentSelection(currentSelectedPosition);
         recyclerViewDay.setAdapter(timeSlotAdapterDay);
         recyclerViewDay.scrollToPosition(currentSelectedPosition);
+    }
+
+    public static long getDifferenceDays(Date d1, Date d2) {
+        long diff = d2.getTime() - d1.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     public int getMonthInt(String monthName) throws ParseException {

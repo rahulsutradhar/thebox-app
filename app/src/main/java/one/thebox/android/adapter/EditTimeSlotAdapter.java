@@ -56,17 +56,21 @@ public class EditTimeSlotAdapter extends BaseRecyclerAdapter {
         return null;
     }
 
+    private Date prevDate;
+
     @Override
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViewHolder(addressAndOrders.get(position));
+        prevDate = addressAndOrders.get(position).getOderDate();
         if (isCart) {
             itemViewHolder.timeSlotHolderTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new TimeSlotBottomSheet((Activity) mContext,addressAndOrders.get(position).getOderDate(), new TimeSlotBottomSheet.OnTimePicked() {
+                    new TimeSlotBottomSheet((Activity) mContext, prevDate, addressAndOrders.get(position).getOderDate(), new TimeSlotBottomSheet.OnTimePicked() {
                         @Override
                         public void onTimePicked(Date date, Order order) {
+                            prevDate = date;
                             addressAndOrders.get(position).setOderDate(date);
                             notifyItemChanged(position);
                             Toast.makeText(mContext, date.toString(), Toast.LENGTH_SHORT).show();
