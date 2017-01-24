@@ -55,6 +55,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.MainActivity;
@@ -849,8 +850,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price;
-        private ImageView productImageView, edit;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit;
+        private ImageView productImageView;
         private LinearLayout quantityHolder;
 
         public UserItemViewHolder(View itemView) {
@@ -865,7 +866,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
-            edit = (ImageView) itemView.findViewById(R.id.user_item_edit_button);
+            edit = (TextView) itemView.findViewById(R.id.user_item_edit_button);
         }
 
         private void setViews(final UserItem userItem, final int arrayListPosition) {

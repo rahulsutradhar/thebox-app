@@ -260,7 +260,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/margin_from_left_of_card"
-                    android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin_small"
                     android:text="@string/suggested_categories"
                     android:textColor="@color/black"
                     android:textSize="16sp"
