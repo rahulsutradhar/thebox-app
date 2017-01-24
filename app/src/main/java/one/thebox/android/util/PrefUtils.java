@@ -22,6 +22,7 @@ public class PrefUtils {
     public static final String PREF_USER = "PREF_USER";
     final static String KEY_TOKEN = "token";
     private static final String FILE_NAME = "TROVO_PREFERENCES";
+    public static final String KEY_SETTING_CACHE = "SettingCache";
     private static SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
 
@@ -184,8 +185,18 @@ public class PrefUtils {
         editor.apply();
     }
 
+    public static void putLong(Context context, String key, long value) {
+        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
+        editor.putLong(key, value);
+        editor.apply();
+    }
+
     public static String getString(Context context, String key, String defValue) {
         return getSharedPreferences(context).getString(key, defValue);
+    }
+
+    public static long getLong(Context context, String key, long defValue) {
+        return getSharedPreferences(context).getLong(key, defValue);
     }
 
     public static String getString(Context context, String key) {

@@ -41,6 +41,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
+import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
@@ -67,6 +68,8 @@ public class SearchDetailItemsFragment extends Fragment {
     private static final int SOURCE_NON_CATEGORY = 0;
     private static final int SOURCE_CATEGORY = 1;
     private static final int SOURCE_SEARCH = 2;
+    private static final int PER_PAGE_ITEMS = 10;
+    private int pageNumber = 1;
     private View rootView;
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
@@ -81,6 +84,8 @@ public class SearchDetailItemsFragment extends Fragment {
     private TextView emptyText;
     private int positionInViewPager;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
+    private int totalItems;
+    private int maxPageNumber;
 
     public SearchDetailItemsFragment() {
     }
@@ -149,6 +154,20 @@ public class SearchDetailItemsFragment extends Fragment {
                         fillAllUserItems();
                     }
                 });
+            }
+        }
+    };
+
+    private boolean isLoading;
+    EndlessRecyclerViewScrollListener listener = new EndlessRecyclerViewScrollListener() {
+        @Override
+        public void onLoadMore(int page, int totalItemsCount) {
+            if (boxItems != null) {
+                int boxItemCount = boxItems.size();
+                if (boxItemCount < totalItems && !isLoading && pageNumber < maxPageNumber) {
+                    pageNumber++;
+                    getDataBasedOnSource();
+                }
             }
         }
     };
@@ -247,8 +266,11 @@ public class SearchDetailItemsFragment extends Fragment {
             searchDetailAdapter = new SearchDetailAdapter(getActivity());
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
             searchDetailAdapter.setBoxItems(boxItems, userItems);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(manager);
+            listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
+            recyclerView.addOnScrollListener(listener);
         } else {
             searchDetailAdapter.setBoxItems(boxItems, userItems);
             searchDetailAdapter.notifyDataSetChanged();
@@ -292,23 +314,35 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void getCategoryDetail() {
-        linearLayoutHolder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
+        isLoading = true;
+        if (pageNumber == 1) {
+            linearLayoutHolder.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            connectionErrorViewHelper.isVisible(false);
+        }
+        MyApplication.getAPIService().getItems(PrefUtils.getToken(getActivity()), catId, pageNumber, PER_PAGE_ITEMS)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
+                        isLoading = false;
                         if (response.body() != null) {
-                            clearData();
+                            if (pageNumber == 1) {
+                                clearData();
+                            }
 //                            RealmController.addAllBoxItems(response.body().getNormalBoxItems());
 //                            RealmController.addAllUserItems(response.body().getMyBoxItems());
 //                            userItems.addAll(response.body().getMyBoxItems());
-                            boxItems.addAll(response.body().getNormalBoxItems());
+                            CategoryBoxItemsResponse categoryBoxItemsResponse = response.body();
+                            totalItems = categoryBoxItemsResponse.getTotalCount();
+                            maxPageNumber = (totalItems % PER_PAGE_ITEMS) > 0 ? (totalItems / PER_PAGE_ITEMS) + 1 : (totalItems / PER_PAGE_ITEMS);
+                            if (categoryBoxItemsResponse.getNormalBoxItems() != null)
+                                boxItems.addAll(response.body().getNormalBoxItems());
                             setBoxItemsBasedOnUserItems(response.body().getMyBoxItems(), boxItems);
-                            categories.add(response.body().getSelectedCategory());
-                            categories.addAll(response.body().getRestCategories());
+                            if (null != response.body().getSelectedCategory())
+                                categories.add(response.body().getSelectedCategory());
+                            if (null != response.body().getRestCategories())
+                                categories.addAll(response.body().getRestCategories());
                             initDataChangeListener();
 //                            fillAllUserItems();
                         }
@@ -316,6 +350,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
+                        isLoading = false;
                         emptyText.setText(t.toString());
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
@@ -325,7 +360,12 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems) {
+        if (items == null) {
+            Realm realm = MyApplication.getRealm();
+            items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
+        }
         LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
+
         for (BoxItem item : bItems) {
             map.put(item.getId(), item);
         }

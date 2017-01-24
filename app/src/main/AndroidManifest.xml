@@ -141,12 +141,14 @@
         <activity
             android:name=".activity.UniversalSearchActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.PaymentOptionActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".activity.PaymentOptionActivity"
-            android:screenOrientation="portrait"/>
-
-        <!--Activity of RazorPay in order to integrate payment integration.-->
-        <activity android:name="com.razorpay.CheckoutActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize"/>
+        <!-- Activity of RazorPay in order to integrate payment integration. -->
+        <activity
+            android:name="com.razorpay.CheckoutActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
 
         <service
             android:name=".Services.UpdateOrderService"
@@ -159,11 +161,17 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".activity.TermsOfUserActivity"></activity>
+        <activity android:name=".activity.TermsOfUserActivity" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="b64cedb83163da1ef4b796db1394544fda44f190" />
+
         <activity android:name=".activity.ContactUsActivity" />
+
+        <service
+            android:name=".Services.SyncService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

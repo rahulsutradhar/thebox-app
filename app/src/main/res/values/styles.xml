@@ -94,8 +94,8 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:textSize">16dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
         <item name="android:layout_marginTop">24dp</item>
     </style>
 

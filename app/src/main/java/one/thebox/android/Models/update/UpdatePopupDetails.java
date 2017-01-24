@@ -14,6 +14,16 @@ public class UpdatePopupDetails {
     private String subtext3;
     @SerializedName("button_text")
     private String buttonText;
+    @SerializedName("redirect_url")
+    private String redirectUrl;
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
 
     public String getIcon_url() {
         return icon_url;

@@ -43,12 +43,14 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
@@ -56,6 +58,7 @@ import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ShowCaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
+import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
@@ -67,6 +70,7 @@ import one.thebox.android.fragment.MyBoxTabFragment;
 import one.thebox.android.fragment.MyBoxesFragment;
 import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.OnFragmentInteractionListener;
@@ -84,7 +88,7 @@ public class MainActivity extends BaseActivity implements
         , View.OnClickListener, OnFragmentInteractionListener,
         FragmentManager.OnBackStackChangedListener {
 
-    public static final String  EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
+    public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
@@ -93,7 +97,7 @@ public class MainActivity extends BaseActivity implements
     private LinearLayout navigationViewBottom;
 
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction, searchAction,btn_search;
+    private ImageView buttonSpecialAction, searchAction, btn_search;
     private EditText searchView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
@@ -121,7 +125,6 @@ public class MainActivity extends BaseActivity implements
     private User user;
     private FragmentManager fragmentManager;
     private AppBarLayout appBarLayout;
-
 
 
     @Override
@@ -162,8 +165,8 @@ public class MainActivity extends BaseActivity implements
         initCart();
 
 
-        if (!RestClient.is_in_development){
-                ShowCaseHelper.removeAllTutorial();
+        if (!RestClient.is_in_development) {
+            ShowCaseHelper.removeAllTutorial();
 
         }
 
@@ -171,10 +174,11 @@ public class MainActivity extends BaseActivity implements
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,UniversalSearchActivity.class);
-                startActivityForResult(intent,4511);
+                Intent intent = new Intent(MainActivity.this, UniversalSearchActivity.class);
+                startActivityForResult(intent, 4511);
             }
         });
+        getSettingsData();
 
     }
 
@@ -221,7 +225,7 @@ public class MainActivity extends BaseActivity implements
         navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
-        btn_search =(ImageView) findViewById(R.id.btn_search);
+        btn_search = (ImageView) findViewById(R.id.btn_search);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
@@ -258,8 +262,6 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         });
-
-
 
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
@@ -308,6 +310,51 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
+    private void getSettingsData() {
+        // Remove hardcoding of version
+        // 13 is to test
+        MyApplication.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
+                .enqueue(new Callback<SettingsResponse>() {
+                    @Override
+                    public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
+                        if (response != null && response.body() != null) {
+                            checkAppUpdate(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SettingsResponse> call, Throwable t) {
+                    }
+                });
+    }
+
+    private void checkAppUpdate(SettingsResponse response) {
+
+        if (null != response.getData() && response.getData().isNew_version_available()) {
+            if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
+                if (null != response.getData().getUpdatePopupDetails()) {
+                    UpdateDialogFragment f = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(), response.getData().isForce_update());
+                    f.show(this.getSupportFragmentManager(), "Update");
+                    if (!response.getData().isForce_update()) {
+                        saveCacheTime();
+                    }
+                }
+            }
+        }
+    }
+
+    private void saveCacheTime() {
+        long min_5 = 5 * 60 * 1000;
+        PrefUtils.putLong(this, PrefUtils.KEY_SETTING_CACHE, System.currentTimeMillis() + min_5);
+    }
+
+    private boolean isPopupRequiredToDisplay() {
+        long currentTime = System.currentTimeMillis();
+        long prevTime = PrefUtils.getLong(this, PrefUtils.KEY_SETTING_CACHE, currentTime);
+        return prevTime <= currentTime;
+    }
+
+
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
             startActivity(TermsOfUserActivity.getIntent(this, true));
@@ -352,8 +399,9 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
     }
+
     private void openContactUsActivity() {
-        startActivity(new Intent(MainActivity.this,ContactUsActivity.class));
+        startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
         drawerLayout.closeDrawers();
     }
 
@@ -455,6 +503,9 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
+
+
+
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {

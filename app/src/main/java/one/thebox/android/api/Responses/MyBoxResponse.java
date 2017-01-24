@@ -26,25 +26,7 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
 
     @SerializedName("total_no_of_items")
     private String total_no_of_items;
-    @SerializedName("update_popup_details")
-    private UpdatePopupDetails updatePopupDetails;
-    private Setting setting;
 
-    public UpdatePopupDetails getUpdatePopupDetails() {
-        return updatePopupDetails;
-    }
-
-    public void setUpdatePopupDetails(UpdatePopupDetails updatePopupDetails) {
-        this.updatePopupDetails = updatePopupDetails;
-    }
-
-    public Setting getSetting() {
-        return setting;
-    }
-
-    public void setSetting(Setting setting) {
-        this.setting = setting;
-    }
 
     public MyBoxResponse(RealmList<Box> boxes) {
         this.boxes = boxes;

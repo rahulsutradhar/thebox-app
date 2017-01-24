@@ -18,18 +18,37 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
     private ArrayList<UserItem> myBoxItems;
     @SerializedName("normal_items")
     private ArrayList<BoxItem> normalBoxItems;
+    @SerializedName("data")
+    private ItemsData itemsData;
+
+
     @SerializedName("selected_category")
     private Category category;
     @SerializedName("rest_of_the_categories_in_box")
     private ArrayList<Category> categories;
     @SerializedName("box_name")
     private String boxName;
+    @SerializedName("total_count")
+    private int totalCount;
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
 
     public String getBoxName() {
         return boxName;
     }
 
     public ArrayList<UserItem> getMyBoxItems() {
+        if (myBoxItems == null) {
+            if (itemsData != null) {
+                return itemsData.getMyBoxItems();
+            }
+        }
         return myBoxItems;
     }
 
@@ -38,6 +57,11 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
     }
 
     public ArrayList<BoxItem> getNormalBoxItems() {
+        if (normalBoxItems == null) {
+            if (itemsData != null) {
+                return itemsData.getNormalBoxItems();
+            }
+        }
         return normalBoxItems;
     }
 
@@ -67,5 +91,28 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
 
     public ArrayList<Category> getRestCategories() {
         return categories;
+    }
+
+    private class ItemsData {
+        @SerializedName("my_items")
+        private ArrayList<UserItem> myBoxItems;
+        @SerializedName("items")
+        private ArrayList<BoxItem> normalBoxItems;
+
+        public ArrayList<UserItem> getMyBoxItems() {
+            return myBoxItems;
+        }
+
+        public void setMyBoxItems(ArrayList<UserItem> myBoxItems) {
+            this.myBoxItems = myBoxItems;
+        }
+
+        public ArrayList<BoxItem> getNormalBoxItems() {
+            return normalBoxItems;
+        }
+
+        public void setNormalBoxItems(ArrayList<BoxItem> normalBoxItems) {
+            this.normalBoxItems = normalBoxItems;
+        }
     }
 }
