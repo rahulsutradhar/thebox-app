@@ -80,5 +80,9 @@
 @thebox.one</string>
   <string name="search_message">Looking it Up</string>
   <string name="sample_text_arriving_in_x_days">Arriving in 10 days</string>
+  <string name="default_subtext_3">Never ever ever\nRUN OUT</string>
+  <string name="default_text_update_button">I want the new version</string>
+  <string name="default_subtext_2">We hope you enjoy the new version please update the app and</string>
+  <string name="default_title_app_update">We come bearing gifts</string>
 </resources>
 

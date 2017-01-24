@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_update_icon"
+        android:layout_marginTop="32dp"
+        android:layout_width="wrap_content"
+        android:src="@drawable/announcement"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/tv_title"
+        style="@style/tv_title_app_update"
+        android:text="@string/default_title_app_update"
+        android:textColor="@color/black"
+        android:textSize="26dp" />
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/tv_subtext1"
+        style="@style/tv_subtext_app_update"
+        android:textColor="@color/clr_subtext_1"
+        android:textSize="14dp" />
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/tv_subtext2"
+        style="@style/tv_subtext_app_update"
+        android:text="@string/default_subtext_2"
+        android:textColor="@color/davy_grey"
+        android:textSize="18dp" />
+
+    <one.thebox.android.ViewHelper.MontserratTextView
+        android:id="@+id/tv_subtext3"
+        style="@style/tv_subtext_app_update"
+        android:text="@string/default_subtext_3"
+        android:textColor="@color/black"
+        android:textSize="26dp" />
+
+    <one.thebox.android.ViewHelper.MontserratButton
+        android:id="@+id/tv_update_button"
+        style="@style/tv_subtext_app_update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lime_green"
+        android:padding="8dp"
+        android:text="@string/default_text_update_button"
+        android:textColor="@color/white"
+        android:textSize="18dp" />
+
+</LinearLayout>

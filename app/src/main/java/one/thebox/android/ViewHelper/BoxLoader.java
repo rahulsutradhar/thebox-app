@@ -34,6 +34,7 @@ public class BoxLoader {
         lp.width = DisplayUtil.dpToPx(context, 100);
         lp.height = DisplayUtil.dpToPx(context, 100);
         lp.gravity = Gravity.CENTER;
+        materialDialog.setCancelable(false);
         materialDialog.getWindow().setAttributes(lp);
         return this;
     }

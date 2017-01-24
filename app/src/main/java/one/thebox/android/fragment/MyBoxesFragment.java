@@ -49,6 +49,7 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -144,7 +145,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         initVariables();
 
         initViews();
-
+        
         //Fetching arguments
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
@@ -205,7 +206,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
         List<UserItem> list = new ArrayList<>();
         list.addAll(items);
-        Log.d("MyBoxesFrag", "Size of user items for box id:"+list.size()+"");
+        Log.d("MyBoxesFrag", "Size of user items for box id:" + list.size() + "");
         return list;
     }
 
@@ -319,6 +320,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void getMyBoxes() {
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
+        String token = PrefUtils.getToken(getActivity());
+        Log.d("Token :", token + "");
         MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
@@ -327,6 +330,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         progressBar.setVisibility(View.GONE);
 
                         if (response.body() != null) {
+                            checkAppUpdate(response.body());
                             removeChangeListener();
                             boxes.clear();
                             monthly_bill = response.body().getMonthly_bill();
@@ -347,6 +351,15 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         connectionErrorViewHelper.isVisible(true);
                     }
                 });
+    }
+
+    private void checkAppUpdate(MyBoxResponse response) {
+        if (null != response.getSetting() && response.getSetting().isNew_version_available()) {
+            if (null != response.getUpdatePopupDetails()) {
+                UpdateDialogFragment f = UpdateDialogFragment.getInstance(response.getUpdatePopupDetails(), response.getSetting().isForce_update());
+                f.show(getActivity().getSupportFragmentManager(), "Update");
+            }
+        }
     }
 
     private void storeToRealm() {

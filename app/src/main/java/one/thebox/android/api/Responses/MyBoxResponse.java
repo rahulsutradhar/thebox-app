@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.update.Setting;
+import one.thebox.android.Models.update.UpdatePopupDetails;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -24,6 +26,25 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
 
     @SerializedName("total_no_of_items")
     private String total_no_of_items;
+    @SerializedName("update_popup_details")
+    private UpdatePopupDetails updatePopupDetails;
+    private Setting setting;
+
+    public UpdatePopupDetails getUpdatePopupDetails() {
+        return updatePopupDetails;
+    }
+
+    public void setUpdatePopupDetails(UpdatePopupDetails updatePopupDetails) {
+        this.updatePopupDetails = updatePopupDetails;
+    }
+
+    public Setting getSetting() {
+        return setting;
+    }
+
+    public void setSetting(Setting setting) {
+        this.setting = setting;
+    }
 
     public MyBoxResponse(RealmList<Box> boxes) {
         this.boxes = boxes;
@@ -46,11 +67,19 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
         this.boxes = boxes;
     }
 
-    public String getMonthly_bill(){return monthly_bill;}
+    public String getMonthly_bill() {
+        return monthly_bill;
+    }
 
-    public void setMonthly_bill(String monthly_bill){this.monthly_bill = monthly_bill;}
+    public void setMonthly_bill(String monthly_bill) {
+        this.monthly_bill = monthly_bill;
+    }
 
-    public String getTotal_no_of_items(){return total_no_of_items;}
+    public String getTotal_no_of_items() {
+        return total_no_of_items;
+    }
 
-    public void setTotal_no_of_items(String total_no_of_items){this.total_no_of_items = total_no_of_items;}
+    public void setTotal_no_of_items(String total_no_of_items) {
+        this.total_no_of_items = total_no_of_items;
+    }
 }
