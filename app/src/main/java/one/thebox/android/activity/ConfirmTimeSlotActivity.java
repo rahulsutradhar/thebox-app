@@ -81,24 +81,23 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             setTitle("Reschedule Order");
             initViewCase4();
             setupTimeSlotRecyclerView();
-        }
-        else {
-                if (hasPreviousOrder() && isCart()) {
-                    setContentView(R.layout.confirm_time_slot_when_user_have_orders);
-                    setTitle("Merge with future deliveries");
-                    initViewsCase1();
-                    setupMergeDeliveryRecyclerView();
-                } else if (!hasPreviousOrder() && isCart()) {
-                    setContentView(R.layout.activity_confirm_time_slot);
-                    setTitle("Select Time Slot");
-                    initViewCase2();
-                    setupTimeSlotRecyclerView();
-                } else {
-                    setContentView(R.layout.activity_confirm_time_slot);
-                    setTitle("Select Time Slot");
-                    initViewsCase3();
-                    setupTimeSlotRecyclerView();
-                }
+        } else {
+            if (hasPreviousOrder() && isCart()) {
+                setContentView(R.layout.confirm_time_slot_when_user_have_orders);
+                setTitle("Merge with future deliveries");
+                initViewsCase1();
+                setupMergeDeliveryRecyclerView();
+            } else if (!hasPreviousOrder() && isCart()) {
+                setContentView(R.layout.activity_confirm_time_slot);
+                setTitle("Select Time Slot");
+                initViewCase2();
+                setupTimeSlotRecyclerView();
+            } else {
+                setContentView(R.layout.activity_confirm_time_slot);
+                setTitle("Select Time Slot");
+                initViewsCase3();
+                setupTimeSlotRecyclerView();
+            }
         }
     }
 
@@ -129,13 +128,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-                    @Override
-                    public void onTimePicked(Date date, Order order) {
-                        currentSelectedDate = date;
-                        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                    }
-                }).showTimeSlotBottomSheet();
+                showBottomSheet();
             }
         });
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
@@ -188,13 +181,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-                    @Override
-                    public void onTimePicked(Date date, Order order) {
-                        currentSelectedDate = date;
-                        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                    }
-                }).showTimeSlotBottomSheet();
+                showBottomSheet();
             }
         });
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
@@ -203,13 +190,24 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Date reschedule_to= getDateWithTimeSlot(currentSelectedDate,
+                Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
                         timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
 
-                reSchedule (reschedule_to);
+                reSchedule(reschedule_to);
             }
         });
     }
+
+    private void showBottomSheet() {
+        new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, nextSlotDate, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
+            @Override
+            public void onTimePicked(Date date, Order order) {
+                currentSelectedDate = date;
+                timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
+            }
+        }).showTimeSlotBottomSheet();
+    }
+
 
     public void setupMergeDeliveryRecyclerView() {
         mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
@@ -224,11 +222,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         RealmQuery<Order> query = realm.where(Order.class);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
-                if (Calendar.getInstance().getTime()
-                        .compareTo
-                                (DateTimeUtil.convertStringToDate(realmResults.get(i).getDeliveryScheduleAt())) == -1) {
-                    mergeOrders.add(realmResults.get(i));
-                }
+            if (Calendar.getInstance().getTime()
+                    .compareTo
+                            (DateTimeUtil.convertStringToDate(realmResults.get(i).getDeliveryScheduleAt())) == -1) {
+                mergeOrders.add(realmResults.get(i));
+            }
         }
 
 
@@ -245,7 +243,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         return addressAndOrders.get(0).getOrder().isCart();
     }
 
-    public void reSchedule(Date reschedule_to){
+    public void reSchedule(Date reschedule_to) {
         final BoxLoader dialog = new BoxLoader(this).show();
         MyApplication.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to))
                 .enqueue(new Callback<RescheduleResponseBody>() {
@@ -277,7 +275,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     private void setupTimeSlotRecyclerView() {
-        timeSlotAdapter = new TimeSlotAdapter(this);
+        timeSlotAdapter = new TimeSlotAdapter(this, new TimeSlotAdapter.OnTimeSlotSelected() {
+            @Override
+            public void onTimeSlotSelected(String timeSlot) {
+                currentSelectedDate = getDateWithTimeSlot(currentSelectedDate, timeSlot);
+            }
+        });
         ArrayList<String> timeSlotArrayList = new ArrayList<>();
         for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
             timeSlotArrayList.add(Constants.DATE_RANGE[i]);
@@ -290,11 +293,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private void initVariable() {
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
 
-        if (getIntent().getBooleanExtra(IS_RESCHEDULING,false)){
+        if (getIntent().getBooleanExtra(IS_RESCHEDULING, false)) {
             is_rescheduling = true;
             nextSlotDate = getNextSlotDate(DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt()));
-        }
-        else{
+        } else {
             nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
         }
 
@@ -322,6 +324,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     public Date setHourAndMinuteToCurrentDate(String hour, String minute, String am_pm) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentSelectedDate);
         calendar.set(Calendar.HOUR, Integer.parseInt(hour));
         calendar.set(Calendar.MINUTE, Integer.parseInt(minute));
         if (am_pm.equals("A")) {
@@ -344,7 +347,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         String am_pm = timeSlot.substring(6, 7);
 
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, date.getYear()+1900);
+        cal.set(Calendar.YEAR, date.getYear() + 1900);
         cal.set(Calendar.MONTH, date.getMonth());
         cal.set(Calendar.DAY_OF_MONTH, date.getDate());
         //Date added_date = cal.getTime();
@@ -352,11 +355,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             //cal.set(Calendar.AM_PM, Calendar.AM);
             cal.set(Calendar.HOUR_OF_DAY, hour);
         } else {
-            if (hour == 12){
+            if (hour == 12) {
                 cal.set(Calendar.HOUR_OF_DAY, hour);
-            }
-            else{
-                Integer hr_format_hour =  hour+12;
+            } else {
+                Integer hr_format_hour = hour + 12;
                 cal.set(Calendar.HOUR_OF_DAY, hr_format_hour);
             }
             //cal.set(Calendar.AM_PM, Calendar.PM);

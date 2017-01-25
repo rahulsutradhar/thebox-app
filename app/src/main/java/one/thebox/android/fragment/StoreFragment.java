@@ -62,10 +62,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private View rootLayout;
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
-    private TextView noOfItemsInCart;
     private RealmList<Box> boxes = new RealmList<>();
     private AppBarObserver appBarObserver;
-    private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -77,13 +75,13 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
-                    if (noOfTabs > 0) {
-                        noOfItemsInCart.setVisibility(View.VISIBLE);
-                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
-                    } else {
-                        noOfItemsInCart.setVisibility(View.GONE);
-                    }
+//                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
+//                    if (noOfTabs > 0) {
+//                        noOfItemsInCart.setVisibility(View.VISIBLE);
+//                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
+//                    } else {
+//                        noOfItemsInCart.setVisibility(View.GONE);
+//                    }
                 }
             });
 
@@ -171,15 +169,14 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
-            }
-        });
-        noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
-        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
+//        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
+//        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+//            }
+//        });
+//        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,19 +277,19 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        fabHolder.setTranslationY(-offset);
+//        fabHolder.setTranslationY(-offset);
     }
 
     public void onTabEvent(TabEvent tabEvent) {
-        if (getActivity() == null) {
-            return;
-        }
-        if (tabEvent.getNumberOfItemsInCart() > 0) {
-            noOfItemsInCart.setVisibility(View.VISIBLE);
-            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
-        } else {
-            noOfItemsInCart.setVisibility(View.GONE);
-        }
+//        if (getActivity() == null) {
+//            return;
+//        }
+//        if (tabEvent.getNumberOfItemsInCart() > 0) {
+//            noOfItemsInCart.setVisibility(View.VISIBLE);
+//            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
+//        } else {
+//            noOfItemsInCart.setVisibility(View.GONE);
+//        }
     }
 
     private boolean isRegistered;

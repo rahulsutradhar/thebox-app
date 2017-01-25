@@ -1,8 +1,10 @@
 package one.thebox.android.activity;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +39,7 @@ import android.widget.Toast;
 import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -45,6 +49,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
+import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
@@ -79,6 +84,8 @@ import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
@@ -180,10 +187,56 @@ public class MainActivity extends BaseActivity implements
         });
         getSettingsData();
 
+        setCartOnToolBar();
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                                                                  new IntentFilter(BROADCAST_EVENT_TAB));
+        //new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+
+    }
+
+    @Subscribe
+    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setCartOnToolBar();
+            }
+        });
     }
 
     private void initCart() {
         CartHelper.saveCartItemsIfRequire();
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setCartOnToolBar();
+                }
+            });
+
+        }
+    };
+
+    private void setCartOnToolBar() {
+        FrameLayout cartFrame = (FrameLayout) findViewById(R.id.frame_cart_icon);
+        TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
+        int numberOfItems = CartHelper.getNumberOfItemsInCart();
+        if (numberOfItems > 0) {
+            cartFrame.setVisibility(View.VISIBLE);
+            noOfItemsInCart.setText(String.valueOf(numberOfItems));
+            cartFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                }
+            });
+        } else {
+            cartFrame.setVisibility(View.GONE);
+        }
     }
 
     public void setupNavigationDrawer() {
@@ -503,7 +556,6 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onBackPressed() {
-
 
 
         if (fragmentManager.getBackStackEntryCount() > 0) {

@@ -101,8 +101,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ArrayList<Integer> catIds = new ArrayList<>();
     private ArrayList<Integer> user_catIds = new ArrayList<>();
     private int clickPosition;
-    private TextView numberOfItemsInCart, noResultFound, itemsInCart, savings;
-    private FrameLayout fabHolder;
+    private TextView noResultFound, itemsInCart, savings;
+    //    private FrameLayout fabHolder;
     private CardView specialCardView;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int source;
@@ -118,12 +118,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             int temp = noOfTabs;
             noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
             if (noOfTabs > 0) {
-                numberOfItemsInCart.setVisibility(View.VISIBLE);
-                numberOfItemsInCart.setText(String.valueOf(noOfTabs));
                 if (temp != noOfTabs)
                     showSpecialCardEvent(new ShowSpecialCardEvent(true));
             } else {
-                numberOfItemsInCart.setVisibility(View.GONE);
             }
         }
     };
@@ -182,9 +179,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 query.equalTo(Category.FIELD_ID, catIds.get(i)).or();
             }
         }
-        RealmResults<Category> realmResults = query.findAll();
-        for (Category category : realmResults) {
-            categories.add(category);
+        if (catIds.size() != 0) {
+            RealmResults<Category> realmResults = query.findAll();
+            for (Category category : realmResults) {
+                categories.add(category);
+            }
         }
         RealmQuery<Category> query_user_cat = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
         for (int i = 0; i < user_catIds.size(); i++) {
@@ -212,12 +211,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private void initViews() {
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
-        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(fabClickListener);
+//        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
+//        floatingActionButton.setOnClickListener(fabClickListener);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-        numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
-        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
+//        numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
+//        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
@@ -378,7 +377,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
-                            //Toast.makeText(getContext(), finalView.getMeasuredWidth(), Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (NoSuchFieldException e) {
@@ -587,7 +585,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        fabHolder.setTranslationY(-offset);
+//        fabHolder.setTranslationY(-offset);
         specialCardView.setTranslationY(-offset);
     }
 
@@ -610,7 +608,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
+//                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                             tabLayout.setScrollPosition(clickPosition, 0, true);
                             shouldMoveMore = false;
                         }
@@ -645,11 +643,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (getActivity() == null) {
             return;
         }
-        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
-        mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
-        mFab.setOnClickListener(fabClickListener);
-        numberOfItemsInCart.setVisibility(View.VISIBLE);
-        numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
+//        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
+//        mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
+//        mFab.setOnClickListener(fabClickListener);
+//        numberOfItemsInCart.setVisibility(View.VISIBLE);
+//        numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
     }
 
     @Subscribe
@@ -663,12 +661,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
-                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
 
             } else {
                 specialCardView.setVisibility(View.GONE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
-                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }
