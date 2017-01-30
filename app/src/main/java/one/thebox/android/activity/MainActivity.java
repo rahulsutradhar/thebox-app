@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements
     private LinearLayout navigationViewBottom;
 
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction, searchAction,btn_search;
+    private ImageView buttonSpecialAction, searchAction,btn_search, chatbutton;
     private EditText searchView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
@@ -171,14 +171,11 @@ public class MainActivity extends BaseActivity implements
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                attachSearchResultFragment();
                 Intent intent = new Intent(MainActivity.this,UniversalSearchActivity.class);
                 startActivityForResult(intent,4511);
             }
         });
 
-
-//        new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
     }
 
     private void initCart() {
@@ -224,6 +221,7 @@ public class MainActivity extends BaseActivity implements
         navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
+        chatbutton = (ImageView) findViewById(R.id.chat_button);
         btn_search =(ImageView) findViewById(R.id.btn_search);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
@@ -261,9 +259,6 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         });
-
-
-
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         searchAction = (ImageView) findViewById(R.id.image_view_search_action);
@@ -329,19 +324,6 @@ public class MainActivity extends BaseActivity implements
     }
 
 
-
-    /*private void attachExploreBoxes() {
-        clearBackStack();
-        setTitle("Explore Boxes");
-        getToolbar().setSubtitle(null);
-        this.findViewById(R.id.explore_and_deliveries).setVisibility(View.GONE);
-        ExploreBoxesFragment fragment = new ExploreBoxesFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "Explore Boxes");
-        fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
-    }*/
-
     private void attachOrderFragment() {
         clearBackStack();
         CartFragment fragment = new CartFragment();
@@ -377,6 +359,13 @@ public class MainActivity extends BaseActivity implements
     private void attachMyBoxesFragment(int default_position) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
+
+        chatbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openContactUsActivity();
+            }
+        });
 
         Bundle bundle = new Bundle();
         bundle.putInt("default_position", default_position);
@@ -414,7 +403,6 @@ public class MainActivity extends BaseActivity implements
         btn_search.setVisibility(View.VISIBLE);
 
         buttonSpecialAction.setVisibility(View.VISIBLE);
-
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -422,6 +410,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0);
             }
         });
+
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
@@ -438,6 +427,7 @@ public class MainActivity extends BaseActivity implements
 //        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -446,6 +436,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0);
             }
         });
+
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
@@ -627,7 +618,7 @@ public class MainActivity extends BaseActivity implements
         searchView.getText().clear();
 //        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -636,6 +627,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0);
             }
         });
+
         ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
         ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
         int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
@@ -688,6 +680,8 @@ public class MainActivity extends BaseActivity implements
     public ImageView getButtonSpecialAction() {
         return buttonSpecialAction;
     }
+
+    public ImageView getChatbutton(){ return chatbutton;}
 
     public ImageView getButtonSearch() {
         return btn_search;

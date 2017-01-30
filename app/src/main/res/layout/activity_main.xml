@@ -47,6 +47,17 @@
                         android:src="@drawable/ic_search_icon"
                         android:visibility="visible" />
 
+                    <ImageView
+                        android:id="@+id/chat_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="16dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="16dp"
+                        android:src="@drawable/ic_forum_black_24dp"
+                        android:visibility="visible" />
+
 
                     <ImageView
                         android:id="@+id/button_special_action"
@@ -55,9 +66,7 @@
                         android:paddingBottom="16dp"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
-
                         android:paddingTop="16dp"
-                        android:src="@drawable/ic_edit"
                         android:visibility="visible" />
 
                 </LinearLayout>
