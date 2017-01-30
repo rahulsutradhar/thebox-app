@@ -55,7 +55,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
@@ -554,12 +554,15 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
-//        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.VISIBLE);
+
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
+
+        ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
+
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
-        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -567,6 +570,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
+
+        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getSearchAction().setImageResource(R.drawable.menu_icon);
         ((MainActivity) getActivity()).getSearchAction().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -574,6 +579,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
             }
         });
+
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
@@ -585,7 +591,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-//        fabHolder.setTranslationY(-offset);
         specialCardView.setTranslationY(-offset);
     }
 
@@ -604,8 +609,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
         moveViewPager(clickPosition);
         if (!RestClient.is_in_development) {
-            new ShowCaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                    .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+            new ShowcaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
+                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
 //                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);

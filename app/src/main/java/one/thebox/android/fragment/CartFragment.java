@@ -174,6 +174,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.GONE);
+        ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
+
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {

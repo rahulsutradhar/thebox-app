@@ -61,7 +61,7 @@ import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity implements
     private LinearLayout navigationViewBottom;
 
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction, searchAction, btn_search;
+    private ImageView buttonSpecialAction, searchAction,btn_search, chatbutton;
     private EditText searchView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
@@ -171,10 +171,8 @@ public class MainActivity extends BaseActivity implements
 
         initCart();
 
-
         if (!RestClient.is_in_development) {
-            ShowCaseHelper.removeAllTutorial();
-
+            ShowcaseHelper.removeAllTutorial();
         }
 
 
@@ -278,7 +276,8 @@ public class MainActivity extends BaseActivity implements
         navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
-        btn_search = (ImageView) findViewById(R.id.btn_search);
+        chatbutton = (ImageView) findViewById(R.id.chat_button);
+        btn_search =(ImageView) findViewById(R.id.btn_search);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
@@ -315,7 +314,6 @@ public class MainActivity extends BaseActivity implements
                 }
             }
         });
-
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         searchAction = (ImageView) findViewById(R.id.image_view_search_action);
@@ -454,13 +452,20 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void openContactUsActivity() {
-        startActivity(new Intent(MainActivity.this, ContactUsActivity.class));
+        startActivity(new Intent(MainActivity.this,HotLineActivity.class));
         drawerLayout.closeDrawers();
     }
 
     private void attachMyBoxesFragment(int default_position,boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
+
+        chatbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openContactUsActivity();
+            }
+        });
 
         Bundle bundle = new Bundle();
         bundle.putInt("default_position", default_position);
@@ -498,7 +503,6 @@ public class MainActivity extends BaseActivity implements
         btn_search.setVisibility(View.VISIBLE);
 
         buttonSpecialAction.setVisibility(View.VISIBLE);
-
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -506,6 +510,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0,false);
             }
         });
+
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
@@ -522,6 +527,7 @@ public class MainActivity extends BaseActivity implements
 //        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -530,6 +536,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(0,false);
             }
         });
+
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
@@ -710,7 +717,7 @@ public class MainActivity extends BaseActivity implements
 
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
+
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -772,6 +779,8 @@ public class MainActivity extends BaseActivity implements
     public ImageView getButtonSpecialAction() {
         return buttonSpecialAction;
     }
+
+    public ImageView getChatbutton(){ return chatbutton;}
 
     public ImageView getButtonSearch() {
         return btn_search;

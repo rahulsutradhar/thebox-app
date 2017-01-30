@@ -148,7 +148,9 @@
         <activity
             android:name=".activity.PaymentOptionActivity"
             android:screenOrientation="portrait" />
-
+        <activity
+            android:name=".activity.HotLineActivity"
+            android:screenOrientation="portrait" />
         <!-- Activity of RazorPay in order to integrate payment integration. -->
         <activity
             android:name="com.razorpay.CheckoutActivity"

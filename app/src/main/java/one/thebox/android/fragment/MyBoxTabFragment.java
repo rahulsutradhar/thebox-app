@@ -131,13 +131,20 @@ public class MyBoxTabFragment extends Fragment {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
+
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
+
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(null);
+
+        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
+
+        ((MainActivity) getActivity()).getChatbutton().setVisibility(View.VISIBLE);
+
         ((MainActivity) getActivity()).getSearchView().getText().clear();
         ((MainActivity) getActivity()).getSearchAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getSearchAction().setOnClickListener(null);
+
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(((BaseActivity) getActivity()).getContentView().getWindowToken(), 0);
     }

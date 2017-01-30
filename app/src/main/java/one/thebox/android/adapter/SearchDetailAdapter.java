@@ -55,8 +55,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
-import one.thebox.android.ViewHelper.MontserratTextView;
-import one.thebox.android.ViewHelper.ShowCaseHelper;
+import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -681,15 +680,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 moveRecyclerView(true);
                             }
                             if ((PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
-                                new ShowCaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                             @Override
                                             public void onComplete() {
                                                 PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
                                                 PrefUtils.putBoolean(MyApplication.getInstance(), "store_tutorial", false);
-                                                new ShowCaseHelper((Activity) mContext, 2)
+                                                new ShowcaseHelper((Activity) mContext, 2)
                                                         .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                        .setOnCompleteListener(new ShowCaseHelper.OnCompleteListener() {
+                                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                                             @Override
                                                             public void onComplete() {
                                                                 EventBus.getDefault().post(new ShowTabTutorialEvent());
