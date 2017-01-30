@@ -486,7 +486,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 out_of_stock.setVisibility(View.VISIBLE);
 
                 // Disable the change button
-                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                no_of_options_holder.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
             } else {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 addButton.setVisibility(View.VISIBLE);
@@ -495,7 +495,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 repeat_every.setVisibility(View.VISIBLE);
                 out_of_stock.setVisibility(View.GONE);
                 // Disable the change button
-                changeButton.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                no_of_options_holder.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
             }
         }
 
