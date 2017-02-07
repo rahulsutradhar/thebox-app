@@ -50,6 +50,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
+import one.thebox.android.activity.FullImageActivity;
 import one.thebox.android.activity.ImageActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -599,7 +600,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     String url = boxItem.getSelectedItemConfig().getPhotoUrl();
-                    ImageActivity.startActivity(mContext, url);
+                    FullImageActivity.showImage(url,mContext);
                 }
             });
 

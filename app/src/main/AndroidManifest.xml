@@ -183,7 +183,9 @@
 
         <service
             android:name=".Services.SyncService"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".activity.FullImageActivity"></activity>
     </application>
 
 </manifest>

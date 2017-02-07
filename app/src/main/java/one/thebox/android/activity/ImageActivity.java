@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import one.thebox.android.R;
 import one.thebox.android.adapter.CustomPagerAdapter;
 import one.thebox.android.fragment.ImageFragment;
+import one.thebox.android.util.OnFragmentInteractionListener;
 
-public class ImageActivity extends BaseActivity implements CustomPagerAdapter.PagerAdapterInterface<String> {
+public class ImageActivity extends BaseActivity implements CustomPagerAdapter.PagerAdapterInterface<String> ,OnFragmentInteractionListener {
 
     public static final String KEY_IMAGE = "imageKey";
     private static final String KEY_IMAGES = "imagesKey";
@@ -76,5 +77,10 @@ public class ImageActivity extends BaseActivity implements CustomPagerAdapter.Pa
     @Override
     public CharSequence getPageTitle(int position, String listItem) {
         return "";
+    }
+
+    @Override
+    public void showDrawerToggle(boolean showDrawerToggle) {
+
     }
 }

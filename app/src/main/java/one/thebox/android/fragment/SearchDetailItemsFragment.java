@@ -345,6 +345,8 @@ public class SearchDetailItemsFragment extends Fragment {
                                 categories.addAll(response.body().getRestCategories());
                             initDataChangeListener();
 //                            fillAllUserItems();
+                        }else {
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 

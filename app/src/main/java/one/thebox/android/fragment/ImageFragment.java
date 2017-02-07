@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 import com.squareup.picasso.Picasso;
 
 import one.thebox.android.R;
+import one.thebox.android.util.OnFragmentInteractionListener;
 import ooo.oxo.library.widget.TouchImageView;
 
 /**
  * Created by nbansal2211 on 23/12/16.
  */
 
-public class ImageFragment extends BaseFragment {
+public class ImageFragment extends BaseFragment implements OnFragmentInteractionListener {
     private TouchImageView fullImage;
     private String image;
 
@@ -35,4 +36,8 @@ public class ImageFragment extends BaseFragment {
     }
 
 
+    @Override
+    public void showDrawerToggle(boolean showDrawerToggle) {
+
+    }
 }

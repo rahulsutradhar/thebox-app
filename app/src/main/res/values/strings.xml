@@ -52,7 +52,10 @@
   <string name="enter_details">
     <u>Enter Details</u>
   </string>
+<<<<<<< 2df9f97817fe5d4a8b3bf7a64e79bc9b152f6d83
 
+=======
+>>>>>>> add lat long
     <!-- Announcement String -->
     <string name="useritem_quantity_change_from_box_title">Hey</string>
     <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
@@ -72,6 +75,7 @@
     <string name="never_run_out_hassle_free_delivery">Never Run Out. Hassle Free Delivery.</string>
     <string name="only_operational_in_powai">We are currently only operational in Powai</string>
     <string name="suggested_categories">Hey, Don\'t forget to pick these</string>
+
     <string name="chat">Chat</string>
     <string name="contact_support">Contact Support</string>
     <string name="faq">FAQ</string>
@@ -89,11 +93,8 @@
     <string name="default_subtext_2">We hope you enjoy the new version please update the app and</string>
     <string name="default_title_app_update">We come bearing gifts</string>
 
-
     <!-- OnBoard Activity -->
     <string name="get_started">GET STARTED</string>
-
     <string name="gps_error">We cannot get your location. Please turn on your GPS.</string>
-
 </resources>
 

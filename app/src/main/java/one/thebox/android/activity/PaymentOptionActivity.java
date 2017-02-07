@@ -1,18 +1,28 @@
 package one.thebox.android.activity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.razorpay.Checkout;
 
 import org.json.JSONObject;
@@ -41,8 +51,10 @@ import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.PaymentSelectorFragment;
+import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -55,7 +67,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
-    private static final String EXTRA_TOTAL_CART_AMOUNT="total_cart_amount";
+    private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
+    private static final int REQ_CODE_GET_LOCATION = 101;
     private ArrayList<AddressAndOrder> addressAndOrders;
 
     @BindView(R.id.tabsPaymentOption)
@@ -71,13 +84,13 @@ public class PaymentOptionActivity extends AppCompatActivity {
     ImageView imgPaymentBack;
 
 
-
     int POSITION_OF_VIEW_PAGER;
     String totalPayment = "";
     private User user;
     private int mergeOrderId;
-
-
+    private boolean locationRefreshed;
+    private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
+    private String razorpayPaymentID;
 
 
     @Override
@@ -172,36 +185,26 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     @OnClick(R.id.txtPlaceOrder)
-    public void submitPlaceOrder()
-    {
-        if(POSITION_OF_VIEW_PAGER==0)
-        {
-            startPayment(String.valueOf(Double.parseDouble(totalPayment)*100),"Subscribe and Forget",user.getEmail(),user.getPhoneNumber(),user.getName());
+    public void submitPlaceOrder() {
+        if (POSITION_OF_VIEW_PAGER == 0) {
+            startPayment(String.valueOf(Double.parseDouble(totalPayment) * 100), "Subscribe and Forget", user.getEmail(), user.getPhoneNumber(), user.getName());
 
-        }
-        else if(POSITION_OF_VIEW_PAGER==1)
-        {
-            if (mergeOrderId == 0) {
-                pay_offline();
-            } else {
-                merge_cart_to_order_and_pay_offline();
-            }
+        } else if (POSITION_OF_VIEW_PAGER == 1) {
+            getUserLocation();
         }
     }
 
-    public static String fmt(double d)
-    {
-        if(d == (long) d)
-            return String.format("%d",(long)d);
+    public static String fmt(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
         else
-            return String.format("%s",d);
+            return String.format("%s", d);
     }
-
 
 
     private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId))
+        MyApplication.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -243,7 +246,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId,razorpayPaymentID))
+        MyApplication.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -285,7 +288,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders))
+        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -327,7 +330,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString()))
+        MyApplication.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString(), String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -367,11 +370,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-    public void startPayment(String amount,String description,String email,String phonenumber,String name){
+    public void startPayment(String amount, String description, String email, String phonenumber, String name) {
 
         /**
          * Put your key id generated in Razorpay dashboard here
@@ -397,47 +396,147 @@ public class PaymentOptionActivity extends AppCompatActivity {
          */
         Activity activity = this;
 
-        try{
+        try {
             JSONObject options = new JSONObject("{" +
-                    "description: '"+description+"'," +
+                    "description: '" + description + "'," +
                     "currency: 'INR'}"
             );
 
             options.put("amount", amount);
             options.put("name", "The Box Cart");
-            options.put("prefill", new JSONObject("{email: '"+email+"', contact: '"+phonenumber+"', name: '"+name+"'}"));
+            options.put("prefill", new JSONObject("{email: '" + email + "', contact: '" + phonenumber + "', name: '" + name + "'}"));
 
             razorpayCheckout.open(activity, options);
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
+    public void onPaymentSuccess(String razorpayPaymentID) {
+        this.razorpayPaymentID=razorpayPaymentID;
+        getUserLocation();
+    }
 
-    public void onPaymentSuccess(String razorpayPaymentID){
-
+    private void payOnLine(String razorpayPaymentID) {
         if (mergeOrderId == 0) {
             pay_online(razorpayPaymentID);
         } else {
             merge_cart_to_order_and_pay_online(razorpayPaymentID);
         }
-
     }
 
 
-    public void onPaymentError(int code, String response){
+    public void onPaymentError(int code, String response) {
         try {
             Log.e("Payment failed", "Code is " + Integer.toString(code) + " " + response);
-            Toast.makeText(this, "Payment failed, Try Cash on Delivery " , Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
+            Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
         }
     }
 
+    private void getUserLocation() {
+        checkGPSenable();
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_GET_LOCATION) {
+            return;
+        }
+    }
+
+    // Location Marking Issue
+    private void checkGPSenable() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            getLocationPermission();
+        } else {
+            buildAlertMessageNoGps();
+        }
+    }
+
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.gps_error)
+                .setCancelable(false)
+                .setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQ_CODE_GET_LOCATION);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void getLocationPermission() {
+        if (AppUtil.checkPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            setLocation();
+            return;
+        }
+        new TedPermission(this).setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        setLocation();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                    }
+                }).check();
+    }
+
+    private void setLocation() {
+        new FusedLocationService(this) {
+            @Override
+            protected void onSuccess(MyLocation mLastKnownLocation) {
+                if (mLastKnownLocation != null) {
+                    if (!locationRefreshed) {
+                        locationRefreshed = true;
+                        setLocation();
+                        return;
+                    }
+                    latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
+                    if(TextUtils.isEmpty(razorpayPaymentID)){
+                        fillUserInfo();
+                    }else {
+                        pay_online(razorpayPaymentID);
+                    }
+                }
+            }
+
+            @Override
+            protected void onFailed(ConnectionResult connectionResult) {
+                latLng = new MyLocation("0.0", "0.0");
+                locationRefreshed = false;
+                if(TextUtils.isEmpty(razorpayPaymentID)){
+                    fillUserInfo();
+                }else {
+                    pay_online(razorpayPaymentID);
+                }
+            }
+        };
+    }
+
+    private void fillUserInfo() {
+        if (mergeOrderId == 0) {
+            pay_offline();
+        } else {
+            merge_cart_to_order_and_pay_offline();
+        }
+
+    }
 
 
 }
