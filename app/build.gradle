@@ -26,7 +26,7 @@ android {
     defaultConfig {
         applicationId "one.thebox.android"
         minSdkVersion 15
-
+        multiDexEnabled true
         targetSdkVersion 23
         versionCode 13
         versionName "1.1.3"
@@ -45,6 +45,11 @@ android {
         maven {
             url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
         }
+    }
+
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
     }
 }
 
@@ -86,6 +91,8 @@ dependencies {
     compile 'com.facebook.stetho:stetho:1.3.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.freshdesk:hotline-android:1.0.+'
+    compile 'io.branch.sdk.android:library:2.+'
+    compile 'com.android.support:multidex:1.0.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }

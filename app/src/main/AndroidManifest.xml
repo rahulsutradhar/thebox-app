@@ -98,6 +98,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <data android:scheme="thebox" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+
         </activity>
         <activity
             android:name=".activity.FillUserInfoActivity"
@@ -167,6 +176,14 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <!-- BRANCH.IO TEST Key-->
+
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z" />
+
+        <!-- BRANCH.IO LIVE Key-->
+
+       <!-- <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_gpud56EtW1sAAy8sEcapQkloCwitt59c" />-->
+
         <activity android:name=".activity.TermsOfUserActivity" />
 
         <meta-data
@@ -174,6 +191,8 @@
             android:value="b64cedb83163da1ef4b796db1394544fda44f190" />
 
         <activity android:name=".activity.ContactUsActivity" />
+
+
 
         <service
             android:name=".Services.SyncService"

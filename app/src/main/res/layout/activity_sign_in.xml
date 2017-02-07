@@ -62,4 +62,34 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
+
+    <!--<LinearLayout
+        android:id="@+id/llSocialSingIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_sign_in"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivFacebookLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/fb_icon" />
+
+        <ImageView
+            android:id="@+id/ivGooglePlusLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/app_name"
+            android:src="@mipmap/gplus_icon" />
+    </LinearLayout>
+-->
+
 </RelativeLayout>
