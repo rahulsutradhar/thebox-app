@@ -2,7 +2,6 @@ package one.thebox.android.ViewHelper;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextPaint;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,26 +24,20 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Invoice;
@@ -72,11 +65,8 @@ import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.fragment.SearchDetailItemsFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
-import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -604,11 +594,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .centerCrop()
                     .crossFade()
                     .into(productImage);
-            productImage.setTag(boxItem.getSelectedItemConfig().getPhotoUrl());
+
             productImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String url = (String) v.getTag();
+                    String url = boxItem.getSelectedItemConfig().getPhotoUrl();
                     ImageActivity.startActivity(mContext, url);
                 }
             });

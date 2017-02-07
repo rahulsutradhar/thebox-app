@@ -108,7 +108,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
-    
+
     compile 'com.github.oxoooo:touch-image-view:1.0.1'
     compile 'gun0912.ted:tedpermission:1.0.2'
 

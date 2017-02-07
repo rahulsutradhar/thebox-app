@@ -123,7 +123,7 @@ public interface APIService {
     Call<MyBoxResponse> getMyBoxes(@Header("authtoken") String authToken);
 
     @GET("/gogetmyuseritems")
-    Call<UserItemResponse> getMyItems(@Header("authtoken") String authToken);
+    Call<UserItemResponse>  getMyItems(@Header("authtoken") String authToken);
 
     @POST("/updateitemquantity")
     Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,

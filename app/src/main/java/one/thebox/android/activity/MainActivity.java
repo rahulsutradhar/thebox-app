@@ -1,12 +1,10 @@
 package one.thebox.android.activity;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
@@ -19,24 +17,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,25 +49,19 @@ import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
 import one.thebox.android.Services.RegistrationIntentService;
-import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
-import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.CartFragment;
-import one.thebox.android.fragment.ExploreBoxesFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxTabFragment;
-import one.thebox.android.fragment.MyBoxesFragment;
-import one.thebox.android.fragment.OrderTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -186,10 +170,8 @@ public class MainActivity extends BaseActivity implements
         getSettingsData();
 
         setCartOnToolBar();
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                                                                  new IntentFilter(BROADCAST_EVENT_TAB));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter(BROADCAST_EVENT_TAB));
         //new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
-
     }
 
     @Subscribe

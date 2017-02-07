@@ -6,14 +6,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
@@ -22,16 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.eftimoff.androidplayer.Player;
-import com.eftimoff.androidplayer.actions.property.PropertyAction;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -63,7 +55,6 @@ import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.AnimationUtil;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -613,7 +604,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-//                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
+//                            new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                             tabLayout.setScrollPosition(clickPosition, 0, true);
                             shouldMoveMore = false;
                         }
