@@ -52,6 +52,7 @@
   <string name="enter_details">
     <u>Enter Details</u>
   </string>
+
     <!-- Announcement String -->
     <string name="useritem_quantity_change_from_box_title">Hey</string>
     <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
@@ -91,5 +92,8 @@
 
     <!-- OnBoard Activity -->
     <string name="get_started">GET STARTED</string>
+
+    <string name="gps_error">We cannot get your location. Please turn on your GPS.</string>
+
 </resources>
 

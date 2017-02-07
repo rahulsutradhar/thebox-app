@@ -1,7 +1,13 @@
 package one.thebox.android.activity;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +22,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
@@ -26,7 +35,9 @@ import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.MyApplication;
+import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
+import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -35,6 +46,7 @@ import retrofit2.Response;
 
 public class FillUserInfoActivity extends BaseActivity implements View.OnClickListener {
 
+    private static final int REQ_CODE_GET_LOCATION = 101;
     String name, email, locality;
     Call<LocalitiesResponse> call;
     private Button submitButton;
@@ -67,6 +79,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         }
     };
     private int codeSelected;
+    private boolean locationRefreshed;
+    private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,39 +158,128 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         switch (id) {
             case R.id.button_submit: {
                 if (isValidInfo()) {
-                    final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication
-                            .getAPIService()
-                            .storeUserInfo(PrefUtils.getToken(this)
-                                    , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
-                                            .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(codeSelected))))
-                            .enqueue(new Callback<UserSignInSignUpResponse>() {
-                                @Override
-                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    dialog.dismiss();
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            if (response.body().getUser() != null) {
-                                                PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
-                                                PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
-                                                startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
-                                                finish();
-                                            }
-                                        } else {
-                                            Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                                    dialog.dismiss();
-                                }
-                            });
+                    getUserLocation();
                 }
                 break;
             }
         }
+    }
+
+    private void getUserLocation() {
+        checkGPSenable();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_CODE_GET_LOCATION) {
+            return;
+        }
+    }
+
+    // Location Marking Issue
+    private void checkGPSenable() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            getLocationPermission();
+        } else {
+            buildAlertMessageNoGps();
+        }
+    }
+
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.gps_error)
+                .setCancelable(false)
+                .setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQ_CODE_GET_LOCATION);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void getLocationPermission() {
+        if (AppUtil.checkPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            setLocation();
+            return;
+        }
+        new TedPermission(this).setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+                .setPermissionListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        setLocation();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                        fillUserInfo();
+                    }
+                }).check();
+    }
+
+    private void setLocation() {
+        new FusedLocationService(this) {
+            @Override
+            protected void onSuccess(MyLocation mLastKnownLocation) {
+                if (mLastKnownLocation != null) {
+                    if (!locationRefreshed) {
+                        locationRefreshed = true;
+                        setLocation();
+                        return;
+                    }
+                    latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
+                    fillUserInfo();
+                }
+            }
+
+            @Override
+            protected void onFailed(ConnectionResult connectionResult) {
+                latLng = new MyLocation("0.0", "0.0");
+                locationRefreshed = false;
+                fillUserInfo();
+            }
+        };
+    }
+
+    private void fillUserInfo() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MyApplication
+                .getAPIService()
+                .storeUserInfo(PrefUtils.getToken(this)
+                        , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
+                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(codeSelected), latLng.getLatitude(), latLng.getLongitude())))
+                .enqueue(new Callback<UserSignInSignUpResponse>() {
+                    @Override
+                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                        dialog.dismiss();
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                if (response.body().getUser() != null) {
+                                    PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
+                                    PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
+                                    startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            } else {
+                                Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
     }
 
     public boolean isValidEmail(CharSequence target) {

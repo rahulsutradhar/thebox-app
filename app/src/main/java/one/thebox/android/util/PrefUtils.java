@@ -23,6 +23,8 @@ public class PrefUtils {
     final static String KEY_TOKEN = "token";
     private static final String FILE_NAME = "TROVO_PREFERENCES";
     public static final String KEY_SETTING_CACHE = "SettingCache";
+    public static final java.lang.String KEY_LAT = "loc_lat";
+    public static final java.lang.String KEY_LNG = "loc_lng";
     private static SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
 

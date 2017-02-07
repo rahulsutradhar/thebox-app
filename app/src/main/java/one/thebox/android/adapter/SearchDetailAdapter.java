@@ -57,6 +57,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
+import one.thebox.android.activity.ImageActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
@@ -603,6 +604,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .centerCrop()
                     .crossFade()
                     .into(productImage);
+            productImage.setTag(boxItem.getSelectedItemConfig().getPhotoUrl());
+            productImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = (String) v.getTag();
+                    ImageActivity.startActivity(mContext, url);
+                }
+            });
 
 
             no_of_options_holder.setOnClickListener(new View.OnClickListener() {

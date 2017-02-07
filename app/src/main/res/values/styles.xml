@@ -101,6 +101,15 @@
 
     <style name="tv_subtext_app_update" parent="tv_title_app_update"></style>
 
+    <style name="toolbar">
+        <item name="android:id">@id/toolbar</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <item name="toolbar" type="id"></item>
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content"-->
     <!--android:layout_gravity="center"-->
