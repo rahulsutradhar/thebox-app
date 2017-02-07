@@ -22,6 +22,7 @@ import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 
+
 /**
  * Created by 32 on 30-05-2016.
  */
