@@ -83,8 +83,10 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initVariables() {
+
+        //ignore Order class if order successful is false
         Realm realm = MyApplication.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class);
+        RealmQuery<Order> query = realm.where(Order.class).notEqualTo("successful", false);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         orders.clear();
         for (int i = 0; i < realmResults.size(); i++) {
@@ -92,23 +94,21 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         }
 
         //Setting scenes
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             //No data available;show static content
             //New User
             scene_number = -1;
         }
         //Atleast one delivery scheduled by the user
-        else if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)) {
-            if (PrefUtils.should_i_fetch_model_data_from_server(MyApplication.getInstance(),0)) {
+        else if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true)) {
+            if (PrefUtils.should_i_fetch_model_data_from_server(MyApplication.getInstance(), 0)) {
                 OrderHelper.getOrderAndNotify(false);
                 PrefUtils.clean_model_being_updated_on_server_details(MyApplication.getInstance(), 0);
             }
             scene_number = 1;
-        }
-        else if ((orders.size() < 4)){
+        } else if ((orders.size() < 4)) {
             scene_number = 1;
-        }
-        else {
+        } else {
             scene_number = 0;
         }
     }
@@ -118,8 +118,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
 
-        switch(scene_number){
-            case -1:{
+        switch (scene_number) {
+            case -1: {
                 no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
@@ -130,12 +130,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 });
                 break;
             }
-            case 0:{
+            case 0: {
                 setupRecyclerView();
                 progress_bar.setVisibility(View.GONE);
                 break;
             }
-            case 1:{
+            case 1: {
                 progress_bar.setVisibility(View.VISIBLE);
                 setupRecyclerView();
                 break;

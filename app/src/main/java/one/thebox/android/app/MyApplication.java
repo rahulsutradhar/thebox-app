@@ -6,13 +6,10 @@ import android.content.Context;
 //import com.squareup.leakcanary.LeakCanary;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineConfig;
-import com.squareup.okhttp.Cache;
-import com.squareup.picasso.LruCache;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
+
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.fabric.sdk.android.Fabric;
@@ -94,7 +91,7 @@ public class MyApplication extends Application {
                                     .addHeader("Content-type", "application/json").build();
                             return chain.proceed(request);
                         }
-                    }).build();
+                    }).addNetworkInterceptor(new StethoInterceptor()).build();
 
         }
         return okHttpClient;
@@ -130,7 +127,7 @@ public class MyApplication extends Application {
 
         RealmChangeManager.getInstance();
 
-        HotlineConfig hlConfig=new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c","e183d3ec-b70b-4833-8ff1-ad93f4b017da");
+        HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
         hlConfig.setVoiceMessagingEnabled(true);
         hlConfig.setCameraCaptureEnabled(true);
         hlConfig.setPictureMessagingEnabled(true);
