@@ -28,10 +28,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Helpers.RealmChangeManager;
+import one.thebox.android.R;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.util.HockeySenderHelper;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by harsh on 10/12/15.
@@ -110,28 +112,37 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        myApplication = this;
-        mContext = getApplicationContext();
+        try {
+            Fabric.with(this, new Crashlytics());
+            myApplication = this;
+            mContext = getApplicationContext();
 
-        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
+            FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
-        getRealm();
+            getRealm();
 
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                        .build());
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                            .build());
 
+             /* initialize Calligraphy*/
+            CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                    .setDefaultFontPath("fonts/Montserrat-Bold.ttf")
+                    .setFontAttrId(R.attr.fontPath)
+                    .build());
 
-        RealmChangeManager.getInstance();
+            RealmChangeManager.getInstance();
 
-        HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
-        hlConfig.setVoiceMessagingEnabled(true);
-        hlConfig.setCameraCaptureEnabled(true);
-        hlConfig.setPictureMessagingEnabled(true);
-        Hotline.getInstance(getApplicationContext()).init(hlConfig);
+            HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
+            hlConfig.setVoiceMessagingEnabled(true);
+            hlConfig.setCameraCaptureEnabled(true);
+            hlConfig.setPictureMessagingEnabled(true);
+            Hotline.getInstance(getApplicationContext()).init(hlConfig);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
