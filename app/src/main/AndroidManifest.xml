@@ -81,7 +81,7 @@
             android:label="@string/on_boarding_activity"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Green" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
