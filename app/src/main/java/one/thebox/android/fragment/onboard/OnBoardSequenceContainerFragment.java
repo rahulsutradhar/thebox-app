@@ -13,6 +13,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.activity.SignInActivity;
 import one.thebox.android.adapter.onboard.OnBoardSequenceFragmentAdapter;
 import one.thebox.android.fragment.base.FragmentBase;
@@ -57,7 +58,7 @@ public class OnBoardSequenceContainerFragment extends FragmentBase {
         pageIndicator.setViewPager(viewPager);
 
         //move to signin Activity
-        Button getStartedButton = (Button) getView().findViewById(R.id.button_get_started);
+        MontserratTextView getStartedButton = (MontserratTextView) getView().findViewById(R.id.button_get_started);
         getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
