@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,7 +61,7 @@ public class MyBoxTabFragment extends Fragment {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_my_box_tabs, container, false);
             initViews();
-            setupViewPagerAndTabs(default_position,show_loader);
+            setupViewPagerAndTabs(default_position, show_loader);
         }
         return rootView;
     }
@@ -82,7 +83,7 @@ public class MyBoxTabFragment extends Fragment {
         super.onDetach();
     }
 
-    private void setupViewPagerAndTabs(int default_position,boolean show_loader) {
+    private void setupViewPagerAndTabs(int default_position, boolean show_loader) {
         if (getActivity() == null) {
             return;
         }
@@ -97,7 +98,7 @@ public class MyBoxTabFragment extends Fragment {
         //Attaching "MyItems"
         MyBoxesFragment my_box_fragment = new MyBoxesFragment();
         my_box_fragment.setArguments(args);
-        adapter.addFragment( my_box_fragment , "My Items");
+        adapter.addFragment(my_box_fragment, "My Items");
 
         //Attaching Store
         StoreFragment store_fragment = new StoreFragment();

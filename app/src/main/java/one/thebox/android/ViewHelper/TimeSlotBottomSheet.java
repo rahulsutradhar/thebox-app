@@ -90,7 +90,7 @@ public class TimeSlotBottomSheet {
         try {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            endDate = fmt.parse("2016-12-30");
+            endDate = fmt.parse("2017-12-30");
             startDate = fmt.parse(fmt.format(startDate));
 
             Date prevSelectedDate = fmt.parse(fmt.format(currentSelectedDate));
@@ -117,7 +117,7 @@ public class TimeSlotBottomSheet {
             public void onItemClicked(int position) {
 
                 try {
-                    int currentYear = 2016;
+                    int currentYear = Calendar.getInstance().get(Calendar.YEAR);
                     String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
                     String[] strings = dayMonth.split(",");
                     int day = Integer.parseInt(strings[0]);

@@ -14,8 +14,6 @@ import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.fabric.sdk.android.Fabric;
 
-import org.acra.ACRA;
-import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
 
 import java.io.IOException;
@@ -32,7 +30,6 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.util.HockeySenderHelper;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**

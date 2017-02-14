@@ -36,6 +36,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.PeriodicTask;
 import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
@@ -58,6 +60,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
+import one.thebox.android.Services.MyTaskService;
 import one.thebox.android.Services.RegistrationIntentService;
 import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -95,6 +98,14 @@ public class MainActivity extends BaseActivity implements
         , View.OnClickListener, OnFragmentInteractionListener,
         FragmentManager.OnBackStackChangedListener {
 
+    public static final String TASK_TAG_PERIODIC = "periodic_task";
+    private static final String TAG = "MainActivity";
+
+    /**
+     * GcmNetworkmanger for push notification heartbeat
+     */
+    private GcmNetworkManager mGcmNetworkManager;
+
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
@@ -104,7 +115,7 @@ public class MainActivity extends BaseActivity implements
     private LinearLayout navigationViewBottom;
 
     private DrawerLayout drawerLayout;
-    private ImageView buttonSpecialAction, searchAction,btn_search, chatbutton;
+    private ImageView buttonSpecialAction, searchAction, btn_search, chatbutton;
     private EditText searchView;
     private String query;
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
@@ -140,6 +151,10 @@ public class MainActivity extends BaseActivity implements
         setContentView(R.layout.activity_main);
         startService(new Intent(this, RegistrationIntentService.class));
         startService(new Intent(this, MyInstanceIDListenerService.class));
+
+        //get_gcm_network_manager
+        mGcmNetworkManager = GcmNetworkManager.getInstance(this);
+
         user = PrefUtils.getUser(this);
         fragmentManager = getSupportFragmentManager();
         shouldHandleDrawer();
@@ -154,19 +169,13 @@ public class MainActivity extends BaseActivity implements
 
         // Doing it for notification so "My Deliveries" fragment can be attached by default
         Bundle extras = getIntent().getExtras();
-        if(extras !=null) {
-            if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 11)
-            {
-                attachMyBoxesFragment(2,false);
-            }
-            else if (getIntent().getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0) == 10)
-            {
-                attachMyBoxesFragment(1,false);
-            }
-        }
-        else
-        {
-            attachMyBoxesFragment(1,false);
+        if (extras != null) {
+
+            onNewIntent(getIntent());
+
+        } else {
+            attachMyBoxesFragment(1, false);
+
         }
 
         initCart();
@@ -187,10 +196,11 @@ public class MainActivity extends BaseActivity implements
 
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                                                                  new IntentFilter(BROADCAST_EVENT_TAB));
+                new IntentFilter(BROADCAST_EVENT_TAB));
         //new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
 
     }
+
 
     @Subscribe
     public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
@@ -277,7 +287,7 @@ public class MainActivity extends BaseActivity implements
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
         chatbutton = (ImageView) findViewById(R.id.chat_button);
-        btn_search =(ImageView) findViewById(R.id.btn_search);
+        btn_search = (ImageView) findViewById(R.id.btn_search);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
@@ -341,7 +351,7 @@ public class MainActivity extends BaseActivity implements
     public boolean handleDrawer(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.my_boxes:
-                attachMyBoxesFragment(0,false);
+                attachMyBoxesFragment(0, false);
                 return true;
             case R.id.my_account:
                 attachMyAccountFragment();
@@ -452,11 +462,11 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void openContactUsActivity() {
-        startActivity(new Intent(MainActivity.this,HotLineActivity.class));
+        startActivity(new Intent(MainActivity.this, HotLineActivity.class));
         drawerLayout.closeDrawers();
     }
 
-    private void attachMyBoxesFragment(int default_position,boolean show_loader) {
+    private void attachMyBoxesFragment(int default_position, boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
 
@@ -478,7 +488,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyBoxesFragmentWithBackStack() {
-        attachMyBoxesFragment(1,false);
+        attachMyBoxesFragment(1, false);
     }
 
     private void attachSearchResultFragment() {
@@ -507,7 +517,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0,false);
+                attachMyBoxesFragment(0, false);
             }
         });
 
@@ -533,7 +543,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0,false);
+                attachMyBoxesFragment(0, false);
             }
         });
 
@@ -638,6 +648,7 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        startPeriodicTask();
     }
 
     @Override
@@ -648,11 +659,16 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onStop() {
         super.onStop();
+
+        // For the purposes of this sample, cancel all tasks when the app is stopped.
+        mGcmNetworkManager.cancelAllTasks(MyTaskService.class);
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
                 break;
@@ -661,13 +677,13 @@ public class MainActivity extends BaseActivity implements
             //Attaching Myitems fragment
             //Called after payment is confirmed
             case 1: {
-                attachMyBoxesFragment(0,true);
+                attachMyBoxesFragment(0, true);
                 break;
             }
 
             //Attaching MyDeliveries fragment
             case 2: {
-                attachMyBoxesFragment(2,false);
+                attachMyBoxesFragment(2, false);
                 break;
             }
 
@@ -697,15 +713,15 @@ public class MainActivity extends BaseActivity implements
 
             //Notifications
             case 10: {
-                attachMyBoxesFragment(1,false);
+                attachMyBoxesFragment(1, false);
                 break;
             }
             case 11: {
-                attachMyBoxesFragment(2,false);
+                attachMyBoxesFragment(2, false);
                 break;
             }
             case 12: {
-                attachMyBoxesFragment(2,false);
+                attachMyBoxesFragment(2, false);
                 break;
             }
 
@@ -723,7 +739,7 @@ public class MainActivity extends BaseActivity implements
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attachMyBoxesFragment(0,false);
+                attachMyBoxesFragment(0, false);
             }
         });
 
@@ -780,7 +796,9 @@ public class MainActivity extends BaseActivity implements
         return buttonSpecialAction;
     }
 
-    public ImageView getChatbutton(){ return chatbutton;}
+    public ImageView getChatbutton() {
+        return chatbutton;
+    }
 
     public ImageView getButtonSearch() {
         return btn_search;
@@ -840,6 +858,20 @@ public class MainActivity extends BaseActivity implements
 
         }
         navigationView.invalidate();
+    }
+
+    public void startPeriodicTask() {
+        Log.d(TAG, "startPeriodicTask");
+
+        // [START start_periodic_task]
+        PeriodicTask task = new PeriodicTask.Builder()
+                .setService(MyTaskService.class)
+                .setTag(TASK_TAG_PERIODIC)
+                .setPeriod(300L)
+                .build();
+
+        mGcmNetworkManager.schedule(task);
+
     }
 }
 
