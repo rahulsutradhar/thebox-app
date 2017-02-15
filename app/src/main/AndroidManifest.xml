@@ -28,6 +28,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
         android:name=".app.MyApplication"
@@ -43,8 +44,9 @@
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
                 <category android:name="one.thebox.android" />
             </intent-filter>
@@ -53,7 +55,7 @@
         <service
             android:name=".Services.MyGcmListenerService"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
@@ -71,6 +73,16 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+        <!--HeartBeat -->
+        <service
+            android:name=".Services.MyTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+                <action android:name="com.google.android.gms.gcm.SERVICE_ACTION_INITIALIZE" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".activity.LoginActivity"
@@ -82,15 +94,18 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".activity.MainActivity"
+            android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoAnimation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing" />
         <activity
             android:name=".activity.SplashActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/MyLaunchActivityTheme">
             <intent-filter>

@@ -54,6 +54,7 @@ public class RegistrationIntentService extends IntentService {
             InstanceID instanceID = InstanceID.getInstance(this);
             String gcm_token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+            this.gcm_token = gcm_token;
             // [END get_gcm_token]
             Log.i(TAG, "GCM Registration GcmToken: " + gcm_token);
 
@@ -89,8 +90,8 @@ public class RegistrationIntentService extends IntentService {
      * @param gcm_token The new gcm_token.
      */
     private void sendRegistrationToServer(String gcm_token) {
-        this.gcm_token = gcm_token;
-        MyApplication.getAPIService().postRegistrationId(PrefUtils.getToken(MyApplication.getInstance()),new RegistrationIdRequestBody(gcm_token))
+        MyApplication.getAPIService().postRegistrationId(
+                PrefUtils.getToken(MyApplication.getInstance()), new RegistrationIdRequestBody(gcm_token))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

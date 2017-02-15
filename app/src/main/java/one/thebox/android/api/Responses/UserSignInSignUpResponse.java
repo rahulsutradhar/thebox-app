@@ -13,7 +13,7 @@ import one.thebox.android.api.ApiResponse;
 /**
  * Created by Ajeet Kumar Meena on 19-04-2016.
  */
-public class UserSignInSignUpResponse extends ApiResponse implements Serializable{
+public class UserSignInSignUpResponse extends ApiResponse implements Serializable {
     @SerializedName("success")
     private boolean success;
     @SerializedName("info")
@@ -26,6 +26,7 @@ public class UserSignInSignUpResponse extends ApiResponse implements Serializabl
     private RealmList<Order> orders;
     @SerializedName("useritem_quantites")
     private RealmList<Invoice> useritem_quantites;
+
     public UserSignInSignUpResponse(boolean success, String info, User user) {
         this.success = success;
         this.info = info;
@@ -71,4 +72,5 @@ public class UserSignInSignUpResponse extends ApiResponse implements Serializabl
     public void setOrders(RealmList<Order> orders) {
         this.orders = orders;
     }
+
 }

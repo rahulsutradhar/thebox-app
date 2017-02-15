@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         setContentView(R.layout.activity_login);
         initViews();
         setStatusBarColor(getResources().getColor(R.color.black));
+
+
     }
 
     private void initViews() {
