@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="48dp"
         android:layout_marginTop="48dp"
         android:orientation="vertical"
         tools:context="one.thebox.android.activity.OtpVerificationActivity">
 
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="48dp"
-                android:gravity="center_horizontal"
-                android:text="Verifying your number"
-                android:textColor="@color/primary_text_color"
-                android:textSize="20sp" />
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:text="We've sent an SMS with an activation code"
-                android:textColor="@color/primary_text_color"
-                android:textSize="14sp" />
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:id="@+id/text_view_to_phone_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:text="to +913499235455"
-                android:textColor="@color/primary_text_color"
-                android:textSize="14sp" />
-
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/progress_bar"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:padding="8dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/loader" />
-
-            <one.thebox.android.ViewHelper.MontserratTextView
-                android:id="@+id/button_resend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:layout_marginBottom="150dp"
-                android:layout_gravity="center_horizontal"
-                android:text="Resend"
-                android:textColor="@color/primary_text_color"
-                android:background="@drawable/green_borders"
-                android:textSize="14sp" />
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="48dp"
+            android:gravity="center_horizontal"
+            android:text="Verifying your number"
+            android:textColor="@color/primary_text_color"
+            android:textSize="20sp" />
 
         <one.thebox.android.ViewHelper.MontserratTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="We've sent an SMS with an activation code"
+            android:textColor="@color/primary_text_color"
+            android:textSize="14sp" />
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/text_view_to_phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="to +913499235455"
+            android:textColor="@color/primary_text_color"
+            android:textSize="14sp" />
+
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/progress_bar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:src="@drawable/loader" />
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/button_resend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/green_borders"
+            android:padding="8dp"
+            android:text="Resend"
+            android:textColor="@color/primary_text_color"
+            android:textSize="14sp" />
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
             android:text="If we fail to automatically read SMS"
             android:textColor="@color/davy_grey"
             android:textSize="8sp" />
@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
+            android:imeOptions="actionDone"
             android:background="@drawable/black_underline_edit_text"
             android:gravity="center"
             android:inputType="number"

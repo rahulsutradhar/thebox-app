@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,6 +79,27 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         resendButton.setOnClickListener(this);
         doneButton.setOnClickListener(this);
         toPhoneNumberTextView.setText("to " + phoneNumber);
+
+        //track keyboard done option to procees
+        otpVerificationEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    //check if otp is valid
+                    if (isValidOtp()) {
+                        //hide keyboard
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+
+                        //request server
+                        verifyOtpFromServer(phoneNumber, otp);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Subscribe
@@ -164,6 +188,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                             response.errorBody());
                                     //display error message
                                     otpVerificationEditText.setError(error.getInfo());
+
                                 }
 
                             }
