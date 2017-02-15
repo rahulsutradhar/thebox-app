@@ -62,6 +62,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
+        notifyDataSetChanged();
     }
 
     public int getStickyHeaderHeight() {
@@ -217,8 +218,8 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             }
 
             // When used in Search Detail Fragment
-            if (isSearchDetailItemFragment){
-            setAnimation(itemViewHolder.itemView);
+            if (isSearchDetailItemFragment) {
+                setAnimation(itemViewHolder.itemView);
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +262,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         // Animations
-        private void setAnimation(View viewToAnimate){
+        private void setAnimation(View viewToAnimate) {
             Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right);
             viewToAnimate.startAnimation(animation);
         }
@@ -459,7 +460,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
     }
-
 
 
 }

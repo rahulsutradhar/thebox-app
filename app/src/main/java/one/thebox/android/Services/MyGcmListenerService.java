@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineNotificationConfig;
@@ -40,8 +41,6 @@ public class MyGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
-
-
         Hotline instance = Hotline.getInstance(this);
         HotlineNotificationConfig notificationConfig = new HotlineNotificationConfig()
                 .setNotificationSoundEnabled(true)
@@ -53,7 +52,7 @@ public class MyGcmListenerService extends GcmListenerService {
 
         Hotline.getInstance(getApplicationContext()).setNotificationConfig(notificationConfig);
 
-        if(instance.isHotlineNotification(data)) {
+        if (instance.isHotlineNotification(data)) {
             instance.handleGcmMessage(data);
             return;
         } else {
@@ -67,6 +66,7 @@ public class MyGcmListenerService extends GcmListenerService {
             } else {
                 new NotificationHelper(this, notificationInfo).show();
             }
+
         }
     }
 

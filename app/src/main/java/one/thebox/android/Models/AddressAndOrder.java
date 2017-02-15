@@ -1,5 +1,7 @@
 package one.thebox.android.Models;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -49,6 +51,7 @@ public class AddressAndOrder implements Serializable {
 
 
     public static String getDateStringWithoutSlot(Date date) {
+        /*Log.i("Time SLot ", "" + date.toString());*/
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
