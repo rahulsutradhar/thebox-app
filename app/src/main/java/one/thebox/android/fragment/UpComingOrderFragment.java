@@ -98,8 +98,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             //No data available;show static content
             //New User
             scene_number = -1;
-        }
-        //Atleast one delivery scheduled by the user
+        }//Atleast one delivery scheduled by the user
         else if (PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true)) {
             if (PrefUtils.should_i_fetch_model_data_from_server(MyApplication.getInstance(), 0)) {
                 OrderHelper.getOrderAndNotify(false);

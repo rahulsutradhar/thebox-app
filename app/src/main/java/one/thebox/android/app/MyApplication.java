@@ -30,6 +30,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
+import retrofit2.Retrofit;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -42,6 +43,7 @@ public class MyApplication extends Application {
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
     private static MyApplication myApplication;
     private static RestClient restClient;
+    private static Retrofit retrofit;
     private static OkHttpClient okHttpClient;
     private static Realm realm;
     private static Context mContext;
@@ -51,6 +53,7 @@ public class MyApplication extends Application {
     private static RestClient getRestClient() {
         if (restClient == null) {
             restClient = new RestClient();
+            retrofit = restClient.getRetrofit();
         }
         return restClient;
     }
@@ -146,5 +149,13 @@ public class MyApplication extends Application {
 
     public static Context getAppContext() {
         return mContext;
+    }
+
+    public static Retrofit getRetrofit() {
+        return retrofit;
+    }
+
+    public static void setRetrofit(Retrofit retrofit) {
+        MyApplication.retrofit = retrofit;
     }
 }
