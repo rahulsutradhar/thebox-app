@@ -79,6 +79,27 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
             }
         });
+
+        //track keyboard done option
+        mobileNumberEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (isValidMobileNumber()) {
+                        //close keyboard
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+
+                        //request server
+                        requestSignin();
+                    }
+                    return true;
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
