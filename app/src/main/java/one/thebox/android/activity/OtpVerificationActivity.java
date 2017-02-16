@@ -188,7 +188,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                             response.errorBody());
                                     //display error message
                                     otpVerificationEditText.setError(error.getInfo());
-
                                 }
 
                             }
