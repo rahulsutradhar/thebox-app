@@ -57,6 +57,7 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.Services.MyInstanceIDListenerService;
@@ -69,6 +70,7 @@ import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.MyApplication;
 import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.CartFragment;
@@ -122,6 +124,8 @@ public class MainActivity extends BaseActivity implements
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
     private Menu menu;
+    public int triggeredFrom = 0;
+
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
@@ -466,7 +470,7 @@ public class MainActivity extends BaseActivity implements
         drawerLayout.closeDrawers();
     }
 
-    private void attachMyBoxesFragment(int default_position, boolean show_loader) {
+    public void attachMyBoxesFragment(int default_position, boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
 
@@ -482,7 +486,7 @@ public class MainActivity extends BaseActivity implements
         bundle.putBoolean("show_loader", show_loader);
         fragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "My Boxes");
+        fragmentTransaction.replace(R.id.frame, fragment, "My_Boxes");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
     }
@@ -499,13 +503,14 @@ public class MainActivity extends BaseActivity implements
             getToolbar().setTitle(null);
             AutoCompleteFragment fragment = new AutoCompleteFragment();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment, "Search Result").addToBackStack("Explore Boxes");
+            fragmentTransaction.replace(R.id.frame, fragment, "Search_Result").addToBackStack("Explore_Boxes");
             fragmentTransaction.commit();
         }
         appBarLayout.setExpanded(true, true);
     }
 
     public void attachSearchDetailFragment(SearchResult query) {
+        clearBackStack();
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
@@ -521,10 +526,11 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query, 11);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         appBarLayout.setExpanded(true, true);
@@ -549,8 +555,9 @@ public class MainActivity extends BaseActivity implements
 
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         appBarLayout.setExpanded(true, true);
@@ -576,13 +583,20 @@ public class MainActivity extends BaseActivity implements
 
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack();
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (getTriggeredFrom() == 11) {
+                attachMyBoxesFragment(1, false);
+            } else {
+                Toast.makeText(getApplicationContext(), "False - " + getTriggeredFrom(), Toast.LENGTH_SHORT).show();
+            }
+
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
                 return;
             }
 
+            //exit app
             this.doubleBackToExitPressedOnce = true;
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
 
@@ -711,13 +725,16 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
 
-            //Notifications
+            /**
+             * Notifications Action Handiling
+             */
             case 10: {
                 attachMyBoxesFragment(1, false);
                 break;
             }
             case 11: {
-                attachMyBoxesFragment(2, false);
+                //attach category Fragment
+                attachCategoriesFragmentForNotifications(intent);
                 break;
             }
             case 12: {
@@ -745,15 +762,51 @@ public class MainActivity extends BaseActivity implements
 
         ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
         ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
+
         int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
         String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
+
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search Details");
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         appBarLayout.setExpanded(true, true);
+    }
+
+    /**
+     * Attach Search Detail Fragment on click from Notifications
+     */
+    public void attachCategoriesFragmentForNotifications(Intent intent) {
+        clearBackStack();
+        //parse the Parameters
+        Params params = CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_NOTIFICATION_PARAMETER), Params.class);
+
+        getToolbar().setSubtitle(null);
+
+        searchView.getText().clear();
+        searchViewHolder.setVisibility(View.GONE);
+
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_box);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachMyBoxesFragment(1, false);
+            }
+        });
+
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(params.getCategoryId(), params.getBoxName(), 11);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
+        fragmentTransaction.commit();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        appBarLayout.setExpanded(true, true);
+
     }
 
     @Override
@@ -871,7 +924,14 @@ public class MainActivity extends BaseActivity implements
                 .build();
 
         mGcmNetworkManager.schedule(task);
+    }
 
+    public int getTriggeredFrom() {
+        return triggeredFrom;
+    }
+
+    public void setTriggeredFrom(int triggeredFrom) {
+        this.triggeredFrom = triggeredFrom;
     }
 }
 

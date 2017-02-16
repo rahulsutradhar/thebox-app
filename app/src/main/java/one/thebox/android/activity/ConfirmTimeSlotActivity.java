@@ -127,7 +127,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
         timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
 
-      /*  Log.i("Time Slot Confirm", "" + AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));*/
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

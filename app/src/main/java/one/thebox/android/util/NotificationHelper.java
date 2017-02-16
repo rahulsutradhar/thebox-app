@@ -18,6 +18,8 @@ import java.io.IOException;
 
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.app.*;
+import one.thebox.android.app.Constants;
 
 /**
  * Created by Ajeet Kumar Meena on 11-02-2016.
@@ -207,7 +209,13 @@ public class NotificationHelper {
         if (notificationInfo.getNotificationActions() != null && !notificationInfo.getNotificationActions().isEmpty()
                 && notificationInfo.getNotificationActions().size() >= index + 1) {
             Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra("extra_tab_no", notificationInfo.getNotificationActions().get(index).getActionId());
+            //Action to be Perform
+            intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+            //set Extra data
+            if (notificationInfo.getParams() != null) {
+                intent.putExtra(Constants.EXTRA_NOTIFICATION_PARAMETER, CoreGsonUtils.toJson(notificationInfo.getParams()));
+            }
+
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
             int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);

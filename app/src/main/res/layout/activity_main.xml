@@ -1,208 +1,213 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:descendantFocusability="beforeDescendants"
-    android:fitsSystemWindows="true"
-    android:focusableInTouchMode="true">
+    android:fitsSystemWindows="true">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar_layout"
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="match_parent">
 
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="top"
-                android:background="@color/primary"
-                android:backgroundTint="@color/primary"
-                android:gravity="center_vertical"
-                app:layout_scrollFlags="scroll|enterAlways">
-
-                <LinearLayout
-                    android:id="@+id/llSpecialIcons"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:orientation="horizontal">
-
-
-                    <ImageView
-                        android:id="@+id/btn_search"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="16dp"
-                        android:paddingTop="16dp"
-                        android:src="@drawable/ic_search_icon"
-                        android:visibility="visible" />
-
-                    <ImageView
-                        android:id="@+id/chat_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="16dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:paddingTop="16dp"
-                        android:src="@drawable/ic_forum_black_24dp"
-                        android:visibility="visible" />
-
-
-                    <ImageView
-                        android:id="@+id/button_special_action"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="16dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:paddingTop="16dp"
-                        android:visibility="visible" />
-
-                    <FrameLayout
-                        android:id="@+id/frame_cart_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="16dp"
-                        android:paddingLeft="5dp"
-                        android:paddingRight="5dp"
-                        android:paddingTop="16dp">
-
-                        <include layout="@layout/header_cart" />
-                    </FrameLayout>
-
-                </LinearLayout>
-
-
-            </android.support.v7.widget.Toolbar>
-
-            <FrameLayout
-                android:id="@+id/search_view_holder"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/search_view_background"
-                android:visibility="gone">
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                <LinearLayout
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top"
+                    android:background="@color/primary"
+                    android:backgroundTint="@color/primary"
+                    android:gravity="center_vertical"
+                    app:layout_scrollFlags="scroll|enterAlways">
+
+                    <LinearLayout
+                        android:id="@+id/llSpecialIcons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:orientation="horizontal">
+
+
+                        <ImageView
+                            android:id="@+id/btn_search"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="16dp"
+                            android:paddingTop="16dp"
+                            android:src="@drawable/ic_search_icon"
+                            android:visibility="visible" />
+
+                        <ImageView
+                            android:id="@+id/chat_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="16dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:paddingTop="16dp"
+                            android:src="@drawable/ic_forum_black_24dp"
+                            android:visibility="visible" />
+
+
+                        <ImageView
+                            android:id="@+id/button_special_action"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="16dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:paddingTop="16dp"
+                            android:visibility="visible" />
+
+                        <FrameLayout
+                            android:id="@+id/frame_cart_icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="16dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:paddingTop="16dp">
+
+                            <include layout="@layout/header_cart" />
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+
+                </android.support.v7.widget.Toolbar>
+
+                <FrameLayout
+                    android:id="@+id/search_view_holder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/search_view_background"
+                    android:visibility="gone">
 
-                    <ImageView
-                        android:id="@+id/image_view_search_action"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:paddingBottom="4dp"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:paddingTop="4dp"
-                        android:src="@drawable/menu_icon" />
-
-
-                    <one.thebox.android.ViewHelper.MontserratEditText
-                        android:id="@+id/search"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:background="@color/white"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:gravity="center_vertical"
-                        android:hint="Search and Add"
-                        android:imeOptions="actionSearch"
-                        android:inputType="text"
-                        android:paddingBottom="10dp"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="10dp"
-                        android:textColor="@color/primary_text_color"
-                        android:textColorHint="@color/manatee" />
+                        android:orientation="horizontal">
 
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/image_view_search_action"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingTop="4dp"
+                            android:src="@drawable/menu_icon" />
 
-                <pl.droidsonroids.gif.GifImageView
-                    android:id="@+id/progress_bar"
-                    style="?android:attr/android:progressBarStyleSmall"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="right|center_vertical"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginRight="12dp"
-                    android:gravity="center"
-                    android:src="@drawable/loader" />
+
+                        <one.thebox.android.ViewHelper.MontserratEditText
+                            android:id="@+id/search"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:background="@color/white"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            android:gravity="center_vertical"
+                            android:hint="Search and Add"
+                            android:imeOptions="actionSearch"
+                            android:inputType="text"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            android:paddingTop="10dp"
+                            android:textColor="@color/primary_text_color"
+                            android:textColorHint="@color/manatee" />
+
+                    </LinearLayout>
+
+                    <pl.droidsonroids.gif.GifImageView
+                        android:id="@+id/progress_bar"
+                        style="?android:attr/android:progressBarStyleSmall"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginRight="12dp"
+                        android:gravity="center"
+                        android:src="@drawable/loader" />
+
+
+                </FrameLayout>
+
+
+            </android.support.design.widget.AppBarLayout>
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
             </FrameLayout>
 
-
-        </android.support.design.widget.AppBarLayout>
-
-        <FrameLayout
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
-        </FrameLayout>
-
-    </android.support.design.widget.CoordinatorLayout>
-
-    <android.support.design.widget.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start">
+        </android.support.design.widget.CoordinatorLayout>
 
         <android.support.design.widget.NavigationView
-            android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="top"
-            android:layout_marginBottom="50dp"
-            android:background="@color/white"
-            app:headerLayout="@layout/drawer_header"
-            app:itemTextAppearance="@style/NavigationDrawerStyle"
-            app:itemTextColor="@color/primary_text_color"
-            app:menu="@menu/drawer">
+            android:layout_gravity="start">
+
+            <android.support.design.widget.NavigationView
+                android:id="@+id/navigation_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:layout_marginBottom="50dp"
+                android:background="@color/white"
+                app:headerLayout="@layout/drawer_header"
+                app:itemTextAppearance="@style/NavigationDrawerStyle"
+                app:itemTextColor="@color/primary_text_color"
+                app:menu="@menu/drawer">
+
+            </android.support.design.widget.NavigationView>
+
+            <LinearLayout
+                android:id="@+id/navigation_drawer_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:background="@color/green_navigation_contact_us"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"
+                    android:gravity="center"
+                    android:text="@string/contact_us"
+                    android:textAppearance="@style/NavigationDrawerStyle"
+                    android:textColor="@color/white" />
+            </LinearLayout>
 
         </android.support.design.widget.NavigationView>
 
-        <LinearLayout
-            android:id="@+id/navigation_drawer_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:background="@color/green_navigation_contact_us"
-            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:foregroundGravity="center"
-                android:gravity="center"
-                android:text="@string/contact_us"
-                android:textAppearance="@style/NavigationDrawerStyle"
-                android:textColor="@color/white" />
-        </LinearLayout>
-
-    </android.support.design.widget.NavigationView>
-
-
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>
+</RelativeLayout>
