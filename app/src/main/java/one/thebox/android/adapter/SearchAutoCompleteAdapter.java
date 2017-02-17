@@ -1,12 +1,15 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -65,9 +68,12 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(searchResults.get(position))));
+                
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4);
+                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(searchResults.get(position)));
+                ((Activity) mContext).setResult(1, intent);
+                ((Activity) mContext).finish();
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
