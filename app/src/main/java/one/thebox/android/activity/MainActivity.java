@@ -514,7 +514,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void attachSearchDetailFragment(SearchResult query) {
-        clearBackStack();
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();

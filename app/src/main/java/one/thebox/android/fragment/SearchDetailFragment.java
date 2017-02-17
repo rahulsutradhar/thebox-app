@@ -651,6 +651,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             if (listenerAdded) {
                 ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(null);
                 ((MainActivity) getActivity()).putToggleListener();
+                listenerAdded = false;
             }
             ((MainActivity) getActivity()).setTriggeredFrom(triggeredFrom);
         }
