@@ -16,10 +16,11 @@ public class RestClient {
 
     public static final boolean is_in_development = true;
     private APIService apiService;
+    private  Retrofit retrofit;
 
     public RestClient() {
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.DEBUG ? STAGING_URL_AWS : PROD_URL_AWS)
                 .client(MyApplication.getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -32,4 +33,12 @@ public class RestClient {
     }
 
     public boolean Is_in_Development() {return is_in_development;}
+
+    public Retrofit getRetrofit() {
+        return retrofit;
+    }
+
+    public void setRetrofit(Retrofit retrofit) {
+        this.retrofit = retrofit;
+    }
 }

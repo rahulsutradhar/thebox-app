@@ -59,6 +59,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
+        notifyDataSetChanged();
     }
 
     public int getStickyHeaderHeight() {

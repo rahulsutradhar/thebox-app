@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.squareup.picasso.Picasso;
@@ -19,6 +18,8 @@ import java.io.IOException;
 
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.app.*;
+import one.thebox.android.app.Constants;
 
 /**
  * Created by Ajeet Kumar Meena on 11-02-2016.
@@ -89,6 +90,7 @@ public class NotificationHelper {
         setPendingIntent();
         setNotificationSoundAndLights();
         showNotification();
+
     }
 
     public void setupBuilder() {
@@ -114,7 +116,7 @@ public class NotificationHelper {
 
     private void showNotification() {
         Notification notification = builder.build();
-        //notification.sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
+        notification.sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
         notification.ledARGB = context.getResources().getColor(R.color.primary);
         this.notificationManager.notify(notificationInfo.getNotificationId(), notification);
     }
@@ -172,6 +174,7 @@ public class NotificationHelper {
     }
 
     private void setBaseParameter() {
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
         builder.setColor(context.getResources().getColor(BACKGROUND_COLOR));
         builder.setSmallIcon(NotificationInfo.ICON_IDS[NotificationInfo.INDEX_ICON_NOTIFICATION]);
         builder.setVibrate(new long[]{1, 1, 1});
@@ -206,21 +209,17 @@ public class NotificationHelper {
         if (notificationInfo.getNotificationActions() != null && !notificationInfo.getNotificationActions().isEmpty()
                 && notificationInfo.getNotificationActions().size() >= index + 1) {
             Intent intent = new Intent(context, MainActivity.class);
+            //Action to be Perform
+            intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+            //set Extra data
+            if (notificationInfo.getParams() != null) {
+                intent.putExtra(Constants.EXTRA_NOTIFICATION_PARAMETER, CoreGsonUtils.toJson(notificationInfo.getParams()));
+            }
 
-//          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-//            Bundle bundle = new Bundle();
-//            bundle.putInt(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
-//            intent.putExtras(bundle);
-
-//            intent.putExtra(ActionExecuter.FLAG_NOTIFICATION, true);
-//            intent.putExtra(ActionExecuter.ACTION_ID, notificationInfo.getNotificationActions().get(index).getActionId());
-//            intent.putExtra(ActionExecuter.ACTION_EXTRA, notificationInfo.getNotificationActions().get(index).getActionExrta());
-//            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
-            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO,notificationInfo.getNotificationActions().get(index).getActionId());
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            return PendingIntent.getActivity(context, notificationInfo.getNotificationId() + index, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            int iUniqueId = (int) (System.currentTimeMillis() & 0xfffffff);
+            return PendingIntent.getActivity(context, iUniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
         return null;
     }
