@@ -113,6 +113,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private int noOfTabs;
     private String title;
     private int triggeredFrom = 0;
+    private boolean listenerAdded = false;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -145,11 +146,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         return searchDetailFragment;
     }
 
-    public static SearchDetailFragment getInstance(SearchResult searchResult, int triggeredFrom) {
+    public static SearchDetailFragment getInstance(SearchResult searchResult) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_QUERY, searchResult.getResult());
         bundle.putInt(EXTRA_CAT_ID, searchResult.getId());
-        bundle.putInt(TRIGERED_FROM, triggeredFrom);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
         return searchDetailFragment;
@@ -613,12 +613,17 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         });
 
         //back button in toolbar
-        ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleBackPress();
-            }
-        });
+        if (triggeredFrom == 21) {
+            listenerAdded = true;
+            ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    handleBackPress();
+                }
+            });
+        }
+
 
         //track the hardware back button and handle back navigation
         rootView.setFocusableInTouchMode(true);
@@ -641,10 +646,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
     public void handleBackPress() {
-        /**
-         * Open MyBoxFragment when press backed from search results or notification category
-         */
-        if (triggeredFrom == 11) {
+
+        if (triggeredFrom == 21) {
+            if (listenerAdded) {
+                ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(null);
+                ((MainActivity) getActivity()).putToggleListener();
+            }
             ((MainActivity) getActivity()).setTriggeredFrom(triggeredFrom);
         }
         getActivity().onBackPressed();

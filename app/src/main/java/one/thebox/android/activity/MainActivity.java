@@ -193,7 +193,7 @@ public class MainActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UniversalSearchActivity.class);
-                startActivityForResult(intent, 4511);
+                startActivityForResult(intent, 1);
             }
         });
         getSettingsData();
@@ -264,6 +264,13 @@ public class MainActivity extends BaseActivity implements
         setSupportActionBar(getToolbar());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        putToggleListener();
+/*
+        navigationView.setCheckedItem(R.id.explore_boxes);
+*/
+    }
+
+    public void putToggleListener() {
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(), R.string.openDrawer, R.string.closeDrawer) {
 
             @Override
@@ -279,9 +286,6 @@ public class MainActivity extends BaseActivity implements
             }
         };
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
-/*
-        navigationView.setCheckedItem(R.id.explore_boxes);
-*/
     }
 
     private void initViews() {
@@ -526,7 +530,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query, 11);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -584,12 +588,9 @@ public class MainActivity extends BaseActivity implements
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            if (getTriggeredFrom() == 11) {
+            if (getTriggeredFrom() == 21) {
                 attachMyBoxesFragment(1, false);
-            } else {
-                Toast.makeText(getApplicationContext(), "False - " + getTriggeredFrom(), Toast.LENGTH_SHORT).show();
             }
-
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -732,7 +733,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(1, false);
                 break;
             }
-            case 11: {
+            case 21: {
                 //attach category Fragment
                 attachCategoriesFragmentForNotifications(intent);
                 break;
@@ -785,6 +786,7 @@ public class MainActivity extends BaseActivity implements
         Params params = CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_NOTIFICATION_PARAMETER), Params.class);
 
         getToolbar().setSubtitle(null);
+        setTriggeredFrom(21);
 
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.GONE);
@@ -798,7 +800,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(params.getCategoryId(), params.getBoxName(), 11);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(params.getCategoryId(), params.getBoxName(), 21);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -932,6 +934,24 @@ public class MainActivity extends BaseActivity implements
 
     public void setTriggeredFrom(int triggeredFrom) {
         this.triggeredFrom = triggeredFrom;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try {
+            //search results
+            if (requestCode == 1) {
+                if (data.getExtras() != null) {
+                    onNewIntent(data);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
 
