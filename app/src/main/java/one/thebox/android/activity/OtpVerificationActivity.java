@@ -171,10 +171,20 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     CartHelper.saveOrdersToRealm(response.body().getCart());
                                     OrderHelper.addAndNotify(response.body().getOrders());
                                     if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                        startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
+
+                                        Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
                                         finish();
+
                                     } else {
-                                        startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
+                                        Intent intent = new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
                                         finish();
                                     }
                                 }
