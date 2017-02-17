@@ -52,10 +52,7 @@
   <string name="enter_details">
     <u>Enter Details</u>
   </string>
-<<<<<<< 2df9f97817fe5d4a8b3bf7a64e79bc9b152f6d83
 
-=======
->>>>>>> add lat long
     <!-- Announcement String -->
     <string name="useritem_quantity_change_from_box_title">Hey</string>
     <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
