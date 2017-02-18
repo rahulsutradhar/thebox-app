@@ -5,20 +5,13 @@ import android.widget.Toast;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
-import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.IntStringComparator;
 
 /**
@@ -246,11 +239,11 @@ public class BoxItem extends RealmObject implements Serializable {
 
     private void checkAndPrintIfNull(ItemConfig itemConfig) {
         if (itemConfig == null) {
-            Toast.makeText(MyApplication.getInstance(), "Item config is null for id " + this.getId(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(TheBox.getInstance(), "Item config is null for id " + this.getId(), Toast.LENGTH_SHORT).show();
         } else {
             if (itemConfig.getSizeUnit() == null ||
                     itemConfig.getItemType() == null) {
-                Toast.makeText(MyApplication.getInstance(), "Item fields are null for " + this.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TheBox.getInstance(), "Item fields are null for " + this.getId(), Toast.LENGTH_SHORT).show();
             }
         }
     }

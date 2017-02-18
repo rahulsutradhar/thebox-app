@@ -1,25 +1,9 @@
 package one.thebox.android.ViewHelper;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.DisplayUtil;
 
 /**
  * Created by vaibhav on 13/08/16.

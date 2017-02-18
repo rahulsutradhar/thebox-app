@@ -2,14 +2,13 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
 /**
@@ -160,8 +159,8 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                 }
             }
             else{
-                sizeTextView.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.manatee));
-                costTextView.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.manatee));
+                sizeTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
+                costTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
                 sizeTextView.setPaintFlags(sizeTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 costTextView.setPaintFlags(costTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }

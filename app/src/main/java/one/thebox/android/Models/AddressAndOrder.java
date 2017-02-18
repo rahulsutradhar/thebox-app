@@ -1,7 +1,5 @@
 package one.thebox.android.Models;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -13,7 +11,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 
@@ -35,7 +33,7 @@ public class AddressAndOrder implements Serializable {
     public AddressAndOrder(int addressId, int orderId) {
         this.addressId = addressId;
         this.orderId = orderId;
-        this.user = PrefUtils.getUser(MyApplication.getInstance());
+        this.user = PrefUtils.getUser(TheBox.getInstance());
     }
 
     public static String getDateString(Date date) {
@@ -119,7 +117,7 @@ public class AddressAndOrder implements Serializable {
     }
 
     public Order getOrder() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class)
                 .equalTo(Order.FIELD_ID, orderId);
         RealmResults<Order> realmResults = query.findAll();

@@ -16,8 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,16 +33,14 @@ import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
-import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.adapter.StoreRecyclerAdapter;
 import one.thebox.android.api.Responses.MyBoxResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -53,7 +49,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
 
 public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
@@ -125,7 +120,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private List<UserItem> getUserItems(int boxId) {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
         List<UserItem> list = new ArrayList<>();
         list.addAll(items);
@@ -133,7 +128,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void initVariables() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
         RealmList<Box> boxes = new RealmList<>();
@@ -216,7 +211,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         Log.d("From Store", "Calling gogetmybox");
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
+        TheBox.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<MyBoxResponse>() {
                     @Override
                     public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
@@ -248,7 +243,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void storeToRealm() {
-        final Realm superRealm = MyApplication.getRealm();
+        final Realm superRealm = TheBox.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {

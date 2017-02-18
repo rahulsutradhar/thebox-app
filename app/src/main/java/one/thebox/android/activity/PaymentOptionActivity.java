@@ -41,7 +41,6 @@ import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
@@ -49,7 +48,7 @@ import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
@@ -204,7 +203,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -214,7 +213,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
-                                        MyApplication.getInstance(),
+                                        TheBox.getInstance(),
                                         Constants.PREF_IS_ORDER_IS_LOADING,
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
@@ -246,7 +245,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -256,7 +255,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
-                                        MyApplication.getInstance(),
+                                        TheBox.getInstance(),
                                         Constants.PREF_IS_ORDER_IS_LOADING,
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
@@ -288,7 +287,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -298,7 +297,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
-                                        MyApplication.getInstance(),
+                                        TheBox.getInstance(),
                                         Constants.PREF_IS_ORDER_IS_LOADING,
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
@@ -330,7 +329,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString(), String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString(), String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -340,7 +339,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
-                                    MyApplication.getInstance(),
+                                    TheBox.getInstance(),
                                     Constants.PREF_IS_ORDER_IS_LOADING,
                                     Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                     (new Date(System.currentTimeMillis())).getTime()

@@ -17,7 +17,7 @@ import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.ExploreItemAdapter;
 import one.thebox.android.api.Responses.ExploreItemResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -86,7 +86,7 @@ public class ExploreBoxesFragment extends Fragment {
     public void getAllBoxes() {
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getAllExploreBoxes(PrefUtils.getToken(getActivity()))
+        TheBox.getAPIService().getAllExploreBoxes(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<ExploreItemResponse>() {
                     @Override
                     public void onResponse(Call<ExploreItemResponse> call, Response<ExploreItemResponse> response) {

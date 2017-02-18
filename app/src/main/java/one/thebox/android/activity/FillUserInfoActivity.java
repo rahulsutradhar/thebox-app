@@ -8,20 +8,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -34,7 +30,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.FusedLocationService;
@@ -112,11 +108,11 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                     progressBar.setVisibility(View.VISIBLE);
                     if (callHasBeenCompleted) {
                         callHasBeenCompleted = false;
-                        call = MyApplication.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
+                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
                         call.enqueue(localitiesResponseCallback);
                     } else {
                         call.cancel();
-                        call = MyApplication.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
+                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
                         call.enqueue(localitiesResponseCallback);
                     }
                 } else {
@@ -252,7 +248,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
     private void fillUserInfo() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication
+        TheBox
                 .getAPIService()
                 .storeUserInfo(PrefUtils.getToken(this)
                         , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody

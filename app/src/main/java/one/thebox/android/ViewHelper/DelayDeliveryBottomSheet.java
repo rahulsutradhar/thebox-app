@@ -7,7 +7,6 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +29,7 @@ import one.thebox.android.adapter.DeliverySlotsAdapter;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.Responses.AdjustDeliveryResponse;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -92,7 +90,7 @@ public class DelayDeliveryBottomSheet {
     }
 
     public void getAllOrders() {
-        MyApplication.getAPIService().getAdjustDeliveryOrders(PrefUtils.getToken(context), userItem.getId())
+        TheBox.getAPIService().getAdjustDeliveryOrders(PrefUtils.getToken(context), userItem.getId())
                 .enqueue(new Callback<AdjustDeliveryResponse>() {
                              @Override
                              public void onResponse(Call<AdjustDeliveryResponse> call, Response<AdjustDeliveryResponse> response) {
@@ -323,7 +321,7 @@ public class DelayDeliveryBottomSheet {
                         String selectedtext = r.getText().toString();
 
                         final BoxLoader loader = new BoxLoader(mContext).show();
-                        MyApplication.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
+                        TheBox.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
                                     @Override
@@ -371,7 +369,7 @@ public class DelayDeliveryBottomSheet {
                         String selectedtext = r.getText().toString();
 
                         final BoxLoader loader = new BoxLoader(context).show();
-                        MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
+                        TheBox.getAPIService().cancelSubscription(PrefUtils.getToken(mContext)
                                 , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
                                     @Override

@@ -2,7 +2,7 @@ package one.thebox.android.api;
 
 
 import one.thebox.android.BuildConfig;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -22,7 +22,7 @@ public class RestClient {
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.DEBUG ? STAGING_URL_AWS : PROD_URL_AWS)
-                .client(MyApplication.getOkHttpClient())
+                .client(TheBox.getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(APIService.class);

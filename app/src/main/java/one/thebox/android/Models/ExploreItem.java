@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -88,18 +88,18 @@ public class ExploreItem implements Serializable {
     }
 
     public int getDefaultPositionOfViewPager() {
-        return PrefUtils.getInt(MyApplication.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + getTitle(), 0);
+        return PrefUtils.getInt(TheBox.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + getTitle(), 0);
     }
 
     public void setDefaultPositionOfViewPager(int viewPagerPosition) {
-        PrefUtils.putInt(MyApplication.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + getTitle(), viewPagerPosition);
+        PrefUtils.putInt(TheBox.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + getTitle(), viewPagerPosition);
     }
 
     public static int getDefaultPositionOfViewPager(String boxName) {
-        return PrefUtils.getInt(MyApplication.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + boxName, 0);
+        return PrefUtils.getInt(TheBox.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + boxName, 0);
     }
 
     public static void setDefaultPositionOfViewPager(String boxName, int viewPagerPosition) {
-        PrefUtils.putInt(MyApplication.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + boxName, viewPagerPosition);
+        PrefUtils.putInt(TheBox.getInstance(), PREF_DEFAULT_POSITION_OF_VIEW_PAGER + boxName, viewPagerPosition);
     }
 }

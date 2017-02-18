@@ -32,7 +32,7 @@ import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.util.DateTimeUtil;
@@ -132,7 +132,7 @@ public class UserItemHolder extends BaseHolder {
             @Override
             public void onClick(View v) {
 
-                if (PrefUtils.getBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", true)) {
+                if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
                     Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
                     confirm_change_is_not_intentded_for_a_particular_order.build_it();
@@ -140,7 +140,7 @@ public class UserItemHolder extends BaseHolder {
                             .setPositiveButton(confirm_change_is_not_intentded_for_a_particular_order.getPositive_button_text_res_id(), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
-                                    PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                    PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                     if (userItem.getQuantity() == 0) {
                                         addItemToBox(getAdapterPosition());
                                     } else {
@@ -151,7 +151,7 @@ public class UserItemHolder extends BaseHolder {
                             .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
-                                    PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                    PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                     Intent intent = new Intent(mContext, MainActivity.class)
                                             .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 11);
                                     context.startActivity(intent);
@@ -173,7 +173,7 @@ public class UserItemHolder extends BaseHolder {
             public void onClick(View v) {
 
 
-                if (PrefUtils.getBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", true)) {
+                if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
                     Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
                     confirm_change_is_not_intentded_for_a_particular_order.build_it();
@@ -182,7 +182,7 @@ public class UserItemHolder extends BaseHolder {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
 
-                                    PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                    PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
 
                                     if (userItem.getQuantity() > 1) {
                                         updateQuantity(item, getAdapterPosition(), userItem.getQuantity() - 1);
@@ -200,7 +200,7 @@ public class UserItemHolder extends BaseHolder {
                                         dialog_unsubscribe.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                                         dialog_unsubscribe.show();
                                     } else {
-                                        Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
@@ -208,7 +208,7 @@ public class UserItemHolder extends BaseHolder {
                             .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
-                                    PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                    PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                     Intent intent = new Intent(mContext, MainActivity.class)
                                             .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 11);
                                     mContext.startActivity(intent);
@@ -233,7 +233,7 @@ public class UserItemHolder extends BaseHolder {
                         dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                         dialog.show();
                     } else {
-                        Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -275,13 +275,13 @@ public class UserItemHolder extends BaseHolder {
                 .crossFade()
                 .into(productImageView);
 
-//            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
-        //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
+//            Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+        //Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
     }
 
     private void addItemToBox(final int position) throws IllegalStateException {
 //        final BoxLoader dialog = new BoxLoader(mContext).show();
-//        MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(MyApplication.getInstance()),
+//        TheBox.getAPIService().addToMyBox(PrefUtils.getToken(TheBox.getInstance()),
 //                new AddToMyBoxRequestBody(
 //                        new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
 //                        new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
@@ -291,10 +291,10 @@ public class UserItemHolder extends BaseHolder {
 //                        dialog.dismiss();
 //                        if (response.body() != null) {
 //                            if (response.body().isSuccess()) {
-//                                Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 //                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
 //                            } else {
-//                                Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 //                            }
 //                        }
 //                    }
@@ -309,7 +309,7 @@ public class UserItemHolder extends BaseHolder {
 
     private void updateQuantity(UserItem item, final int position, final int quantity) throws IllegalStateException {
         final BoxLoader dialog = new BoxLoader(mContext).show();
-        MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(item.getId(), quantity)))
+        TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(item.getId(), quantity)))
                 .enqueue(new Callback<UpdateItemConfigResponse>() {
                     @Override
                     public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
@@ -331,9 +331,9 @@ public class UserItemHolder extends BaseHolder {
 //                                }
 //                                OrderHelper.addAndNotify(response.body().getOrders());
 //                                EventBus.getDefault().post(new UpdateOrderItemEvent());
-//                                Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -347,7 +347,7 @@ public class UserItemHolder extends BaseHolder {
 
     private void changeConfig(final int position, final int itemConfigId) {
         final BoxLoader dialog = new BoxLoader(mContext).show();
-        MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemConfigurationRequest
+        TheBox.getAPIService().updateItemConfig(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemConfigurationRequest
                 (new UpdateItemConfigurationRequest.UserItem(item.getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                 .enqueue(new Callback<UpdateItemConfigResponse>() {
                     @Override
@@ -390,20 +390,20 @@ public class UserItemHolder extends BaseHolder {
                 int idx = radioGroup.indexOfChild(radioButton);
                 RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
                 if (r == null) {
-                    Toast.makeText(MyApplication.getInstance(), "Select one of the given reasons", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TheBox.getInstance(), "Select one of the given reasons", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String selectedtext = r.getText().toString();
 
                 final BoxLoader loader = new BoxLoader(mContext).show();
-                MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(MyApplication.getInstance())
+                TheBox.getAPIService().cancelSubscription(PrefUtils.getToken(TheBox.getInstance())
                         , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                         .enqueue(new Callback<CancelSubscriptionResponse>() {
                             @Override
                             public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                 loader.dismiss();
                                 if (response.body() != null) {
-//                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 //                                    if (response.body().isSuccess()) {
 //                                        userItems.remove(getAdapterPosition());
 //                                        if (onUserItemChange != null) {

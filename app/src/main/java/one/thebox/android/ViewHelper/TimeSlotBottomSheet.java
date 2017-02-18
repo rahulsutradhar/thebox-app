@@ -13,16 +13,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.BaseRecyclerAdapter;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
-import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.DateTimeUtil;
 

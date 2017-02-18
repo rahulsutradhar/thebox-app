@@ -4,15 +4,12 @@ package one.thebox.android.activity;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -58,7 +55,7 @@ public class OnBoardingActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        PrefUtils.putBoolean(MyApplication.getAppContext(), AUTO_ENABLE_PERMISSION, true);
+                        PrefUtils.putBoolean(TheBox.getAppContext(), AUTO_ENABLE_PERMISSION, true);
 
                         Intent intent = new Intent();
                         intent.setComponent(new ComponentName(CALC_PACKAGE_NAME, CALC_PACKAGE_ACITIVITY));

@@ -5,21 +5,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 
-import org.greenrobot.eventbus.EventBus;
-
 import io.realm.Realm;
-import io.realm.RealmList;
-import one.thebox.android.Events.ShowSpecialCardEvent;
-import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
-import one.thebox.android.api.Responses.CartResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.PrefUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 19-05-2016.
@@ -28,7 +19,7 @@ public class CartHelper {
     private static final String EXTRA_HAS_SAVED_ORDER = "extra_has_saved_order";
 
     public static void saveCartItemsIfRequire() {
-        if (!PrefUtils.getBoolean(MyApplication.getInstance(), EXTRA_HAS_SAVED_ORDER, false)) {
+        if (!PrefUtils.getBoolean(TheBox.getInstance(), EXTRA_HAS_SAVED_ORDER, false)) {
             saveOrders();
         }
     }
@@ -37,7 +28,7 @@ public class CartHelper {
     }
 
     public static void saveOrdersToRealm(final Order order) {
-        final Realm superRealm = MyApplication.getRealm();
+        final Realm superRealm = TheBox.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -52,16 +43,16 @@ public class CartHelper {
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-                Toast.makeText(MyApplication.getInstance(), error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(TheBox.getInstance(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
     public static int getNumberOfItemsInCart() {
-        Order order = MyApplication.getRealm()
+        Order order = TheBox.getRealm()
                 .where(Order.class)
-                .equalTo(Order.FIELD_ID, PrefUtils.getUser(MyApplication.getInstance()).getCartId())
+                .equalTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId())
                 .findFirst();
         if (order == null || order.getId() == 0) {
             return 0;
@@ -74,8 +65,8 @@ public class CartHelper {
 //        if (userItem.getNextDeliveryScheduledAt() != null) {
 //            return;
 //        }
-        final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
-        Realm realm = MyApplication.getRealm();
+        final int cartId = PrefUtils.getUser(TheBox.getInstance()).getCartId();
+        Realm realm = TheBox.getRealm();
 
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(userItem);
@@ -120,8 +111,8 @@ public class CartHelper {
     }
 
     public static void removeUserItem(final int userItemId, Order cart) {
-        final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
-        Realm realm = MyApplication.getRealm();
+        final int cartId = PrefUtils.getUser(TheBox.getInstance()).getCartId();
+        Realm realm = TheBox.getRealm();
         realm.beginTransaction();
         realm.where(UserItem.class).equalTo("id", userItemId).findFirst().deleteFromRealm();
         realm.commitTransaction();
@@ -172,8 +163,8 @@ public class CartHelper {
     }
 
     public static void clearCart() {
-        final int cartId = PrefUtils.getUser(MyApplication.getInstance()).getCartId();
-        Realm realm = MyApplication.getRealm();
+        final int cartId = PrefUtils.getUser(TheBox.getInstance()).getCartId();
+        Realm realm = TheBox.getRealm();
         realm.executeTransactionAsync
                 (new Realm.Transaction() {
                     @Override
@@ -198,6 +189,6 @@ public class CartHelper {
         Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
         // add data
         intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
-        LocalBroadcastManager.getInstance(MyApplication.getInstance()).sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(TheBox.getInstance()).sendBroadcast(intent);
     }
 }

@@ -17,7 +17,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 
 /**
  * Created by robin on 11/10/16.
@@ -129,8 +129,8 @@ public abstract class FusedLocationService implements GoogleApiClient.Connection
     }
 
     public static MyLocation getLatestLocation() {
-        String lat = PrefUtils.getString(MyApplication.getInstance(), PrefUtils.KEY_LAT, null);
-        String lng = PrefUtils.getString(MyApplication.getInstance(), PrefUtils.KEY_LNG, null);
+        String lat = PrefUtils.getString(TheBox.getInstance(), PrefUtils.KEY_LAT, null);
+        String lng = PrefUtils.getString(TheBox.getInstance(), PrefUtils.KEY_LNG, null);
         if (TextUtils.isEmpty(lat) || TextUtils.isEmpty(lng)) {
             return null;
         } else {
@@ -140,13 +140,13 @@ public abstract class FusedLocationService implements GoogleApiClient.Connection
     }
 
     private void saveLastKnownLocation(MyLocation mLastKnownLocation) {
-        PrefUtils.putString(MyApplication.getInstance(), PrefUtils.KEY_LAT, mLastKnownLocation.getLatitude() + "");
-        PrefUtils.putString(MyApplication.getInstance(), PrefUtils.KEY_LNG, mLastKnownLocation.getLongitude() + "");
+        PrefUtils.putString(TheBox.getInstance(), PrefUtils.KEY_LAT, mLastKnownLocation.getLatitude() + "");
+        PrefUtils.putString(TheBox.getInstance(), PrefUtils.KEY_LNG, mLastKnownLocation.getLongitude() + "");
     }
 
     private MyLocation getSavedLocation() {
-        String latitude = PrefUtils.getString(MyApplication.getInstance(), PrefUtils.KEY_LAT, null);
-        String longitude = PrefUtils.getString(MyApplication.getInstance(), PrefUtils.KEY_LNG, null);
+        String latitude = PrefUtils.getString(TheBox.getInstance(), PrefUtils.KEY_LAT, null);
+        String longitude = PrefUtils.getString(TheBox.getInstance(), PrefUtils.KEY_LNG, null);
         try {
             return new MyLocation(longitude, latitude);
         } catch (Exception e) {

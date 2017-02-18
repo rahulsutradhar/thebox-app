@@ -4,25 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
@@ -35,7 +29,7 @@ import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
 import one.thebox.android.api.Responses.LocalitiesResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -205,7 +199,7 @@ public class AddressBottomSheet {
 
     private void addAddress(final Address address) {
         final BoxLoader dialog = new BoxLoader(context).show();
-        MyApplication.getAPIService().addAddress(PrefUtils.getToken(context),
+        TheBox.getAPIService().addAddress(PrefUtils.getToken(context),
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
                                 address.getLocality().getCode(),
@@ -239,7 +233,7 @@ public class AddressBottomSheet {
 
     private void updateAddress(final Address address) {
         final BoxLoader dialog = new BoxLoader(context).show();
-        MyApplication.getAPIService().updateAddress(PrefUtils.getToken(context),
+        TheBox.getAPIService().updateAddress(PrefUtils.getToken(context),
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
                                 address.getId()
@@ -291,11 +285,11 @@ public class AddressBottomSheet {
                     progressBar.setVisibility(View.VISIBLE);
                     if (callHasBeenCompleted) {
                         callHasBeenCompleted = false;
-                        call = MyApplication.getAPIService().getAllLocalities(PrefUtils.getToken(context), editable.toString());
+                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(context), editable.toString());
                         call.enqueue(localitiesResponseCallback);
                     } else {
                         call.cancel();
-                        call = MyApplication.getAPIService().getAllLocalities(PrefUtils.getToken(context), editable.toString());
+                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(context), editable.toString());
                         call.enqueue(localitiesResponseCallback);
                     }
                 } else {

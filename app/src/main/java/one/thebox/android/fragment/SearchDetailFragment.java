@@ -24,7 +24,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,7 +54,7 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -186,7 +185,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
     private void setCategories() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Category> query = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
         for (int i = 0; i < catIds.size(); i++) {
             if (catIds.size() - 1 == i) {
@@ -453,7 +452,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
+        TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
@@ -487,7 +486,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
+        TheBox.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
@@ -516,7 +515,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     public void getExploreDetails() {
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
+        TheBox.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override
                     public void onResponse(Call<ExploreBoxResponse> call, Response<ExploreBoxResponse> response) {
@@ -730,13 +729,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (previousScrollAction != showSpecialCardEvent.isVisible()) {
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
-                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
 
             } else {
                 specialCardView.setVisibility(View.GONE);
-                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }

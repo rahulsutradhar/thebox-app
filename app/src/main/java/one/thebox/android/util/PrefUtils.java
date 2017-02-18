@@ -7,11 +7,9 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.Set;
 
 import one.thebox.android.Models.User;
-import one.thebox.android.app.MyApplication;
 
 
 /**

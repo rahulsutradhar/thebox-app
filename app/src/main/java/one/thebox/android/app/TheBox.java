@@ -1,7 +1,8 @@
 package one.thebox.android.app;
 
-import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 //import com.squareup.leakcanary.LeakCanary;
 import com.crashlytics.android.Crashlytics;
@@ -36,19 +37,19 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 /**
  * Created by harsh on 10/12/15.
  */
-@ReportsCrashes(buildConfigClass = MyApplication.class)
-public class MyApplication extends Application {
+@ReportsCrashes(buildConfigClass = TheBox.class)
+public class TheBox extends MultiDexApplication {
 
     private static final int READ_TIMEOUT = 60 * 1000;
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
-    private static MyApplication myApplication;
+    private static TheBox theBox;
     private static RestClient restClient;
     private static Retrofit retrofit;
     private static OkHttpClient okHttpClient;
     private static Realm realm;
     private static Context mContext;
     private static RealmConfiguration realmConfiguration;
-    public final String TAG = MyApplication.class.getSimpleName();
+    public final String TAG = TheBox.class.getSimpleName();
 
     private static RestClient getRestClient() {
         if (restClient == null) {
@@ -67,7 +68,7 @@ public class MyApplication extends Application {
     }
 
     public static void setRealm(Realm realm) {
-        MyApplication.realm = realm;
+        TheBox.realm = realm;
     }
 
     public static RealmConfiguration getRealmConfiguration() {
@@ -76,8 +77,8 @@ public class MyApplication extends Application {
         return realmConfiguration;
     }
 
-    public static synchronized MyApplication getInstance() {
-        return myApplication;
+    public static synchronized TheBox getInstance() {
+        return theBox;
     }
 
     public static OkHttpClient getOkHttpClient() {
@@ -113,14 +114,16 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         try {
-            Fabric.with(this, new Crashlytics());
-            myApplication = this;
+            theBox = this;
             mContext = getApplicationContext();
 
             FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
+            /*Local database*/
             getRealm();
+            RealmChangeManager.getInstance();
 
+            /*debug tools*/
             Stetho.initialize(
                     Stetho.newInitializerBuilder(this)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
@@ -133,8 +136,11 @@ public class MyApplication extends Application {
                     .setFontAttrId(R.attr.fontPath)
                     .build());
 
-            RealmChangeManager.getInstance();
+            /*Crash report analytics tool*/
+            Fabric.with(this, new Crashlytics());
 
+
+            /*hotline*/
             HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
             hlConfig.setVoiceMessagingEnabled(true);
             hlConfig.setCameraCaptureEnabled(true);
@@ -146,6 +152,11 @@ public class MyApplication extends Application {
 
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     public static Context getAppContext() {
         return mContext;
@@ -156,6 +167,6 @@ public class MyApplication extends Application {
     }
 
     public static void setRetrofit(Retrofit retrofit) {
-        MyApplication.retrofit = retrofit;
+        TheBox.retrofit = retrofit;
     }
 }

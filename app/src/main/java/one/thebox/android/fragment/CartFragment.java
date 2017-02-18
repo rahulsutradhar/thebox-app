@@ -27,11 +27,10 @@ import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
@@ -69,7 +68,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     private void initVariables() {
         int cartId = PrefUtils.getUser(getActivity()).getCartId();
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, cartId).findFirst();

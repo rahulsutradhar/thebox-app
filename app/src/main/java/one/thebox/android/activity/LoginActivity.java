@@ -1,15 +1,13 @@
 package one.thebox.android.activity;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,7 +62,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             }
             case R.id.facebook_button: {
-                MyApplication.getAPIService().test("qwerretrtrewt").enqueue(new Callback<ApiResponse>() {
+                TheBox.getAPIService().test("qwerretrtrewt").enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
 

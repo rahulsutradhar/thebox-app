@@ -32,7 +32,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
-import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -63,7 +62,7 @@ import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.MyAccountFragment;
@@ -306,11 +305,11 @@ public class MainActivity extends BaseActivity implements
                     progressBar.setVisibility(View.VISIBLE);
                     if (callHasBeenCompleted) {
                         callHasBeenCompleted = false;
-                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
                         call.enqueue(searchAutoCompleteResponseCallback);
                     } else {
                         call.cancel();
-                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
+                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
                         call.enqueue(searchAutoCompleteResponseCallback);
                     }
                 } else {
@@ -369,7 +368,7 @@ public class MainActivity extends BaseActivity implements
     private void getSettingsData() {
         // Remove hardcoding of version
         // 13 is to test
-        MyApplication.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
+        TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
                     public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
@@ -619,7 +618,7 @@ public class MainActivity extends BaseActivity implements
 
     public void getAllAddresses() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().getAllAddresses(PrefUtils.getToken(this))
+        TheBox.getAPIService().getAllAddresses(PrefUtils.getToken(this))
                 .enqueue(new Callback<GetAllAddressResponse>() {
                     @Override
                     public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
@@ -875,7 +874,7 @@ public class MainActivity extends BaseActivity implements
 
     public ArrayList<ExploreItem> getAllExploreItems() {
         ArrayList<ExploreItem> exploreItems = new ArrayList<>();
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
         RealmList<Box> boxes = new RealmList<>();

@@ -51,7 +51,6 @@ import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.FullImageActivity;
-import one.thebox.android.activity.ImageActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
@@ -63,7 +62,7 @@ import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
@@ -182,15 +181,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewType) {
             case VIEW_TYPE_USER_ITEM: {
-                View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(R.layout.item_user_item, parent, false);
+                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_user_item, parent, false);
                 return new UserItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
-                View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(R.layout.item_search_detail_items, parent, false);
+                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_search_detail_items, parent, false);
                 return new SearchedItemViewHolder(itemView);
             }
             case VIEW_TYPE_ORDER_ITEM: {
-                View itemView = LayoutInflater.from(MyApplication.getInstance()).inflate(R.layout.item_order_item, parent, false);
+                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_order_item, parent, false);
                 return new OrderItemViewHolder(itemView);
             }
         }
@@ -329,7 +328,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                             dialog.show();
                         } else {
-                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -384,13 +383,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .into(productImageView);
 
 
-//            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
-            //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
+//            Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+            //Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().updateOrderQuantity(PrefUtils.getToken(MyApplication.getInstance()), new UpdateOrderItemQuantityRequestBody(order_id, userItems.get(position).getId(), quantity))
+            TheBox.getAPIService().updateOrderQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateOrderItemQuantityRequestBody(order_id, userItems.get(position).getId(), quantity))
                     .enqueue(new Callback<UpdateOrderItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateOrderItemResponse> call, Response<UpdateOrderItemResponse> response) {
@@ -409,9 +408,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     }
                                     OrderHelper.addAndNotify(response.body().getOrder());
                                     EventBus.getDefault().post(new UpdateOrderItemEvent());
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -477,7 +476,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 out_of_stock.setVisibility(View.VISIBLE);
 
                 // Disable the change button
-                no_of_options_holder.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
             } else {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 addButton.setVisibility(View.VISIBLE);
@@ -486,7 +485,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 repeat_every.setVisibility(View.VISIBLE);
                 out_of_stock.setVisibility(View.GONE);
                 // Disable the change button
-                no_of_options_holder.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.dim_gray));
+                no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
             }
         }
 
@@ -516,12 +515,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
 
-            WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(MyApplication.getInstance(), LinearLayoutManager.HORIZONTAL, false);
+            WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
             if (!shouldScrollToPosition) {
                 linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
             }
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
-            frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(MyApplication.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
+            frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
                 public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
                     if (boxItems.get(position).getUserItemId() != 0) {
@@ -550,9 +549,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(MyApplication.getInstance(), suggestedCategories);
+            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
-            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance(), LinearLayoutManager.HORIZONTAL, false));
+            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
@@ -647,7 +646,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         if (boxItem.getQuantity() > 0) {
                             updateQuantity(position, boxItem.getQuantity() - 1);
                         } else {
-                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -676,16 +675,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                         if (getAdapterPosition() == 0) {
-                            if ((PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
+                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
                                 moveRecyclerView(true);
                             }
-                            if ((PrefUtils.getBoolean(MyApplication.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
+                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
                                 new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
                                         .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                             @Override
                                             public void onComplete() {
-                                                PrefUtils.putBoolean(MyApplication.getInstance(), "move", false);
-                                                PrefUtils.putBoolean(MyApplication.getInstance(), "store_tutorial", false);
+                                                PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
+                                                PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
                                                 new ShowcaseHelper((Activity) mContext, 2)
                                                         .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
                                                         .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
@@ -714,7 +713,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void addItemToBox(final int position) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(MyApplication.getInstance()),
+            TheBox.getAPIService().addToMyBox(PrefUtils.getToken(TheBox.getInstance()),
                     new AddToMyBoxRequestBody(
                             new AddToMyBoxRequestBody.Item(boxItems.get(position).getId()),
                             new AddToMyBoxRequestBody.ItemConfig(boxItems.get(position).getSelectedItemConfig().getId())))
@@ -724,7 +723,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    //Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                     boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 //                                    RealmList<Category> suggestedCategories = new RealmList<Category>();
@@ -757,7 +756,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     notifyItemChanged(getAdapterPosition());
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                 } else {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -778,7 +777,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             userItemId = boxItems.get(position).getUserItemId();
             final int finalPosition = position;
-            MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
+            TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
@@ -805,9 +804,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemChanged(getAdapterPosition());
                                         }
                                     }
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -821,7 +820,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void changeConfig(final int position, final int itemConfigId) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemConfigurationRequest
+            TheBox.getAPIService().updateItemConfig(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemConfigurationRequest
                     (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getUserItemId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
@@ -845,7 +844,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
         public void moveRecyclerView(final boolean finalPosition) {
-            if (PrefUtils.getBoolean(MyApplication.getInstance(), "move", true)) {
+            if (PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) {
                 if (finalPosition)
                     recyclerViewFrequency.smoothScrollToPosition(frequencyAndPriceAdapter.getItemsCount());
                 else {
@@ -945,7 +944,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
 
-                    if (PrefUtils.getBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", true)) {
+                    if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
                         Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
                         confirm_change_is_not_intentded_for_a_particular_order.build_it();
@@ -953,7 +952,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 .setPositiveButton(confirm_change_is_not_intentded_for_a_particular_order.getPositive_button_text_res_id(), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                         if (userItem.getQuantity() == 0) {
                                             addItemToBox(getAdapterPosition());
                                         } else {
@@ -964,7 +963,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                         Intent intent = new Intent(mContext, MainActivity.class)
                                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 2);
                                         mContext.startActivity(intent);
@@ -986,7 +985,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onClick(View v) {
 
 
-                    if (PrefUtils.getBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", true)) {
+                    if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
                         Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
                         confirm_change_is_not_intentded_for_a_particular_order.build_it();
@@ -995,7 +994,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
 
-                                        PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
 
                                         if (userItem.getQuantity() > 1) {
                                             updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
@@ -1013,7 +1012,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             dialog_unsubscribe.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                                             dialog_unsubscribe.show();
                                         } else {
-                                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                                         }
 
                                     }
@@ -1021,7 +1020,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(MyApplication.getInstance(), "update_quantity_announcemnet", false);
+                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
                                         Intent intent = new Intent(mContext, MainActivity.class)
                                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 11);
                                         mContext.startActivity(intent);
@@ -1046,7 +1045,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                             dialog.show();
                         } else {
-                            Toast.makeText(MyApplication.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -1091,13 +1090,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .crossFade()
                     .into(productImageView);
 
-//            Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
-            //Picasso.with(MyApplication.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
+//            Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
+            //Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
         private void addItemToBox(final int position) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().addToMyBox(PrefUtils.getToken(MyApplication.getInstance()),
+            TheBox.getAPIService().addToMyBox(PrefUtils.getToken(TheBox.getInstance()),
                     new AddToMyBoxRequestBody(
                             new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
                             new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
@@ -1107,10 +1106,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
                                 } else {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -1125,7 +1124,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().updateQuantity(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
+            TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
@@ -1147,9 +1146,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     }
                                     OrderHelper.addAndNotify(response.body().getOrders());
                                     EventBus.getDefault().post(new UpdateOrderItemEvent());
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -1163,7 +1162,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void changeConfig(final int position, final int itemConfigId) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            MyApplication.getAPIService().updateItemConfig(PrefUtils.getToken(MyApplication.getInstance()), new UpdateItemConfigurationRequest
+            TheBox.getAPIService().updateItemConfig(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemConfigurationRequest
                     (new UpdateItemConfigurationRequest.UserItem(userItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
@@ -1206,20 +1205,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     int idx = radioGroup.indexOfChild(radioButton);
                     RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
                     if (r == null) {
-                        Toast.makeText(MyApplication.getInstance(), "Select one of the given reasons", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TheBox.getInstance(), "Select one of the given reasons", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     String selectedtext = r.getText().toString();
 
                     final BoxLoader loader = new BoxLoader(mContext).show();
-                    MyApplication.getAPIService().cancelSubscription(PrefUtils.getToken(MyApplication.getInstance())
+                    TheBox.getAPIService().cancelSubscription(PrefUtils.getToken(TheBox.getInstance())
                             , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
                             .enqueue(new Callback<CancelSubscriptionResponse>() {
                                 @Override
                                 public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                     loader.dismiss();
                                     if (response.body() != null) {
-                                        Toast.makeText(MyApplication.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         if (response.body().isSuccess()) {
                                             userItems.remove(getAdapterPosition());
                                             if (onUserItemChange != null) {

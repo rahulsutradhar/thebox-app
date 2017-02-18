@@ -2,14 +2,11 @@ package one.thebox.android.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,7 +20,7 @@ import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,7 +73,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
         if (smsEvent.getMessage().contains("awesome")) {
             otp = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
             final BoxLoader dialog = new BoxLoader(this).show();
-            MyApplication.getAPIService()
+            TheBox.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
                         @Override
@@ -130,7 +127,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
             case R.id.done_button: {
                 if (isValidOtp()) {
                     final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService()
+                    TheBox.getAPIService()
                             .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
@@ -144,7 +141,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
                                                     final BoxLoader dialog = new BoxLoader(ConfirmOtpActivity.this).show();
-                                                    MyApplication.getAPIService().updateProfile(
+                                                    TheBox.getAPIService().updateProfile(
                                                             PrefUtils.getToken(ConfirmOtpActivity.this), new StoreUserInfoRequestBody(
                                                                     new StoreUserInfoRequestBody.User
                                                                             (phoneNumber, user.getEmail(), user.getName(), PrefUtils.getUser(ConfirmOtpActivity.this).getLocalityCode())))
@@ -194,7 +191,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
             case R.id.button_resend: {
                 if (isSignUpActivity) {
                     final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
+                    TheBox.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override
                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
@@ -208,7 +205,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                             });
                 } else {
                     final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService()
+                    TheBox.getAPIService()
                             .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                 @Override

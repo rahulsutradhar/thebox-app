@@ -36,6 +36,12 @@ android {
         enabled = true
     }
 
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
+        incremental true
+    }
+
     buildTypes {
         release {
             minifyEnabled false

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 
 
 /**
@@ -87,15 +87,15 @@ public class ActionExecuter {
                 break;
             }
             case ORDER_HAS_LOADED: {
-                if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-                    PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
+                if(PrefUtils.getBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+                    PrefUtils.putBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
                     OrderHelper.getOrderAndNotify(false);
                 }
                 break;
             }
             case ORDER_HAS_BEEN_UPDATED_NOTIFY_USER: {
-                if(PrefUtils.getBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
-                    PrefUtils.putBoolean(MyApplication.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
+                if(PrefUtils.getBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false)) {
+                    PrefUtils.putBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, false);
                     OrderHelper.getOrderAndNotify(true);
                 }
                 break;

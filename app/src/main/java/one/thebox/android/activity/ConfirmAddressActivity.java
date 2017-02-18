@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,9 +20,8 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AddressBottomSheet;
-import one.thebox.android.adapter.EditDeliveryAddressAdapter;
 import one.thebox.android.adapter.SelectDeliveryAddressAdapter;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 
@@ -57,7 +54,7 @@ public class ConfirmAddressActivity extends BaseActivity {
         if (orderIds.isEmpty()) {
             return;
         }
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0);
         for (int i = 0; i < orderIds.size(); i++) {

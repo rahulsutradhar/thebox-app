@@ -5,16 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,21 +19,17 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
-import one.thebox.android.Services.UpdateOrderService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.adapter.MergeOrderAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
-import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
-import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.Responses.RescheduleResponseBody;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
@@ -220,7 +212,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     private void initMergeOrders() {
         mergeOrders = new RealmList<>();
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         for (int i = 0; i < realmResults.size(); i++) {
@@ -247,7 +239,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     public void reSchedule(Date reschedule_to) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to))
+        TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to))
                 .enqueue(new Callback<RescheduleResponseBody>() {
                     @Override
                     public void onResponse(Call<RescheduleResponseBody> call, Response<RescheduleResponseBody> response) {

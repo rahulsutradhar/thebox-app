@@ -3,7 +3,6 @@ package one.thebox.android.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -12,12 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 
 import okhttp3.ResponseBody;
@@ -29,7 +25,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -157,7 +153,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     public void verifyOtpFromServer(String phoneNumber, String otp) {
 
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService()
+        TheBox.getAPIService()
                 .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
@@ -192,7 +188,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                 if (response != null && !response.isSuccessful() && response.errorBody() != null) {
                                     //parse error send by the server and show message
                                     Converter<ResponseBody, one.thebox.android.api.Responses.UserSignInSignUpResponse> errorConverter =
-                                            MyApplication.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
                                                     new Annotation[0]);
                                     one.thebox.android.api.Responses.UserSignInSignUpResponse error = errorConverter.convert(
                                             response.errorBody());
@@ -234,7 +230,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
      */
     public void requestResentOtp(String phoneNumber) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
+        TheBox.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

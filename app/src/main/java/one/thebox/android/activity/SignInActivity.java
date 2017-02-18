@@ -4,12 +4,9 @@ import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -17,18 +14,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import java.lang.annotation.Annotation;
 
 import okhttp3.ResponseBody;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.adapter.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.PrefUtils;
+import one.thebox.android.app.TheBox;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
@@ -125,7 +118,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
      */
     public void requestSignin() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        MyApplication.getAPIService()
+        TheBox.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(countryCode + phoneNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
@@ -143,7 +136,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                                 if (response != null && !response.isSuccessful() && response.errorBody() != null) {
                                     //parse error send by the server and show message
                                     Converter<ResponseBody, UserSignInSignUpResponse> errorConverter =
-                                            MyApplication.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
                                                     new Annotation[0]);
                                     one.thebox.android.api.Responses.UserSignInSignUpResponse error = errorConverter.convert(
                                             response.errorBody());
