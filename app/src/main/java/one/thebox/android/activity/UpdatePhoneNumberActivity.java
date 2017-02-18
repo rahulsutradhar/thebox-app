@@ -8,15 +8,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
-import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,7 +76,7 @@ public class UpdatePhoneNumberActivity extends BaseActivity implements View.OnCl
 
     public void singIn() {
         final BoxLoader dialog =   new BoxLoader(this).show();
-        MyApplication.getAPIService()
+        TheBox.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + mobileNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override

@@ -6,9 +6,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,7 +19,7 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -102,7 +99,7 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
             @Override
             public void onClick(View v) {
                 final BoxLoader loader =   new BoxLoader(mContext).show();
-                MyApplication.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(mContext),
+                TheBox.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(mContext),
                         new MergeSubscriptionRequest(userItem.getId(), orders.get(position).getId()))
                         .enqueue(new Callback<MergeSubscriptionResponse>() {
                             @Override

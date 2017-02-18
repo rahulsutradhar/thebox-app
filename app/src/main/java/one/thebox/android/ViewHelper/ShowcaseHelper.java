@@ -2,7 +2,6 @@ package one.thebox.android.ViewHelper;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextPaint;
@@ -11,16 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
+
 
 /**
  * Created by 32 on 30-05-2016.
@@ -32,7 +31,7 @@ public class ShowcaseHelper {
     private int id;
     private ShowcaseView showcaseView;
     private static final String PREF_SHOW_CASE_STATUS = "show_case_status";
-    private static final int EXTRA_PADDING = DisplayUtil.dpToPx(MyApplication.getInstance(), 16);
+    private static final int EXTRA_PADDING = DisplayUtil.dpToPx(TheBox.getInstance(), 16);
     private OnCompleteListener onCompleteListener;
     private boolean shouldBeOnMiddle;
     private int topPadding;
@@ -47,23 +46,23 @@ public class ShowcaseHelper {
 
 
     public ShowcaseHelper setTopPadding(int topPadding) {
-        this.topPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), topPadding);
+        this.topPadding = DisplayUtil.dpToPx(TheBox.getInstance(), topPadding);
         return this;
     }
 
     public ShowcaseHelper setLeftPadding(int leftPadding) {
-        this.leftPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), leftPadding);
+        this.leftPadding = DisplayUtil.dpToPx(TheBox.getInstance(), leftPadding);
         return this;
     }
 
     public ShowcaseHelper setBottomPadding(int bottomPadding) {
-        this.bottomPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), bottomPadding);
+        this.bottomPadding = DisplayUtil.dpToPx(TheBox.getInstance(), bottomPadding);
         return this;
     }
 
 
     public ShowcaseHelper setRightPadding(int rightPadding) {
-        this.rightPadding = DisplayUtil.dpToPx(MyApplication.getInstance(), rightPadding);
+        this.rightPadding = DisplayUtil.dpToPx(TheBox.getInstance(), rightPadding);
         return this;
     }
 
@@ -162,11 +161,11 @@ public class ShowcaseHelper {
     }
 
     public static boolean hasNotBeenViewed(int id){
-        return PrefUtils.getBoolean(MyApplication.getInstance(), PREF_SHOW_CASE_STATUS + id, false);
+        return PrefUtils.getBoolean(TheBox.getInstance(), PREF_SHOW_CASE_STATUS + id, false);
     }
 
     public static void removeAllTutorial() {
         for (int i = 0; i < 10; i++)
-            PrefUtils.removeSharedPref(MyApplication.getInstance(), PREF_SHOW_CASE_STATUS + i);
+            PrefUtils.removeSharedPref(TheBox.getInstance(), PREF_SHOW_CASE_STATUS + i);
     }
 }

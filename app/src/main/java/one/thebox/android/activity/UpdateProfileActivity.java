@@ -1,6 +1,5 @@
 package one.thebox.android.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,15 +7,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,7 +61,7 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
 
                 if (isValidInfo() && hasChanges()) {
                     final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService().updateProfile(
+                    TheBox.getAPIService().updateProfile(
                             PrefUtils.getToken(this), new StoreUserInfoRequestBody(
                                     new StoreUserInfoRequestBody.User
                                             (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getLocalityCode())))

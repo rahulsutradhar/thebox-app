@@ -20,9 +20,8 @@ import java.io.IOException;
 
 import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
-import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -54,6 +53,7 @@ public class RegistrationIntentService extends IntentService {
             InstanceID instanceID = InstanceID.getInstance(this);
             String gcm_token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+            this.gcm_token = gcm_token;
             // [END get_gcm_token]
             Log.i(TAG, "GCM Registration GcmToken: " + gcm_token);
 
@@ -89,8 +89,8 @@ public class RegistrationIntentService extends IntentService {
      * @param gcm_token The new gcm_token.
      */
     private void sendRegistrationToServer(String gcm_token) {
-        this.gcm_token = gcm_token;
-        MyApplication.getAPIService().postRegistrationId(PrefUtils.getToken(MyApplication.getInstance()),new RegistrationIdRequestBody(gcm_token))
+        TheBox.getAPIService().postRegistrationId(
+                PrefUtils.getToken(TheBox.getInstance()), new RegistrationIdRequestBody(gcm_token))
                 .enqueue(new Callback<ApiResponse>() {
                     @Override
                     public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

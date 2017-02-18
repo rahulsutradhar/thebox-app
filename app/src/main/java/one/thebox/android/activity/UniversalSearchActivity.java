@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,9 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -30,12 +26,12 @@ import butterknife.ButterKnife;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.MontserratTextView;
+
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -142,11 +138,11 @@ public class UniversalSearchActivity extends Activity {
                     llNoResult.setVisibility(View.GONE);
                     if (callHasBeenCompleted) {
                         callHasBeenCompleted = false;
-                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(UniversalSearchActivity.this), query);
+                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(UniversalSearchActivity.this), query);
                         call.enqueue(searchAutoCompleteResponseCallback);
                     } else {
                         call.cancel();
-                        call = MyApplication.getAPIService().searchAutoComplete(PrefUtils.getToken(UniversalSearchActivity.this), query);
+                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(UniversalSearchActivity.this), query);
                         call.enqueue(searchAutoCompleteResponseCallback);
                     }
                 } else {
@@ -166,18 +162,19 @@ public class UniversalSearchActivity extends Activity {
             }
         });
 
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), "search_bar_tutorial", true) && (!RestClient.is_in_development)) {
+
+        if (PrefUtils.getBoolean(TheBox.getInstance(), "search_bar_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper(this, 0)
                     .show("Search", "Search for an item, brand or category", headerSearch)
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-                            PrefUtils.putBoolean(MyApplication.getInstance(), "search_bar_tutorial", false);
+                            PrefUtils.putBoolean(TheBox.getInstance(), "search_bar_tutorial", false);
                         }
-                    });;
+                    });
+
+
         }
-
-
     }
 
 
@@ -189,7 +186,7 @@ public class UniversalSearchActivity extends Activity {
     }
 
     private void initViews() {
-        type=Typeface.createFromAsset(getAssets(),"fonts/AvenirLTStd-Book.otf");
+        type = Typeface.createFromAsset(getAssets(), "fonts/AvenirLTStd-Book.otf");
         progress_bar_text.setTypeface(type);
         searchRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

@@ -1,24 +1,20 @@
 package one.thebox.android.app;
 
-import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 //import com.squareup.leakcanary.LeakCanary;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineConfig;
-import com.squareup.okhttp.Cache;
-import com.squareup.picasso.LruCache;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
+
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import io.fabric.sdk.android.Fabric;
 
-import org.acra.ACRA;
-import org.acra.ErrorReporter;
 import org.acra.annotation.ReportsCrashes;
 
 import java.io.IOException;
@@ -31,30 +27,34 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Helpers.RealmChangeManager;
+import one.thebox.android.R;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.util.HockeySenderHelper;
+import retrofit2.Retrofit;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by harsh on 10/12/15.
  */
-@ReportsCrashes(buildConfigClass = MyApplication.class)
-public class MyApplication extends Application {
+@ReportsCrashes(buildConfigClass = TheBox.class)
+public class TheBox extends MultiDexApplication {
 
     private static final int READ_TIMEOUT = 60 * 1000;
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
-    private static MyApplication myApplication;
+    private static TheBox theBox;
     private static RestClient restClient;
+    private static Retrofit retrofit;
     private static OkHttpClient okHttpClient;
     private static Realm realm;
     private static Context mContext;
     private static RealmConfiguration realmConfiguration;
-    public final String TAG = MyApplication.class.getSimpleName();
+    public final String TAG = TheBox.class.getSimpleName();
 
     private static RestClient getRestClient() {
         if (restClient == null) {
             restClient = new RestClient();
+            retrofit = restClient.getRetrofit();
         }
         return restClient;
     }
@@ -68,7 +68,7 @@ public class MyApplication extends Application {
     }
 
     public static void setRealm(Realm realm) {
-        MyApplication.realm = realm;
+        TheBox.realm = realm;
     }
 
     public static RealmConfiguration getRealmConfiguration() {
@@ -77,8 +77,8 @@ public class MyApplication extends Application {
         return realmConfiguration;
     }
 
-    public static synchronized MyApplication getInstance() {
-        return myApplication;
+    public static synchronized TheBox getInstance() {
+        return theBox;
     }
 
     public static OkHttpClient getOkHttpClient() {
@@ -94,7 +94,7 @@ public class MyApplication extends Application {
                                     .addHeader("Content-type", "application/json").build();
                             return chain.proceed(request);
                         }
-                    }).build();
+                    }).addNetworkInterceptor(new StethoInterceptor()).build();
 
         }
         return okHttpClient;
@@ -113,33 +113,60 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        myApplication = this;
-        mContext = getApplicationContext();
+        try {
+            theBox = this;
+            mContext = getApplicationContext();
 
-        FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
+            FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
-        getRealm();
+            /*Local database*/
+            getRealm();
+            RealmChangeManager.getInstance();
 
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                        .build());
+            /*debug tools*/
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                            .build());
+
+             /* initialize Calligraphy*/
+            CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                    .setDefaultFontPath("fonts/Montserrat-Bold.ttf")
+                    .setFontAttrId(R.attr.fontPath)
+                    .build());
+
+            /*Crash report analytics tool*/
+            Fabric.with(this, new Crashlytics());
 
 
-        RealmChangeManager.getInstance();
-
-        HotlineConfig hlConfig=new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c","e183d3ec-b70b-4833-8ff1-ad93f4b017da");
-        hlConfig.setVoiceMessagingEnabled(true);
-        hlConfig.setCameraCaptureEnabled(true);
-        hlConfig.setPictureMessagingEnabled(true);
-        Hotline.getInstance(getApplicationContext()).init(hlConfig);
+            /*hotline*/
+            HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
+            hlConfig.setVoiceMessagingEnabled(true);
+            hlConfig.setCameraCaptureEnabled(true);
+            hlConfig.setPictureMessagingEnabled(true);
+            Hotline.getInstance(getApplicationContext()).init(hlConfig);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     public static Context getAppContext() {
         return mContext;
+    }
+
+    public static Retrofit getRetrofit() {
+        return retrofit;
+    }
+
+    public static void setRetrofit(Retrofit retrofit) {
+        TheBox.retrofit = retrofit;
     }
 }

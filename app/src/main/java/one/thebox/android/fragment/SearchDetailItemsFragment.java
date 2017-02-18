@@ -1,13 +1,9 @@
 package one.thebox.android.fragment;
 
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,15 +23,11 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmModel;
 import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
-import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Helpers.RealmController;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Order;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -45,16 +36,13 @@ import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
 
 
 public class SearchDetailItemsFragment extends Fragment {
@@ -138,7 +126,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     public void initDataChangeListener() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         realm.addChangeListener(realmListener);
     }
 
@@ -191,7 +179,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void fillAllUserItems() {
         if (catId != -1) {
-            Realm realm = MyApplication.getRealm();
+            Realm realm = TheBox.getRealm();
             RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
             setBoxItemsBasedOnUserItems(items, boxItems);
         } else {
@@ -281,7 +269,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
+        TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
@@ -320,7 +308,7 @@ public class SearchDetailItemsFragment extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
             connectionErrorViewHelper.isVisible(false);
         }
-        MyApplication.getAPIService().getItems(PrefUtils.getToken(getActivity()), catId, pageNumber, PER_PAGE_ITEMS)
+        TheBox.getAPIService().getItems(PrefUtils.getToken(getActivity()), catId, pageNumber, PER_PAGE_ITEMS)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
@@ -345,6 +333,8 @@ public class SearchDetailItemsFragment extends Fragment {
                                 categories.addAll(response.body().getRestCategories());
                             initDataChangeListener();
 //                            fillAllUserItems();
+                        }else {
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -361,7 +351,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems) {
         if (items == null) {
-            Realm realm = MyApplication.getRealm();
+            Realm realm = TheBox.getRealm();
             items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
         }
         LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();

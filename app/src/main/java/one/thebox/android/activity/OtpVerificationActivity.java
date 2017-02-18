@@ -3,16 +3,20 @@ package one.thebox.android.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.annotation.Annotation;
+
+import okhttp3.ResponseBody;
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
@@ -21,11 +25,12 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Converter;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
@@ -70,46 +75,39 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         resendButton.setOnClickListener(this);
         doneButton.setOnClickListener(this);
         toPhoneNumberTextView.setText("to " + phoneNumber);
+
+        //track keyboard done option to procees
+        otpVerificationEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    //check if otp is valid
+                    if (isValidOtp()) {
+                        //hide keyboard
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+
+                        //request server
+                        verifyOtpFromServer(phoneNumber, otp);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
         if (smsEvent.getMessage().contains("awesome") || smsEvent.getMessage().toLowerCase().contains("the box")) {
             String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
-            otp = otpString;
-            final BoxLoader dialog = new BoxLoader(this).show();
-            MyApplication.getAPIService()
-                    .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otpString)))
-                    .enqueue(new Callback<UserSignInSignUpResponse>() {
-                        @Override
-                        public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                            dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    if (response.body().getUser() != null) {
-                                        PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
-                                        PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
-                                        CartHelper.saveOrdersToRealm(response.body().getCart());
-                                        OrderHelper.addAndNotify(response.body().getOrders());
-                                        if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
-                                            finish();
-                                        } else {
-                                            startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
-                                            finish();
-                                        }
-                                    }
-                                } else {
-                                    Toast.makeText(OtpVerificationActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
+            if (otpString != null || !otpString.isEmpty()) {
+                otpVerificationEditText.setText(otpString);
+            }
+            //request server with otp
+            verifyOtpFromServer(phoneNumber, otpString);
         }
 
     }
@@ -132,77 +130,91 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
-                    final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService()
-                            .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
-                            .enqueue(new Callback<UserSignInSignUpResponse>() {
-                                @Override
-                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    dialog.dismiss();
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            if (response.body().getUser() != null) {
-                                                PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
-                                                PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
-                                                CartHelper.saveOrdersToRealm(response.body().getCart());
-                                                OrderHelper.addAndNotify(response.body().getOrders());
-                                                if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class).addFlags((Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)));
-                                                    finish();
-                                                } else {
-                                                    startActivity(new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class));
-                                                    finish();
-                                                }
-                                            }
-                                        } else {
-                                            Toast.makeText(OtpVerificationActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                                    dialog.dismiss();
-                                }
-                            });
+                    //request server with otp
+                    verifyOtpFromServer(phoneNumber, otp);
                 }
                 break;
             }
 
             case R.id.button_resend: {
                 if (isSignUpActivity) {
-                    final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
-                            .enqueue(new Callback<UserSignInSignUpResponse>() {
-                                @Override
-                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    dialog.dismiss();
-                                }
-
-                                @Override
-                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                                    dialog.dismiss();
-                                }
-                            });
+                    requestResentOtp(phoneNumber);
                 } else {
-                    final BoxLoader dialog = new BoxLoader(this).show();
-                    MyApplication.getAPIService()
-                            .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
-                            .enqueue(new Callback<UserSignInSignUpResponse>() {
-                                @Override
-                                public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                                    dialog.dismiss();
-                                }
-
-                                @Override
-                                public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                                    dialog.dismiss();
-                                }
-                            });
+                    requestResentOtp(phoneNumber);
                 }
             }
         }
     }
+
+
+    /**
+     * Verify otp from server
+     */
+    public void verifyOtpFromServer(String phoneNumber, String otp) {
+
+        final BoxLoader dialog = new BoxLoader(this).show();
+        TheBox.getAPIService()
+                .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
+                .enqueue(new Callback<UserSignInSignUpResponse>() {
+                    @Override
+                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().getUser() != null) {
+                                    PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
+                                    PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                    CartHelper.saveOrdersToRealm(response.body().getCart());
+                                    OrderHelper.addAndNotify(response.body().getOrders());
+                                    if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
+
+                                        Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+
+                                    } else {
+                                        Intent intent = new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                            } else {
+                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                    //parse error send by the server and show message
+                                    Converter<ResponseBody, one.thebox.android.api.Responses.UserSignInSignUpResponse> errorConverter =
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
+                                                    new Annotation[0]);
+                                    one.thebox.android.api.Responses.UserSignInSignUpResponse error = errorConverter.convert(
+                                            response.errorBody());
+                                    //display error message
+                                    otpVerificationEditText.setError(error.getInfo());
+                                }
+
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
 
     private boolean isValidOtp() {
         if (otpVerificationEditText.getText().toString().isEmpty()) {
@@ -211,5 +223,25 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         }
         otp = otpVerificationEditText.getText().toString();
         return true;
+    }
+
+    /**
+     * Resend Otp to user Phone
+     */
+    public void requestResentOtp(String phoneNumber) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        TheBox.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
+                .enqueue(new Callback<UserSignInSignUpResponse>() {
+                    @Override
+                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

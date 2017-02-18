@@ -1,29 +1,17 @@
 package one.thebox.android.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceScreen;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -34,17 +22,11 @@ import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AppBarObserver;
-import one.thebox.android.activity.ConfirmAddressActivity;
 import one.thebox.android.adapter.OrdersItemAdapter;
-import one.thebox.android.api.Responses.OrdersApiResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class UpComingOrderFragment extends Fragment implements View.OnClickListener {
@@ -83,8 +65,10 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initVariables() {
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class);
+
+        //ignore Order class if order successful is false
+        Realm realm = TheBox.getRealm();
+        RealmQuery<Order> query = realm.where(Order.class).notEqualTo("successful", false);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
         orders.clear();
         for (int i = 0; i < realmResults.size(); i++) {
@@ -92,23 +76,20 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         }
 
         //Setting scenes
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             //No data available;show static content
             //New User
             scene_number = -1;
-        }
-        //Atleast one delivery scheduled by the user
-        else if (PrefUtils.getBoolean(MyApplication.getInstance(),Constants.PREF_IS_ORDER_IS_LOADING,true)) {
-            if (PrefUtils.should_i_fetch_model_data_from_server(MyApplication.getInstance(),0)) {
+        }//Atleast one delivery scheduled by the user
+        else if (PrefUtils.getBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true)) {
+            if (PrefUtils.should_i_fetch_model_data_from_server(TheBox.getInstance(), 0)) {
                 OrderHelper.getOrderAndNotify(false);
-                PrefUtils.clean_model_being_updated_on_server_details(MyApplication.getInstance(), 0);
+                PrefUtils.clean_model_being_updated_on_server_details(TheBox.getInstance(), 0);
             }
             scene_number = 1;
-        }
-        else if ((orders.size() < 4)){
+        } else if ((orders.size() < 4)) {
             scene_number = 1;
-        }
-        else {
+        } else {
             scene_number = 0;
         }
     }
@@ -118,8 +99,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
 
-        switch(scene_number){
-            case -1:{
+        switch (scene_number) {
+            case -1: {
                 no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
@@ -130,12 +111,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 });
                 break;
             }
-            case 0:{
+            case 0: {
                 setupRecyclerView();
                 progress_bar.setVisibility(View.GONE);
                 break;
             }
-            case 1:{
+            case 1: {
                 progress_bar.setVisibility(View.VISIBLE);
                 setupRecyclerView();
                 break;

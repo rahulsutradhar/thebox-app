@@ -9,11 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Helpers.RealmController;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
@@ -22,10 +18,9 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.AddressesActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
-import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.activity.UpdateProfileActivity;
 import one.thebox.android.api.ApiResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -132,7 +127,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             }
             case R.id.button_sign_out: {
                 final BoxLoader dialog = new BoxLoader(getActivity()).show();
-                MyApplication.getAPIService().signOut(PrefUtils.getToken(getActivity()))
+                TheBox.getAPIService().signOut(PrefUtils.getToken(getActivity()))
                         .enqueue(new Callback<ApiResponse>() {
                             @Override
                             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {

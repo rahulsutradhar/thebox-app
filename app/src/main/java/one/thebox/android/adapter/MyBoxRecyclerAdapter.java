@@ -3,42 +3,24 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.RealmList;
-import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
-import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.Montserrat;
 import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
-import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -120,13 +102,16 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position), position);
 
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
+        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper((Activity) mContext, 3)
                     .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-                            PrefUtils.putBoolean(MyApplication.getInstance(), "home_tutorial", false);
+                            PrefUtils.putBoolean(TheBox.getInstance(), "home_tutorial", false);
+                            new ShowcaseHelper((Activity) mContext, 3)
+                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
+
                         }
                     });
         }
@@ -204,7 +189,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViews(Box box,final int position) {
+        public void setViews(Box box, final int position) {
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
                 this.title.setVisibility(View.GONE);
@@ -220,7 +205,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     @Override
                     public void onUserItemChange(List<UserItem> userItems) {
                         boxes.get(position).setAllItemsInTheBox(userItems);
-                        setViews(boxes.get(position),position);
+                        setViews(boxes.get(position), position);
                     }
                 });
                 this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);

@@ -3,6 +3,7 @@ package one.thebox.android.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.R;
 
 public class NotificationInfo {
@@ -14,7 +15,9 @@ public class NotificationInfo {
     public final static int INDEX_ACTION_NEGATIVE_BUTTON = 2;
     public final static int INDEX_ICON_NOTIFICATION = 0;
     public final static int[] ICON_IDS = {R.drawable.ic_logo};
+
     List<NotificationAction> notificationActions = new ArrayList<>();
+    private Params params;
     private int notificationId;
     private int positiveButtonIconId;
     private int negativeButtonIconId;
@@ -53,7 +56,7 @@ public class NotificationInfo {
         this.contentText = contentText;
     }
 
-    public NotificationInfo(int notificationId, String contentTitle, String contentText,int type,NotificationAction action) {
+    public NotificationInfo(int notificationId, String contentTitle, String contentText, int type, NotificationAction action) {
         this.notificationId = notificationId;
         this.contentTitle = contentTitle;
         this.contentText = contentText;
@@ -176,6 +179,14 @@ public class NotificationInfo {
 
     public void setNotificationId(int notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public Params getParams() {
+        return params;
+    }
+
+    public void setParams(Params params) {
+        this.params = params;
     }
 
     enum NotificationType {

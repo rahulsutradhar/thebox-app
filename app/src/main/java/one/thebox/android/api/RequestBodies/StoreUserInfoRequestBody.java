@@ -26,12 +26,25 @@ public class StoreUserInfoRequestBody implements Serializable {
         private String email;
         private String name;
         private String localitycode;
+        private double lat;
+        private double lng;
 
         public User(String phonenumber, String email, String name, String localitycode) {
             this.phonenumber = phonenumber;
             this.email = email;
             this.name = name;
             this.localitycode = localitycode;
+            this.lat = 0.0;
+            this.lng = 0.0;
+        }
+
+        public User(String phonenumber, String email, String name, String localitycode, double lat, double lng) {
+            this.phonenumber = phonenumber;
+            this.email = email;
+            this.name = name;
+            this.localitycode = localitycode;
+            this.lat = lat;
+            this.lng = lng;
         }
 
         public String getPhonenumber() {

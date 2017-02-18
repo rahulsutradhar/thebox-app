@@ -14,8 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -28,12 +26,11 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserCategory;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DisplayUtil;
@@ -62,6 +59,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setBoxes(RealmList<Box> boxes) {
         this.boxes = boxes;
+        notifyDataSetChanged();
     }
 
     public int getStickyHeaderHeight() {
@@ -97,13 +95,15 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position));
 
-        if (PrefUtils.getBoolean(MyApplication.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
+        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper((Activity) mContext, 3)
                     .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-                            PrefUtils.putBoolean(MyApplication.getInstance(), "home_tutorial", false);
+                            PrefUtils.putBoolean(TheBox.getInstance(), "home_tutorial", false);
+                            new ShowcaseHelper((Activity) mContext, 3)
+                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
                         }
                     });
         }
@@ -217,8 +217,8 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             }
 
             // When used in Search Detail Fragment
-            if (isSearchDetailItemFragment){
-            setAnimation(itemViewHolder.itemView);
+            if (isSearchDetailItemFragment) {
+                setAnimation(itemViewHolder.itemView);
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +261,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         // Animations
-        private void setAnimation(View viewToAnimate){
+        private void setAnimation(View viewToAnimate) {
             Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right);
             viewToAnimate.startAnimation(animation);
         }
@@ -459,7 +459,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
     }
-
 
 
 }

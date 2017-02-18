@@ -9,12 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import io.realm.Realm;
@@ -25,11 +23,10 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SearchDetailAdapter;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DateTimeUtil;
 
 public class OrderItemsActivity extends BaseActivity {
@@ -50,7 +47,7 @@ public class OrderItemsActivity extends BaseActivity {
         if (getIntent().hasExtra(EXTRA_USER_ITEM_ARRAY_LIST)){
             orderId = getIntent().getIntExtra(EXTRA_USER_ITEM_ARRAY_LIST, 0);
         }
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_ID, orderId);
 

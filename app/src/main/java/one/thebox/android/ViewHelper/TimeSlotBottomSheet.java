@@ -13,16 +13,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.BaseRecyclerAdapter;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
-import one.thebox.android.app.MyApplication;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -90,7 +86,7 @@ public class TimeSlotBottomSheet {
         try {
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            endDate = fmt.parse("2016-12-30");
+            endDate = fmt.parse("2017-12-30");
             startDate = fmt.parse(fmt.format(startDate));
 
             Date prevSelectedDate = fmt.parse(fmt.format(currentSelectedDate));
@@ -117,7 +113,7 @@ public class TimeSlotBottomSheet {
             public void onItemClicked(int position) {
 
                 try {
-                    int currentYear = 2016;
+                    int currentYear = Calendar.getInstance().get(Calendar.YEAR);
                     String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
                     String[] strings = dayMonth.split(",");
                     int day = Integer.parseInt(strings[0]);

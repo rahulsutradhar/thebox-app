@@ -16,6 +16,9 @@ public class OnlinePaymentRequest implements Serializable {
     String razorpay_payment_id;
     @SerializedName("date")
     private String order_date;
+    private String lat;
+    private String lng;
+
 
     public OnlinePaymentRequest(int order_id,String razorpay_payment_id,String order_date) {
         this.order_id = order_id;
@@ -26,5 +29,20 @@ public class OnlinePaymentRequest implements Serializable {
     public OnlinePaymentRequest(int merge_to_this_order_id,String razorpay_payment_id) {
         this.order_id = merge_to_this_order_id;
         this.razorpay_payment_id = razorpay_payment_id;
+    }
+
+    public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String order_date, String lat, String lng) {
+        this.order_id = order_id;
+        this.razorpay_payment_id = razorpay_payment_id;
+        this.order_date = order_date;
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+    public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String lat, String lng) {
+        this.order_id = order_id;
+        this.razorpay_payment_id = razorpay_payment_id;
+        this.lat = lat;
+        this.lng = lng;
     }
 }

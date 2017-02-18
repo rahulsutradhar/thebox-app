@@ -6,32 +6,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.eftimoff.androidplayer.Player;
-import com.eftimoff.androidplayer.actions.property.PropertyAction;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,8 +54,7 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.RestClient;
-import one.thebox.android.app.MyApplication;
-import one.thebox.android.util.AnimationUtil;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -80,6 +71,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public static final String EXTRA_MY_BOX_USER_CATEGORIES_ID = "my_box_user_category_click_event";
     public static final String EXTRA_CLICK_POSITION = "extra_click_position";
     public static final String BOX_NAME = "box_name";
+    public static final String TRIGERED_FROM = "trigered_from";
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
     private static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
@@ -109,6 +101,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public static int POSITION_OF_VIEW_PAGER;
     private boolean previousScrollAction = false;
     private int noOfTabs;
+    private String title;
+    private int triggeredFrom = 0;
+    private boolean listenerAdded = false;
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -157,20 +153,39 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         return searchDetailFragment;
     }
 
+    /**
+     * Call for Notification Click
+     */
+    public static SearchDetailFragment getInstance(int catId, String boxName, int triggeredFrom) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_CAT_ID, catId);
+        bundle.putString(BOX_NAME, boxName);
+        bundle.putInt(TRIGERED_FROM, triggeredFrom);
+        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
+        searchDetailFragment.setArguments(bundle);
+        return searchDetailFragment;
+    }
+
     private void initVariables() {
-        query = getArguments().getString(EXTRA_QUERY);
-        catId = getArguments().getInt(EXTRA_CAT_ID);
-        exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
-        catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
-        user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
-        clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
-        if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-            setCategories();
+        try {
+            query = getArguments().getString(EXTRA_QUERY);
+            catId = getArguments().getInt(EXTRA_CAT_ID);
+            title = getArguments().getString(BOX_NAME);
+            triggeredFrom = getArguments().getInt(TRIGERED_FROM);
+            exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
+            catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
+            user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
+            clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
+            if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
+                setCategories();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void setCategories() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         RealmQuery<Category> query = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
         for (int i = 0; i < catIds.size(); i++) {
             if (catIds.size() - 1 == i) {
@@ -266,7 +281,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         }
 
-
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
@@ -289,6 +303,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 }
             }
         }
+
 
         return rootView;
     }
@@ -355,7 +370,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (getActivity() == null) {
             return;
         }
-        ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
+
+        if (title != null) {
+            ((MainActivity) getActivity()).getToolbar().setTitle(title);
+        } else {
+            ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
+        }
+
         final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
         adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems, 0), categories.get(0));
         for (int i = 1; i < categories.size(); i++) {
@@ -431,7 +452,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
+        TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
                     public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
@@ -465,13 +486,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
+        TheBox.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
                     public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(false);
+
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
                             userItems.addAll(response.body().getMyBoxItems());
@@ -493,7 +515,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     public void getExploreDetails() {
         connectionErrorViewHelper.isVisible(false);
-        MyApplication.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
+        TheBox.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override
                     public void onResponse(Call<ExploreBoxResponse> call, Response<ExploreBoxResponse> response) {
@@ -580,8 +602,50 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         });
 
+        //back button in toolbar
+        if (triggeredFrom == 21) {
+            listenerAdded = true;
+            ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    handleBackPress();
+                }
+            });
+        }
+
+
+        //track the hardware back button and handle back navigation
+        rootView.setFocusableInTouchMode(true);
+        rootView.requestFocus();
+        rootView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+                    handleBackPress();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
+    }
+
+    public void handleBackPress() {
+
+        if (triggeredFrom == 21) {
+            if (listenerAdded) {
+                ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(null);
+                ((MainActivity) getActivity()).putToggleListener();
+                listenerAdded = false;
+            }
+            ((MainActivity) getActivity()).setTriggeredFrom(triggeredFrom);
+        }
+        getActivity().onBackPressed();
     }
 
     @Override
@@ -613,7 +677,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                         @Override
                         public void onComplete() {
-//                            new ShowCaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
+//                            new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
                             tabLayout.setScrollPosition(clickPosition, 0, true);
                             shouldMoveMore = false;
                         }
@@ -665,13 +729,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (previousScrollAction != showSpecialCardEvent.isVisible()) {
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
-                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
 
             } else {
                 specialCardView.setVisibility(View.GONE);
-                specialCardView.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popdown));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(MyApplication.getInstance(), R.anim.passport_options_popup));
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
+//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }

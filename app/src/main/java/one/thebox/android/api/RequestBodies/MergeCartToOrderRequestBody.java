@@ -10,9 +10,13 @@ import java.io.Serializable;
 
 public class MergeCartToOrderRequestBody implements Serializable{
     @SerializedName("order_id")
-    int mergeOrderId;
+    private int mergeOrderId;
+    private String lat;
+    private String lng;
 
-    public MergeCartToOrderRequestBody(int mergeOrderId) {
+    public MergeCartToOrderRequestBody(int mergeOrderId, String lat, String lng) {
         this.mergeOrderId = mergeOrderId;
+        this.lat = lat;
+        this.lng = lng;
     }
 }
