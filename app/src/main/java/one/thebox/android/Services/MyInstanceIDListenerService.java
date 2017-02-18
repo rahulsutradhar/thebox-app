@@ -1,4 +1,4 @@
-package one.thebox.android.Services;
+package one.thebox.android.services;
 
 /**
  * Created by saurabhjain on 30/11/15.

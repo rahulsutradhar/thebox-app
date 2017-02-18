@@ -25,7 +25,9 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,6 +46,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     private String phoneNumber;
     private String otp;
     private boolean isSignUpActivity;
+    private AuthenticationService authenticationService;
 
     public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
         return new Intent(context, OtpVerificationActivity.class)
@@ -64,6 +67,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     private void initVariables() {
         phoneNumber = getIntent().getStringExtra(EXTRA_PHONE_NUMBER);
         isSignUpActivity = getIntent().getBooleanExtra(EXTRA_IS_SIGN_UP_ACTIVITY, false);
+        authenticationService = new AuthenticationService();
     }
 
     private void initViews() {
@@ -166,6 +170,11 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
                                     CartHelper.saveOrdersToRealm(response.body().getCart());
                                     OrderHelper.addAndNotify(response.body().getOrders());
+                                    PrefUtils.putBoolean(OtpVerificationActivity.this, Keys.IS_AUTHENTICATED, true);
+
+                                    //set user information to crashlytics
+                                    authenticationService.setUserDataToCrashlytics();
+
                                     if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
 
                                         Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);

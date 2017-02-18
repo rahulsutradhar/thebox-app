@@ -31,6 +31,7 @@ import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalitiesResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.FusedLocationService;
@@ -53,6 +54,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     //    {"code":400072,"name":"Powai"}
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
+    private AuthenticationService authenticationService;
+
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
         @Override
         public void onResponse(Call<LocalitiesResponse> call, Response<LocalitiesResponse> response) {
@@ -146,6 +149,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
         localityAutoCompleteTextView.setClickable(false); //
         codeSelected = Constants.POWAI_LOCALITY.getCode();
+
+        authenticationService = new AuthenticationService();
     }
 
     @Override
@@ -257,17 +262,25 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
                         dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                if (response.body().getUser() != null) {
-                                    PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
-                                    PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
-                                    startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
-                                    finish();
+                        try {
+                            if (response.body() != null) {
+                                if (response.body().isSuccess()) {
+                                    if (response.body().getUser() != null) {
+                                        PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
+                                        PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
+                                        //update crashlytics data when user fills details
+                                        authenticationService.setUserDataToCrashlytics();
+
+                                        startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
+                                        finish();
+                                    }
+                                } else {
+                                    Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
-                            } else {
-                                Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
 

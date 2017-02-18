@@ -1,4 +1,4 @@
-package one.thebox.android.Services;
+package one.thebox.android.services;
 
 import android.app.IntentService;
 import android.content.Intent;
