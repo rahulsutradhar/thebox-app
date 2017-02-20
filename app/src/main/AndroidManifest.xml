@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <permission
         android:name="one.thebox.android.permission.C2D_MESSAGE"
@@ -37,7 +38,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <receiver android:name=".Services.SmsReceiver">
+        <receiver android:name=".services.SmsReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
@@ -55,21 +56,21 @@
         </receiver>
 
         <service
-            android:name=".Services.MyGcmListenerService"
+            android:name=".services.MyGcmListenerService"
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".Services.MyInstanceIDListenerService"
+            android:name=".services.MyInstanceIDListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".Services.RegistrationIntentService"
+            android:name=".services.RegistrationIntentService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -77,7 +78,7 @@
         </service>
         <!--HeartBeat -->
         <service
-            android:name=".Services.MyTaskService"
+            android:name=".services.MyTaskService"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>
@@ -181,7 +182,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
 
         <service
-            android:name=".Services.UpdateOrderService"
+            android:name=".services.UpdateOrderService"
             android:enabled="true" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
@@ -200,7 +201,7 @@
         <activity android:name=".activity.ContactUsActivity" />
 
         <service
-            android:name=".Services.SyncService"
+            android:name=".services.SyncService"
             android:exported="false" />
 
         <activity android:name=".activity.FullImageActivity"></activity>

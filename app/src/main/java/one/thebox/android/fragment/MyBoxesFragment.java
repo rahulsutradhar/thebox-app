@@ -143,11 +143,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         initVariables();
 
         initViews();
-        
+
         //Fetching arguments
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        if (show_loader_and_call){
+        if (show_loader_and_call) {
             getMyBoxes();
         }
 
@@ -177,10 +177,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         setUpBoxes();
 
         //Checking if useritems are present
-        if (realm.where(UserItem.class).equalTo("stillSubscribed", true).isNotNull("nextDeliveryScheduledAt").findAll().size() > 0){
+        if (realm.where(UserItem.class).equalTo("stillSubscribed", true).isNotNull("nextDeliveryScheduledAt").findAll().size() > 0) {
             has_one_or_more_subscribed_items = true;
-        }
-        else{
+        } else {
             has_one_or_more_subscribed_items = false;
         }
 
@@ -239,26 +238,26 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
         //One or more items are subscribed
         else {
-                progressBar.setVisibility(View.GONE);
-                fabHolder.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            fabHolder.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
 
-                if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
-                    final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linearLayoutManager);
-                    myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-                    myBoxRecyclerAdapter.setBoxes(boxes);
-                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                    recyclerView.setAdapter(myBoxRecyclerAdapter);
-                } else {
-                    myBoxRecyclerAdapter.setBoxes(boxes);
-                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                    myBoxRecyclerAdapter.notifyDataSetChanged();
-                }
-
+            if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
+                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                recyclerView.setLayoutManager(linearLayoutManager);
+                myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+                myBoxRecyclerAdapter.setBoxes(boxes);
+                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                recyclerView.setAdapter(myBoxRecyclerAdapter);
+            } else {
+                myBoxRecyclerAdapter.setBoxes(boxes);
+                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
+                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                myBoxRecyclerAdapter.notifyDataSetChanged();
             }
+
+        }
     }
 
     private void initViews() {
@@ -421,12 +420,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-    @Subscribe
-    public void UpdateOrderItemEvent() {
-    }
 
     @Subscribe
-    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+    public void onUpdateOrderItemEvent(UpdateOrderItemEvent onUpdateOrderItem) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

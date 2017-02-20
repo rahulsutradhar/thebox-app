@@ -69,6 +69,7 @@ dependencies {
      * Dependency Injection
      */
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
 
     /**
      * Support libraries
@@ -114,6 +115,7 @@ dependencies {
      * Image loading library Glide
      */
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     /**
      * Runtime permission handler for Android 6 and above
