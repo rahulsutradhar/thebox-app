@@ -115,8 +115,10 @@ public class NotificationHelper {
     }
 
     private void showNotification() {
+        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("custom_notification_sound", "raw", TheBox.getAppContext().getPackageName());
+
         Notification notification = builder.build();
-        notification.sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
+        notification.sound = Uri.parse("android.resource://" + TheBox.getAppContext().getPackageName() + "/" + res_sound_id);
         notification.ledARGB = context.getResources().getColor(R.color.primary);
         this.notificationManager.notify(notificationInfo.getNotificationId(), notification);
     }
@@ -151,7 +153,8 @@ public class NotificationHelper {
     }
 
     private void setNotificationSoundAndLights() {
-        getNotificaiton().sound = Uri.parse("android.resource://com.listup.android/" + R.raw.custom_notification_sound);
+        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("custom_notification_sound", "raw", TheBox.getAppContext().getPackageName());
+        getNotificaiton().sound = Uri.parse("android.resource://" + TheBox.getAppContext().getPackageName() + "/" + res_sound_id);
         getNotificaiton().defaults = Notification.DEFAULT_VIBRATE;
         getNotificaiton().ledARGB = context.getResources().getColor(R.color.primary);
     }
