@@ -150,10 +150,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         initViews();
         initVariables();
 
-        //Fetching arguments
+        //Fetching arguments- silent notification for my items
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
+        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false) || show_loader_and_call) {
             fetchOrderedUserItem();
         }
 
@@ -205,7 +205,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 .where().isNotNull("nextDeliveryScheduledAt").findAll();
         RealmList<UserItem> list = new RealmList<>();
         list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
-        Log.d("MyBoxesFrag", "Size of user items for box id:" + list.size() + "");
         return list;
     }
 
@@ -336,7 +335,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         removeChangeListener();
                         orderedUserItems.clear();
                         orderedUserItems.addAll(response.body().getOrderedUserItems());
-                        
+
                         //store to local database
                         storeToRealm();
 

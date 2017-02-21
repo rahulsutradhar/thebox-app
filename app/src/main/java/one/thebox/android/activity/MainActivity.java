@@ -193,6 +193,8 @@ public class MainActivity extends BaseActivity implements
 
         //Preference to load OrderedUserItem when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
+        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
+
     }
 
     @Override
@@ -737,6 +739,11 @@ public class MainActivity extends BaseActivity implements
             }
             case 12: {
                 attachMyBoxesFragment(2, false);
+                break;
+            }
+
+            case 13:{
+                attachMyBoxesFragment(0,false);
                 break;
             }
 
