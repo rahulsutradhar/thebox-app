@@ -113,6 +113,7 @@ public class MyBoxTabFragment extends Fragment {
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(default_position);
+        viewPager.setOffscreenPageLimit(3);
     }
 
     @Override

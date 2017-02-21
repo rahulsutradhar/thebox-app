@@ -174,6 +174,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (userItems != null) {
             this.userItems = userItems;
         }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -363,7 +364,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 arrivingTime.setText("Item is added to your cart");
 
             } else {
-                long days = DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
+                /*long days = DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
                 if (days <= 1) {
                     int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
                     if (DateTimeUtil.isArrivingToday(hours)) {
@@ -373,7 +374,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 } else {
                     arrivingTime.setText("Arriving in " + days + " days");
-                }
+                }*/
+
+                arrivingTime.setText(userItem.getArrivingAt());
             }
 
             Glide.with(mContext)
@@ -599,7 +602,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     String url = boxItem.getSelectedItemConfig().getPhotoUrl();
-                    FullImageActivity.showImage(url,mContext);
+                    FullImageActivity.showImage(url, mContext);
                 }
             });
 

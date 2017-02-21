@@ -53,6 +53,7 @@ import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
+import one.thebox.android.app.Keys;
 import one.thebox.android.services.MyInstanceIDListenerService;
 import one.thebox.android.services.MyTaskService;
 import one.thebox.android.services.RegistrationIntentService;
@@ -186,11 +187,22 @@ public class MainActivity extends BaseActivity implements
         getSettingsData();
 
         setCartOnToolBar();
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter(BROADCAST_EVENT_TAB));
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
         //new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+
+        //Preference to load OrderedUserItem when user open the app
+        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        //Preference to load OrderedUserItem when user open the app be false
+        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
+
+    }
 
     @Subscribe
     public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {

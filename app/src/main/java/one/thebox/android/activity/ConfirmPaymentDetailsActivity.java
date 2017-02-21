@@ -23,7 +23,7 @@ import one.thebox.android.util.PrefUtils;
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
-    private static final String EXTRA_TOTAL_CART_AMOUNT="total_cart_amount";
+    private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
 
     private Order cart;
     private Context context;
@@ -34,6 +34,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private User user;
     private int mergeOrderId;
     private float amount_to_pay;
+    private float totalAmountToPay;
 
     public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
@@ -69,7 +70,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         Order cart = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if(cart!=null) {
+        if (cart != null) {
             this.cart = realm.copyFromRealm(cart);
         }
     }
@@ -84,14 +85,8 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
 
-
-        if (mergeOrderId == 0) {
-            amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
-        }
-        else {
-            amount_to_pay = cart.getTotalPriceOfUserItemsForCart();
-        }
-
+        //show the final price
+        amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
         payButton.setText("Pay: Rs " + amount_to_pay);
 
     }
@@ -103,10 +98,10 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(ConfirmPaymentDetailsActivity.this,PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT,String.valueOf(amount_to_pay));
-                intent.putExtra(EXTRA_ARRAY_LIST_ORDER,getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
-                intent.putExtra(EXTRA_MERGE_ORDER_ID,getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
+                Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
+                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, String.valueOf(amount_to_pay));
+                intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
+                intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
                 startActivity(intent);
 
             }

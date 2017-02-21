@@ -21,12 +21,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.realm.Realm;
@@ -41,12 +41,14 @@ import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.user.OrderedUserItem;
+import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
-import one.thebox.android.api.Responses.MyBoxResponse;
+import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -76,6 +78,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private String monthly_bill;
     private String total_no_of_items;
     private boolean show_loader_and_call = false;
+
+    /**
+     * Ordered User Item
+     */
+    private List<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
 
     private boolean isLocallyUpdated;
@@ -140,15 +147,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                              Bundle savedInstanceState) {
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
 
-        initVariables();
-
         initViews();
+        initVariables();
 
         //Fetching arguments
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        if (show_loader_and_call) {
-            getMyBoxes();
+        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
+            fetchOrderedUserItem();
         }
 
         setupAppBarObserver();
@@ -164,45 +170,41 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         return rootLayout;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
+
+    }
+
     private void initVariables() {
 
-        //Setting up all the boxes
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        this.boxes.clear();
-        this.boxes.addAll(realm.copyFromRealm(boxes));
-        setUpBoxes();
+        //Fetch OrderedUserItem if stored in local database
+        Realm realm1 = TheBox.getRealm();
+        RealmResults<OrderedUserItem> realmResults1 = realm1.where(OrderedUserItem.class).findAll();
+
+        this.orderedUserItems.clear();
+        this.orderedUserItems.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
+        for (OrderedUserItem orderedUserItem : orderedUserItems) {
+            orderedUserItem.setUserItems(getUserItems(orderedUserItem.getBoxId()));
+        }
 
         //Checking if useritems are present
-        if (realm.where(UserItem.class).equalTo("stillSubscribed", true).isNotNull("nextDeliveryScheduledAt").findAll().size() > 0) {
+        if (orderedUserItems.size() > 0) {
             has_one_or_more_subscribed_items = true;
         } else {
             has_one_or_more_subscribed_items = false;
         }
-
-
     }
 
-    private void setUpBoxes() {
-        // Add to boxes list only if there are items in box
-        Iterator<Box> iterator = this.boxes.iterator();
-        while (iterator.hasNext()) {
-            Box box = iterator.next();
-            if (box.getAllItemInTheBox().isEmpty()) {
-                iterator.remove();
-            } else {
-            }
-        }
-    }
 
-    private List<UserItem> getUserItems(int boxId) {
+    private RealmList<UserItem> getUserItems(int boxId) {
         Realm realm = TheBox.getRealm();
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
-        List<UserItem> list = new ArrayList<>();
-        list.addAll(items);
+        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll()
+                .where().notEqualTo("stillSubscribed", false).findAll()
+                .where().isNotNull("nextDeliveryScheduledAt").findAll();
+        RealmList<UserItem> list = new RealmList<>();
+        list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
         Log.d("MyBoxesFrag", "Size of user items for box id:" + list.size() + "");
         return list;
     }
@@ -244,17 +246,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
             if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
                 final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 recyclerView.setLayoutManager(linearLayoutManager);
                 myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-                myBoxRecyclerAdapter.setBoxes(boxes);
-                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
+                myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
                 recyclerView.setAdapter(myBoxRecyclerAdapter);
             } else {
-                myBoxRecyclerAdapter.setBoxes(boxes);
-                myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                myBoxRecyclerAdapter.notifyDataSetChanged();
+                myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
             }
 
         }
@@ -275,7 +273,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getMyBoxes();
+                //getMyBoxes();
+                fetchOrderedUserItem();
             }
         });
     }
@@ -314,58 +313,75 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         super.onDetach();
     }
 
-    public void getMyBoxes() {
-        progressBar.setVisibility(View.VISIBLE);
+    /**
+     * Fetch User Item
+     */
+    public void fetchOrderedUserItem() {
+
         connectionErrorViewHelper.isVisible(false);
+        progressBar.setVisibility(View.VISIBLE);
+
         String token = PrefUtils.getToken(getActivity());
-        Log.d("Token :", token + "");
-        TheBox.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
-                .enqueue(new Callback<MyBoxResponse>() {
-                    @Override
-                    public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        progressBar.setVisibility(View.GONE);
+        TheBox.getAPIService().getMyItems(token).enqueue(new Callback<UserItemResponse>() {
+            @Override
+            public void onResponse(Call<UserItemResponse> call, Response<UserItemResponse> response) {
 
-                        if (response.body() != null) {
-                            removeChangeListener();
-                            boxes.clear();
-                            monthly_bill = response.body().getMonthly_bill();
-                            total_no_of_items = response.body().getTotal_no_of_items();
-                            boxes.addAll(response.body().getBoxes());
-                            isLocallyUpdated = true;
-                            storeToRealm();
-                            setUpBoxes();
-                            setupRecyclerView();
-                        }
+                connectionErrorViewHelper.isVisible(false);
+                progressBar.setVisibility(View.GONE);
+
+                try {
+                    if (response.isSuccessful() && response.body() != null) {
+
+                        //get the OrderedUserItem
+                        removeChangeListener();
+                        orderedUserItems.clear();
+                        orderedUserItems.addAll(response.body().getOrderedUserItems());
+                        
+                        //store to local database
+                        storeToRealm();
+
+                    } else {
+                        //Parse Error
+                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
-                    @Override
-                    public void onFailure(Call<MyBoxResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                        no_item_subscribed_view_holder.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
-                    }
-                });
+                } catch (Exception e) {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                    no_item_subscribed_view_holder.setVisibility(View.GONE);
+                    connectionErrorViewHelper.isVisible(true);
+                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserItemResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                no_item_subscribed_view_holder.setVisibility(View.GONE);
+                connectionErrorViewHelper.isVisible(true);
+                Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void storeToRealm() {
-        final Realm superRealm = TheBox.getRealm();
-        superRealm.executeTransactionAsync(new Realm.Transaction() {
+
+        final Realm superRealm1 = TheBox.getRealm();
+        superRealm1.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                for (Box box : boxes) {
-                    List<UserItem> items = box.getAllItemInTheBox();
-                    for (UserItem item : items) {
-                        item.setBoxId(box.getBoxId());
-                    }
-                }
-                realm.copyToRealmOrUpdate(boxes);
+                realm.copyToRealmOrUpdate(orderedUserItems);
             }
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
                 if (null != getActivity()) {
+                    initVariables();
+                    setupRecyclerView();
+
                     ((MainActivity) getActivity()).addBoxesToMenu();
                     initDataChangeListener();
                 }
@@ -373,8 +389,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
+
             }
         });
+
 
     }
 
@@ -427,8 +445,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initVariables();
-                    setupRecyclerView();
+                    //fetch data from server and update the list
+                    fetchOrderedUserItem();
                 }
             });
         }

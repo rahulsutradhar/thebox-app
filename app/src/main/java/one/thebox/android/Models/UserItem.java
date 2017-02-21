@@ -15,28 +15,43 @@ public class UserItem extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("usercategory_id")
     private int userCategoryId;
+
     @SerializedName("item_id")
     private int selectedItemId;
+
     @SerializedName("user_id")
     private int userId;
+
     @SerializedName("quantity")
     private int quantity;
+
     @SerializedName("next_delivery_scheduled_at")
     private String nextDeliveryScheduledAt;
+
     @SerializedName("still_subscribed")
     private boolean stillSubscribed;
+
     @SerializedName("itemconfig_id")
     private int selectedConfigId;
+
     @SerializedName("item")
     private BoxItem boxItem;
+
     @SerializedName("box_id")
     private int boxId;
+
     @SerializedName("cart_id")
     private int cartId;
+
+    @SerializedName("arriving_at")
+    private String arrivingAt;
+
     @Ignore
     private int orderItemQty;
+
     @Ignore
     private int orderId;
 
@@ -165,6 +180,14 @@ public class UserItem extends RealmObject implements Serializable {
 
     public void setBoxItem(BoxItem boxItem) {
         this.boxItem = boxItem;
+    }
+
+    public String getArrivingAt() {
+        return arrivingAt;
+    }
+
+    public void setArrivingAt(String arrivingAt) {
+        this.arrivingAt = arrivingAt;
     }
 
     public BoxItem getFakeBoxItemObject() {

@@ -73,7 +73,7 @@ public class TheBox extends MultiDexApplication {
 
     public static RealmConfiguration getRealmConfiguration() {
         realmConfiguration = new RealmConfiguration.Builder(getInstance()).name("thebox.realm")
-                .deleteRealmIfMigrationNeeded().schemaVersion(6).build();
+                .deleteRealmIfMigrationNeeded().schemaVersion(7).build();
         return realmConfiguration;
     }
 

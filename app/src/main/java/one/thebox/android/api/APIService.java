@@ -2,7 +2,7 @@ package one.thebox.android.api;
 
 
 import one.thebox.android.Models.update.SettingsResponse;
-import one.thebox.android.Models.user.UserItemResponse;
+import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
