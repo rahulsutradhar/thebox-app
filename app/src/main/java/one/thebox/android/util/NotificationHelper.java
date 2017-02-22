@@ -115,7 +115,7 @@ public class NotificationHelper {
     }
 
     private void showNotification() {
-        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("custom_notification_sound", "raw", TheBox.getAppContext().getPackageName());
+        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("the_little_dwarf_notification", "raw", TheBox.getAppContext().getPackageName());
 
         Notification notification = builder.build();
         notification.sound = Uri.parse("android.resource://" + TheBox.getAppContext().getPackageName() + "/" + res_sound_id);
@@ -153,7 +153,7 @@ public class NotificationHelper {
     }
 
     private void setNotificationSoundAndLights() {
-        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("custom_notification_sound", "raw", TheBox.getAppContext().getPackageName());
+        int res_sound_id = TheBox.getAppContext().getResources().getIdentifier("the_little_dwarf_notification", "raw", TheBox.getAppContext().getPackageName());
         getNotificaiton().sound = Uri.parse("android.resource://" + TheBox.getAppContext().getPackageName() + "/" + res_sound_id);
         getNotificaiton().defaults = Notification.DEFAULT_VIBRATE;
         getNotificaiton().ledARGB = context.getResources().getColor(R.color.primary);

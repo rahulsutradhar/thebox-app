@@ -103,7 +103,6 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
 
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        /*itemViewHolder.setViews(boxes.get(position), position);*/
         itemViewHolder.setViews(orderedUserItems.get(position), position);
 
         if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {

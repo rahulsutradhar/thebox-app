@@ -341,7 +341,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
 
             price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
-            frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
             productName.setText(userItem.getBoxItem().getTitle());
 
@@ -1043,7 +1043,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
             //userItem.getBoxItem().getSelectedItemConfig();
             price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-            frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
             productName.setText(userItem.getBoxItem().getTitle());
 

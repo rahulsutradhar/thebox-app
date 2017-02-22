@@ -183,10 +183,19 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         Realm realm1 = TheBox.getRealm();
         RealmResults<OrderedUserItem> realmResults1 = realm1.where(OrderedUserItem.class).findAll();
 
-        this.orderedUserItems.clear();
-        this.orderedUserItems.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
-        for (OrderedUserItem orderedUserItem : orderedUserItems) {
-            orderedUserItem.setUserItems(getUserItems(orderedUserItem.getBoxId()));
+        RealmList<OrderedUserItem> itemRealmList = new RealmList<>();
+        itemRealmList.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
+
+        if (itemRealmList.size() > 0) {
+            this.orderedUserItems.clear();
+            for (OrderedUserItem orderedUserItem : itemRealmList) {
+                if (getUserItems(orderedUserItem.getBoxId()).size() > 0) {
+                    orderedUserItem.setUserItems(getUserItems(orderedUserItem.getBoxId()));
+                    this.orderedUserItems.add(orderedUserItem);
+                }
+            }
+        } else {
+            this.orderedUserItems.clear();
         }
 
         //Checking if useritems are present
@@ -239,6 +248,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
         //One or more items are subscribed
         else {
+            no_item_subscribed_view_holder.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
             fabHolder.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
@@ -272,7 +282,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getMyBoxes();
                 fetchOrderedUserItem();
             }
         });
@@ -333,11 +342,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
                         //get the OrderedUserItem
                         removeChangeListener();
-                        orderedUserItems.clear();
-                        orderedUserItems.addAll(response.body().getOrderedUserItems());
-
-                        //store to local database
-                        storeToRealm();
+                        if (response.body().getOrderedUserItems().size() > 0) {
+                            orderedUserItems.clear();
+                            orderedUserItems.addAll(response.body().getOrderedUserItems());
+                            
+                            //store to local database
+                            storeToRealm();
+                        }
 
                     } else {
                         //Parse Error
