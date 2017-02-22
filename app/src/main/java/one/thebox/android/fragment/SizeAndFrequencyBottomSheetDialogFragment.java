@@ -59,7 +59,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
 
     private void setupViewPager() {
         int defaultSelectedPosition = 0;
-        String keySelectedPosition = boxItem.getSelectedItemConfig().getSubscriptionType();
+        String keySelectedPosition = boxItem.getSelectedItemConfig().getSubscriptionText();
         Set<IntStringObject> keySet = hashMap.keySet();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity());
         int i = 0;

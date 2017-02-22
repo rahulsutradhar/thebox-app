@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
+import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.User;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
@@ -37,7 +38,7 @@ public class AuthenticationService {
     }
 
     public void setUserDataToCrashlytics() {
-        if (isAuthenticated()) {
+        if (isAuthenticated() && BuildConfig.enableCrashlytics) {
             try {
                 User user = PrefUtils.getUser(TheBox.getAppContext());
 

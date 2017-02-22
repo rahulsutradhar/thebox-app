@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,6 +24,7 @@ import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.OrdersItemAdapter;
+import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
@@ -59,9 +61,23 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
-        initVariables();
         initViews();
+
+        initVariables();
+
+
+        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false)) {
+            fetchDeliveriesFromServer();
+        }
+
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false);
+
     }
 
     private void initVariables() {
@@ -70,27 +86,17 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class).notEqualTo("successful", false);
         RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
+
         orders.clear();
-        for (int i = 0; i < realmResults.size(); i++) {
-            orders.add(realmResults.get(i));
+        for (Order order : realmResults) {
+            orders.add(order);
         }
 
-        //Setting scenes
-        if (orders.isEmpty()) {
-            //No data available;show static content
-            //New User
-            scene_number = -1;
-        }//Atleast one delivery scheduled by the user
-        else if (PrefUtils.getBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true)) {
-            if (PrefUtils.should_i_fetch_model_data_from_server(TheBox.getInstance(), 0)) {
-                OrderHelper.getOrderAndNotify(false);
-                PrefUtils.clean_model_being_updated_on_server_details(TheBox.getInstance(), 0);
-            }
-            scene_number = 1;
-        } else if ((orders.size() < 4)) {
-            scene_number = 1;
-        } else {
+        if (!orders.isEmpty()) {
             scene_number = 0;
+        } else {
+            //show error message
+            scene_number = -1;
         }
     }
 
@@ -113,15 +119,18 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             }
             case 0: {
                 setupRecyclerView();
+                no_orders_subscribed_view_holder.setVisibility(View.GONE);
                 progress_bar.setVisibility(View.GONE);
                 break;
             }
-            case 1: {
-                progress_bar.setVisibility(View.VISIBLE);
-                setupRecyclerView();
-                break;
-            }
         }
+    }
+
+    /**
+     * Fetch Deliveries from Server
+     */
+    public void fetchDeliveriesFromServer() {
+        OrderHelper.getOrderAndNotify(false);
     }
 
     private void setupRecyclerView() {
@@ -148,13 +157,15 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     // Called after Constants.PREF_IS_ORDER_IS_LOADING is switched from false to true
     @Subscribe
-    public void onUpdateUpcomingDeliveries(UpdateUpcomingDeliveriesEvent UpdateUpcomingDeliveriesEvent) {
+    public void onUpdateUpcomingDeliveries(final UpdateUpcomingDeliveriesEvent updateUpcomingDeliveriesEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     initVariables();
                     initViews();
+
                 }
             });
         }

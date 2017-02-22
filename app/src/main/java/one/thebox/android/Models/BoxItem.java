@@ -40,7 +40,7 @@ public class BoxItem extends RealmObject implements Serializable {
     private boolean isSmartItems;
     @SerializedName("category_id")
     private int categoryId;
-//    @SerializedName("photo_file_name")
+    //    @SerializedName("photo_file_name")
 //    private String photoFileName;
 //    @SerializedName("photo_content_type")
 //    private String photoContentType;
@@ -205,9 +205,10 @@ public class BoxItem extends RealmObject implements Serializable {
     public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
         TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
         for (int i = 0; i < itemConfigs.size(); i++) {
-            String subscriptionType = itemConfigs.get(i).getSubscriptionType();
+            String subscriptionText = itemConfigs.get(i).getSubscriptionText();
             int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
-            IntStringObject key = new IntStringObject(subscriptionTypeUnit, subscriptionType);
+            IntStringObject key = new IntStringObject(subscriptionTypeUnit, subscriptionText);
+
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
                 RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
                 tempItemConfigs.add(itemConfigs.get(i));

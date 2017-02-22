@@ -36,6 +36,7 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -174,6 +175,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (userItems != null) {
             this.userItems = userItems;
         }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -339,7 +341,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
 
             price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
-            frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
             productName.setText(userItem.getBoxItem().getTitle());
 
@@ -363,17 +365,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 arrivingTime.setText("Item is added to your cart");
 
             } else {
-                long days = DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
-                if (days <= 1) {
-                    int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
-                    if (DateTimeUtil.isArrivingToday(hours)) {
-                        arrivingTime.setText("Arriving Today");
-                    } else {
-                        arrivingTime.setText("Arriving Tomorrow");
-                    }
-                } else {
-                    arrivingTime.setText("Arriving in " + days + " days");
-                }
+                arrivingTime.setText(userItem.getArrivingAt());
             }
 
             Glide.with(mContext)
@@ -381,10 +373,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .centerCrop()
                     .crossFade()
                     .into(productImageView);
-
-
-//            Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
-            //Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
@@ -599,7 +587,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     String url = boxItem.getSelectedItemConfig().getPhotoUrl();
-                    FullImageActivity.showImage(url,mContext);
+                    FullImageActivity.showImage(url, mContext);
                 }
             });
 
@@ -1055,7 +1043,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
             //userItem.getBoxItem().getSelectedItemConfig();
             price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-            frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
             productName.setText(userItem.getBoxItem().getTitle());
 
@@ -1089,9 +1077,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     .centerCrop()
                     .crossFade()
                     .into(productImageView);
-
-//            Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).fit().into(productImageView);
-            //Picasso.with(TheBox.getInstance()).load(itemConfig.getPhotoUrl()).resize(116,116).into(productImageView);
         }
 
         private void addItemToBox(final int position) throws IllegalStateException {
@@ -1124,6 +1109,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
+
             TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
                         @Override
@@ -1144,7 +1130,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (onUserItemChange != null) {
                                         onUserItemChange.onUserItemChange(userItems);
                                     }
-                                    OrderHelper.addAndNotify(response.body().getOrders());
+                                    OrderHelper.getOrderAndNotify(false);
                                     EventBus.getDefault().post(new UpdateOrderItemEvent());
                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
@@ -1178,7 +1164,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
                                 }
-                                OrderHelper.addAndNotify(response.body().getOrders());
+                                OrderHelper.getOrderAndNotify(false);
+
                                 if (getAdapterPosition() != -1)
                                     EventBus.getDefault().post(new UpdateOrderItemEvent());
                             }
@@ -1227,7 +1214,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
                                             CartHelper.removeUserItem(userItem.getId(), null);
-                                            OrderHelper.addAndNotify(response.body().getOrders());
+                                            OrderHelper.getOrderAndNotify(false);
                                             EventBus.getDefault().post(new UpdateOrderItemEvent());
 
                                         }
