@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
@@ -30,25 +33,25 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private String monthly_bill;
     private String total_no_of_items;
-    private List<Box> boxes = new ArrayList<>();
     private int stickyHeaderHeight = 0;
-    private SparseIntArray boxHeights = new SparseIntArray();
+
+    /**
+     * User Ordered Item
+     */
+    private List<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
     public MyBoxRecyclerAdapter(Context context) {
         super(context);
     }
 
-    public void addBox(Box box) {
-        boxes.add(box);
+    public List<OrderedUserItem> getOrderedUserItems() {
+        return orderedUserItems;
     }
 
-    public List<Box> getBoxes() {
-        return boxes;
-    }
-
-    public void setBoxes(List<Box> boxes) {
-        this.boxes.clear();
-        this.boxes.addAll(boxes);
+    public void setOrderedUserItems(List<OrderedUserItem> orderedUserItems) {
+        this.orderedUserItems.clear();
+        this.orderedUserItems.addAll(orderedUserItems);
+        notifyDataSetChanged();
     }
 
     public String getMonthly_bill() {
@@ -100,7 +103,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
 
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(boxes.get(position), position);
+        itemViewHolder.setViews(orderedUserItems.get(position), position);
 
         if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper((Activity) mContext, 3)
@@ -130,7 +133,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return boxes.size();
+        return orderedUserItems.size();
     }
 
     @Override
@@ -162,7 +165,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
+                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(orderedUserItems.get(getAdapterPosition()).getBoxId(),
+                        orderedUserItems.get(getAdapterPosition()).getTitle()));
+
                 mContext.startActivity(new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
@@ -180,6 +185,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             super(itemView);
             this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.useritem_list_recycler_view);
             this.title = (MontserratTextView) itemView.findViewById(R.id.title);
+
             recyclerViewUserItems.setNestedScrollingEnabled(false);
             recyclerViewUserItems.setItemViewCacheSize(20);
             recyclerViewUserItems.setDrawingCacheEnabled(true);
@@ -189,23 +195,28 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViews(Box box, final int position) {
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
+        public void setViews(final OrderedUserItem orderedUserItem, final int position) {
+
+            if (orderedUserItem.getUserItems() == null || orderedUserItem.getUserItems().isEmpty()) {
                 this.recyclerViewUserItems.setVisibility(View.GONE);
                 this.title.setVisibility(View.GONE);
             } else {
                 this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                 this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
                 this.title.setVisibility(View.VISIBLE);
-                this.title.setText(box.getBoxDetail().getTitle());
+
+                //set title the box category
+                this.title.setText(orderedUserItem.getTitle());
 
                 this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
-                this.userItemRecyclerAdapter.setBoxItems(null, box.getAllItemInTheBox());
+                this.userItemRecyclerAdapter.setBoxItems(null, orderedUserItem.getUserItems());
                 this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
                     @Override
                     public void onUserItemChange(List<UserItem> userItems) {
-                        boxes.get(position).setAllItemsInTheBox(userItems);
-                        setViews(boxes.get(position), position);
+
+                        orderedUserItems.get(position).setAllUserItems(userItems);
+                        setViews(orderedUserItems.get(position), position);
+
                     }
                 });
                 this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);

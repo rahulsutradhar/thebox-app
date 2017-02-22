@@ -6,6 +6,8 @@ package one.thebox.android.Events;
 
 public class UpdateUpcomingDeliveriesEvent {
 
+
     public UpdateUpcomingDeliveriesEvent() {
     }
+    
 }

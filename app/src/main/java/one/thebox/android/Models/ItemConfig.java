@@ -11,22 +11,34 @@ public class ItemConfig extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("size_or_quantity")
     private int size;
+
     @SerializedName("size_unit")
     private String sizeUnit;
+
     @SerializedName("item_type")
     private String itemType;
+
     @SerializedName("price")
     private int price;
+
     @SerializedName("subscription_type")
     private String subscriptionType;
+
+    @SerializedName("subscription_text")
+    private String subscriptionText;
+
     @SerializedName("photo_url")
     private String photoUrl;
+
     @SerializedName("subscriptiontype")
     private int subscriptionTypeUnit;
+
     @SerializedName("correct_quantity")
     private String correctQuantity;
+
     @SerializedName("in_stock")
     private boolean in_stock;
 
@@ -117,5 +129,21 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setCorrectQuantity(String correctQuantity) {
         this.correctQuantity = correctQuantity;
+    }
+
+    public String getSubscriptionText() {
+        return subscriptionText;
+    }
+
+    public void setSubscriptionText(String subscriptionText) {
+        this.subscriptionText = subscriptionText;
+    }
+
+    public boolean isIn_stock() {
+        return in_stock;
+    }
+
+    public void setIn_stock(boolean in_stock) {
+        this.in_stock = in_stock;
     }
 }
