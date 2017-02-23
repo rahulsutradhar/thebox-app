@@ -12,8 +12,10 @@ public class BoxDetail extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("photo_url")
     private String photoUrl;
 

@@ -18,10 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.google.common.collect.Ordering;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +33,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
@@ -131,6 +136,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         Realm realm = TheBox.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
+        realmResults = realmResults.sort("priority", Sort.DESCENDING);
+
         RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
         this.boxes.clear();
@@ -222,11 +229,10 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
-                                setupRecyclerView();
+                                //save locally
                                 storeToRealm();
                             }
-                        }
-                        else if (response.raw().code() == 401){
+                        } else if (response.raw().code() == 401) {
                             (new AccountManager(getActivity()))
                                     .delete_account_data();
                             getActivity().finish();
@@ -247,18 +253,15 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                for (Box box : boxes) {
-                    List<UserItem> items = box.getAllItemInTheBox();
-                    for (UserItem item : items) {
-                        item.setBoxId(box.getBoxId());
-                    }
-                }
+               
                 realm.copyToRealmOrUpdate(boxes);
             }
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
                 if (null != getActivity()) {
+                    initVariables();
+                    setupRecyclerView();
                     ((MainActivity) getActivity()).addBoxesToMenu();
                 }
             }
