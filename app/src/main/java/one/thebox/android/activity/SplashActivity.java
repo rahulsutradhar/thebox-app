@@ -66,9 +66,7 @@ public class SplashActivity extends Activity {
     }
 
     private void jump() {
-        String token = PrefUtils.getToken(SplashActivity.this);
         User user = PrefUtils.getUser(SplashActivity.this);
-
         if (authenticationService.isAuthenticated()) {
             if ((user == null || user.getName() == null || user.getName().isEmpty())) {
                 startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));

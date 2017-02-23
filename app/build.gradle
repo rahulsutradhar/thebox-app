@@ -64,7 +64,7 @@ android {
             buildConfigField 'Boolean', 'enableStetho', 'false'
             resValue "string", "app_name", "The Box"
             resValue "string", "io.branch.sdk.BranchKey" , "key_live_gpud56EtW1sAAy8sEcapQkloCwitt59c"
-            resValue "string", "io.brach.schema", "thebox"
+            resValue "string", "io.branch.schema", "thebox"
             signingConfig signingConfigs.config
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -80,7 +80,7 @@ android {
             buildConfigField 'Boolean', 'enableStetho', 'true'
             resValue "string", "app_name", "The Box Debug"
             resValue "string", "io.branch.sdk.BranchKey" , "key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z"
-            resValue "string", "io.brach.schema", "thebox.test"
+            resValue "string", "io.branch.schema", "thebox.test"
         }
     }
 

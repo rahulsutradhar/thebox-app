@@ -121,7 +121,7 @@
             <intent-filter android:autoVerify="true">
                 <data
                     android:host="open"
-                    android:scheme="@string/io.brach.schema" />
+                    android:scheme="@string/io.branch.schema" />
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
