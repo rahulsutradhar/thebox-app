@@ -26,16 +26,24 @@ public class Box extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("user_id")
     private int userId;
+
     @SerializedName("box_id")
     private int boxId;
+
+    private int priority;
+
     @SerializedName("remaining_categories")
     private RealmList<Category> remainingCategories;
+
     @SerializedName("usercategories_with_at_least_one_item")
     private RealmList<UserCategory> userCategories;
+
     @SerializedName("box")
     private BoxDetail box;
+
     @Ignore
     private List<UserItem> allItemsInTheBox = new RealmList<>();
 
@@ -139,5 +147,13 @@ public class Box extends RealmObject implements Serializable {
 
     public void setBox(BoxDetail box) {
         this.box = box;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }
