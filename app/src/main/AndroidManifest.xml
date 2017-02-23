@@ -110,13 +110,25 @@
         <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/MyLaunchActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <data
+                    android:host="open"
+                    android:scheme="@string/io.branch.schema" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+
         </activity>
         <activity
             android:name=".activity.FillUserInfoActivity"
@@ -192,6 +204,12 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <!-- BRANCH.IO Key-->
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="@string/io.branch.sdk.BranchKey" />
+
+
         <activity android:name=".activity.TermsOfUserActivity" />
 
         <meta-data
@@ -199,6 +217,7 @@
             android:value="b64cedb83163da1ef4b796db1394544fda44f190" />
 
         <activity android:name=".activity.ContactUsActivity" />
+
 
         <service
             android:name=".services.SyncService"
