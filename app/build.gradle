@@ -35,7 +35,7 @@ android {
     defaultConfig {
         applicationId "one.thebox.android"
         minSdkVersion 15
-
+        multiDexEnabled true
         targetSdkVersion 23
         versionCode 13
         versionName "1.1.3"
@@ -63,6 +63,8 @@ android {
             buildConfigField 'Boolean', 'enableCrashlytics', 'true'
             buildConfigField 'Boolean', 'enableStetho', 'false'
             resValue "string", "app_name", "The Box"
+            resValue "string", "io.branch.sdk.BranchKey" , "key_live_gpud56EtW1sAAy8sEcapQkloCwitt59c"
+            resValue "string", "io.brach.schema", "thebox"
             signingConfig signingConfigs.config
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -77,6 +79,8 @@ android {
             buildConfigField 'Boolean', 'enableCrashlytics', 'false'
             buildConfigField 'Boolean', 'enableStetho', 'true'
             resValue "string", "app_name", "The Box Debug"
+            resValue "string", "io.branch.sdk.BranchKey" , "key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z"
+            resValue "string", "io.brach.schema", "thebox.test"
         }
     }
 
@@ -92,6 +96,11 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
+
+        dexOptions {
+            incremental true
+            javaMaxHeapSize "4g"
+        }
     }
 }
 
@@ -105,6 +114,7 @@ dependencies {
      */
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.jakewharton:butterknife:8.4.0'
+
     /**
      * Support libraries
      */
@@ -113,6 +123,8 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.android.support:cardview-v7:23.4.0'
+    compile 'com.android.support:multidex:1.0.0'
+
     /**
      * Google Play services
      */
@@ -122,14 +134,17 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:9.0.2'
     compile 'com.google.android.gms:play-services-appindexing:9.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
+
     /**
      * Bottom Sheet Material Design
      */
     compile 'com.cocosw:bottomsheet:1.+@aar'
+
     /**
      * Even Bus Green Robot
      */
     compile 'org.greenrobot:eventbus:3.0.0'
+
     /**
      * Network Library - Retrofit
      */
@@ -138,17 +153,20 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
     /**
      * Image loading library Glide
      */
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
     /**
      * Runtime permission handler for Android 6 and above
      */
     compile 'com.github.hotchemi:permissionsdispatcher:2.1.2'
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
     compile 'ch.acra:acra:4.6.2'
+
     /**
      * Gif Image loader
      */
@@ -156,28 +174,39 @@ dependencies {
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     compile 'com.eftimoff:androidplayer:1.0.3@aar'
     compile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+
     /**
      * Works only in debug build for Developer tools
      */
     compile 'com.facebook.stetho:stetho:1.3.1'
     compile 'com.uphyca:stetho_realm:0.9.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.4.2'
+
     /**
      * Hotline
      */
     compile 'com.github.freshdesk:hotline-android:1.0.+'
+
+    /**
+     * branch.io
+     */
+    compile 'io.branch.sdk.android:library:2.+'
+
     /**
      * Fabric crashlytics
      */
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
+
     compile 'com.github.oxoooo:touch-image-view:1.0.1'
     compile 'gun0912.ted:tedpermission:1.0.2'
+
     /**
      * Custom fonts
      */
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+
     /**
      * ViewPagerIndicator
      */
