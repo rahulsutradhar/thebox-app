@@ -13,6 +13,7 @@ import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineConfig;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 
 import org.acra.annotation.ReportsCrashes;
@@ -122,6 +123,9 @@ public class TheBox extends MultiDexApplication {
             /*Local database*/
             getRealm();
             RealmChangeManager.getInstance();
+
+            /*Branch.io*/
+            Branch.getAutoInstance(this);
 
             /*debuger tools*/
             if (BuildConfig.enableStetho) {
