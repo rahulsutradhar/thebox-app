@@ -36,7 +36,6 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
