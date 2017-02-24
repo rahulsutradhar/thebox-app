@@ -188,8 +188,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         if (itemRealmList.size() > 0) {
             orderedUserItems.clear();
             for (OrderedUserItem orderedUserItem : itemRealmList) {
-                if (getUserItems(orderedUserItem.getBoxId()).size() > 0) {
-                    orderedUserItem.setUserItems(getUserItems(orderedUserItem.getBoxId()));
+                if (getUserItems(orderedUserItem).size() > 0) {
+                    orderedUserItem.setUserItems(getUserItems(orderedUserItem));
                     orderedUserItems.add(orderedUserItem);
                 }
             }
@@ -203,13 +203,20 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
 
-    private RealmList<UserItem> getUserItems(int boxId) {
+    private RealmList<UserItem> getUserItems(OrderedUserItem orderedUserItem) {
         Realm realm = TheBox.getRealm();
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll()
+        RealmList<UserItem> list = new RealmList<>();
+
+        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", orderedUserItem.getBoxId()).findAll()
                 .where().notEqualTo("stillSubscribed", false).findAll()
                 .where().isNotNull("nextDeliveryScheduledAt").findAll();
-        RealmList<UserItem> list = new RealmList<>();
-        list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
+
+        if (items.isLoaded()) {
+            list = new RealmList<>();
+            list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
+            return list;
+        }
+
         return list;
     }
 
@@ -245,7 +252,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     public void setupEmptyStateView() {
-        // Toast.makeText(getActivity(), "Called Empty", Toast.LENGTH_SHORT).show();
         // No items are subscribed
         no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
         fabHolder.setVisibility(View.GONE);
@@ -447,7 +453,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 @Override
                 public void run() {
                     //fetch data from server and update the list
-                    fetchOrderedUserItem(false);
+                    initVariables();
                 }
             });
         }
