@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -172,7 +173,7 @@ public class MainActivity extends BaseActivity implements
 
         initCart();
 
-        if (!RestClient.is_in_development) {
+        if (!BuildConfig.DEBUG) {
             ShowcaseHelper.removeAllTutorial();
         }
 
@@ -234,6 +235,7 @@ public class MainActivity extends BaseActivity implements
     };
 
     private void setCartOnToolBar() {
+
         FrameLayout cartFrame = (FrameLayout) findViewById(R.id.frame_cart_icon);
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems = CartHelper.getNumberOfItemsInCart();
@@ -243,7 +245,19 @@ public class MainActivity extends BaseActivity implements
             cartFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+
+                    try {
+                        //check if cart fragment is visible or not
+                        CartFragment cartFragment = (CartFragment) fragmentManager.findFragmentByTag("Bills");
+                        if (cartFragment != null && cartFragment.isVisible()) {
+                            //blank
+                        } else {
+                            startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         } else {
