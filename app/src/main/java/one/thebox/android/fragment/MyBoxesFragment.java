@@ -27,19 +27,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.Box;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.api.Responses.UserItemResponse;
@@ -70,7 +67,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
     private TextView noOfItemsInCart;
-    private List<Box> boxes = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
@@ -78,11 +74,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private String monthly_bill;
     private String total_no_of_items;
     private boolean show_loader_and_call = false;
+    private boolean isRegistered;
 
     /**
      * Ordered User Item
      */
-    private List<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
 
     private boolean isLocallyUpdated;
@@ -153,13 +149,16 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         //Fetching arguments- silent notification for my items
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false) || show_loader_and_call) {
-            fetchOrderedUserItem();
+        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
+            if (show_loader) {
+                fetchOrderedUserItem(false);
+            } else {
+                fetchOrderedUserItem(true);
+            }
+            PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
         }
 
         setupAppBarObserver();
-
-        setupRecyclerView();
 
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
 
@@ -173,11 +172,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
 
     }
 
-    private void initVariables() {
+    private synchronized void initVariables() {
+        ArrayList<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
         //Fetch OrderedUserItem if stored in local database
         Realm realm1 = TheBox.getRealm();
@@ -187,33 +186,37 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         itemRealmList.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
 
         if (itemRealmList.size() > 0) {
-            this.orderedUserItems.clear();
+            orderedUserItems.clear();
             for (OrderedUserItem orderedUserItem : itemRealmList) {
-                if (getUserItems(orderedUserItem.getBoxId()).size() > 0) {
-                    orderedUserItem.setUserItems(getUserItems(orderedUserItem.getBoxId()));
-                    this.orderedUserItems.add(orderedUserItem);
+                if (getUserItems(orderedUserItem).size() > 0) {
+                    orderedUserItem.setUserItems(getUserItems(orderedUserItem));
+                    orderedUserItems.add(orderedUserItem);
                 }
             }
-        } else {
-            this.orderedUserItems.clear();
         }
 
-        //Checking if useritems are present
         if (orderedUserItems.size() > 0) {
-            has_one_or_more_subscribed_items = true;
+            setupRecyclerView(orderedUserItems);
         } else {
-            has_one_or_more_subscribed_items = false;
+            setupEmptyStateView();
         }
     }
 
 
-    private RealmList<UserItem> getUserItems(int boxId) {
+    private RealmList<UserItem> getUserItems(OrderedUserItem orderedUserItem) {
         Realm realm = TheBox.getRealm();
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll()
+        RealmList<UserItem> list = new RealmList<>();
+
+        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", orderedUserItem.getBoxId()).findAll()
                 .where().notEqualTo("stillSubscribed", false).findAll()
                 .where().isNotNull("nextDeliveryScheduledAt").findAll();
-        RealmList<UserItem> list = new RealmList<>();
-        list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
+
+        if (items.isLoaded()) {
+            list = new RealmList<>();
+            list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
+            return list;
+        }
+
         return list;
     }
 
@@ -228,43 +231,41 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
 
-    private void setupRecyclerView() {
-
-        // No items are subscribed
-        if (!has_one_or_more_subscribed_items) {
-            no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
-            fabHolder.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
-
-            // Adding Onclick listener directing to Store Fragment
-            no_item_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
-                }
-            });
-        }
-
+    private void setupRecyclerView(ArrayList<OrderedUserItem> orderedUserItems) {
         //One or more items are subscribed
-        else {
-            no_item_subscribed_view_holder.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            fabHolder.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.VISIBLE);
+        no_item_subscribed_view_holder.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        fabHolder.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
 
-            if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
-                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-                myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
-                recyclerView.setAdapter(myBoxRecyclerAdapter);
-            } else {
-                myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
-            }
-
+        if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+            myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+            recyclerView.setAdapter(myBoxRecyclerAdapter);
+        } else {
+            myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
         }
+
+    }
+
+    public void setupEmptyStateView() {
+        // No items are subscribed
+        no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
+        fabHolder.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+
+        // Adding Onclick listener directing to Store Fragment
+        no_item_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
+            }
+        });
+
     }
 
     private void initViews() {
@@ -282,7 +283,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchOrderedUserItem();
+                fetchOrderedUserItem(true);
             }
         });
     }
@@ -324,10 +325,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     /**
      * Fetch User Item
      */
-    public void fetchOrderedUserItem() {
+    public synchronized void fetchOrderedUserItem(boolean showLoader) {
 
         connectionErrorViewHelper.isVisible(false);
-        progressBar.setVisibility(View.VISIBLE);
+        if (showLoader) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         String token = PrefUtils.getToken(getActivity());
         TheBox.getAPIService().getMyItems(token).enqueue(new Callback<UserItemResponse>() {
@@ -343,13 +346,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         //get the OrderedUserItem
                         removeChangeListener();
                         if (response.body().getOrderedUserItems().size() > 0) {
-                            orderedUserItems.clear();
-                            orderedUserItems.addAll(response.body().getOrderedUserItems());
-                            
                             //store to local database
-                            storeToRealm();
+                            storeToRealm(response.body().getOrderedUserItems());
                         }
-
                     } else {
                         //Parse Error
                         Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -377,20 +376,19 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     }
 
-    private void storeToRealm() {
+    private synchronized void storeToRealm(final ArrayList<OrderedUserItem> list) {
 
         final Realm superRealm1 = TheBox.getRealm();
         superRealm1.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(orderedUserItems);
+                realm.copyToRealmOrUpdate(list);
             }
         }, new Realm.Transaction.OnSuccess() {
             @Override
             public void onSuccess() {
                 if (null != getActivity()) {
                     initVariables();
-                    setupRecyclerView();
 
                     ((MainActivity) getActivity()).addBoxesToMenu();
                     initDataChangeListener();
@@ -428,7 +426,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-    private boolean isRegistered;
 
     @Override
     public void onStart() {
@@ -450,16 +447,15 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
 
     @Subscribe
-    public void onUpdateOrderItemEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+    public synchronized void onUpdateOrderItemEvent(UpdateOrderItemEvent onUpdateOrderItem) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //fetch data from server and update the list
-                    fetchOrderedUserItem();
+                    initVariables();
                 }
             });
         }
     }
-
 }

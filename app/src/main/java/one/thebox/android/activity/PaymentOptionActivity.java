@@ -25,6 +25,7 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.razorpay.Checkout;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmList;
+import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
@@ -339,10 +341,10 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
-                                    TheBox.getInstance(),
-                                    Constants.PREF_IS_ORDER_IS_LOADING,
-                                    Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                    (new Date(System.currentTimeMillis())).getTime()
+                                        TheBox.getInstance(),
+                                        Constants.PREF_IS_ORDER_IS_LOADING,
+                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
+                                        (new Date(System.currentTimeMillis())).getTime()
                                 );
 
                                 CartHelper.clearCart();
@@ -380,8 +382,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         Checkout razorpayCheckout = new Checkout();
         if (RestClient.is_in_development) {
             razorpayCheckout.setKeyID(test_key_id);
-        }
-        else{
+        } else {
             razorpayCheckout.setKeyID(live_key_id);
         }
 
@@ -414,7 +415,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     public void onPaymentSuccess(String razorpayPaymentID) {
-        this.razorpayPaymentID=razorpayPaymentID;
+        this.razorpayPaymentID = razorpayPaymentID;
         getUserLocation();
     }
 
@@ -507,9 +508,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         return;
                     }
                     latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
-                    if(TextUtils.isEmpty(razorpayPaymentID)){
+                    if (TextUtils.isEmpty(razorpayPaymentID)) {
                         fillUserInfo();
-                    }else {
+                    } else {
                         pay_online(razorpayPaymentID);
                     }
                 }
@@ -519,9 +520,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
             protected void onFailed(ConnectionResult connectionResult) {
                 latLng = new MyLocation("0.0", "0.0");
                 locationRefreshed = false;
-                if(TextUtils.isEmpty(razorpayPaymentID)){
+                if (TextUtils.isEmpty(razorpayPaymentID)) {
                     fillUserInfo();
-                }else {
+                } else {
                     pay_online(razorpayPaymentID);
                 }
             }
@@ -536,6 +537,4 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
 
     }
-
-
 }
