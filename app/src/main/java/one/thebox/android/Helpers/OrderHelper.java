@@ -12,6 +12,7 @@ import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.NotificationHelper;
@@ -41,11 +42,11 @@ public class OrderHelper {
         saveToRealm(order);
     }
 
-    public static void build_and_show_order_delivered_notification(){
-        NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10,"");
-        NotificationInfo notificationInfo = new NotificationInfo(10,"Delivery Done","Why don't you add more items for next delivery?",0,content_action);
+    public static void build_and_show_order_delivered_notification() {
+        NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10, "");
+        NotificationInfo notificationInfo = new NotificationInfo(10, "Delivery Done", "Why don't you add more items for next delivery?", 0, content_action);
         new NotificationHelper(TheBox.getInstance(), notificationInfo).show();
-        Log.v("Notification shown","Here");
+        Log.v("Notification shown", "Here");
     }
 
     public static void getOrderAndNotify(final Boolean show_notification) {
@@ -71,12 +72,27 @@ public class OrderHelper {
         );
     }
 
+    public static void updateUserItemAndNotifiy(final UserItem userItem) {
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+
+        UserItem userItem1 = realm.where(UserItem.class).equalTo("id", userItem.getId()).findFirst();
+        if (userItem1 != null) {
+            userItem1.setQuantity(userItem.getQuantity());
+            userItem1.setSelectedConfigId(userItem.getSelectedConfigId());
+            realm.copyToRealm(userItem1);
+            realm.commitTransaction();
+
+            sendUpdateOrderItemBroadcast();
+        }
+    }
+
 
     private static void saveToRealm(final RealmList<Order> orders) {
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
-            realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll().deleteAllFromRealm();
-            realm.copyToRealmOrUpdate(orders);
+        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+        realm.copyToRealmOrUpdate(orders);
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();
     }
@@ -99,7 +115,6 @@ public class OrderHelper {
         EventBus.getDefault().post(new UpdateCartEvent(1));
         EventBus.getDefault().post(new UpdateOrderItemEvent());
     }
-
 
 
     public static void getOrderAndNotifySynchronusly() {

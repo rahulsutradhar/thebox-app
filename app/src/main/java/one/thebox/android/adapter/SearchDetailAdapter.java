@@ -36,7 +36,6 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -1130,8 +1129,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (onUserItemChange != null) {
                                         onUserItemChange.onUserItemChange(userItems);
                                     }
-                                    OrderHelper.getOrderAndNotify(false);
-                                    EventBus.getDefault().post(new UpdateOrderItemEvent());
+
+                                    OrderHelper.updateUserItemAndNotifiy(item);
+
                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -1155,7 +1155,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
                             if (response.body() != null) {
-                                userItems.set(position, response.body().getUserItem());
+                                UserItem item = response.body().getUserItem();
+                                userItems.set(position, item);
                                 if (onUserItemChange != null) {
                                     onUserItemChange.onUserItemChange(userItems);
                                 }
@@ -1164,10 +1165,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
                                     CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
                                 }
-                                OrderHelper.getOrderAndNotify(false);
 
-                                if (getAdapterPosition() != -1)
-                                    EventBus.getDefault().post(new UpdateOrderItemEvent());
+                                OrderHelper.updateUserItemAndNotifiy(item);
                             }
                         }
 
@@ -1205,6 +1204,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                     loader.dismiss();
                                     if (response.body() != null) {
+                                        UserItem item = response.body().getUserItem();
                                         Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         if (response.body().isSuccess()) {
                                             userItems.remove(getAdapterPosition());
@@ -1214,8 +1214,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemRemoved(getAdapterPosition());
                                             dialog.dismiss();
                                             CartHelper.removeUserItem(userItem.getId(), null);
-                                            OrderHelper.getOrderAndNotify(false);
-                                            EventBus.getDefault().post(new UpdateOrderItemEvent());
+                                            OrderHelper.addAndNotify(response.body().getOrders());
 
                                         }
                                     }
