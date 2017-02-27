@@ -35,6 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmList;
+import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
@@ -380,7 +381,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         String live_key_id = "rzp_live_e1nfI8frHunaFM";
 
         Checkout razorpayCheckout = new Checkout();
-        if (RestClient.is_in_development) {
+        if (BuildConfig.DEBUG) {
             razorpayCheckout.setKeyID(test_key_id);
         } else {
             razorpayCheckout.setKeyID(live_key_id);
