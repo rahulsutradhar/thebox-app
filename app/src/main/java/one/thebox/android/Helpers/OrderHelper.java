@@ -75,16 +75,10 @@ public class OrderHelper {
     public static void updateUserItemAndNotifiy(final UserItem userItem) {
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
 
-        UserItem userItem1 = realm.where(UserItem.class).equalTo("id", userItem.getId()).findFirst();
-        if (userItem1 != null) {
-            userItem1.setQuantity(userItem.getQuantity());
-            userItem1.setSelectedConfigId(userItem.getSelectedConfigId());
-            realm.copyToRealm(userItem1);
-            realm.commitTransaction();
-
-            sendUpdateOrderItemBroadcast();
-        }
+        sendUpdateOrderItemBroadcast();
     }
 
 

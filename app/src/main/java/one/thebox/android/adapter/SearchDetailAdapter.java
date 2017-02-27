@@ -1059,17 +1059,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
                 arrivingTime.setText("Item is added to your cart");
             } else {
-                long days = DateTimeUtil.getDifferenceAsDay(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
-                if (days <= 1) {
-                    int hours = (int) DateTimeUtil.getDifferenceAsHours(Calendar.getInstance().getTime(), DateTimeUtil.convertStringToDate(userItem.getNextDeliveryScheduledAt()));
-                    if (DateTimeUtil.isArrivingToday(hours)) {
-                        arrivingTime.setText("Arriving Today");
-                    } else {
-                        arrivingTime.setText("Arriving Tomorrow");
-                    }
-                } else {
-                    arrivingTime.setText("Arriving in " + days + " days");
-                }
+                arrivingTime.setText(userItem.getArrivingAt());
             }
             Glide.with(mContext)
                     .load(itemConfig.getPhotoUrl())
