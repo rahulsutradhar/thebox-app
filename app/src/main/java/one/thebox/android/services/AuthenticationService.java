@@ -8,6 +8,7 @@ import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.User;
+import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
@@ -62,6 +63,19 @@ public class AuthenticationService {
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * Check if User Info exist or not
+     */
+    public boolean isUserInfoExist() {
+        User user = PrefUtils.getUser(TheBox.getAppContext());
+
+        if ((user == null || user.getName() == null || user.getName().isEmpty())) {
+            return false;
+        } else {
+            return true;
         }
     }
 
