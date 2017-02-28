@@ -25,52 +25,6 @@ public class OnBoardingActivity extends BaseActivity {
         setContentView(R.layout.activity_onboard);
         setStatusBarTranslucent(true);
         setStatusBarColor(getResources().getColor(R.color.white));
-
-        //Ask user to enable Auto-Start permission in Xiomi device
-       /* if (!PrefUtils.getBoolean(this, AUTO_ENABLE_PERMISSION)) {
-            autoStartAppPermission();
-        }*/
     }
-
-
-    /**
-     * For Xiomi Device
-     */
-    public void autoStartAppPermission() {
-        try {
-
-            String xiaomi = "Xiaomi";
-            final String CALC_PACKAGE_NAME = "com.miui.securitycenter";
-            final String CALC_PACKAGE_ACITIVITY = "com.miui.permcenter.autostart.AutoStartManagementActivity";
-            String devieManufacturer = android.os.Build.MANUFACTURER;
-
-            if (devieManufacturer.equalsIgnoreCase(xiaomi)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Permission");
-                builder.setMessage("We need Auto Start Permission to enable Notification");
-                builder.setCancelable(false);
-
-                String positiveText = getString(android.R.string.ok);
-                builder.setPositiveButton(positiveText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        PrefUtils.putBoolean(TheBox.getAppContext(), AUTO_ENABLE_PERMISSION, true);
-
-                        Intent intent = new Intent();
-                        intent.setComponent(new ComponentName(CALC_PACKAGE_NAME, CALC_PACKAGE_ACITIVITY));
-                        startActivity(intent);
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                // display dialog
-                dialog.show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
 }

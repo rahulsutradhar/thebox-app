@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -66,15 +67,32 @@ public class SplashActivity extends Activity {
     }
 
     private void jump() {
+        String token = PrefUtils.getToken(SplashActivity.this);
         User user = PrefUtils.getUser(SplashActivity.this);
+
         if (authenticationService.isAuthenticated()) {
-            if ((user == null || user.getName() == null || user.getName().isEmpty())) {
+
+            if (authenticationService.isUserInfoExist()) {
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            } else {
                 startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
-            } else if (!(user == null || user.getName() == null || user.getName().isEmpty())) {
+            }
+
+        } else {
+            //From next version it should open OnBoardActivity
+            //startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+
+            /**
+             * if the key returns false means the key don't exist
+             * so repeat old methord of navigation
+             */
+            if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
+                startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+            } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
+                startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+            } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
             }
-        } else {
-            startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
         }
         finish();
     }

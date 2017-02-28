@@ -24,34 +24,49 @@ public class Order extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("user_id")
     private int userId;
+
     @SerializedName("address_id")
     private int addressId;
+
     @SerializedName("delivery_scheduled_at")
     private String deliveryScheduleAt;
+
     @SerializedName("paid")
     private boolean paid;
+
     @SerializedName("delivered")
     private boolean delivered;
+
     @SerializedName("open")
     private boolean open;
+
     @SerializedName("total_price")
     private float totalPrice;
+
     @SerializedName("delivery_charges")
     private float deliveryCharges;
+
     @SerializedName("tax")
     private float tax;
+
     @SerializedName("cart")
     private boolean cart;
+
     @SerializedName("useritems")
     private RealmList<UserItem> userItems;
+
     @SerializedName("useritem_quantites")
     private RealmList<Invoice> useritem_quantites;
+
     @SerializedName("cod")
     private boolean cod;
+
     @SerializedName("successfull")
     private boolean successful;
+
     @SerializedName("payment_amount_remaining")
     private int payment_amount_remaining;
 
