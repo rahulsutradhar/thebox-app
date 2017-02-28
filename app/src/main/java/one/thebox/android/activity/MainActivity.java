@@ -173,7 +173,7 @@ public class MainActivity extends BaseActivity implements
 
         initCart();
 
-        if (!BuildConfig.DEBUG) {
+        if (!RestClient.is_in_development) {
             ShowcaseHelper.removeAllTutorial();
         }
 
@@ -190,7 +190,8 @@ public class MainActivity extends BaseActivity implements
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
-        //new ShowCaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
+        //Tutorial
+        // new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
 
         //Preference to load OrderedUserItem when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
@@ -204,6 +205,7 @@ public class MainActivity extends BaseActivity implements
 
         //Preference to load OrderedUserItem when user open the app be false
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
+        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, false);
 
     }
 
