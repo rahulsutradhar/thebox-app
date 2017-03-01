@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
 import java.util.ArrayList;
 
 import one.thebox.android.Models.ExploreItem;
@@ -33,6 +36,11 @@ public class ExploreBoxesFragment extends Fragment {
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
     private ConnectionErrorViewHelper connectionErrorViewHelper;
 
+    /**
+     * Glide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
     public ExploreBoxesFragment() {
     }
 
@@ -55,11 +63,12 @@ public class ExploreBoxesFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        exploreItemAdapter = new ExploreItemAdapter(getActivity());
+        exploreItemAdapter = new ExploreItemAdapter(getActivity(),glideRequestManager);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);

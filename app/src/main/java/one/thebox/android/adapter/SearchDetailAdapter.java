@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -92,6 +93,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<Category> suggestedCategories = new ArrayList<>();
     private int boxId;
 
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
     public List<UserItem> getUserItems() {
         return userItems;
     }
@@ -131,8 +137,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.boxItems = boxItems;
     }
 
-    public SearchDetailAdapter(Context context) {
+    public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {
         this.mContext = context;
+        this.glideRequestManager = glideRequestManager;
     }
 
     public boolean isHide_quantity_selector_in_this_order_item_view() {
@@ -275,103 +282,108 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, final int arrayListPosition) {
 
 
-            for (Invoice i : useritems_quantities) {
-                if (i.getUseritem_id() == userItem.getId()) {
-                    quantity_for_this_order = i.getInvoice_quantity();
-                    noOfItemSelected.setText(String.valueOf(i.getInvoice_quantity()));
+            try {
+                for (Invoice i : useritems_quantities) {
+                    if (i.getUseritem_id() == userItem.getId()) {
+                        quantity_for_this_order = i.getInvoice_quantity();
+                        noOfItemSelected.setText(String.valueOf(i.getInvoice_quantity()));
+                    }
                 }
-            }
 
-            if (isHide_quantity_selector_in_this_order_item_view()) {
+                if (isHide_quantity_selector_in_this_order_item_view()) {
 
-                quantityHolder.setVisibility(View.GONE);
-                addButton.setVisibility(View.GONE);
-                subtractButton.setVisibility(View.GONE);
+                    quantityHolder.setVisibility(View.GONE);
+                    addButton.setVisibility(View.GONE);
+                    subtractButton.setVisibility(View.GONE);
 
-            } else {
-                quantityHolder.setVisibility(View.VISIBLE);
+                } else {
+                    quantityHolder.setVisibility(View.VISIBLE);
 
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
-                    }
-                });
-
-                subtractButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (quantity_for_this_order > 1) {
-                            updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
-                        } else if (quantity_for_this_order == 1) {
-                            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                    title("Remove " + userItem.getBoxItem().getTitle())
-                                    .positiveText("Cancel")
-                                    .negativeText("Remove")
-                                    .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
-                                    .callback(new MaterialDialog.ButtonCallback() {
-                                        @Override
-                                        public void onPositive(MaterialDialog materialDialog) {
-
-                                            // Dismiss the dialog
-                                            materialDialog.cancel();
-                                        }
-
-                                        @Override
-                                        public void onNegative(MaterialDialog materialDialog) {
-
-                                            // Making update call
-                                            updateQuantity(getAdapterPosition(), 0);
-
-                                        }
-                                    })
-                                    .build();
-                            dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                            dialog.show();
-                        } else {
-                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                    addButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
                         }
+                    });
 
-                    }
-                });
+                    subtractButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (quantity_for_this_order > 1) {
+                                updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
+                            } else if (quantity_for_this_order == 1) {
+                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                        title("Remove " + userItem.getBoxItem().getTitle())
+                                        .positiveText("Cancel")
+                                        .negativeText("Remove")
+                                        .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
+                                        .callback(new MaterialDialog.ButtonCallback() {
+                                            @Override
+                                            public void onPositive(MaterialDialog materialDialog) {
+
+                                                // Dismiss the dialog
+                                                materialDialog.cancel();
+                                            }
+
+                                            @Override
+                                            public void onNegative(MaterialDialog materialDialog) {
+
+                                                // Making update call
+                                                updateQuantity(getAdapterPosition(), 0);
+
+                                            }
+                                        })
+                                        .build();
+                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                dialog.show();
+                            } else {
+                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+                }
+
+
+                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+
+                price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
+                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+
+                productName.setText(userItem.getBoxItem().getTitle());
+
+                if (itemConfig.getCorrectQuantity().equals("NA")) {
+                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                } else {
+                    config.setText(itemConfig.
+                            getCorrectQuantity() + " x " +
+                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                }
+
+                savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+
+
+                if (isHasUneditableUserItem()) {
+                    arrivingTime.setVisibility(View.GONE);
+
+                }
+
+                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
+                    arrivingTime.setText("Item is added to your cart");
+
+                } else {
+                    arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                //image loading
+                glideRequestManager.load(itemConfig.getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImageView);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-
-            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-
-            price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
-            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
-
-            productName.setText(userItem.getBoxItem().getTitle());
-
-            if (itemConfig.getCorrectQuantity().equals("NA")) {
-                config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            } else {
-                config.setText(itemConfig.
-                        getCorrectQuantity() + " x " +
-                        itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            }
-
-            savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
-
-
-            if (isHasUneditableUserItem()) {
-                arrivingTime.setVisibility(View.GONE);
-
-            }
-
-            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                arrivingTime.setText("Item is added to your cart");
-
-            } else {
-                arrivingTime.setText(userItem.getArrivingAt());
-            }
-
-            Glide.with(mContext)
-                    .load(itemConfig.getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImageView);
         }
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
@@ -536,7 +548,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories);
+            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
@@ -544,110 +556,110 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
 
-            this.position = arrayListPosition;
-            productName.setText(boxItem.getTitle());
-            productBrand.setText(boxItem.getBrand());
+            try {
+                this.position = arrayListPosition;
+                productName.setText(boxItem.getTitle());
+                productBrand.setText(boxItem.getBrand());
 
-            //Updating Savings
-            if (boxItem.getSavings() == 0) {
-                savingAmountHolder.setVisibility(View.GONE);
-            } else {
-                savingAmountHolder.setVisibility(View.VISIBLE);
-                savings.setText(boxItem.getSavings() + " Rs Savings");
-            }
-
-            //Updating no. of SKU's
-            if (boxItem.getNo_of_sku() < 2) {
-                no_of_options_holder.setVisibility(View.GONE);
-            } else if (boxItem.getNo_of_sku() == 2) {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + 1 more option");
-            } else {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
-            }
-
-
-            if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
-                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                //Updating Savings
+                if (boxItem.getSavings() == 0) {
+                    savingAmountHolder.setVisibility(View.GONE);
                 } else {
-                    size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    savingAmountHolder.setVisibility(View.VISIBLE);
+                    savings.setText(boxItem.getSavings() + " Rs Savings");
                 }
-            }
 
-            Glide.with(mContext)
-                    .load(boxItem.getSelectedItemConfig().getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImage);
-
-            productImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String url = boxItem.getSelectedItemConfig().getPhotoUrl();
-                    FullImageActivity.showImage(url, mContext);
+                //Updating no. of SKU's
+                if (boxItem.getNo_of_sku() < 2) {
+                    no_of_options_holder.setVisibility(View.GONE);
+                } else if (boxItem.getNo_of_sku() == 2) {
+                    no_of_options_holder.setVisibility(View.VISIBLE);
+                    no_of_options_holder.setText(" + 1 more option");
+                } else {
+                    no_of_options_holder.setVisibility(View.VISIBLE);
+                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
                 }
-            });
 
 
-            no_of_options_holder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
-                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
+                    if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
+                        size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    } else {
+                        size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    }
+                }
+
+                glideRequestManager.load(boxItem.getSelectedItemConfig().getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImage);
+
+                productImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = boxItem.getSelectedItemConfig().getPhotoUrl();
+                        FullImageActivity.showImage(url, mContext);
+                    }
+                });
+
+
+                no_of_options_holder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+                        dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                        dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                            @Override
+                            public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                dialogFragment.dismiss();
+                                if (boxItem.getUserItemId() == 0) {
+                                    boxItem.setSelectedItemConfig(selectedItemConfig);
+                                    setViews(boxItem, position, true);
+                                } else {
+                                    changeConfig(position, selectedItemConfig.getId());
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Checking if item is in stock
+                if (boxItem.is_in_stock()) {
+                    setViewsBasedOnStock(false);
+                    addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                            dialogFragment.dismiss();
-                            if (boxItem.getUserItemId() == 0) {
-                                boxItem.setSelectedItemConfig(selectedItemConfig);
-                                setViews(boxItem, position, true);
+                        public void onClick(View v) {
+                            addItemToBox(position);
+                        }
+                    });
+                    addButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            updateQuantity(position, boxItem.getQuantity() + 1);
+                        }
+                    });
+                    subtractButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (boxItem.getQuantity() > 0) {
+                                updateQuantity(position, boxItem.getQuantity() - 1);
                             } else {
-                                changeConfig(position, selectedItemConfig.getId());
+                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                }
-            });
 
-            // Checking if item is in stock
-            if (boxItem.is_in_stock()) {
-                setViewsBasedOnStock(false);
-                addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        addItemToBox(position);
+                    setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
+
+                    noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
+
+                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
+                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+                        savingHolder.setVisibility(View.VISIBLE);
+                    } else {
+                        savingHolder.setVisibility(View.GONE);
                     }
-                });
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateQuantity(position, boxItem.getQuantity() + 1);
-                    }
-                });
-                subtractButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (boxItem.getQuantity() > 0) {
-                            updateQuantity(position, boxItem.getQuantity() - 1);
-                        } else {
-                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-
-                noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-
-                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
-                    setupRecyclerViewSuggestedCategories(suggestedCategories);
-                    savingHolder.setVisibility(View.VISIBLE);
-                } else {
-                    savingHolder.setVisibility(View.GONE);
-                }
 
 // Previous implementation
 //                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
@@ -657,44 +669,47 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                    savingHolder.setVisibility(View.GONE);
 //                }
 
-                if (boxItem.getQuantity() == 0) {
-                    addButtonViewHolder.setVisibility(View.VISIBLE);
-                    updateQuantityViewHolder.setVisibility(View.GONE);
-                    if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
-                        if (getAdapterPosition() == 0) {
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
-                                moveRecyclerView(true);
-                            }
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
-                                new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                            @Override
-                                            public void onComplete() {
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
-                                                new ShowcaseHelper((Activity) mContext, 2)
-                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                                            @Override
-                                                            public void onComplete() {
-                                                                EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                moveRecyclerView(true);
+                    if (boxItem.getQuantity() == 0) {
+                        addButtonViewHolder.setVisibility(View.VISIBLE);
+                        updateQuantityViewHolder.setVisibility(View.GONE);
+                        if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
+                            if (getAdapterPosition() == 0) {
+                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
+                                    moveRecyclerView(true);
+                                }
+                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
+                                    new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                                @Override
+                                                public void onComplete() {
+                                                    PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
+                                                    PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
+                                                    new ShowcaseHelper((Activity) mContext, 2)
+                                                            .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                                                @Override
+                                                                public void onComplete() {
+                                                                    EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                                }
+                                                            });
+                                                }
+                                            });
+                                    moveRecyclerView(true);
+                                }
                             }
                         }
+                    } else {
+                        addButtonViewHolder.setVisibility(View.GONE);
+                        updateQuantityViewHolder.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    addButtonViewHolder.setVisibility(View.GONE);
-                    updateQuantityViewHolder.setVisibility(View.VISIBLE);
                 }
-            }
 
-            // If Item is not in stock
-            else {
-                setViewsBasedOnStock(true);
+                // If Item is not in stock
+                else {
+                    setViewsBasedOnStock(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -870,6 +885,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setViews(final UserItem userItem, final int arrayListPosition) {
+
             quantityHolder.setVisibility(View.VISIBLE);
 
             edit.setOnClickListener(new View.OnClickListener() {
@@ -1038,34 +1054,40 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 }
             });
-            noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-            //userItem.getBoxItem().getSelectedItemConfig();
-            price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
-            productName.setText(userItem.getBoxItem().getTitle());
+            try {
 
-            if (itemConfig.getCorrectQuantity().equals("NA")) {
-                config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            } else {
-                config.setText(itemConfig.getCorrectQuantity() + " x " +
-                        itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
+                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+                price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
+                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+
+                productName.setText(userItem.getBoxItem().getTitle());
+
+                if (itemConfig.getCorrectQuantity().equals("NA")) {
+                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                } else {
+                    config.setText(itemConfig.getCorrectQuantity() + " x " +
+                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                }
+
+                if (isHasUneditableUserItem()) {
+                    arrivingTime.setVisibility(View.GONE);
+                }
+                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
+                    arrivingTime.setText("Item is added to your cart");
+                } else {
+                    arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                glideRequestManager.load(itemConfig.getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImageView);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            if (isHasUneditableUserItem()) {
-                arrivingTime.setVisibility(View.GONE);
-            }
-            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                arrivingTime.setText("Item is added to your cart");
-            } else {
-                arrivingTime.setText(userItem.getArrivingAt());
-            }
-            Glide.with(mContext)
-                    .load(itemConfig.getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImageView);
         }
 
         private void addItemToBox(final int position) throws IllegalStateException {

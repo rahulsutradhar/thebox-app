@@ -10,6 +10,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -38,13 +41,17 @@ public class OrderItemsActivity extends BaseActivity {
     private int orderId;
     private Order order;
     private TextView payTextView;
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     public static Intent newInstance(Context context, int orderId) {
         return new Intent(context, OrderItemsActivity.class).putExtra(EXTRA_USER_ITEM_ARRAY_LIST, orderId);
     }
 
     private void initVariables() {
-        if (getIntent().hasExtra(EXTRA_USER_ITEM_ARRAY_LIST)){
+        if (getIntent().hasExtra(EXTRA_USER_ITEM_ARRAY_LIST)) {
             orderId = getIntent().getIntExtra(EXTRA_USER_ITEM_ARRAY_LIST, 0);
         }
         Realm realm = TheBox.getRealm();
@@ -75,6 +82,7 @@ public class OrderItemsActivity extends BaseActivity {
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
@@ -117,11 +125,11 @@ public class OrderItemsActivity extends BaseActivity {
     }
 
     private void setupRecyclerView() {
-        userItemRecyclerAdapter = new SearchDetailAdapter(this);
+        userItemRecyclerAdapter = new SearchDetailAdapter(this, glideRequestManager);
         userItemRecyclerAdapter.setBoxItems(null, userItems);
         userItemRecyclerAdapter.setUserItemQuantities(order.getId(), order.getUserItemQuantities());
         userItemRecyclerAdapter.setHasUneditableUserItem(true);
-        if (order.isPaid()){
+        if (order.isPaid()) {
             userItemRecyclerAdapter.setHide_quantity_selector_in_this_order_item_view(true);
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

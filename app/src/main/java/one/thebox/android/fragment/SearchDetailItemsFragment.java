@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -74,6 +77,11 @@ public class SearchDetailItemsFragment extends Fragment {
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int totalItems;
     private int maxPageNumber;
+
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     public SearchDetailItemsFragment() {
     }
@@ -204,6 +212,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
@@ -251,7 +260,7 @@ public class SearchDetailItemsFragment extends Fragment {
             emptyText.setVisibility(View.GONE);
         }
         if (searchDetailAdapter == null) {
-            searchDetailAdapter = new SearchDetailAdapter(getActivity());
+            searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
             searchDetailAdapter.setBoxItems(boxItems, userItems);
             LinearLayoutManager manager = new LinearLayoutManager(getActivity());

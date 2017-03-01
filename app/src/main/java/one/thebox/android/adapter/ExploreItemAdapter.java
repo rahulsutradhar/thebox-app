@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 
@@ -20,10 +21,16 @@ import one.thebox.android.util.CoreGsonUtils;
  */
 public class ExploreItemAdapter extends BaseRecyclerAdapter {
 
+    /**
+     * Glide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
     private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
 
-    public ExploreItemAdapter(Context context) {
+    public ExploreItemAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
+        this.glideRequestManager = glideRequestManager;
     }
 
     public void addExploreItems(ExploreItem exploreItem) {
@@ -137,8 +144,7 @@ public class ExploreItemAdapter extends BaseRecyclerAdapter {
                     .downloader(downloader).memoryCache(memoryCache).build();*/
 //            Picasso.with(mContext).load(exploreItem.getImageUrl()).networkPolicy(NetworkPolicy.OFFLINE).into(imageView);
 
-            Glide.with(mContext)
-                    .load(exploreItem.getImageUrl())
+            glideRequestManager.load(exploreItem.getImageUrl())
                     .centerCrop()
                     .crossFade()
                     .into(imageView);
