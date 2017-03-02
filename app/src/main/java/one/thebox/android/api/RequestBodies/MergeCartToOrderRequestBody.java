@@ -8,14 +8,19 @@ import java.io.Serializable;
  * Created by 32 on 28-05-2016.
  */
 
-public class MergeCartToOrderRequestBody implements Serializable{
+public class MergeCartToOrderRequestBody implements Serializable {
+
     @SerializedName("order_id")
     private int mergeOrderId;
+
+    private String amount;
+
     private String lat;
     private String lng;
 
-    public MergeCartToOrderRequestBody(int mergeOrderId, String lat, String lng) {
+    public MergeCartToOrderRequestBody(int mergeOrderId, String amount, String lat, String lng) {
         this.mergeOrderId = mergeOrderId;
+        this.amount = amount;
         this.lat = lat;
         this.lng = lng;
     }

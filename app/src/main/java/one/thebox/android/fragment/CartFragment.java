@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +77,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     private void initVariables() {
         int cartId = PrefUtils.getUser(getActivity()).getCartId();
+        Log.i("PAYMENT_CART_ID", cartId + "");
         Realm realm = TheBox.getRealm();
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)

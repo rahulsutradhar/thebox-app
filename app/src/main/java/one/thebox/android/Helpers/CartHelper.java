@@ -171,6 +171,7 @@ public class CartHelper {
                     public void execute(Realm realm) {
                         Order order = realm.where(Order.class).equalTo(Order.FIELD_ID, cartId).findFirst();
                         order.getUserItems().clear();
+                        order.setTotalPrice(0);
                         sendUpdateNoItemsInCartBroadcast(order.getUserItems().size());
                     }
                 }, new Realm.Transaction.OnSuccess() {

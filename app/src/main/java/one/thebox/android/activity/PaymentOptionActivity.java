@@ -70,8 +70,10 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
+    private static final String EXTRA_IS_MERGING = "is_merging_order";
     private static final int REQ_CODE_GET_LOCATION = 101;
     private ArrayList<AddressAndOrder> addressAndOrders;
+    private boolean isMerging;
 
     @BindView(R.id.tabsPaymentOption)
     TabLayout tabsPaymentOption;
@@ -121,6 +123,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
         mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
+        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
+
+        Log.d("PAYMENT_M_STATUS ", mergeOrderId + "  " + isMerging);
     }
 
 
@@ -206,7 +211,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -223,10 +228,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 );
 
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -248,7 +255,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this),
+                new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -265,10 +273,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 );
 
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -306,10 +316,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -332,7 +344,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString(), String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        int orderId = 0;
+        if (isMerging) {
+            orderId = mergeOrderId;
+        } else {
+            orderId = addressAndOrders.get(0).getOrderId();
+        }
+
+        Log.d("PAYMENT_ONLINE ", orderId + " ");
+        Log.d("PAYMENT_AOUNT ", totalPayment);
+        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
+                String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -348,10 +370,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
 
-                                CartHelper.clearCart();
+
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
