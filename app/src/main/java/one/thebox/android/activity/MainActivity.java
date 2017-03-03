@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity implements
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
     private Menu menu;
-    public int triggeredFrom = 0;
+    private int numberOfItemIncart = -1;
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -229,6 +229,10 @@ public class MainActivity extends BaseActivity implements
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
+                    if (intent.getExtras() != null) {
+                        numberOfItemIncart = intent.getIntExtra(Constants.EXTRA_ITEMS_IN_CART, -1);
+                    }
                     setCartOnToolBar();
                 }
             });
@@ -240,9 +244,16 @@ public class MainActivity extends BaseActivity implements
 
         FrameLayout cartFrame = (FrameLayout) findViewById(R.id.frame_cart_icon);
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
-        int numberOfItems = CartHelper.getNumberOfItemsInCart();
+        int numberOfItems;
+        if (numberOfItemIncart == -1) {
+            numberOfItems = CartHelper.getNumberOfItemsInCart();
+        } else {
+            numberOfItems = numberOfItemIncart;
+        }
+
         if (numberOfItems > 0) {
             cartFrame.setVisibility(View.VISIBLE);
+            noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(numberOfItems));
             cartFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -263,6 +274,8 @@ public class MainActivity extends BaseActivity implements
                 }
             });
         } else {
+            noOfItemsInCart.setText("");
+            noOfItemsInCart.setVisibility(View.GONE);
             cartFrame.setVisibility(View.GONE);
         }
     }
@@ -458,15 +471,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachOrderFragment() {
-        clearBackStack();
-        CartFragment fragment = new CartFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "Bills");
-        fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
-    }
-
-    private void attachOrderFragmentWithBackStack() {
 
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -476,11 +480,10 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void attachMyAccountFragment() {
-        clearBackStack();
 
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "My Account");
+        fragmentTransaction.replace(R.id.frame, fragment, "My_Account").addToBackStack("My_Account");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
     }
@@ -509,10 +512,6 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.replace(R.id.frame, fragment, "My_Boxes");
         fragmentTransaction.commit();
         appBarLayout.setExpanded(true, true);
-    }
-
-    private void attachMyBoxesFragmentWithBackStack() {
-        attachMyBoxesFragment(1, false);
     }
 
     private void attachSearchResultFragment() {
@@ -603,9 +602,6 @@ public class MainActivity extends BaseActivity implements
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            if (getTriggeredFrom() == 21) {
-                attachMyBoxesFragment(1, false);
-            }
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();
@@ -718,7 +714,7 @@ public class MainActivity extends BaseActivity implements
             }
 
             case 3: {
-                attachOrderFragmentWithBackStack();
+                attachOrderFragment();
                 break;
             }
             case 4: {
@@ -737,7 +733,7 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 7: {
-                attachMyBoxesFragmentWithBackStack();
+                attachMyBoxesFragment(1, false);
                 break;
             }
 
@@ -750,7 +746,7 @@ public class MainActivity extends BaseActivity implements
             }
             case 21: {
                 //attach category Fragment
-                attachCategoriesFragmentForNotifications(intent);
+                performCategoryNotification(intent);
                 break;
             }
             case 12: {
@@ -765,6 +761,16 @@ public class MainActivity extends BaseActivity implements
             default:
                 attachMyBoxesFragment(1, false);
         }
+    }
+
+    private void performCategoryNotification(Intent intent) {
+        //check if Box Fragment is visible or not
+
+        //bad technic, need to reafactor
+        attachMyBoxesFragment(1, false);
+        attachCategoriesFragmentForNotifications(intent);
+
+
     }
 
     private void attachCategoriesFragment(Intent intent) {
@@ -802,16 +808,12 @@ public class MainActivity extends BaseActivity implements
      * Attach Search Detail Fragment on click from Notifications
      */
     public void attachCategoriesFragmentForNotifications(Intent intent) {
-        clearBackStack();
         //parse the Parameters
         Params params = CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_NOTIFICATION_PARAMETER), Params.class);
 
         getToolbar().setSubtitle(null);
-        setTriggeredFrom(21);
-
         searchView.getText().clear();
         searchViewHolder.setVisibility(View.GONE);
-
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -821,7 +823,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(params.getCategoryId(), params.getBoxName(), 21);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(params.getCategoryId(), params.getBoxName());
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -947,14 +949,6 @@ public class MainActivity extends BaseActivity implements
                 .build();
 
         mGcmNetworkManager.schedule(task);
-    }
-
-    public int getTriggeredFrom() {
-        return triggeredFrom;
-    }
-
-    public void setTriggeredFrom(int triggeredFrom) {
-        this.triggeredFrom = triggeredFrom;
     }
 
     @Override

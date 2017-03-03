@@ -24,6 +24,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -102,8 +103,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private boolean previousScrollAction = false;
     private int noOfTabs;
     private String title;
-    private int triggeredFrom = 0;
-    private boolean listenerAdded = false;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -156,11 +155,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     /**
      * Call for Notification Click
      */
-    public static SearchDetailFragment getInstance(int catId, String boxName, int triggeredFrom) {
+    public static SearchDetailFragment getInstance(int catId, String boxName) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_CAT_ID, catId);
         bundle.putString(BOX_NAME, boxName);
-        bundle.putInt(TRIGERED_FROM, triggeredFrom);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
         return searchDetailFragment;
@@ -171,7 +169,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             query = getArguments().getString(EXTRA_QUERY);
             catId = getArguments().getInt(EXTRA_CAT_ID);
             title = getArguments().getString(BOX_NAME);
-            triggeredFrom = getArguments().getInt(TRIGERED_FROM);
             exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
             catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
             user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
@@ -576,11 +573,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void onResume() {
         super.onResume();
         ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
-
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
-
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
-
         ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
 
         ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
@@ -602,51 +596,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
         });
 
-        //back button in toolbar
-        if (triggeredFrom == 21) {
-            listenerAdded = true;
-            ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    handleBackPress();
-                }
-            });
-        }
-
-
-        //track the hardware back button and handle back navigation
-        rootView.setFocusableInTouchMode(true);
-        rootView.requestFocus();
-        rootView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-                    handleBackPress();
-                    return true;
-                }
-                return false;
-            }
-        });
-
 
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
 
-    public void handleBackPress() {
-
-        if (triggeredFrom == 21) {
-            if (listenerAdded) {
-                ((MainActivity) getActivity()).getToolbar().setNavigationOnClickListener(null);
-                ((MainActivity) getActivity()).putToggleListener();
-                listenerAdded = false;
-            }
-            ((MainActivity) getActivity()).setTriggeredFrom(triggeredFrom);
-        }
-        getActivity().onBackPressed();
-    }
 
     @Override
     public void onPause() {

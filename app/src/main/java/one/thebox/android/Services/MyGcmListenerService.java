@@ -48,13 +48,17 @@ public class MyGcmListenerService extends GcmListenerService {
             instance.handleGcmMessage(data);
             return;
         } else {
-            Log.d("message received", data.toString());
             String notificationInfoString = data.getString("notification_info");
             NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
-            if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
-                //Updating Prefrences
-                PrefUtils.putBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
-                ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
+
+            if (notificationInfo != null && notificationInfo.getNotificationActions().size() > 0) {
+                if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
+                    //Updating Prefrences
+                    PrefUtils.putBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
+                    ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
+                } else {
+                    new NotificationHelper(this, notificationInfo).show();
+                }
             } else {
                 new NotificationHelper(this, notificationInfo).show();
             }

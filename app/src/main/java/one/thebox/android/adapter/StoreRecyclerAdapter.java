@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -45,8 +46,14 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     private int stickyHeaderHeight = 0;
     private SparseIntArray boxHeights = new SparseIntArray();
 
-    public StoreRecyclerAdapter(Context context) {
+    /**
+     * Glide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
+    public StoreRecyclerAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
+        this.glideRequestManager = glideRequestManager;
     }
 
     public void addBox(Box box) {
@@ -152,18 +159,21 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private RealmList<UserCategory> my_catIds;
         private Box box;
         private Context context;
+        private RequestManager mRequestManager;
 
-        public RemainingCategoryAdapter(Context context, List<Category> categories, RealmList<UserCategory> my_catIds) {
+        public RemainingCategoryAdapter(Context context, List<Category> categories, RealmList<UserCategory> my_catIds, RequestManager mRequestManager) {
             super(context);
             this.categories = categories;
             this.my_catIds = my_catIds;
             this.context = context;
+            this.mRequestManager = mRequestManager;
         }
 
-        public RemainingCategoryAdapter(Context context, List<Category> categories) {
+        public RemainingCategoryAdapter(Context context, List<Category> categories, RequestManager mRequestManager) {
             super(context);
             this.categories = categories;
             this.context = context;
+            this.mRequestManager = mRequestManager;
         }
 
         public void setBox(Box box) {
@@ -313,8 +323,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     categoryNameTextView.setText(category.getMinititle());
                 }
 
-                Glide.with(mContext)
-                        .load(category.getIconUrl())
+                mRequestManager.load(category.getIconUrl())
                         .centerCrop()
                         .crossFade()
                         .into(categoryIcon);
@@ -443,8 +452,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 //            }
 
 
-            Glide.with(mContext)
-                    .load(box.getBoxDetail().getPhotoUrl())
+            glideRequestManager.load(box.getBoxDetail().getPhotoUrl())
                     .centerCrop()
                     .crossFade()
                     .into(boxImageView);
@@ -453,7 +461,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
             RealmList<Category> categories = new RealmList<>();
             categories.addAll(box.getRemainingCategories());
-            this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories, box.getUserCategories());
+            this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories, box.getUserCategories(), glideRequestManager);
             this.remainingCategoryAdapter.setBox(boxes.get(getAdapterPosition()));
             this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
 

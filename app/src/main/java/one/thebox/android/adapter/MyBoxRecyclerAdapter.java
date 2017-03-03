@@ -10,6 +10,8 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.RequestManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +38,18 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     private int stickyHeaderHeight = 0;
 
     /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
+    /**
      * User Ordered Item
      */
     private List<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
-    public MyBoxRecyclerAdapter(Context context) {
+    public MyBoxRecyclerAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
+        this.glideRequestManager = glideRequestManager;
     }
 
     public List<OrderedUserItem> getOrderedUserItems() {
@@ -197,29 +205,33 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         public void setViews(final OrderedUserItem orderedUserItem, final int position) {
 
-            if (orderedUserItem.getUserItems() == null || orderedUserItem.getUserItems().isEmpty()) {
-                this.recyclerViewUserItems.setVisibility(View.GONE);
-                this.title.setVisibility(View.GONE);
-            } else {
-                this.recyclerViewUserItems.setVisibility(View.VISIBLE);
-                this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
-                this.title.setVisibility(View.VISIBLE);
+            try {
+                if (orderedUserItem.getUserItems() == null || orderedUserItem.getUserItems().isEmpty()) {
+                    this.recyclerViewUserItems.setVisibility(View.GONE);
+                    this.title.setVisibility(View.GONE);
+                } else {
+                    this.recyclerViewUserItems.setVisibility(View.VISIBLE);
+                    this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
+                    this.title.setVisibility(View.VISIBLE);
 
-                //set title the box category
-                this.title.setText(orderedUserItem.getTitle());
+                    //set title the box category
+                    this.title.setText(orderedUserItem.getTitle());
 
-                this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext);
-                this.userItemRecyclerAdapter.setBoxItems(null, orderedUserItem.getUserItems());
-                this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
-                    @Override
-                    public void onUserItemChange(List<UserItem> userItems) {
+                    this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
+                    this.userItemRecyclerAdapter.setBoxItems(null, orderedUserItem.getUserItems());
+                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
+                        @Override
+                        public void onUserItemChange(List<UserItem> userItems) {
 
-                        orderedUserItems.get(position).setAllUserItems(userItems);
-                        setViews(orderedUserItems.get(position), position);
+                            orderedUserItems.get(position).setAllUserItems(userItems);
+                            setViews(orderedUserItems.get(position), position);
 
-                    }
-                });
-                this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
+                        }
+                    });
+                    this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

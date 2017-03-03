@@ -55,6 +55,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private ArrayList<Locality> localities = new ArrayList<>();
     private String[] localitiesSuggestions = new String[0];
     private AuthenticationService authenticationService;
+    private double latitude = 0.0, longitude = 0.0;
+    private int locationPermisionCounter = 0;
 
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
         @Override
@@ -174,17 +176,23 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_GET_LOCATION) {
+            checkGPSenable();
             return;
         }
     }
 
     // Location Marking Issue
     private void checkGPSenable() {
+        locationPermisionCounter++;
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getLocationPermission();
         } else {
-            buildAlertMessageNoGps();
+            if (locationPermisionCounter > 1) {
+                fillUserInfo();
+            } else {
+                buildAlertMessageNoGps();
+            }
         }
     }
 
@@ -201,6 +209,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
+                        fillUserInfo();
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -238,6 +247,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                         return;
                     }
                     latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
+                    latitude = latLng.getLatitude();
+                    longitude = latLng.getLongitude();
                     fillUserInfo();
                 }
             }
@@ -253,11 +264,10 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
     private void fillUserInfo() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox
-                .getAPIService()
+        TheBox.getAPIService()
                 .storeUserInfo(PrefUtils.getToken(this)
                         , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
-                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(codeSelected), latLng.getLatitude(), latLng.getLongitude())))
+                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(codeSelected), latitude, longitude)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
