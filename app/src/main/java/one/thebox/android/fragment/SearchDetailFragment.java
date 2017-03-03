@@ -107,7 +107,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "Broadcast Reciever SearchDetailFragment ", Toast.LENGTH_SHORT).show();
             if (getActivity() == null) {
                 return;
             }

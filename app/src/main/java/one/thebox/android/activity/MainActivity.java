@@ -113,6 +113,7 @@ public class MainActivity extends BaseActivity implements
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
     private Menu menu;
+    private int numberOfItemIncart = -1;
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -225,12 +226,13 @@ public class MainActivity extends BaseActivity implements
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, final Intent intent) {
-            Toast.makeText(context, "Broadcast Reciever MainActivity ", Toast.LENGTH_SHORT).show();
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
 
+                    if (intent.getExtras() != null) {
+                        numberOfItemIncart = intent.getIntExtra(Constants.EXTRA_ITEMS_IN_CART, -1);
+                    }
                     setCartOnToolBar();
                 }
             });
@@ -242,9 +244,16 @@ public class MainActivity extends BaseActivity implements
 
         FrameLayout cartFrame = (FrameLayout) findViewById(R.id.frame_cart_icon);
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
-        int numberOfItems = CartHelper.getNumberOfItemsInCart();
+        int numberOfItems;
+        if (numberOfItemIncart == -1) {
+            numberOfItems = CartHelper.getNumberOfItemsInCart();
+        } else {
+            numberOfItems = numberOfItemIncart;
+        }
+
         if (numberOfItems > 0) {
             cartFrame.setVisibility(View.VISIBLE);
+            noOfItemsInCart.setVisibility(View.VISIBLE);
             noOfItemsInCart.setText(String.valueOf(numberOfItems));
             cartFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -265,6 +274,8 @@ public class MainActivity extends BaseActivity implements
                 }
             });
         } else {
+            noOfItemsInCart.setText("");
+            noOfItemsInCart.setVisibility(View.GONE);
             cartFrame.setVisibility(View.GONE);
         }
     }

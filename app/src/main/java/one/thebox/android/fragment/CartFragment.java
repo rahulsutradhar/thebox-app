@@ -54,7 +54,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, final Intent intent) {
-            Toast.makeText(context, "Broadcast Reciever CartFragmnet ", Toast.LENGTH_SHORT).show();
             if (getActivity() == null) {
                 return;
             }
@@ -79,7 +78,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     private void initVariables() {
         int cartId = PrefUtils.getUser(getActivity()).getCartId();
-        Log.i("PAYMENT_CART_ID", cartId + "");
         Realm realm = TheBox.getRealm();
         Order order = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0)

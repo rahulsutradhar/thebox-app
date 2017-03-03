@@ -9,6 +9,7 @@ import android.widget.Toast;
 import io.realm.Realm;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.PrefUtils;
@@ -39,7 +40,6 @@ public class CartHelper {
             @Override
             public void onSuccess() {
                 sendUpdateNoItemsInCartBroadcast(order.getUserItems().size());
-                //Toast.makeText(getActivity(), "success", Toast.LENGTH_SHORT).showTimeSlotBottomSheet();
             }
         }, new Realm.Transaction.OnError() {
             @Override
@@ -191,9 +191,9 @@ public class CartHelper {
     }
 
     public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
-        Log.d("PAYMENT_ITEM_AF_ORDR ", numberOfItem + " ");
         Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
         // add data
+        intent.putExtra(Constants.EXTRA_ITEMS_IN_CART, numberOfItem);
         intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
         LocalBroadcastManager.getInstance(TheBox.getInstance()).sendBroadcast(intent);
     }
