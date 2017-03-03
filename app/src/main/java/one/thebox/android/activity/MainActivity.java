@@ -120,8 +120,16 @@ public class MainActivity extends BaseActivity implements
         public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
             progressBar.setVisibility(View.GONE);
             callHasBeenCompleted = true;
-            if (response.body() != null) {
-                EventBus.getDefault().post(new SearchEvent(query, response.body()));
+            try {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        EventBus.getDefault().post(new SearchEvent(query, response.body()));
+                    }
+                } else {
+                    //handle error
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

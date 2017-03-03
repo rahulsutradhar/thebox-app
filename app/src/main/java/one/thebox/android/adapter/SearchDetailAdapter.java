@@ -920,25 +920,21 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
                                     @Override
                                     public void onDelayActionCompleted(UserItem userItem) {
-                                        try {
-                                            if (userItem == null) {
-                                                userItems.remove(arrayListPosition);
-                                                if (onUserItemChange != null) {
-                                                    onUserItemChange.onUserItemChange(userItems);
-                                                }
-                                                notifyItemRemoved(getAdapterPosition());
-                                            } else {
-                                                userItems.set(arrayListPosition, userItem);
-                                                if (onUserItemChange != null) {
-                                                    onUserItemChange.onUserItemChange(userItems);
-                                                }
-                                                notifyItemChanged(getAdapterPosition());
+
+                                        if (userItem == null) {
+                                            userItems.remove(arrayListPosition);
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
                                             }
-                                        } catch (ArrayIndexOutOfBoundsException e) {
-                                            e.printStackTrace();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                            notifyItemRemoved(getAdapterPosition());
+                                        } else {
+                                            userItems.set(arrayListPosition, userItem);
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
+                                            notifyItemChanged(getAdapterPosition());
                                         }
+                                       
                                     }
                                 }).show(userItem);
 
@@ -1132,37 +1128,31 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
-                            try {
-                                if (response.body() != null) {
-                                    if (response.body().isSuccess()) {
-                                        int prevQuantity = userItems.get(position).getQuantity();
-                                        UserItem item = response.body().getUserItem();
-                                        item.setBoxId(response.body().getBoxId());
-                                        if (quantity >= 1) {
-                                            CartHelper.addOrUpdateUserItem(item, null);
-                                            notifyItemChanged(getAdapterPosition());
-                                        } else {
-                                            CartHelper.removeUserItem(userItems.get(position).getId(), null);
-                                            notifyItemRemoved(getAdapterPosition());
-                                        }
-                                        if (onUserItemChange != null) {
-                                            onUserItemChange.onUserItemChange(userItems);
-                                        }
 
-                                        OrderHelper.updateUserItemAndNotifiy(item);
-
-                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                            if (response.body() != null) {
+                                if (response.body().isSuccess()) {
+                                    int prevQuantity = userItems.get(position).getQuantity();
+                                    UserItem item = response.body().getUserItem();
+                                    item.setBoxId(response.body().getBoxId());
+                                    if (quantity >= 1) {
+                                        CartHelper.addOrUpdateUserItem(item, null);
+                                        notifyItemChanged(getAdapterPosition());
                                     } else {
-                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        CartHelper.removeUserItem(userItems.get(position).getId(), null);
+                                        notifyItemRemoved(getAdapterPosition());
                                     }
+                                    if (onUserItemChange != null) {
+                                        onUserItemChange.onUserItemChange(userItems);
+                                    }
+
+                                    OrderHelper.updateUserItemAndNotifiy(item);
+
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
-                            } catch (NullPointerException e) {
-                                e.printStackTrace();
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                e.printStackTrace();
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
+
                         }
 
                         @Override
@@ -1229,29 +1219,21 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 @Override
                                 public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                     loader.dismiss();
-                                    try {
 
-                                        if (response.body() != null) {
-                                            UserItem item = response.body().getUserItem();
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                            if (response.body().isSuccess()) {
-                                                userItems.remove(getAdapterPosition());
-                                                if (onUserItemChange != null) {
-                                                    onUserItemChange.onUserItemChange(userItems);
-                                                }
-                                                notifyItemRemoved(getAdapterPosition());
-                                                dialog.dismiss();
-                                                CartHelper.removeUserItem(userItem.getId(), null);
-                                                OrderHelper.addAndNotify(response.body().getOrders());
-
+                                    if (response.body() != null) {
+                                        UserItem item = response.body().getUserItem();
+                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        if (response.body().isSuccess()) {
+                                            userItems.remove(getAdapterPosition());
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
                                             }
+                                            notifyItemRemoved(getAdapterPosition());
+                                            dialog.dismiss();
+                                            CartHelper.removeUserItem(userItem.getId(), null);
+                                            OrderHelper.addAndNotify(response.body().getOrders());
+
                                         }
-                                    } catch (ArrayIndexOutOfBoundsException e) {
-                                        e.printStackTrace();
-                                    } catch (NullPointerException e) {
-                                        e.printStackTrace();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
                                 }
 
