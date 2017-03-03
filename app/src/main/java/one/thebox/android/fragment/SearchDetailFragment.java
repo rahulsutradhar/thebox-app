@@ -24,6 +24,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -106,6 +107,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Broadcast Reciever SearchDetailFragment ", Toast.LENGTH_SHORT).show();
             if (getActivity() == null) {
                 return;
             }

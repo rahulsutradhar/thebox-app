@@ -106,7 +106,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 } else {
                     addressAndOrders.add(new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
                 }
-                Log.d("PAYMENT_MEGE_O_ID", mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId() + "");
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
                         addressAndOrders,
                         mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));

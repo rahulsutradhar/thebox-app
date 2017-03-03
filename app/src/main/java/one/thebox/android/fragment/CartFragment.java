@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -53,6 +54,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, final Intent intent) {
+            Toast.makeText(context, "Broadcast Reciever CartFragmnet ", Toast.LENGTH_SHORT).show();
             if (getActivity() == null) {
                 return;
             }

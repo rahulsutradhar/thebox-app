@@ -225,9 +225,12 @@ public class MainActivity extends BaseActivity implements
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, final Intent intent) {
+            Toast.makeText(context, "Broadcast Reciever MainActivity ", Toast.LENGTH_SHORT).show();
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     setCartOnToolBar();
                 }
             });

@@ -2,6 +2,7 @@ package one.thebox.android.Helpers;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -52,6 +53,7 @@ public class CartHelper {
     public static int getNumberOfItemsInCart() {
         Order order = TheBox.getRealm()
                 .where(Order.class)
+                .notEqualTo(Order.FIELD_ID, 0)
                 .equalTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId())
                 .findFirst();
         if (order == null || order.getId() == 0) {
@@ -169,14 +171,16 @@ public class CartHelper {
                 (new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        Order order = realm.where(Order.class).equalTo(Order.FIELD_ID, cartId).findFirst();
+                        Order order = realm.where(Order.class).notEqualTo(Order.FIELD_ID, 0)
+                                .equalTo(Order.FIELD_ID, cartId).findFirst();
                         order.getUserItems().clear();
                         order.setTotalPrice(0);
-                        sendUpdateNoItemsInCartBroadcast(order.getUserItems().size());
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
+                        //cart is empty
+                        sendUpdateNoItemsInCartBroadcast(0);
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
@@ -187,6 +191,7 @@ public class CartHelper {
     }
 
     public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
+        Log.d("PAYMENT_ITEM_AF_ORDR ", numberOfItem + " ");
         Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
         // add data
         intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
