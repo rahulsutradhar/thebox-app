@@ -68,7 +68,7 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+
                 Intent intent = new Intent(mContext, MainActivity.class);
                 intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4);
                 intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(searchResults.get(position)));
@@ -132,13 +132,17 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(SearchResult searchResult) {
-            if (searchResult.getId() == 0) {
-                searchResultText.setText(searchResult.getResult());
-            } else {
-                searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
-                SpannableStringBuilder str = new SpannableStringBuilder("See All " + searchResult.getResult());
-                str.setSpan(new android.text.style.ForegroundColorSpan(context.getResources().getColor(R.color.light_grey)), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                searchResultText.setText(str);
+            try {
+                if (searchResult.getId() == 0) {
+                    searchResultText.setText(searchResult.getResult());
+                } else {
+                    searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
+                    SpannableStringBuilder str = new SpannableStringBuilder("See All " + searchResult.getResult());
+                    str.setSpan(new android.text.style.ForegroundColorSpan(context.getResources().getColor(R.color.light_grey)), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    searchResultText.setText(str);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

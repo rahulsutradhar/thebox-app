@@ -249,11 +249,8 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             if (response.body().isSuccess()) {
 
                                 Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
                                 OrderHelper.addAndNotify(response.body().getOrders());
-
-                                startActivity(new Intent(ConfirmTimeSlotActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-
+                                startActivity(new Intent(ConfirmTimeSlotActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 2));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();

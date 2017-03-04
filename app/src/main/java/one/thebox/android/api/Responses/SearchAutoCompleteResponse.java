@@ -20,11 +20,17 @@ public class SearchAutoCompleteResponse extends ApiResponse implements Serializa
     }
 
     public List<String> getItems() {
-        if (this.items == null || this.items.size() == 0) {
-            items = new ArrayList<>();
-            for (Category cat : categories) {
-                items.addAll(cat.getItems());
+        try {
+            if (this.items == null || this.items.size() == 0) {
+                items = new ArrayList<>();
+                for (Category cat : categories) {
+                    if (cat.getItems() != null) {
+                        items.addAll(cat.getItems());
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return items;
     }

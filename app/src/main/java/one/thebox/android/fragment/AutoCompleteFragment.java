@@ -72,9 +72,9 @@ public class AutoCompleteFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if(dy!=0) {
+                if (dy != 0) {
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(((BaseActivity)getActivity()).getContentView().getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(((BaseActivity) getActivity()).getContentView().getWindowToken(), 0);
                 }
             }
         });
@@ -94,27 +94,39 @@ public class AutoCompleteFragment extends Fragment {
 
     @Subscribe
     public void onSearchEvent(SearchEvent searchEvent) {
-        searchResults.clear();
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
-            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
-            int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
-            SearchResult searchResult = new SearchResult(categoryId, categoryName);
-            searchResults.add(searchResult);
+        try {
+
+            searchResults.clear();
+            if (searchEvent.getSearchAutoCompleteResponse().getCategories() != null) {
+                for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
+                    String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
+                    int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
+                    SearchResult searchResult = new SearchResult(categoryId, categoryName);
+                    searchResults.add(searchResult);
+                }
+            }
+
+            if (searchEvent.getSearchAutoCompleteResponse().getItems() != null) {
+                for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
+                    String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
+                    SearchResult searchResult = new SearchResult(itemName);
+                    searchResults.add(searchResult);
+                }
+            }
+            
+            if (searchResults.size() == 0) {
+                noItemFoundTextView.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                noItemFoundTextView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+            searchAutoCompleteAdapter.setSearchResults(searchResults);
+            recyclerView.setAdapter(searchAutoCompleteAdapter);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
-            String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
-            SearchResult searchResult = new SearchResult(itemName);
-            searchResults.add(searchResult);
-        }
-        if (searchResults.size() == 0) {
-            noItemFoundTextView.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            noItemFoundTextView.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-        searchAutoCompleteAdapter.setSearchResults(searchResults);
-        recyclerView.setAdapter(searchAutoCompleteAdapter);
     }
 
 
@@ -122,6 +134,12 @@ public class AutoCompleteFragment extends Fragment {
     public void onStart() {
         super.onStart();
         MainActivity.isSearchFragmentIsAttached = true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

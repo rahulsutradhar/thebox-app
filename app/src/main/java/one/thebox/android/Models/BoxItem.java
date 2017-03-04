@@ -21,36 +21,49 @@ public class BoxItem extends RealmObject implements Serializable {
 
     @SerializedName("quantity")
     private int quantity;
+
     @Ignore
     private int userItemId;
+
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("brand")
     private String brand;
+
     @SerializedName("savings")
     private int savings;
+
     @SerializedName("in_stock")
     private boolean in_stock;
+
     @SerializedName("no_of_sku")
     private int no_of_sku;
+
     @SerializedName("smart_item")
     private boolean isSmartItems;
+
     @SerializedName("category_id")
     private int categoryId;
     //    @SerializedName("photo_file_name")
 //    private String photoFileName;
 //    @SerializedName("photo_content_type")
 //    private String photoContentType;
+
     @SerializedName("itemconfigs")
     private RealmList<ItemConfig> itemConfigs;
+
     @SerializedName("photo_url")
     private String photoUrl;
+
     @Ignore
     private ItemConfig selectedItemConfig;
     private RealmList<Category> suggestedCategory = new RealmList<>();
+
     @Ignore
     private int horizontalOffsetOfRecyclerView;
 
