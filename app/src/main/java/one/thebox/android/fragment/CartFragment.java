@@ -11,10 +11,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -40,6 +45,11 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
     private TextView emptyCartText;
+
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -106,7 +116,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         }
 
         if (userItemRecyclerAdapter == null) {
-            userItemRecyclerAdapter = new SearchDetailAdapter(getActivity());
+            userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
             userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -119,6 +129,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);

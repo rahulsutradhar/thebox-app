@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -107,7 +108,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
                         addressAndOrders,
-                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
+                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));
             }
         });
     }
@@ -248,11 +249,8 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             if (response.body().isSuccess()) {
 
                                 Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
                                 OrderHelper.addAndNotify(response.body().getOrders());
-
-                                startActivity(new Intent(ConfirmTimeSlotActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1));
-
+                                startActivity(new Intent(ConfirmTimeSlotActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 2));
                                 finish();
                             } else {
                                 Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();

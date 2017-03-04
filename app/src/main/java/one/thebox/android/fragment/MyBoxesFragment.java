@@ -23,6 +23,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -77,8 +80,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private boolean isRegistered;
 
     /**
-     * Ordered User Item
+     * GLide Request Manager
      */
+    private RequestManager glideRequestManager;
 
 
     private boolean isLocallyUpdated;
@@ -242,7 +246,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(linearLayoutManager);
-            myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
+            myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), glideRequestManager);
             myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
             recyclerView.setAdapter(myBoxRecyclerAdapter);
         } else {
@@ -269,6 +273,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         this.progressBar = (GifImageView) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
         this.no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);

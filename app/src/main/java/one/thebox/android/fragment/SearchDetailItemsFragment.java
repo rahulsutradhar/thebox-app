@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
@@ -74,6 +77,11 @@ public class SearchDetailItemsFragment extends Fragment {
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int totalItems;
     private int maxPageNumber;
+
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     public SearchDetailItemsFragment() {
     }
@@ -180,8 +188,8 @@ public class SearchDetailItemsFragment extends Fragment {
     private void fillAllUserItems() {
         if (catId != -1) {
             Realm realm = TheBox.getRealm();
-            RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
-            setBoxItemsBasedOnUserItems(items, boxItems);
+            RealmResults<UserItem> realmResults = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
+            setBoxItemsBasedOnUserItems(realmResults, boxItems);
         } else {
             getDataBasedOnSource();
         }
@@ -204,6 +212,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
@@ -251,7 +260,7 @@ public class SearchDetailItemsFragment extends Fragment {
             emptyText.setVisibility(View.GONE);
         }
         if (searchDetailAdapter == null) {
-            searchDetailAdapter = new SearchDetailAdapter(getActivity());
+            searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
             searchDetailAdapter.setBoxItems(boxItems, userItems);
             LinearLayoutManager manager = new LinearLayoutManager(getActivity());
@@ -350,40 +359,44 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems) {
-        if (items == null) {
-            Realm realm = TheBox.getRealm();
-            items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
-        }
-        LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
-
-        for (BoxItem item : bItems) {
-            map.put(item.getId(), item);
-        }
-        userItems.clear();
-//            boxItems.clear();
-        for (UserItem item : items) {
-            if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
-                userItems.add(item);
-            } else {
-                BoxItem boxItem = item.getBoxItem();
-                if (map.containsKey(boxItem.getId())) {
-                    BoxItem box = map.get(boxItem.getId());
-                    box.setUserItemId(item.getId());
-                    box.setQuantity(item.getQuantity());
-                    map.put(box.getId(), box);
-                } else {
-                    boxItem.setUserItemId(item.getId());
-                    boxItem.setQuantity(item.getQuantity());
-                    map.put(boxItem.getId(), boxItem);
-                }
-
+        try {
+            if (items == null && catId != -1) {
+                Realm realm = TheBox.getRealm();
+                items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
             }
-        }
-        boxItems.clear();
-        boxItems.addAll(map.values());
+            LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
+
+            for (BoxItem item : bItems) {
+                map.put(item.getId(), item);
+            }
+            userItems.clear();
+//            boxItems.clear();
+            for (UserItem item : items) {
+                if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
+                    userItems.add(item);
+                } else {
+                    BoxItem boxItem = item.getBoxItem();
+                    if (map.containsKey(boxItem.getId())) {
+                        BoxItem box = map.get(boxItem.getId());
+                        box.setUserItemId(item.getId());
+                        box.setQuantity(item.getQuantity());
+                        map.put(box.getId(), box);
+                    } else {
+                        boxItem.setUserItemId(item.getId());
+                        boxItem.setQuantity(item.getQuantity());
+                        map.put(boxItem.getId(), boxItem);
+                    }
+
+                }
+            }
+            boxItems.clear();
+            boxItems.addAll(map.values());
 //            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
 //            boxItems.addAll(boxes);
-        setupRecyclerView();
+            setupRecyclerView();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

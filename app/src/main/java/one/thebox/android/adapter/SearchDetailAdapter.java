@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -92,6 +93,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<Category> suggestedCategories = new ArrayList<>();
     private int boxId;
 
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
     public List<UserItem> getUserItems() {
         return userItems;
     }
@@ -131,8 +137,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.boxItems = boxItems;
     }
 
-    public SearchDetailAdapter(Context context) {
+    public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {
         this.mContext = context;
+        this.glideRequestManager = glideRequestManager;
     }
 
     public boolean isHide_quantity_selector_in_this_order_item_view() {
@@ -200,36 +207,45 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SearchedItemViewHolder) {
-            bindSearchViewHolder(holder, position - (userItems == null ? 0 : userItems.size()));
+            bindSearchViewHolder(holder, holder.getAdapterPosition() - (userItems == null ? 0 : userItems.size()));
         } else if (holder instanceof UserItemViewHolder) {
-            bindMyItemViewHolder(holder, position);
+            bindMyItemViewHolder(holder, holder.getAdapterPosition());
         } else {
-            bindOrderItemViewHolder(holder, position);
+            bindOrderItemViewHolder(holder, holder.getAdapterPosition());
         }
     }
 
     private void bindOrderItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
         OrderItemViewHolder itemViewHolder = (OrderItemViewHolder) holder;
-        userItems.get(position).getBoxItem().setSelectedItemConfig(
-                userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
-                ));
-        itemViewHolder.setViews(useritems_quantities, userItems.get(position), position);
+        //check if adapter holds correct position
+        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+            userItems.get(holder.getAdapterPosition()).getBoxItem().setSelectedItemConfig(
+                    userItems.get(holder.getAdapterPosition()).getBoxItem().getItemConfigById(userItems.get(holder.getAdapterPosition()).getSelectedConfigId()
+                    ));
+            itemViewHolder.setViews(useritems_quantities, userItems.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+        }
     }
 
     private void bindMyItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
         UserItemViewHolder itemViewHolder = (UserItemViewHolder) holder;
-        userItems.get(position).getBoxItem().setSelectedItemConfig(
-                userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
-                ));
-        itemViewHolder.setViews(userItems.get(position), position);
+        //check if adapter holds correct position
+        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+            userItems.get(holder.getAdapterPosition()).getBoxItem().setSelectedItemConfig(
+                    userItems.get(holder.getAdapterPosition()).getBoxItem().getItemConfigById(userItems.get(holder.getAdapterPosition()).getSelectedConfigId()
+                    ));
+            itemViewHolder.setViews(userItems.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+        }
     }
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-        if (boxItems.get(position).getSelectedItemConfig() == null) {
-            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
+        //check if adapter holds correct position
+        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+            if (boxItems.get(holder.getAdapterPosition()).getSelectedItemConfig() == null) {
+                boxItems.get(holder.getAdapterPosition()).setSelectedItemConfig(boxItems.get(holder.getAdapterPosition()).getSmallestInStockItemConfig());
+            }
+            searchedItemViewHolder.setViews(boxItems.get(holder.getAdapterPosition()), holder.getAdapterPosition(), false);
         }
-        searchedItemViewHolder.setViews(boxItems.get(position), position, false);
     }
 
     @Override
@@ -275,103 +291,108 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, final int arrayListPosition) {
 
 
-            for (Invoice i : useritems_quantities) {
-                if (i.getUseritem_id() == userItem.getId()) {
-                    quantity_for_this_order = i.getInvoice_quantity();
-                    noOfItemSelected.setText(String.valueOf(i.getInvoice_quantity()));
+            try {
+                for (Invoice i : useritems_quantities) {
+                    if (i.getUseritem_id() == userItem.getId()) {
+                        quantity_for_this_order = i.getInvoice_quantity();
+                        noOfItemSelected.setText(String.valueOf(i.getInvoice_quantity()));
+                    }
                 }
-            }
 
-            if (isHide_quantity_selector_in_this_order_item_view()) {
+                if (isHide_quantity_selector_in_this_order_item_view()) {
 
-                quantityHolder.setVisibility(View.GONE);
-                addButton.setVisibility(View.GONE);
-                subtractButton.setVisibility(View.GONE);
+                    quantityHolder.setVisibility(View.GONE);
+                    addButton.setVisibility(View.GONE);
+                    subtractButton.setVisibility(View.GONE);
 
-            } else {
-                quantityHolder.setVisibility(View.VISIBLE);
+                } else {
+                    quantityHolder.setVisibility(View.VISIBLE);
 
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
-                    }
-                });
-
-                subtractButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (quantity_for_this_order > 1) {
-                            updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
-                        } else if (quantity_for_this_order == 1) {
-                            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                    title("Remove " + userItem.getBoxItem().getTitle())
-                                    .positiveText("Cancel")
-                                    .negativeText("Remove")
-                                    .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
-                                    .callback(new MaterialDialog.ButtonCallback() {
-                                        @Override
-                                        public void onPositive(MaterialDialog materialDialog) {
-
-                                            // Dismiss the dialog
-                                            materialDialog.cancel();
-                                        }
-
-                                        @Override
-                                        public void onNegative(MaterialDialog materialDialog) {
-
-                                            // Making update call
-                                            updateQuantity(getAdapterPosition(), 0);
-
-                                        }
-                                    })
-                                    .build();
-                            dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                            dialog.show();
-                        } else {
-                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                    addButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
                         }
+                    });
 
-                    }
-                });
+                    subtractButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (quantity_for_this_order > 1) {
+                                updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
+                            } else if (quantity_for_this_order == 1) {
+                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                        title("Remove " + userItem.getBoxItem().getTitle())
+                                        .positiveText("Cancel")
+                                        .negativeText("Remove")
+                                        .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
+                                        .callback(new MaterialDialog.ButtonCallback() {
+                                            @Override
+                                            public void onPositive(MaterialDialog materialDialog) {
+
+                                                // Dismiss the dialog
+                                                materialDialog.cancel();
+                                            }
+
+                                            @Override
+                                            public void onNegative(MaterialDialog materialDialog) {
+
+                                                // Making update call
+                                                updateQuantity(getAdapterPosition(), 0);
+
+                                            }
+                                        })
+                                        .build();
+                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                dialog.show();
+                            } else {
+                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+                }
+
+
+                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+
+                price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
+                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+
+                productName.setText(userItem.getBoxItem().getTitle());
+
+                if (itemConfig.getCorrectQuantity().equals("NA")) {
+                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                } else {
+                    config.setText(itemConfig.
+                            getCorrectQuantity() + " x " +
+                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                }
+
+                savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+
+
+                if (isHasUneditableUserItem()) {
+                    arrivingTime.setVisibility(View.GONE);
+
+                }
+
+                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
+                    arrivingTime.setText("Item is added to your cart");
+
+                } else {
+                    arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                //image loading
+                glideRequestManager.load(itemConfig.getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImageView);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-
-            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-
-            price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
-            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
-
-            productName.setText(userItem.getBoxItem().getTitle());
-
-            if (itemConfig.getCorrectQuantity().equals("NA")) {
-                config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            } else {
-                config.setText(itemConfig.
-                        getCorrectQuantity() + " x " +
-                        itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            }
-
-            savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
-
-
-            if (isHasUneditableUserItem()) {
-                arrivingTime.setVisibility(View.GONE);
-
-            }
-
-            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                arrivingTime.setText("Item is added to your cart");
-
-            } else {
-                arrivingTime.setText(userItem.getArrivingAt());
-            }
-
-            Glide.with(mContext)
-                    .load(itemConfig.getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImageView);
         }
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
@@ -381,24 +402,32 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateOrderItemResponse> call, Response<UpdateOrderItemResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
 
-                                    if (quantity >= 1) {
-                                        setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
-                                        setUserItems(response.body().getOrder().getUserItems());
-                                        notifyItemChanged(getAdapterPosition());
-                                    } else {
-                                        setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
-                                        setUserItems(response.body().getOrder().getUserItems());
-                                        notifyItemRemoved(getAdapterPosition());
+                                            if (quantity >= 1) {
+                                                setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
+                                                setUserItems(response.body().getOrder().getUserItems());
+                                                notifyItemChanged(getAdapterPosition());
+                                            } else {
+                                                setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
+                                                setUserItems(response.body().getOrder().getUserItems());
+                                                notifyItemRemoved(getAdapterPosition());
+                                            }
+                                            OrderHelper.addAndNotify(response.body().getOrder());
+                                            EventBus.getDefault().post(new UpdateOrderItemEvent());
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                    OrderHelper.addAndNotify(response.body().getOrder());
-                                    EventBus.getDefault().post(new UpdateOrderItemEvent());
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    //handle error
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -536,118 +565,118 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories);
+            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
+        public void setViews(final BoxItem boxItem, final int arrayListPosition, final boolean shouldScrollToPosition) {
 
-            this.position = arrayListPosition;
-            productName.setText(boxItem.getTitle());
-            productBrand.setText(boxItem.getBrand());
+            try {
+                this.position = arrayListPosition;
+                productName.setText(boxItem.getTitle());
+                productBrand.setText(boxItem.getBrand());
 
-            //Updating Savings
-            if (boxItem.getSavings() == 0) {
-                savingAmountHolder.setVisibility(View.GONE);
-            } else {
-                savingAmountHolder.setVisibility(View.VISIBLE);
-                savings.setText(boxItem.getSavings() + " Rs Savings");
-            }
-
-            //Updating no. of SKU's
-            if (boxItem.getNo_of_sku() < 2) {
-                no_of_options_holder.setVisibility(View.GONE);
-            } else if (boxItem.getNo_of_sku() == 2) {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + 1 more option");
-            } else {
-                no_of_options_holder.setVisibility(View.VISIBLE);
-                no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
-            }
-
-
-            if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
-                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                //Updating Savings
+                if (boxItem.getSavings() == 0) {
+                    savingAmountHolder.setVisibility(View.GONE);
                 } else {
-                    size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    savingAmountHolder.setVisibility(View.VISIBLE);
+                    savings.setText(boxItem.getSavings() + " Rs Savings");
                 }
-            }
 
-            Glide.with(mContext)
-                    .load(boxItem.getSelectedItemConfig().getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImage);
-
-            productImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String url = boxItem.getSelectedItemConfig().getPhotoUrl();
-                    FullImageActivity.showImage(url, mContext);
+                //Updating no. of SKU's
+                if (boxItem.getNo_of_sku() < 2) {
+                    no_of_options_holder.setVisibility(View.GONE);
+                } else if (boxItem.getNo_of_sku() == 2) {
+                    no_of_options_holder.setVisibility(View.VISIBLE);
+                    no_of_options_holder.setText(" + 1 more option");
+                } else {
+                    no_of_options_holder.setVisibility(View.VISIBLE);
+                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
                 }
-            });
 
 
-            no_of_options_holder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
-                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
+                    if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
+                        size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    } else {
+                        size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
+                    }
+                }
+
+                glideRequestManager.load(boxItem.getSelectedItemConfig().getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImage);
+
+                productImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String url = boxItem.getSelectedItemConfig().getPhotoUrl();
+                        FullImageActivity.showImage(url, mContext);
+                    }
+                });
+
+
+                no_of_options_holder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+                        dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                        dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                            @Override
+                            public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                dialogFragment.dismiss();
+                                if (boxItem.getUserItemId() == 0) {
+                                    boxItem.setSelectedItemConfig(selectedItemConfig);
+                                    setViews(boxItem, arrayListPosition, true);
+                                } else {
+                                    changeConfig(arrayListPosition, selectedItemConfig.getId());
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Checking if item is in stock
+                if (boxItem.is_in_stock()) {
+                    setViewsBasedOnStock(false);
+                    addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                            dialogFragment.dismiss();
-                            if (boxItem.getUserItemId() == 0) {
-                                boxItem.setSelectedItemConfig(selectedItemConfig);
-                                setViews(boxItem, position, true);
+                        public void onClick(View v) {
+                            addItemToBox(arrayListPosition);
+                        }
+                    });
+                    addButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            updateQuantity(arrayListPosition, boxItem.getQuantity() + 1);
+                        }
+                    });
+                    subtractButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (boxItem.getQuantity() > 0) {
+                                updateQuantity(arrayListPosition, boxItem.getQuantity() - 1);
                             } else {
-                                changeConfig(position, selectedItemConfig.getId());
+                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                }
-            });
 
-            // Checking if item is in stock
-            if (boxItem.is_in_stock()) {
-                setViewsBasedOnStock(false);
-                addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        addItemToBox(position);
+                    setupRecyclerViewFrequency(boxItem, arrayListPosition, shouldScrollToPosition);
+
+                    noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
+
+                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && arrayListPosition == currentPositionOfSuggestedCategory) {
+                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+                        savingHolder.setVisibility(View.VISIBLE);
+                    } else {
+                        savingHolder.setVisibility(View.GONE);
                     }
-                });
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateQuantity(position, boxItem.getQuantity() + 1);
-                    }
-                });
-                subtractButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (boxItem.getQuantity() > 0) {
-                            updateQuantity(position, boxItem.getQuantity() - 1);
-                        } else {
-                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-
-                noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-
-                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
-                    setupRecyclerViewSuggestedCategories(suggestedCategories);
-                    savingHolder.setVisibility(View.VISIBLE);
-                } else {
-                    savingHolder.setVisibility(View.GONE);
-                }
 
 // Previous implementation
 //                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
@@ -657,44 +686,47 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                    savingHolder.setVisibility(View.GONE);
 //                }
 
-                if (boxItem.getQuantity() == 0) {
-                    addButtonViewHolder.setVisibility(View.VISIBLE);
-                    updateQuantityViewHolder.setVisibility(View.GONE);
-                    if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
-                        if (getAdapterPosition() == 0) {
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
-                                moveRecyclerView(true);
-                            }
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
-                                new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                            @Override
-                                            public void onComplete() {
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
-                                                new ShowcaseHelper((Activity) mContext, 2)
-                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                                            @Override
-                                                            public void onComplete() {
-                                                                EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                moveRecyclerView(true);
+                    if (boxItem.getQuantity() == 0) {
+                        addButtonViewHolder.setVisibility(View.VISIBLE);
+                        updateQuantityViewHolder.setVisibility(View.GONE);
+                        if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
+                            if (getAdapterPosition() == 0) {
+                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
+                                    moveRecyclerView(true);
+                                }
+                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
+                                    new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                                @Override
+                                                public void onComplete() {
+                                                    PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
+                                                    PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
+                                                    new ShowcaseHelper((Activity) mContext, 2)
+                                                            .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                                                @Override
+                                                                public void onComplete() {
+                                                                    EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                                }
+                                                            });
+                                                }
+                                            });
+                                    moveRecyclerView(true);
+                                }
                             }
                         }
+                    } else {
+                        addButtonViewHolder.setVisibility(View.GONE);
+                        updateQuantityViewHolder.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    addButtonViewHolder.setVisibility(View.GONE);
-                    updateQuantityViewHolder.setVisibility(View.VISIBLE);
                 }
-            }
 
-            // If Item is not in stock
-            else {
-                setViewsBasedOnStock(true);
+                // If Item is not in stock
+                else {
+                    setViewsBasedOnStock(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -708,31 +740,33 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    //Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
-                                    boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            //Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
+                                            boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 //                                    RealmList<Category> suggestedCategories = new RealmList<Category>();
-                                    boxId = boxItems.get(position).getId();
-                                    suggestedCategories.clear();
-                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
-                                    suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
-                                    currentPositionOfSuggestedCategory = position;
+                                            boxId = boxItems.get(position).getId();
+                                            suggestedCategories.clear();
+                                            suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
+                                            suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
+                                            currentPositionOfSuggestedCategory = position;
 
-                                    Log.d("Box ID ON Subscribe:", "" + boxId);
-                                    Log.d("POsition ON Subscribe:", "" + getAdapterPosition());
-                                    Log.d("POsitionVarSubscribe:", "" + position);
-                                    Log.d("currentPositionSubsc: ", "" + currentPositionOfSuggestedCategory);
+                                            Log.d("Box ID ON Subscribe:", "" + boxId);
+                                            Log.d("POsition ON Subscribe:", "" + getAdapterPosition());
+                                            Log.d("POsitionVarSubscribe:", "" + position);
+                                            Log.d("currentPositionSubsc: ", "" + currentPositionOfSuggestedCategory);
 //                                    boxItems.get(position).setSuggestedCategory(suggestedCategories);
 
 //                                    int temp = currentPositionOfSuggestedCategory;
 //                                    currentPositionOfSuggestedCategory = position;
 
 
-                                    // We are showing suggested category section at most once in a category
-                                    // 1. At start "currentPositionOfSuggestedCategory" = -1 as defined
-                                    // 2. This section makes sure suggested caetgories are set of atmost one item
+                                            // We are showing suggested category section at most once in a category
+                                            // 1. At start "currentPositionOfSuggestedCategory" = -1 as defined
+                                            // 2. This section makes sure suggested caetgories are set of atmost one item
 
 
 //                                    if (temp != -1) {
@@ -740,11 +774,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                                        notifyItemChanged(temp);
 //                                    }
 
-                                    notifyItemChanged(getAdapterPosition());
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-                                } else {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            notifyItemChanged(position);
+                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+                                        } else {
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -769,32 +807,38 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    boxItems.get(finalPosition).setQuantity(quantity);
-                                    if (quantity >= 1) {
-                                        response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            boxItems.get(finalPosition).setQuantity(quantity);
+                                            if (quantity >= 1) {
+                                                response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
 
-                                        //Updating the SearchDetailitem fragment's data if change is made in cart
-                                        //SearchDetailItemsFragment.update_boxitem(response.body().getUserItem().getSelectedItemId(),response.body().getUserItem().getQuantity());
+                                                //Updating the SearchDetailitem fragment's data if change is made in cart
+                                                //SearchDetailItemsFragment.update_boxitem(response.body().getUserItem().getSelectedItemId(),response.body().getUserItem().getQuantity());
 
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-                                        notifyItemChanged(getAdapterPosition());
-                                    } else {
-                                        CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
-                                        if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                            boxItems.remove(getAdapterPosition());
-                                            notifyItemChanged(getAdapterPosition());
-                                            notifyItemRemoved(getAdapterPosition());
+                                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+                                                notifyItemChanged(getAdapterPosition());
+                                            } else {
+                                                CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
+                                                if (shouldRemoveBoxItemOnEmptyQuantity) {
+                                                    boxItems.remove(getAdapterPosition());
+                                                    notifyItemChanged(getAdapterPosition());
+                                                    notifyItemRemoved(getAdapterPosition());
+                                                } else {
+                                                    boxItems.get(finalPosition).setUserItemId(0);
+                                                    notifyItemChanged(getAdapterPosition());
+                                                }
+                                            }
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {
-                                            boxItems.get(finalPosition).setUserItemId(0);
-                                            notifyItemChanged(getAdapterPosition());
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -813,12 +857,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
-                                boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
-                                boxItems.get(position).setSuggestedCategory(suggestionsCategories);
-                                notifyItemChanged(getAdapterPosition());
-                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
+                                            boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
+                                            boxItems.get(position).setSuggestedCategory(suggestionsCategories);
+                                            notifyItemChanged(getAdapterPosition());
+                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -870,6 +922,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setViews(final UserItem userItem, final int arrayListPosition) {
+
             quantityHolder.setVisibility(View.VISIBLE);
 
             edit.setOnClickListener(new View.OnClickListener() {
@@ -904,18 +957,24 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
                                     @Override
                                     public void onDelayActionCompleted(UserItem userItem) {
-                                        if (userItem == null) {
-                                            userItems.remove(arrayListPosition);
-                                            if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
+
+                                        try {
+
+                                            if (userItem == null) {
+                                                userItems.remove(arrayListPosition);
+                                                if (onUserItemChange != null) {
+                                                    onUserItemChange.onUserItemChange(userItems);
+                                                }
+                                                notifyItemRemoved(getAdapterPosition());
+                                            } else {
+                                                userItems.set(arrayListPosition, userItem);
+                                                if (onUserItemChange != null) {
+                                                    onUserItemChange.onUserItemChange(userItems);
+                                                }
+                                                notifyItemChanged(getAdapterPosition());
                                             }
-                                            notifyItemRemoved(getAdapterPosition());
-                                        } else {
-                                            userItems.set(arrayListPosition, userItem);
-                                            if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
-                                            }
-                                            notifyItemChanged(getAdapterPosition());
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
                                     }
                                 }).show(userItem);
@@ -971,7 +1030,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
 
-
                     if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
                         Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
@@ -984,7 +1042,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
 
                                         if (userItem.getQuantity() > 1) {
-                                            updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                                            updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
                                         } else if (userItem.getQuantity() == 1) {
                                             MaterialDialog dialog_unsubscribe = new MaterialDialog.Builder(mContext).
                                                     title("Unsubscribe " + userItem.getBoxItem().getTitle()).
@@ -993,7 +1051,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                                 @Override
                                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                                    openCancelDialog(userItem, getAdapterPosition());
+                                                                    if (arrayListPosition != RecyclerView.NO_POSITION) {
+                                                                        openCancelDialog(userItem, arrayListPosition);
+                                                                    }
                                                                 }
                                                             }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                                             dialog_unsubscribe.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -1017,7 +1077,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     } else {
                         if (userItem.getQuantity() > 1) {
-                            updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                            updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
                         } else if (userItem.getQuantity() == 1) {
                             MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                     title("Unsubscribe " + userItem.getBoxItem().getTitle()).
@@ -1026,7 +1086,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                 @Override
                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    openCancelDialog(userItem, getAdapterPosition());
+                                                    if (arrayListPosition != RecyclerView.NO_POSITION) {
+                                                        openCancelDialog(userItem, arrayListPosition);
+                                                    }
                                                 }
                                             }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -1038,34 +1100,40 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 }
             });
-            noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-            ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-            //userItem.getBoxItem().getSelectedItemConfig();
-            price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-            frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
-            productName.setText(userItem.getBoxItem().getTitle());
+            try {
 
-            if (itemConfig.getCorrectQuantity().equals("NA")) {
-                config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-            } else {
-                config.setText(itemConfig.getCorrectQuantity() + " x " +
-                        itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
+                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
+                price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
+                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+
+                productName.setText(userItem.getBoxItem().getTitle());
+
+                if (itemConfig.getCorrectQuantity().equals("NA")) {
+                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                } else {
+                    config.setText(itemConfig.getCorrectQuantity() + " x " +
+                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
+                }
+
+                if (isHasUneditableUserItem()) {
+                    arrivingTime.setVisibility(View.GONE);
+                }
+                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
+                    arrivingTime.setText("Item is added to your cart");
+                } else {
+                    arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                glideRequestManager.load(itemConfig.getPhotoUrl())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImageView);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            if (isHasUneditableUserItem()) {
-                arrivingTime.setVisibility(View.GONE);
-            }
-            if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                arrivingTime.setText("Item is added to your cart");
-            } else {
-                arrivingTime.setText(userItem.getArrivingAt());
-            }
-            Glide.with(mContext)
-                    .load(itemConfig.getPhotoUrl())
-                    .centerCrop()
-                    .crossFade()
-                    .into(productImageView);
         }
 
         private void addItemToBox(final int position) throws IllegalStateException {
@@ -1078,13 +1146,21 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
+                                        } else {
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 } else {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    //parse error
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -1104,28 +1180,36 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    int prevQuantity = userItems.get(position).getQuantity();
-                                    UserItem item = response.body().getUserItem();
-                                    item.setBoxId(response.body().getBoxId());
-                                    if (quantity >= 1) {
-                                        CartHelper.addOrUpdateUserItem(item, null);
-                                        notifyItemChanged(getAdapterPosition());
-                                    } else {
-                                        CartHelper.removeUserItem(userItems.get(position).getId(), null);
-                                        notifyItemRemoved(getAdapterPosition());
-                                    }
-                                    if (onUserItemChange != null) {
-                                        onUserItemChange.onUserItemChange(userItems);
-                                    }
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            int prevQuantity = userItems.get(position).getQuantity();
+                                            UserItem item = response.body().getUserItem();
+                                            item.setBoxId(response.body().getBoxId());
+                                            if (quantity >= 1) {
+                                                CartHelper.addOrUpdateUserItem(item, null);
+                                                notifyItemChanged(getAdapterPosition());
+                                            } else {
+                                                CartHelper.removeUserItem(userItems.get(position).getId(), null);
+                                                notifyItemRemoved(getAdapterPosition());
+                                            }
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
 
-                                    OrderHelper.updateUserItemAndNotifiy(item);
+                                            OrderHelper.updateUserItemAndNotifiy(item);
 
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 } else {
-                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                    //handle error
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -1144,19 +1228,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
                             dialog.dismiss();
-                            if (response.body() != null) {
-                                UserItem item = response.body().getUserItem();
-                                userItems.set(position, item);
-                                if (onUserItemChange != null) {
-                                    onUserItemChange.onUserItemChange(userItems);
-                                }
-                                notifyItemChanged(getAdapterPosition());
-                                if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
-                                        || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
-                                    CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
-                                }
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+                                        if (response.body().isSuccess()) {
+                                            UserItem item = response.body().getUserItem();
+                                            userItems.set(position, item);
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
+                                            notifyItemChanged(getAdapterPosition());
+                                            if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
+                                                    || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
+                                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
+                                            }
 
-                                OrderHelper.updateUserItemAndNotifiy(item);
+                                            OrderHelper.updateUserItemAndNotifiy(item);
+                                        }
+                                    }
+                                } else {
+                                    //handle error
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -1167,7 +1261,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
         }
 
-        private void openCancelDialog(final UserItem userItem, final int positionInArrayList) {
+        private void openCancelDialog(final UserItem userItem, final int positionInArrayList) throws IllegalStateException {
             MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                     title("Cancel Subscription").
                     customView(R.layout.layout_cancel_subscription, true).
@@ -1193,26 +1287,43 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 @Override
                                 public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                     loader.dismiss();
-                                    if (response.body() != null) {
-                                        UserItem item = response.body().getUserItem();
-                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        if (response.body().isSuccess()) {
-                                            userItems.remove(getAdapterPosition());
-                                            if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
-                                            }
-                                            notifyItemRemoved(getAdapterPosition());
-                                            dialog.dismiss();
-                                            CartHelper.removeUserItem(userItem.getId(), null);
-                                            OrderHelper.addAndNotify(response.body().getOrders());
+                                    try {
+                                        if (response.isSuccessful()) {
+                                            if (response.body() != null) {
+                                                if (response.body().isSuccess()) {
+                                                    UserItem item = response.body().getUserItem();
+                                                    userItems.remove(positionInArrayList);
+                                                    if (onUserItemChange != null) {
+                                                        onUserItemChange.onUserItemChange(userItems);
+                                                    }
+                                                    notifyItemRemoved(positionInArrayList);
+                                                    dialog.dismiss();
+                                                    CartHelper.removeUserItem(userItem.getId(), null);
+                                                    OrderHelper.addAndNotify(response.body().getOrders());
+                                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
+                                                } else {
+                                                    Toast.makeText(TheBox.getInstance(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(TheBox.getInstance(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            //handle error
+                                            Toast.makeText(TheBox.getInstance(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                         }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        loader.dismiss();
+                                        dialog.dismiss();
+                                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
                                     loader.dismiss();
+                                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 }

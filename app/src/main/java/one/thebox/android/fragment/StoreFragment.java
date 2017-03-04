@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.bumptech.glide.Glide;
 import com.google.common.collect.Ordering;
 
 import org.greenrobot.eventbus.EventBus;
@@ -160,7 +161,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         recyclerView.setVisibility(View.VISIBLE);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-        storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity());
+        storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity(), Glide.with(this));
         storeRecyclerAdapter.setBoxes(boxes);
         recyclerView.setAdapter(storeRecyclerAdapter);
     }
@@ -253,7 +254,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-               
+
                 realm.copyToRealmOrUpdate(boxes);
             }
         }, new Realm.Transaction.OnSuccess() {

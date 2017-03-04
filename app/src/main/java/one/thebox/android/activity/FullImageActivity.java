@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.squareup.picasso.Picasso;
 
 import one.thebox.android.R;
@@ -16,9 +18,14 @@ import one.thebox.android.util.Constants;
 import ooo.oxo.library.widget.TouchImageView;
 
 public class FullImageActivity extends BaseActivity {
+    /**
+     * Glide Request Manager
+     */
+    private RequestManager glideRequestManager;
+
     public static void showImage(String imageUrl, Context context) {
         Intent intent = new Intent(context, FullImageActivity.class);
-        intent.putExtra("imageUrl",imageUrl);
+        intent.putExtra("imageUrl", imageUrl);
         context.startActivity(intent);
     }
 
@@ -26,13 +33,21 @@ public class FullImageActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_image);
+
+        glideRequestManager = Glide.with(this);
+
         String imageUrl = getIntent().getStringExtra("imageUrl");
         initToolBar(getString(R.string.app_name));
         if (!TextUtils.isEmpty(imageUrl)) {
             TouchImageView touchImageView = (TouchImageView) findViewById(R.id.iv_full_image);
-            Picasso.with(this).load(imageUrl).into(touchImageView);
+
+            glideRequestManager.load(imageUrl)
+                    .centerCrop()
+                    .crossFade()
+                    .into(touchImageView);
         }
     }
+
     public void initToolBar(String title) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

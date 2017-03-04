@@ -25,7 +25,6 @@ import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 import com.razorpay.Checkout;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmList;
 import one.thebox.android.BuildConfig;
-import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
@@ -50,7 +48,6 @@ import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
 import one.thebox.android.util.AppUtil;
@@ -70,8 +67,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
+    private static final String EXTRA_IS_MERGING = "is_merging_order";
     private static final int REQ_CODE_GET_LOCATION = 101;
     private ArrayList<AddressAndOrder> addressAndOrders;
+    private boolean isMerging;
+    private String latitude = "0.0", longitude = "0.0";
+    private int locationPermisionCounter = 0;
 
     @BindView(R.id.tabsPaymentOption)
     TabLayout tabsPaymentOption;
@@ -121,6 +122,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
         mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
+        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
     }
 
 
@@ -206,7 +208,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -223,10 +225,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 );
 
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -248,7 +252,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this), new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this),
+                new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -265,10 +270,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 );
 
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -306,10 +313,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
 
-                                CartHelper.clearCart();
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -332,7 +341,14 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(addressAndOrders.get(0).getOrderId(), razorpayPaymentID, addressAndOrders.get(0).getOderDate().toString(), String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        int orderId = 0;
+        if (isMerging) {
+            orderId = mergeOrderId;
+        } else {
+            orderId = addressAndOrders.get(0).getOrderId();
+        }
+        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
+                latitude, longitude, isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -348,10 +364,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
 
-                                CartHelper.clearCart();
+
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
+                                //clear cart items
+                                CartHelper.clearCart();
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -377,8 +395,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
         /**
          * Put your key id generated in Razorpay dashboard here
          */
-        String test_key_id = "rzp_test_R4R82jOEbvmNDW";
-        String live_key_id = "rzp_live_e1nfI8frHunaFM";
+        final String test_key_id = "rzp_test_R4R82jOEbvmNDW";
+        final String live_key_id = "rzp_live_e1nfI8frHunaFM";
 
         Checkout razorpayCheckout = new Checkout();
         if (BuildConfig.DEBUG) {
@@ -431,7 +449,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     public void onPaymentError(int code, String response) {
         try {
-            Log.e("Payment failed", "Code is " + Integer.toString(code) + " " + response);
             Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
@@ -446,17 +463,23 @@ public class PaymentOptionActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_GET_LOCATION) {
+            checkGPSenable();
             return;
         }
     }
 
     // Location Marking Issue
     private void checkGPSenable() {
+        locationPermisionCounter++;
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             getLocationPermission();
         } else {
-            buildAlertMessageNoGps();
+            if (locationPermisionCounter > 1) {
+                proceedAndCompletePayment();
+            } else {
+                buildAlertMessageNoGps();
+            }
         }
     }
 
@@ -472,7 +495,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        //if location not provides allow to pay users
                         dialog.cancel();
+                        proceedAndCompletePayment();
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -494,6 +519,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                     @Override
                     public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                        //permission denied but complete the payment
+                        proceedAndCompletePayment();
                     }
                 }).check();
     }
@@ -509,11 +536,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         return;
                     }
                     latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
-                    if (TextUtils.isEmpty(razorpayPaymentID)) {
-                        fillUserInfo();
-                    } else {
-                        pay_online(razorpayPaymentID);
+                    if (latLng != null) {
+                        latitude = String.valueOf(latLng.getLatitude());
+                        longitude = String.valueOf(latLng.getLongitude());
                     }
+                    proceedAndCompletePayment();
                 }
             }
 
@@ -521,13 +548,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
             protected void onFailed(ConnectionResult connectionResult) {
                 latLng = new MyLocation("0.0", "0.0");
                 locationRefreshed = false;
-                if (TextUtils.isEmpty(razorpayPaymentID)) {
-                    fillUserInfo();
-                } else {
-                    pay_online(razorpayPaymentID);
-                }
+                proceedAndCompletePayment();
             }
         };
+    }
+
+    private void proceedAndCompletePayment() {
+        if (TextUtils.isEmpty(razorpayPaymentID)) {
+            fillUserInfo();
+        } else {
+            pay_online(razorpayPaymentID);
+        }
     }
 
     private void fillUserInfo() {

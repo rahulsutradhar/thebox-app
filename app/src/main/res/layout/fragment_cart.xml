@@ -33,7 +33,7 @@
         android:background="@color/primary"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:text="Total Price: Rs 349\n Proceed to Payment"
+        android:text=""
         android:layout_gravity="bottom"
         android:textColor="@color/white"
         android:visibility="visible" />

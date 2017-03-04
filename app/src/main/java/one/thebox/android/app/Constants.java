@@ -15,4 +15,9 @@ public class Constants {
      * Notification Parameter
      */
     public static final String EXTRA_NOTIFICATION_PARAMETER = "extra_notification_params";
+
+    /**
+     * Items in Cart
+     */
+    public static final String EXTRA_ITEMS_IN_CART = "extra_item_in_cart";
 }

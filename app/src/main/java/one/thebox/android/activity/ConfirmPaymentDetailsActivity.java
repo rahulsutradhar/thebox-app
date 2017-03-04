@@ -24,6 +24,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
+    private static final String EXTRA_IS_MERGING = "is_merging_order";
 
     private Order cart;
     private Context context;
@@ -35,6 +36,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private int mergeOrderId;
     private float amount_to_pay;
     private float totalAmountToPay;
+    private boolean isMerging;
 
     public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
@@ -46,6 +48,14 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
         intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
+        return intent;
+    }
+
+    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId, boolean isMerging) {
+        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
+        intent.putExtra(EXTRA_IS_MERGING, isMerging);
         return intent;
     }
 
@@ -64,6 +74,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
         mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
+        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
 
         int cartId = PrefUtils.getUser(this).getCartId();
         Realm realm = TheBox.getRealm();
@@ -102,6 +113,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, String.valueOf(amount_to_pay));
                 intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
                 intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
+                intent.putExtra(EXTRA_IS_MERGING,isMerging);
                 startActivity(intent);
 
             }
