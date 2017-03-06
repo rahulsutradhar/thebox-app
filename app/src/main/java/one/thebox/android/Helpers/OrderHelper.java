@@ -93,11 +93,34 @@ public class OrderHelper {
 
 
     private static void saveToRealm(final Order order) {
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(order);
-        realm.commitTransaction();
-        sendUpdateOrderItemBroadcast();
+        try {
+            final Realm superRealm1 = TheBox.getRealm();
+            superRealm1.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    if (order.getUserItems() != null) {
+                        if (order.getUserItems().size() > 0) {
+                            realm.copyToRealmOrUpdate(order);
+                        } else {
+                            //delete the order row
+                            realm.where(Order.class).equalTo("id", order.getId()).findFirst().deleteFromRealm();
+                        }
+                    }
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    sendUpdateOrderItemBroadcast();
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public interface OnOrdersFetched {

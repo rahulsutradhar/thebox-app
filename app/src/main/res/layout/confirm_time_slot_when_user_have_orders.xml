@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".fragment.MyBoxesFragment">
 
@@ -22,9 +23,7 @@
         app:contentInsetStart="6dp" />
 
 
-
-
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +45,7 @@
         android:layout_weight="1" />
 
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_proceed_to_payment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
