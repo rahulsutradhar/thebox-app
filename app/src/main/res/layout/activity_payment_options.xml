@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/primary_light">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_light"
+    android:fitsSystemWindows="true">
 
     <RelativeLayout
         android:id="@+id/headerTitle"
@@ -15,8 +17,8 @@
             android:id="@+id/imgPaymentBack"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:src="@drawable/ic_back_arrow_white"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:src="@drawable/ic_back_arrow_white" />
 
         <TextView
             android:id="@+id/txtTitle"
@@ -24,15 +26,13 @@
             android:layout_height="match_parent"
             android:layout_toRightOf="@+id/imgPaymentBack"
             android:background="@null"
-            android:textSize="20sp"
             android:gravity="center_vertical"
             android:text="Select Payment Option"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
 
     </RelativeLayout>
-
-
 
 
     <LinearLayout
@@ -40,51 +40,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/headerTitle"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:background="@android:color/white"
+        android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
-            android:layout_gravity="center_vertical">
+            android:layout_weight="2"
+            android:orientation="vertical">
 
 
-        <TextView
-            android:id="@+id/txtTitleAmountToPay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Amount to Pay"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            />
+            <TextView
+                android:id="@+id/txtTitleAmountToPay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Amount to Pay"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/txtTitletaxes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="    (inc of all taxes)"
-            android:textSize="12sp"
-            android:layout_below="@+id/txtTitleAmountToPay"
-            android:textColor="@android:color/black"
-            />
+            <TextView
+                android:id="@+id/txtTitletaxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtTitleAmountToPay"
+                android:text="    (inc of all taxes)"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
         </LinearLayout>
 
 
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginRight="10dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
 
             <ImageView
@@ -92,20 +89,18 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:padding="10dp"
-                android:src="@drawable/ic_rupee"/>
+                android:src="@drawable/ic_rupee" />
 
             <TextView
                 android:id="@+id/txtTotalAmount"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:text="108"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
                 android:layout_below="@+id/txtTitleAmountToPay"
+                android:gravity="center_vertical"
+                android:text="108"
                 android:textColor="@android:color/black"
-                />
+                android:textSize="20sp" />
         </LinearLayout>
-
 
 
     </LinearLayout>
@@ -114,8 +109,8 @@
         android:id="@+id/holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/rlTotalAmount"
         android:layout_above="@+id/txtPlaceOrder"
+        android:layout_below="@+id/rlTotalAmount"
         android:orientation="vertical">
 
 
@@ -142,13 +137,13 @@
         android:id="@+id/txtPlaceOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Place Order"
-        android:textSize="24sp"
-        android:textColor="@android:color/white"
+        android:layout_alignParentBottom="true"
         android:background="@color/place_order_background"
-        android:padding="15dp"
         android:gravity="center"
-        android:layout_alignParentBottom="true" />
+        android:padding="15dp"
+        android:text="Place Order"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
 
 
 </RelativeLayout>

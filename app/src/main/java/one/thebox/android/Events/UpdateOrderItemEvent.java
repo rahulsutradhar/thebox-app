@@ -8,8 +8,20 @@ import one.thebox.android.Models.UserItem;
 
 public class UpdateOrderItemEvent {
 
+    /**
+     * Update Upcoming Fragment
+     */
+    private int reloadUpcomingFragment;
+
     public UpdateOrderItemEvent() {
 
     }
 
+    public int getReloadUpcomingFragment() {
+        return reloadUpcomingFragment;
+    }
+
+    public void setReloadUpcomingFragment(int reloadUpcomingFragment) {
+        this.reloadUpcomingFragment = reloadUpcomingFragment;
+    }
 }

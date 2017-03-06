@@ -37,6 +37,7 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -311,7 +312,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
+                            updateQuantity(arrayListPosition, quantity_for_this_order + 1);
                         }
                     });
 
@@ -319,7 +320,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onClick(View v) {
                             if (quantity_for_this_order > 1) {
-                                updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
+                                updateQuantity(arrayListPosition, quantity_for_this_order - 1);
                             } else if (quantity_for_this_order == 1) {
                                 MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                         title("Remove " + userItem.getBoxItem().getTitle())
@@ -338,7 +339,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             public void onNegative(MaterialDialog materialDialog) {
 
                                                 // Making update call
-                                                updateQuantity(getAdapterPosition(), 0);
+                                                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                    updateQuantity(getAdapterPosition(), 0);
+                                                }
 
                                             }
                                         })
@@ -397,7 +400,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().updateOrderQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateOrderItemQuantityRequestBody(order_id, userItems.get(position).getId(), quantity))
+            TheBox.getAPIService().updateOrderQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateOrderItemQuantityRequestBody(order_id, userItems.get(getAdapterPosition()).getId(), quantity))
                     .enqueue(new Callback<UpdateOrderItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateOrderItemResponse> call, Response<UpdateOrderItemResponse> response) {
@@ -415,9 +418,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
                                                 setUserItems(response.body().getOrder().getUserItems());
                                                 notifyItemRemoved(getAdapterPosition());
+
+                                                //to update the UI in Upcoing fragment when the user removes item from ordered Item
+                                                PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
                                             }
                                             OrderHelper.addAndNotify(response.body().getOrder());
                                             EventBus.getDefault().post(new UpdateOrderItemEvent());
+
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -1042,7 +1049,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
 
                                         if (userItem.getQuantity() > 1) {
-                                            updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
+                                            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                                            }
                                         } else if (userItem.getQuantity() == 1) {
                                             MaterialDialog dialog_unsubscribe = new MaterialDialog.Builder(mContext).
                                                     title("Unsubscribe " + userItem.getBoxItem().getTitle()).
@@ -1051,8 +1060,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                                 @Override
                                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                                    if (arrayListPosition != RecyclerView.NO_POSITION) {
-                                                                        openCancelDialog(userItem, arrayListPosition);
+                                                                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                                        openCancelDialog(userItem, getAdapterPosition());
                                                                     }
                                                                 }
                                                             }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
@@ -1077,7 +1086,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     } else {
                         if (userItem.getQuantity() > 1) {
-                            updateQuantity(arrayListPosition, userItem.getQuantity() - 1);
+                            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                            }
                         } else if (userItem.getQuantity() == 1) {
                             MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                     title("Unsubscribe " + userItem.getBoxItem().getTitle()).
@@ -1086,8 +1097,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                 @Override
                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    if (arrayListPosition != RecyclerView.NO_POSITION) {
-                                                        openCancelDialog(userItem, arrayListPosition);
+                                                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                        openCancelDialog(userItem, getAdapterPosition());
                                                     }
                                                 }
                                             }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();

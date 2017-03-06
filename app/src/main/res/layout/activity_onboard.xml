@@ -4,4 +4,5 @@
     android:name="one.thebox.android.fragment.onboard.OnBoardSequenceContainerFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:layout="@layout/fragment_onboard_sequence_container" />

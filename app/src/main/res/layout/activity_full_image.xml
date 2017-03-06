@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context="one.thebox.android.activity.FullImageActivity">
 
     <android.support.v7.widget.Toolbar style="@style/toolbar" />

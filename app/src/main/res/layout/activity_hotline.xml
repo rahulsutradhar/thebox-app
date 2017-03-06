@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
 
@@ -25,38 +26,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/txtContactSupport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textSize="20sp"
+            android:text="@string/chat"
             android:textColor="@color/black"
-            android:text="@string/chat" />
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/dim_gray"/>
+            android:background="@color/dim_gray" />
 
 
         <TextView
             android:id="@+id/txtFaq"
-            android:layout_below="@id/txtContactSupport"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txtContactSupport"
             android:padding="10dp"
             android:text="@string/faq"
-            android:textSize="20sp"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/dim_gray"/>
+            android:background="@color/dim_gray" />
 
 
     </LinearLayout>
