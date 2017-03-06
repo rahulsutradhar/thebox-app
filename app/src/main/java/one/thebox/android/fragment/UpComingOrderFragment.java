@@ -1,10 +1,12 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +65,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
         initViews();
 
-        initVariables();
+        initVariables(false);
 
 
         if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false)) {
@@ -74,7 +76,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         return rootView;
     }
 
-    private void initVariables() {
+    private void initVariables(boolean checkOrderSize) {
 
         //ignore Order class if order successful is false
         Realm realm = TheBox.getRealm();
@@ -91,6 +93,16 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         } else {
             //show error message
             scene_number = -1;
+        }
+
+        //this called when we remove useritem from OrderedItem
+        if (checkOrderSize) {
+            if (orders != null) {
+                if (orders.size() < 4) {
+                    //if order size is less than 4 fetch orders again
+                    fetchDeliveriesFromServer();
+                }
+            }
         }
     }
 
@@ -156,8 +168,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    initVariables();
+                    initVariables(false);
                     initViews();
 
                 }
@@ -180,5 +191,13 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+
+        if (PrefUtils.getBoolean(getActivity(), "UPDATE_UI_UPCOMING_FRAGMENT", false)) {
+            //first show update locally
+            initVariables(true);
+            initViews();
+            PrefUtils.putBoolean(getActivity(), "UPDATE_UI_UPCOMING_FRAGMENT", false);
+        }
     }
+
 }
