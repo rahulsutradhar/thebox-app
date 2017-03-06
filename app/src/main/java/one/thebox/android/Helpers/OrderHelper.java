@@ -118,6 +118,7 @@ public class OrderHelper {
 
                 }
             });
+            superRealm1.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
