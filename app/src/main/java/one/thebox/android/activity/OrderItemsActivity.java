@@ -62,6 +62,8 @@ public class OrderItemsActivity extends BaseActivity {
         order = realmResults.get(0);
         order = realm.copyFromRealm(order);
         userItems = order.getUserItems();
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -149,7 +151,7 @@ public class OrderItemsActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onUpdateOrderItemEvent(UpdateOrderItemEvent updateOrderItemEvent) {
+    public void onUpdateOrderItemEvent(final UpdateOrderItemEvent updateOrderItemEvent) {
         if (OrderItemsActivity.this != null) {
             OrderItemsActivity.this.runOnUiThread(new Runnable() {
                 @Override
@@ -161,4 +163,5 @@ public class OrderItemsActivity extends BaseActivity {
             });
         }
     }
+
 }

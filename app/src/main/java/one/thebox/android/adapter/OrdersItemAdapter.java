@@ -1,5 +1,6 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
@@ -110,7 +111,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(holder.getAdapterPosition()).getId()));
+                // mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(holder.getAdapterPosition()).getId()));
             }
         });
     }
