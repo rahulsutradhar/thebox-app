@@ -103,12 +103,12 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViewHolder(orders.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+        itemViewHolder.setViewHolder(orders.get(position), position);
         itemViewHolder.holderViewItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(holder.getAdapterPosition()).getId()));
+                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

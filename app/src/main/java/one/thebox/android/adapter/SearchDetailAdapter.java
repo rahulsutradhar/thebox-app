@@ -208,44 +208,44 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SearchedItemViewHolder) {
-            bindSearchViewHolder(holder, holder.getAdapterPosition() - (userItems == null ? 0 : userItems.size()));
+            bindSearchViewHolder(holder, position - (userItems == null ? 0 : userItems.size()));
         } else if (holder instanceof UserItemViewHolder) {
-            bindMyItemViewHolder(holder, holder.getAdapterPosition());
+            bindMyItemViewHolder(holder, position);
         } else {
-            bindOrderItemViewHolder(holder, holder.getAdapterPosition());
+            bindOrderItemViewHolder(holder, position);
         }
     }
 
     private void bindOrderItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
         OrderItemViewHolder itemViewHolder = (OrderItemViewHolder) holder;
         //check if adapter holds correct position
-        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
-            userItems.get(holder.getAdapterPosition()).getBoxItem().setSelectedItemConfig(
-                    userItems.get(holder.getAdapterPosition()).getBoxItem().getItemConfigById(userItems.get(holder.getAdapterPosition()).getSelectedConfigId()
+        if (position != RecyclerView.NO_POSITION) {
+            userItems.get(position).getBoxItem().setSelectedItemConfig(
+                    userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
                     ));
-            itemViewHolder.setViews(useritems_quantities, userItems.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+            itemViewHolder.setViews(useritems_quantities, userItems.get(position), position);
         }
     }
 
     private void bindMyItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
         UserItemViewHolder itemViewHolder = (UserItemViewHolder) holder;
         //check if adapter holds correct position
-        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
-            userItems.get(holder.getAdapterPosition()).getBoxItem().setSelectedItemConfig(
-                    userItems.get(holder.getAdapterPosition()).getBoxItem().getItemConfigById(userItems.get(holder.getAdapterPosition()).getSelectedConfigId()
+        if (position != RecyclerView.NO_POSITION) {
+            userItems.get(position).getBoxItem().setSelectedItemConfig(
+                    userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
                     ));
-            itemViewHolder.setViews(userItems.get(holder.getAdapterPosition()), holder.getAdapterPosition());
+            itemViewHolder.setViews(userItems.get(position), position);
         }
     }
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
         //check if adapter holds correct position
-        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
-            if (boxItems.get(holder.getAdapterPosition()).getSelectedItemConfig() == null) {
-                boxItems.get(holder.getAdapterPosition()).setSelectedItemConfig(boxItems.get(holder.getAdapterPosition()).getSmallestInStockItemConfig());
+        if (position != RecyclerView.NO_POSITION) {
+            if (boxItems.get(position).getSelectedItemConfig() == null) {
+                boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
             }
-            searchedItemViewHolder.setViews(boxItems.get(holder.getAdapterPosition()), holder.getAdapterPosition(), false);
+            searchedItemViewHolder.setViews(boxItems.get(position), position, false);
         }
     }
 

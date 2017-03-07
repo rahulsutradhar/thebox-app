@@ -52,6 +52,25 @@ android {
         incremental true
     }
 
+    repositories {
+        maven {
+            url 'https://jitpack.io'
+        }
+
+        maven {
+            url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+
+        dexOptions {
+            incremental true
+            javaMaxHeapSize "4g"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -81,25 +100,6 @@ android {
             resValue "string", "app_name", "The Box Debug"
             resValue "string", "io.branch.sdk.BranchKey", "key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z"
             resValue "string", "io.branch.schema", "thebox.test"
-        }
-    }
-
-    repositories {
-        maven {
-            url 'https://jitpack.io'
-        }
-
-        maven {
-            url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
-        }
-    }
-
-    lintOptions {
-        checkReleaseBuilds false
-
-        dexOptions {
-            incremental true
-            javaMaxHeapSize "4g"
         }
     }
 }
