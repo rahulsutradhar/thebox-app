@@ -101,6 +101,7 @@ public class SplashActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
+
         Branch branch = Branch.getInstance();
 
         branch.initSession(new Branch.BranchReferralInitListener() {
