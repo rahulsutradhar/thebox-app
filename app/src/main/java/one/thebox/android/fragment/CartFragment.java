@@ -11,12 +11,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -26,13 +24,19 @@ import org.greenrobot.eventbus.Subscribe;
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
+import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
-import one.thebox.android.activity.ConfirmAddressActivity;
+import one.thebox.android.activity.address.AddressActivity;
+import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
@@ -138,9 +142,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RealmList<Order> orders = new RealmList<>();
-                orders.add(order);
-                startActivity(ConfirmAddressActivity.getInstance(getActivity(), orders, false));
+
+                checkAddressAndProceedPayment();
+
             }
         });
         emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);
@@ -200,5 +204,54 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 new IntentFilter(BROADCAST_EVENT_TAB));
 
         onUpdateCart(new UpdateCartEvent(3));
+    }
+
+    public void checkAddressAndProceedPayment() {
+        try {
+            User user = PrefUtils.getUser(getActivity());
+            RealmList<Order> orders = new RealmList<>();
+            orders.add(order);
+
+            if (user.getAddresses() != null) {
+                if (user.getAddresses().size() > 0) {
+
+                    //open Delivery Address Fragment
+                    Address address = user.getAddresses().first();
+                    Intent intent = new Intent(getActivity(), AddressActivity.class);
+                    intent.putExtra("called_from", 2);
+                    intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+                    intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
+                    startActivity(intent);
+
+                } else {
+                    //open Add Address Activity
+                    addDeliverAddress(orders);
+                }
+            } else {
+                //open Add Address Activity
+                addDeliverAddress(orders);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addDeliverAddress(RealmList<Order> orders) {
+        //open add address fragment blank
+        Intent intent = new Intent(getActivity(), AddressActivity.class);
+        /**
+         * 1- My Account Fragment
+         * 2- Cart Fargment
+         */
+        intent.putExtra("called_from", 2);
+        /**
+         * 1- add address
+         * 2- edit address
+         */
+        intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
+        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        startActivity(intent);
     }
 }

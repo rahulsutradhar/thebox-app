@@ -95,7 +95,7 @@ public class AddressBottomSheet {
         label.setText(address.getSociety());
         flat.setText(address.getSociety());
         street.setText(address.getStreet());
-        ((RadioButton) radioGroup.getChildAt(address.getType())).setChecked(true);
+        ((RadioButton) radioGroup.getChildAt(address.getLabel())).setChecked(true);
         localityAutoCompleteTextView.setText(address.getLocality().getName());
         primaryAddress.setChecked(address.isCurrentAddress());
         addButton.setText("Save");
@@ -171,13 +171,13 @@ public class AddressBottomSheet {
                 } else {
                     id = 0;
                 }
-                Address address = new Address(id, type,
+               /* Address address = new Address(id,
                         label.getText().toString(),
                         flat.getText().toString(),
                         street.getText().toString(),
                         localitySelected,
                         primaryAddress.isChecked(), Address.getAddressTypeName(type)
-                );
+                );*/
                 hideKeyboard();
                 if (AddressBottomSheet.this.address != null) {
                     updateAddress(address);
@@ -203,7 +203,7 @@ public class AddressBottomSheet {
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
                                 address.getLocality().getCode(),
-                                address.getType(),
+                                address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
                                 address.getStreet())))
@@ -217,8 +217,7 @@ public class AddressBottomSheet {
                                 address.setId(response.body().getAddress().getId());
                                 onAddressAdded.onAddressAdded(address);
                                 Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                            else {
+                            } else {
                                 Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -238,7 +237,7 @@ public class AddressBottomSheet {
                         new UpdateAddressRequestBody.Address(
                                 address.getId()
                                 , address.getLocality().getCode(),
-                                address.getType(),
+                                address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
                                 address.getStreet())))

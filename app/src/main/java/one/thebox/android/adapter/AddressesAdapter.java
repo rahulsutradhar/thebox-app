@@ -137,10 +137,10 @@ public class AddressesAdapter extends BaseRecyclerAdapter {
 
         public void setView(Address address) {
             if (address.isCurrentAddress()) {
-                typeNameTextView.setText(Address.getAddressTypeName(address.getType()) + " (primary)");
+                typeNameTextView.setText(Address.getAddressTypeName(address.getLabel()) + " (primary)");
                 addressTextView.setText(address.getFlat() + ", " + address.getStreet());
             } else {
-                typeNameTextView.setText(Address.getAddressTypeName(address.getType()));
+                typeNameTextView.setText(Address.getAddressTypeName(address.getLabel()));
                 addressTextView.setText(address.getFlat() + ", " + address.getStreet());
             }
 
