@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity implements
         shouldHandleDrawer();
         initViews();
         setupNavigationDrawer();
-        setStatusBarTranslucent(true);
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
@@ -970,19 +970,25 @@ public class MainActivity extends BaseActivity implements
                 if (data.getExtras() != null) {
                     onNewIntent(data);
                 }
-            } else if (requestCode == 2) {
+            }/**
+             * Add or Edit User Address from MyAccountFragment
+             * Edit User Profile
+             *
+             * 2 - Address
+             * 3- User Profile
+             */
+            else if (requestCode == 2 || requestCode == 3) {
                 if (data.getExtras() != null) {
                     MyAccountFragment myAccountFragment = (MyAccountFragment) fragmentManager.findFragmentByTag("My_Account");
                     if (myAccountFragment != null && myAccountFragment.isVisible()) {
                         myAccountFragment.onActivityResult(requestCode, resultCode, data);
                     }
                 }
-            }
+            }//
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 }
 

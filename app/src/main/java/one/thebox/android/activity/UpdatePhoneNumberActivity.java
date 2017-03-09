@@ -35,7 +35,7 @@ public class UpdatePhoneNumberActivity extends BaseActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_phone_number);
-        setTitle("Edit Mobile Number");
+        setTitle("Update Mobile Number");
         initVariables();
         initViews();
     }
@@ -75,7 +75,7 @@ public class UpdatePhoneNumberActivity extends BaseActivity implements View.OnCl
     }
 
     public void singIn() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + mobileNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {

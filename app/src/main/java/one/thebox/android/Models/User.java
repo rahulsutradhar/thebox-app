@@ -33,20 +33,28 @@ public class User extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int userId;
+
     @SerializedName("email")
     private String email;
+
     @SerializedName("phonenumber")
     private String phoneNumber;
+
     @SerializedName("otp_secret_key_confirmed")
     private boolean isOtpConfirmed;
+
     @SerializedName("name")
     private String name;
+
     @SerializedName("localitycode")
     private String localityCode;
+
     @SerializedName("auth_token")
     private String authToken;
+
     @SerializedName("cart_id")
     private int cartId;
+
     private RealmList<Address> addresses;
 
     public User() {

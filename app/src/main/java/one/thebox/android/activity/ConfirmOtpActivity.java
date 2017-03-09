@@ -21,6 +21,7 @@ import one.thebox.android.api.RequestBodies.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -82,9 +83,11 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     if (response.body().getUser() != null) {
-                                        PrefUtils.saveUser(ConfirmOtpActivity.this, response.body().getUser());
+                                        //save user locally
+                                        saveUserProfileToLocal(response.body().getUser());
                                         PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
                                         CartHelper.saveOrdersToRealm(response.body().getCart());
+
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(ConfirmOtpActivity.this, MainActivity.class));
                                             finish();
@@ -138,8 +141,10 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                             if (response.body().getUser() != null) {
                                                 PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
                                                 CartHelper.saveOrdersToRealm(response.body().getCart());
+
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
+
                                                     final BoxLoader dialog = new BoxLoader(ConfirmOtpActivity.this).show();
                                                     TheBox.getAPIService().updateProfile(
                                                             PrefUtils.getToken(ConfirmOtpActivity.this), new StoreUserInfoRequestBody(
@@ -152,7 +157,8 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                                                     if (response.body() != null) {
                                                                         if (response.body().isSuccess()) {
                                                                             Toast.makeText(ConfirmOtpActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                                                            PrefUtils.saveUser(ConfirmOtpActivity.this, response.body().getUser());
+                                                                            //update User local;y
+                                                                            saveUserProfileToLocal(response.body().getUser());
                                                                             startActivity(new Intent(ConfirmOtpActivity.this, MainActivity.class));
                                                                             finish();
 
@@ -221,6 +227,21 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                 }
             }
         }
+    }
+
+    /**
+     * Save Use Profile to shared Preference
+     */
+    public void saveUserProfileToLocal(User user) {
+
+        User user1 = PrefUtils.getUser(this);
+        if (user1.getAddresses() != null) {
+            if (user1.getAddresses().size() > 0) {
+                user.setAddresses(user1.getAddresses());
+            }
+        }
+        //update user in Preferences
+        PrefUtils.saveUser(this, user);
     }
 
     public boolean isValidOtp() {
