@@ -1,33 +1,18 @@
 package one.thebox.android.activity.address;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.activity.BaseActivity;
-import one.thebox.android.adapter.AddressesAdapter;
 import one.thebox.android.app.Constants;
-import one.thebox.android.fragment.BaseFragment;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.PrefUtils;
 
 public class AddressActivity extends BaseActivity {
 

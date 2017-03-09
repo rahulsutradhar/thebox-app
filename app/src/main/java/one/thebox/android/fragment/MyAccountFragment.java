@@ -13,7 +13,6 @@ import io.realm.RealmList;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AddressBottomSheet;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.MainActivity;
