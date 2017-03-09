@@ -202,7 +202,15 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                     //check street validation
                     if (checkStreetValidation()) {
                         //request server to save addres
-                        addAddress(address);
+                        //type == edit address
+                        if (type == 2) {
+                            updateAddress(address);
+                        }
+                        //type == 1 save address
+                        else {
+                            addAddress(address);
+                        }
+
                     }
 
                 }
@@ -359,7 +367,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
     /**
      * Edit Addres or Update Addres to Server
      */
-    public void updateAddress() {
+    public void updateAddress(final Address address) {
         final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
         TheBox.getAPIService().updateAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
                 new UpdateAddressRequestBody(

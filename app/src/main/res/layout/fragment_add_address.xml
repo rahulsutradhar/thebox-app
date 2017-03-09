@@ -131,7 +131,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:textColorHint="@color/primary_text">
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
 
                                 <android.support.v7.widget.AppCompatEditText
                                     android:id="@+id/edittext_flatNumber"
@@ -163,7 +164,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:textColorHint="@color/primary_text">
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
 
                                 <android.support.v7.widget.AppCompatEditText
                                     android:id="@+id/edittextSociety"
@@ -195,7 +197,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:textColorHint="@color/primary_text">
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
 
                                 <android.support.v7.widget.AppCompatEditText
                                     android:id="@+id/edittextStreet"

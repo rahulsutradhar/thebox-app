@@ -83,45 +83,47 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
 
     private void setupViews() {
 
-        userName.setText(user.getName());
-        email.setText(user.getEmail());
-        phoneNumber.setText(user.getPhoneNumber());
-        if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
-            editAddressButton.setVisibility(View.GONE);
-            showAllAddressesButton.setVisibility(View.VISIBLE);
-            address.setText("You have no address added");
-            showAllAddressesButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        try {
+            userName.setText(user.getName());
+            email.setText(user.getEmail());
+            phoneNumber.setText(user.getPhoneNumber());
+            if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
+                editAddressButton.setVisibility(View.GONE);
+                showAllAddressesButton.setVisibility(View.VISIBLE);
+                address.setText("You have no address added");
+                showAllAddressesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    //open add address fragment blank
-                    Intent intent = new Intent(getActivity(), AddressActivity.class);
-                    /**
-                     * 1- My Account Fragment
-                     * 2- Cart Fargment
-                     */
-                    intent.putExtra("called_from", 1);
-                    /**
-                     * 1- add address
-                     * 2- edit address
-                     */
-                    intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
-                    startActivityForResult(intent, 2);
+                        //open add address fragment blank
+                        Intent intent = new Intent(getActivity(), AddressActivity.class);
+                        /**
+                         * 1- My Account Fragment
+                         * 2- Cart Fargment
+                         */
+                        intent.putExtra("called_from", 1);
+                        /**
+                         * 1- add address
+                         * 2- edit address
+                         */
+                        intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
+                        startActivityForResult(intent, 2);
+                    }
+                });
+            } else {
+                editAddressButton.setVisibility(View.VISIBLE);
+                showAllAddressesButton.setVisibility(View.GONE);
+                clickEditAddress();
+                if (user.getAddresses().size() > 0) {
+                    Address deliveryAddress = user.getAddresses().first();
+                    address.setText(deliveryAddress.getFlat() + ",\n" +
+                            deliveryAddress.getSociety() + ",\n" +
+                            deliveryAddress.getStreet());
                 }
-            });
-        } else {
-            editAddressButton.setVisibility(View.VISIBLE);
-            showAllAddressesButton.setVisibility(View.GONE);
-            clickEditAddress();
-            for (int i = 0; i < user.getAddresses().size(); i++) {
-                if (user.getAddresses().get(i).isCurrentAddress()) {
-                    address.setText(user.getAddresses().get(i).getFlat() + ",\n" +
-                            user.getAddresses().get(i).getSociety() + ",\n" +
-                            user.getAddresses().get(i).getStreet());
-                }
+
             }
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -201,26 +203,6 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void openAddAddressBottomSheet() {
-        new AddressBottomSheet(getActivity(), new AddressBottomSheet.OnAddressAdded() {
-            @Override
-            public void onAddressAdded(Address address) {
-                User user = PrefUtils.getUser(getActivity());
-                RealmList<Address> addresses = user.getAddresses();
-                if (addresses == null || addresses.isEmpty()) {
-                    addresses = new RealmList<Address>();
-                }
-
-                addresses.add(address);
-                user.setAddresses(addresses);
-                PrefUtils.saveUser(getActivity(), user);
-
-                initvariables();
-                setupViews();
-            }
-        }).show();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -245,7 +227,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             if (requestCode == 2) {
                 if (data.getExtras() != null) {
                     Address deliveryAddress = CoreGsonUtils.fromJson(data.getStringExtra("Delivery_Address_Updated"), Address.class);
-                    address.setText(deliveryAddress.getFlat() + " , " + deliveryAddress.getSociety() + " , " + deliveryAddress.getStreet());
+                    address.setText(deliveryAddress.getFlat() + ",\n" + deliveryAddress.getSociety() + ",\n" + deliveryAddress.getStreet());
 
                     //this show all button turns to edit address
                     editAddressButton.setVisibility(View.VISIBLE);

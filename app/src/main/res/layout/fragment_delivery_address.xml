@@ -37,7 +37,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="@drawable/ripple"
-                android:padding="16dp"
+                android:paddingBottom="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="6dp"
                 app:cardElevation="2dp">
@@ -46,7 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp">
 
                     <!--  Left size image-->
                     <RelativeLayout
