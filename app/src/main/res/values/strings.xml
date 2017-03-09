@@ -91,5 +91,10 @@
     <!-- OnBoard Activity -->
     <string name="get_started">GET STARTED</string>
     <string name="gps_error">We cannot get your location. Please turn on your GPS.</string>
+
+    <!-- Address -->
+    <string name="hint_flat_house_office_number">Flat / House / Office No.</string>
+    <string name="hind_society">Society</string>
+    <string name="hint_street_office">Street / Office</string>
 </resources>
 

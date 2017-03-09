@@ -1,25 +1,23 @@
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import io.realm.RealmList;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
-import one.thebox.android.activity.ConfirmAddressActivity;
+import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.OrderItemsActivity;
-import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DateTimeUtil;
 
 
@@ -114,12 +112,6 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 }
             }
         });
-       /* holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(holder.getAdapterPosition()).getId()));
-            }
-        });*/
     }
 
     @Override
@@ -189,7 +181,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         public void onClick(View v) {
                             RealmList<Order> orders = new RealmList<>();
                             orders.add(order);
-                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders, true));
+                            //open time slots activity
+                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders),order.getId(), true));
                         }
                     });
                 }
@@ -248,7 +241,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         public void onClick(View v) {
                             RealmList<Order> orders = new RealmList<>();
                             orders.add(order);
-                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders, false));
+                            //open time slots activity
+                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), false));
                         }
                     });
                 }
@@ -271,7 +265,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                             public void onClick(View v) {
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(order);
-                                mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders, false));
+                                //open time slots activity
+                                mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), false));
                             }
                         });
                     } else {
@@ -293,7 +288,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         public void onClick(View v) {
                             RealmList<Order> orders = new RealmList<>();
                             orders.add(order);
-                            mContext.startActivity(ConfirmAddressActivity.getInstance(mContext, orders, false));
+                            //open time slots activity
+                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), false));
                         }
                     });
                 }

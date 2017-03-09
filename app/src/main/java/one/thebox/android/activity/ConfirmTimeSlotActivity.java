@@ -43,6 +43,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
     private static final String IS_RESCHEDULING = "is_rescheduling";
+    private static final String RESCHEDULE_ORDER_ID = "reschedule_order_id";
     boolean isCart;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private RealmList<Order> mergeOrders;
@@ -61,6 +62,13 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
         return new Intent(context, ConfirmTimeSlotActivity.class)
                 .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
+                .putExtra(IS_RESCHEDULING, is_rescheduling);
+    }
+
+    public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int orderId, boolean is_rescheduling) {
+        return new Intent(context, ConfirmTimeSlotActivity.class)
+                .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
+                .putExtra(RESCHEDULE_ORDER_ID, orderId)
                 .putExtra(IS_RESCHEDULING, is_rescheduling);
     }
 
@@ -168,6 +176,8 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     public void initViewCase4() {
+
+        final int orderId = getIntent().getIntExtra(RESCHEDULE_ORDER_ID, 0);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
@@ -188,7 +198,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
                         timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
 
-                reSchedule(reschedule_to);
+                reSchedule(reschedule_to, orderId);
             }
         });
     }
@@ -238,9 +248,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         return addressAndOrders.get(0).getOrder().isCart();
     }
 
-    public void reSchedule(Date reschedule_to) {
+    public void reSchedule(Date reschedule_to, int orderId) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to))
+        TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to, orderId))
                 .enqueue(new Callback<RescheduleResponseBody>() {
                     @Override
                     public void onResponse(Call<RescheduleResponseBody> call, Response<RescheduleResponseBody> response) {

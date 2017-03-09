@@ -59,7 +59,7 @@
         android:layout_alignRight="@+id/textView6"
         android:layout_alignStart="@+id/textView6"
         android:layout_below="@+id/textView6"
-        android:background="@drawable/black_underline_edit_text"
+        android:background="@drawable/green_underline_edit_text"
         android:gravity="center_horizontal"
         android:inputType="number"
         android:maxLength="10"

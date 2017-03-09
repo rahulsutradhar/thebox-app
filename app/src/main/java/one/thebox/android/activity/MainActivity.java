@@ -970,6 +970,13 @@ public class MainActivity extends BaseActivity implements
                 if (data.getExtras() != null) {
                     onNewIntent(data);
                 }
+            } else if (requestCode == 2) {
+                if (data.getExtras() != null) {
+                    MyAccountFragment myAccountFragment = (MyAccountFragment) fragmentManager.findFragmentByTag("My_Account");
+                    if (myAccountFragment != null && myAccountFragment.isVisible()) {
+                        myAccountFragment.onActivityResult(requestCode, resultCode, data);
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

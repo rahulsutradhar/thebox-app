@@ -90,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:background="@drawable/black_underline_edit_text"
+            android:background="@drawable/green_underline_edit_text"
             android:gravity="center"
             android:imeOptions="actionDone"
             android:inputType="number"

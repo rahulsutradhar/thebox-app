@@ -5,13 +5,17 @@ import android.util.Log;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
+import one.thebox.android.Models.Address;
+import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.Responses.OrdersApiResponse;
 import one.thebox.android.app.TheBox;
@@ -147,4 +151,23 @@ public class OrderHelper {
             e.printStackTrace();
         }
     }
+
+    public static ArrayList<AddressAndOrder> getAddressAndOrder(RealmList<Order> orders) {
+        ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
+        Address address = null;
+        try {
+            User user = PrefUtils.getUser(TheBox.getAppContext());
+            if (user.getAddresses().size() > 0) {
+                address = user.getAddresses().first();
+            }
+            if (address != null) {
+                for (Order order : orders) {
+                    addressAndOrders.add(new AddressAndOrder(address.getId(), order.getId()));
+                }
+            }
+        } catch (Exception e) {
+        }
+        return addressAndOrders;
+    }
+
 }

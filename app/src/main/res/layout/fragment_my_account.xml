@@ -1,5 +1,4 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -114,38 +113,50 @@
                         android:id="@+id/button_show_all_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Show All"
-                        android:textColor="@color/red_orange"
-                        android:textSize="14dp"
-                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true" />
+                        android:layout_alignParentTop="true"
+                        android:padding="16dp"
+                        android:text="Add Address"
+                        android:textColor="@color/red_orange"
+                        android:textSize="14dp" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/button_edit_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Address"
-                        android:textColor="@color/manatee"
-                        android:textSize="18dp"
-                        android:id="@+id/montserratTextView"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
+                        android:padding="16dp"
+                        android:text="Edit Address"
+                        android:textColor="@color/red_orange"
+                        android:textSize="14dp" />
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/montserratTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
                         android:layout_toLeftOf="@+id/button_show_all_address"
-                        android:layout_toStartOf="@+id/button_show_all_address" />
+                        android:layout_toStartOf="@+id/button_show_all_address"
+                        android:text="Address"
+                        android:textColor="@color/manatee"
+                        android:textSize="18dp" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/address_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="c2603, Oberoi splendor, JVLR"
-                        android:textColor="@color/primary_text_color"
-                        android:layout_below="@+id/montserratTextView"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
+                        android:layout_below="@+id/montserratTextView"
                         android:layout_toLeftOf="@+id/button_show_all_address"
-                        android:layout_toStartOf="@+id/button_show_all_address" />
+                        android:layout_toStartOf="@+id/button_show_all_address"
+                        android:text=""
+                        android:textColor="@color/primary_text_color" />
                 </RelativeLayout>
 
             </LinearLayout>
@@ -220,8 +231,8 @@
                 android:paddingRight="32dp"
                 android:paddingTop="8dp"
                 android:text="@string/sign_out"
-                android:textSize="@dimen/text_large1"
-                android:textColor="@color/primary_text_color" />
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_large1" />
 
 
         </LinearLayout>

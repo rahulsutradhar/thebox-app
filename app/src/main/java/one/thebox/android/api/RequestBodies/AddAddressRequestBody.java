@@ -20,12 +20,16 @@ public class AddAddressRequestBody implements Serializable {
     public static class Address {
         @SerializedName("code")
         private int code;
+
         @SerializedName("label")
         private int label;
+
         @SerializedName("flatno")
         private String flatNo;
+
         @SerializedName("society")
         private String society;
+
         @SerializedName("street")
         private String street;
 

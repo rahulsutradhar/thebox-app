@@ -1,0 +1,163 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="DeliveryAddressFragmentBinding">
+
+        <import type="android.view.View" />
+
+        <import
+            alias="ViewModel"
+            type="one.thebox.android.viewmodel.address.DeliveryAddressFragmentViewModel" />
+
+        <variable
+            name="viewModel"
+            type="ViewModel" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/md_grey_200"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/button_proceed"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp">
+
+                    <!--  Left size image-->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2.5">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:src="@{viewModel.addressTypeIcon}" />
+
+                    </RelativeLayout>
+
+                    <!-- Right side -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.3"
+                        android:orientation="vertical">
+
+                        <!-- Address Type -->
+                        <TextView
+                            style="@style/AppTheme.Toolbar.TitleText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.addressTypeText}"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+
+                        <!--Flat Number -->
+                        <one.thebox.android.ViewHelper.MontserratTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="@{viewModel.addressFlat}"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <!-- Society -->
+                        <one.thebox.android.ViewHelper.MontserratTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.addressSociety}"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <!-- Street -->
+                        <one.thebox.android.ViewHelper.MontserratTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{viewModel.addressStreet}"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:onClick="@{(v)->viewModel.onClickOverflowMenu(v)}"
+                            android:padding="2dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_overflow_menu_black_24dp" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+
+        </RelativeLayout>
+
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/button_proceed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@color/primary"
+            android:gravity="center_horizontal"
+            android:onClick="@{()->viewModel.onClickProceedToPayment()}"
+            android:padding="16dp"
+            android:text="Proceed to Payments"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+
+    </RelativeLayout>
+</layout>
