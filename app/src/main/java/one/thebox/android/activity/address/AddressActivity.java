@@ -2,13 +2,17 @@ package one.thebox.android.activity.address;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.Address;
@@ -45,6 +49,10 @@ public class AddressActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
 
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar(getToolbar());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             type = getIntent().getIntExtra(Constants.EXTRA_ADDRESS_TYPE, 0);
@@ -60,12 +68,12 @@ public class AddressActivity extends BaseActivity {
                         CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(Constants.EXTRA_LIST_ORDER), Order.class));
             }
             transactToFragment(addAddressFragment);
-            setTitle("Add Delivery Address");
+            getSupportActionBar().setTitle("Add Delivery Address");
         } else if (type == 2) {
             addAddressFragment = new AddAddressFragment(calledFrom, type,
                     CoreGsonUtils.fromJson(getIntent().getStringExtra("edit_delivery_address"), Address.class));
             transactToFragment(addAddressFragment);
-            setTitle("Edit Delivery Address");
+            getSupportActionBar().setTitle("Edit Delivery Address");
         }
         //Address is saved so transact to Delivery Address Fragment
         else if (calledFrom == 2) {
@@ -74,7 +82,7 @@ public class AddressActivity extends BaseActivity {
                     CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(Constants.EXTRA_LIST_ORDER), Order.class));
 
             transactToFragment(deliveryAddressFragment);
-            setTitle("Delivery Address");
+            getSupportActionBar().setTitle("Delivery Address");
         }
 
     }
@@ -88,10 +96,11 @@ public class AddressActivity extends BaseActivity {
     }
 
     public void transactToFragment(DeliveryAddressFragment fragment) {
-        setTitle("Delivery Address");
+        getToolbar().setTitle("Delivery Address");
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container, fragment, "Delivery_Address");
         fragmentTransaction.commit();
     }
+
 }

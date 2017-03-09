@@ -1,6 +1,7 @@
 package one.thebox.android.fragment.address;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import io.realm.RealmList;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.databinding.DeliveryAddressFragmentBinding;
 import one.thebox.android.fragment.base.FragmentBase;
 import one.thebox.android.viewmodel.address.DeliveryAddressFragmentViewModel;
@@ -70,5 +72,25 @@ public class DeliveryAddressFragment extends FragmentBase {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        ((AddressActivity) getActivity()).getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getActivity().getSupportFragmentManager().popBackStackImmediate();
+                } else {
+                    getActivity().finish();
+                }
+
+
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AddressActivity) getActivity()).getToolbar().setTitle("Delivery Address");
     }
 }

@@ -34,14 +34,11 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="@drawable/ripple"
                 android:paddingBottom="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="6dp"
+                app:cardCornerRadius="2dp"
                 app:cardElevation="2dp">
 
                 <LinearLayout
@@ -55,7 +52,7 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="3">
+                        android:layout_weight="2.5">
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -69,7 +66,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.3"
                         android:orientation="vertical">
 
                         <!-- Address Type -->
@@ -113,6 +110,28 @@
 
 
                     </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:onClick="@{(v)->viewModel.onClickOverflowMenu(v)}"
+                            android:padding="2dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_overflow_menu_black_24dp" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 

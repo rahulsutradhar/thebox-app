@@ -7,19 +7,26 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="top"
-        android:background="@color/primary"
-        android:backgroundTint="@color/primary"
-        android:elevation="6dp"
-        android:gravity="center_vertical"
-        app:contentInsetEnd="6dp"
-        app:contentInsetLeft="6dp"
-        app:contentInsetRight="6dp"
-        app:contentInsetStart="6dp" />
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="top"
+            android:background="@color/primary"
+            android:backgroundTint="@color/primary"
+            android:elevation="6dp"
+            android:gravity="center_vertical"
+            android:title="Address"
+            app:contentInsetEnd="6dp"
+            app:contentInsetLeft="6dp"
+            app:contentInsetRight="6dp"
+            app:contentInsetStart="6dp" />
+    </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/container"

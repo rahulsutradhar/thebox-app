@@ -23,6 +23,7 @@ import one.thebox.android.ViewHelper.MontserratEditText;
 import one.thebox.android.ViewHelper.SimpleTextWatcher;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
@@ -126,6 +127,24 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         notifyChange();
     }
 
+    /**
+     * Called from Delivery Address Fragment
+     * Edit Delivery Address
+     * calledFrom = 3; type = 3;
+     */
+    public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment,
+                                       Address address, RealmList<Order> orders, int calledFrom, int type, View view) {
+        this.addAddressFragment = addAddressFragment;
+        this.address = address;
+        this.orders = orders;
+        this.calledFrom = calledFrom;
+        this.type = type;
+        this.view = view;
+
+        setAddressLabel(address.getLabel());
+        notifyChange();
+    }
+
     public void bindLayout() {
 
         radioGroup = (RadioGroup) view.findViewById(R.id.radioAddressType);
@@ -203,11 +222,11 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                     if (checkStreetValidation()) {
                         //request server to save addres
                         //type == edit address
-                        if (type == 2) {
+                        if (type == 2 || type == 3) {
                             updateAddress(address);
                         }
                         //type == 1 save address
-                        else {
+                        else if (type == 1) {
                             addAddress(address);
                         }
 
@@ -427,15 +446,13 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             }
             //Cart frament
             else if (calledFrom == 2) {
-                //proceed to time slot Activity
-                /*addAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(addAddressFragment.getActivity(),
-                        OrderHelper.getAddressAndOrder(orders), false));
-                addAddressFragment.getActivity().finish();*/
-
                 //transact to delivery Address Fragment
                 transactToDeliveryAddressFragment();
+            } else if (calledFrom == 3) {
 
-
+                //clear back stack
+                clearBackStack();
+                transactToDeliveryAddressFragment();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -446,12 +463,12 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
     public void transactToDeliveryAddressFragment() {
         DeliveryAddressFragment deliveryAddressFragment = new
                 DeliveryAddressFragment(address, orders);
-        FragmentManager fragmentManager = addAddressFragment.getFragmentManager();
+        FragmentManager fragmentManager = addAddressFragment.getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container, deliveryAddressFragment, "Delivery_Address");
         fragmentTransaction.commit();
 
-        addAddressFragment.getActivity().setTitle("Delivery Address");
+        ((AddressActivity) addAddressFragment.getActivity()).getToolbar().setTitle("Delivery Address");
     }
 
     public int getAddressLabel() {
@@ -460,5 +477,11 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     public void setAddressLabel(int addressLabel) {
         this.addressLabel = addressLabel;
+    }
+
+    private void clearBackStack() {
+        for (int i = 0; i < addAddressFragment.getActivity().getSupportFragmentManager().getBackStackEntryCount(); ++i) {
+            addAddressFragment.getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
     }
 }
