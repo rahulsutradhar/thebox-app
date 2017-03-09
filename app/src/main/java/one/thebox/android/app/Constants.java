@@ -20,4 +20,14 @@ public class Constants {
      * Items in Cart
      */
     public static final String EXTRA_ITEMS_IN_CART = "extra_item_in_cart";
+
+    /**
+     * Address Type
+     */
+    public static final String EXTRA_ADDRESS_TYPE = "extra_address_type";
+
+    /**
+     * Order List
+     */
+    public static final String EXTRA_LIST_ORDER = "list_order";
 }

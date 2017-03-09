@@ -11,6 +11,8 @@
         <item name="md_medium_font">Montserrat-Regular.otf</item>
         <item name="md_regular_font">Montserrat-Regular.otf</item>
         <item name="android:listDivider">@color/light_white</item>
+
+        <item name="colorAccent">@color/primary_text_color</item>
     </style>
 
     <style name="MyLaunchActivityTheme" parent="AppTheme">
@@ -32,6 +34,12 @@
         <item name="android:colorButtonNormal">@color/primary</item>
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorAccent">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme.Button.PrimaryButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="android:colorButtonNormal">@color/primary</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

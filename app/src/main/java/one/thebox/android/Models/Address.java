@@ -33,35 +33,44 @@ public class Address extends RealmObject implements Serializable {
     public static final String ADDRESS_TYPE_OTHER = "Other";
     @Ignore
     public static final String[] ADDRESS_TYPES = {ADDRESS_TYPE_HOME, ADDRESS_TYPE_OFFICE, ADDRESS_TYPE_OTHER};
+
     @PrimaryKey
     @SerializedName("id")
     private int id;
-    private int type;
+
     @SerializedName("society")
     private String society;
+
     @SerializedName("flatno")
     private String flat;
+
     @SerializedName("street")
     private String street;
+
     @SerializedName("locality")
     private Locality locality;
+
     private boolean isCurrentAddress;
+
     @SerializedName("get_label")
-    private String label;
+    private String labelText;
+
+    private int label;
+
     @SerializedName("code")
     private int code;
 
     public Address() {
     }
 
-    public Address(int id, int type, String society, String flat, String street, Locality locality, boolean isCurrentAddress, String label) {
+    public Address(int id, String society, String flat, String street, Locality locality, boolean isCurrentAddress, String labelText, int label) {
         this.id = id;
-        this.type = type;
         this.society = society;
         this.flat = flat;
         this.street = street;
         this.locality = locality;
         this.isCurrentAddress = isCurrentAddress;
+        this.labelText = labelText;
         this.label = label;
     }
 
@@ -86,28 +95,12 @@ public class Address extends RealmObject implements Serializable {
         this.code = code;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getSociety() {
@@ -148,5 +141,21 @@ public class Address extends RealmObject implements Serializable {
 
     public void setCurrentAddress(boolean currentAddress) {
         isCurrentAddress = currentAddress;
+    }
+
+    public String getLabelText() {
+        return labelText;
+    }
+
+    public void setLabelText(String labelText) {
+        this.labelText = labelText;
+    }
+
+    public int getLabel() {
+        return label;
+    }
+
+    public void setLabel(int label) {
+        this.label = label;
     }
 }

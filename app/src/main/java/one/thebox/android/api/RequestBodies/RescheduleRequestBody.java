@@ -13,12 +13,16 @@ import one.thebox.android.Models.AddressAndOrder;
  */
 public class RescheduleRequestBody implements Serializable {
 
-        @SerializedName("date")
-        private Date reschedule_to;
+    @SerializedName("date")
+    private Date reschedule_to;
 
-        public RescheduleRequestBody(Date reschedule_to) {
-            this.reschedule_to = reschedule_to;
-        }
+    @SerializedName("order_id")
+    private int orderId;
+
+    public RescheduleRequestBody(Date reschedule_to, int orderId) {
+        this.reschedule_to = reschedule_to;
+        this.orderId = orderId;
+    }
 }
 
 

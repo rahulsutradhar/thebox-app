@@ -23,6 +23,7 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
@@ -111,7 +112,7 @@ public class OrderItemsActivity extends BaseActivity {
                 public void onClick(View v) {
                     RealmList<Order> orders = new RealmList<>();
                     orders.add(order);
-                    startActivity(ConfirmAddressActivity.getInstance(OrderItemsActivity.this, orders, false));
+                    startActivity(ConfirmTimeSlotActivity.newInstance(OrderItemsActivity.this, OrderHelper.getAddressAndOrder(orders), false));
                 }
             });
         }

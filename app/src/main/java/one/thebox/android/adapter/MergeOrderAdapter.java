@@ -1,24 +1,17 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
-import one.thebox.android.activity.ConfirmAddressActivity;
-import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.util.DateTimeUtil;
 
 
