@@ -36,7 +36,9 @@ public class AddressActivity extends BaseActivity {
 
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         setSupportActionBar(getToolbar());
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {

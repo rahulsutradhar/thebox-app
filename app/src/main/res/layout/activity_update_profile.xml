@@ -35,7 +35,7 @@
             android:paddingBottom="40dp"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="40dp"
+            android:paddingTop="10dp"
             tools:context="one.thebox.android.activity.LoginActivity">
 
             <LinearLayout
@@ -139,7 +139,7 @@
         android:layout_gravity="center|bottom"
         android:background="@color/primary"
         android:padding="16dp"
-        android:text="Save"
+        android:text="Update"
         android:textColor="@color/white" />
 
 </LinearLayout>
