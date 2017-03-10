@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity implements
         shouldHandleDrawer();
         initViews();
         setupNavigationDrawer();
-        setStatusBarTranslucent(true);
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
@@ -418,8 +418,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void getSettingsData() {
-        // Remove hardcoding of version
-        // 13 is to test
         TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
@@ -436,17 +434,23 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void checkAppUpdate(SettingsResponse response) {
-
-        if (null != response.getData() && response.getData().isNew_version_available()) {
-            if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
-                if (null != response.getData().getUpdatePopupDetails()) {
-                    UpdateDialogFragment f = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(), response.getData().isForce_update());
-                    f.show(this.getSupportFragmentManager(), "Update");
-                    if (!response.getData().isForce_update()) {
-                        saveCacheTime();
+        try {
+            if (null != response.getData() && response.getData().isNew_version_available()) {
+                if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
+                    if (null != response.getData().getUpdatePopupDetails()) {
+                        UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(),
+                                response.getData().isForce_update());
+                        dialogFragment.show(fragmentManager, "Update");
+                        if (!response.getData().isForce_update()) {
+                            saveCacheTime();
+                        }
                     }
                 }
             }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -970,19 +974,25 @@ public class MainActivity extends BaseActivity implements
                 if (data.getExtras() != null) {
                     onNewIntent(data);
                 }
-            } else if (requestCode == 2) {
+            }/**
+             * Add or Edit User Address from MyAccountFragment
+             * Edit User Profile
+             *
+             * 2 - Address
+             * 3- User Profile
+             */
+            else if (requestCode == 2 || requestCode == 3) {
                 if (data.getExtras() != null) {
                     MyAccountFragment myAccountFragment = (MyAccountFragment) fragmentManager.findFragmentByTag("My_Account");
                     if (myAccountFragment != null && myAccountFragment.isVisible()) {
                         myAccountFragment.onActivityResult(requestCode, resultCode, data);
                     }
                 }
-            }
+            }//
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 }
 

@@ -449,7 +449,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 //transact to delivery Address Fragment
                 transactToDeliveryAddressFragment();
             } else if (calledFrom == 3) {
-
                 //clear back stack
                 clearBackStack();
                 transactToDeliveryAddressFragment();

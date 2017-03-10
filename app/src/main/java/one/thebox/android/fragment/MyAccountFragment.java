@@ -68,9 +68,11 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         showAllAddressesButton = (TextView) rootView.findViewById(R.id.button_show_all_address);
         showAllOrdersButton = (TextView) rootView.findViewById(R.id.button_show_all_orders);
         editAddressButton = (TextView) rootView.findViewById(R.id.button_edit_address);
+
         showAllAddressesButton.setOnClickListener(this);
         showAllOrdersButton.setOnClickListener(this);
         editAddressButton.setOnClickListener(this);
+
         userName = (TextView) rootView.findViewById(R.id.user_name_text_view);
         email = (TextView) rootView.findViewById(R.id.email_text_view);
         phoneNumber = (TextView) rootView.findViewById(R.id.phone_text_view);
@@ -90,6 +92,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                 editAddressButton.setVisibility(View.GONE);
                 showAllAddressesButton.setVisibility(View.VISIBLE);
                 address.setText("You have no address added");
+
                 showAllAddressesButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -153,7 +156,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
 
         if (addresses != null) {
             if (addresses.size() > 0) {
-                editAddress = addresses.get(0);
+                editAddress = addresses.first();
             }
         }
         return editAddress;
@@ -173,10 +176,10 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.button_show_all_address: {
+           /* case R.id.button_show_all_address: {
                 startActivity(new Intent(getActivity(), AddressActivity.class));
                 break;
-            }
+            }*/
             case R.id.button_show_all_orders: {
                 startActivity(new Intent(getActivity(), OrderDetailActivity.class));
                 break;
@@ -213,7 +216,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), UpdateProfileActivity.class));
+                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
+                startActivityForResult(intent, 3);
             }
         });
     }
@@ -223,6 +227,11 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
+            /**
+             * 2- Add or edit Address
+             *
+             * 3 - Update User Profile
+             */
             if (requestCode == 2) {
                 if (data.getExtras() != null) {
                     Address deliveryAddress = CoreGsonUtils.fromJson(data.getStringExtra("Delivery_Address_Updated"), Address.class);
@@ -232,9 +241,15 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                     editAddressButton.setVisibility(View.VISIBLE);
                     showAllAddressesButton.setVisibility(View.GONE);
                     clickEditAddress();
-
+                }
+            } else if (requestCode == 3) {
+                if (data.getExtras() != null) {
+                    user = CoreGsonUtils.fromJson(data.getStringExtra("UserProfile"), User.class);
+                    initViews();
+                    setupViews();
                 }
             }
+
         } catch (Exception e) {
 
         }

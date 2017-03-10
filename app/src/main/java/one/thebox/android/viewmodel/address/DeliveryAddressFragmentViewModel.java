@@ -119,8 +119,8 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
             pwindow.setBackgroundDrawable(deliveryAddressFragment.getActivity().getResources().getDrawable(R.drawable.background_popup_window_card_address_shadow));
         }
 
-        int OFFSET_X = 235;
-        int OFFSET_Y = 40;
+        int OFFSET_X = 250;
+        int OFFSET_Y = 30;
 
         String[] types = {"EDIT"};
 
