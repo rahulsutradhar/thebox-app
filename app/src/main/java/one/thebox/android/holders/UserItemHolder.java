@@ -81,30 +81,32 @@ public class UserItemHolder extends BaseHolder {
                         , EditItemFragment.TAG);
                 dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
                     @Override
-                    public void onEditItemoptionSelected(Boolean change_size_or_reschedule) {
+                    public void onEditItemoptionSelected(int actionUserItemSubscription) {
 
                         dialogFragment.dismiss();
 
                         // true if change_size was clicked
                         // false otherwise
-                        if (change_size_or_reschedule) {
+                        switch (actionUserItemSubscription) {
+                            case 1:
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                            dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager()
-                                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                @Override
-                                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                    dialogFragment.dismiss();
-                                    changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                                }
-                            });
+                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager()
+                                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                    @Override
+                                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                        dialogFragment.dismiss();
+                                        changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+                                    }
+                                });
 
-                        } else {
+                                break;
+                            case 2:
 
-                            new DelayDeliveryBottomSheet((Activity) context, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
-                                @Override
-                                public void onDelayActionCompleted(UserItem userItem) {
+                                new DelayDeliveryBottomSheet((Activity) context, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
+                                    @Override
+                                    public void onDelayActionCompleted(UserItem userItem) {
 //                                    if (userItem == null) {
 //                                        userItems.remove(arrayListPosition);
 //                                        if (onUserItemChange != null) {
@@ -118,9 +120,12 @@ public class UserItemHolder extends BaseHolder {
 //                                        }
 //                                        notifyItemChanged(getAdapterPosition());
 //                                    }
-                                }
-                            }).show(userItem);
+                                    }
+                                }).show(userItem);
 
+                                break;
+                            case 3:
+                                break;
                         }
 
                     }
