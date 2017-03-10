@@ -7,8 +7,11 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Setting {
+
     private boolean new_version_available;
+
     private boolean force_update;
+
     @SerializedName("update_popup_details")
     private UpdatePopupDetails updatePopupDetails;
 

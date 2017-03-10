@@ -46,6 +46,7 @@ public class UpdateDialogFragment extends DialogFragment {
         builder.setCancelable(!isForceUpdate);
         initViews(v);
         Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(!isForceUpdate);
         dialog.setCancelable(!isForceUpdate);
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -62,6 +63,10 @@ public class UpdateDialogFragment extends DialogFragment {
             }
         });
         return dialog;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
     }
 
     private void initViews(View v) {

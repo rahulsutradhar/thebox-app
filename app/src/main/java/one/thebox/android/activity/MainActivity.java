@@ -418,8 +418,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void getSettingsData() {
-        // Remove hardcoding of version
-        // 13 is to test
         TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
@@ -436,17 +434,23 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void checkAppUpdate(SettingsResponse response) {
-
-        if (null != response.getData() && response.getData().isNew_version_available()) {
-            if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
-                if (null != response.getData().getUpdatePopupDetails()) {
-                    UpdateDialogFragment f = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(), response.getData().isForce_update());
-                    f.show(this.getSupportFragmentManager(), "Update");
-                    if (!response.getData().isForce_update()) {
-                        saveCacheTime();
+        try {
+            if (null != response.getData() && response.getData().isNew_version_available()) {
+                if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
+                    if (null != response.getData().getUpdatePopupDetails()) {
+                        UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(),
+                                response.getData().isForce_update());
+                        dialogFragment.show(fragmentManager, "Update");
+                        if (!response.getData().isForce_update()) {
+                            saveCacheTime();
+                        }
                     }
                 }
             }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
