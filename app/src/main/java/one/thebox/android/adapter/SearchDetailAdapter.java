@@ -578,7 +578,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
         }
 
-        public void setViews(final BoxItem boxItem, final int arrayListPosition, final boolean shouldScrollToPosition) {
+        public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
 
             try {
                 this.position = arrayListPosition;
@@ -639,9 +639,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 dialogFragment.dismiss();
                                 if (boxItem.getUserItemId() == 0) {
                                     boxItem.setSelectedItemConfig(selectedItemConfig);
-                                    setViews(boxItem, arrayListPosition, true);
+                                    setViews(boxItem, getAdapterPosition(), true);
                                 } else {
-                                    changeConfig(arrayListPosition, selectedItemConfig.getId());
+                                    changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                 }
                             }
                         });
@@ -654,44 +654,36 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            addItemToBox(arrayListPosition);
+                            addItemToBox(getAdapterPosition());
                         }
                     });
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(arrayListPosition, boxItem.getQuantity() + 1);
+                            updateQuantity(getAdapterPosition(), boxItem.getQuantity() + 1);
                         }
                     });
                     subtractButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (boxItem.getQuantity() > 0) {
-                                updateQuantity(arrayListPosition, boxItem.getQuantity() - 1);
+                                updateQuantity(getAdapterPosition(), boxItem.getQuantity() - 1);
                             } else {
                                 Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
 
-                    setupRecyclerViewFrequency(boxItem, arrayListPosition, shouldScrollToPosition);
+                    setupRecyclerViewFrequency(boxItem, getAdapterPosition(), shouldScrollToPosition);
 
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
 
-                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && arrayListPosition == currentPositionOfSuggestedCategory) {
+                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
                         setupRecyclerViewSuggestedCategories(suggestedCategories);
                         savingHolder.setVisibility(View.VISIBLE);
                     } else {
                         savingHolder.setVisibility(View.GONE);
                     }
-
-// Previous implementation
-//                if (boxItem.getSuggestedCategory() != null && !boxItem.getSuggestedCategory().isEmpty() && position == currentPositionOfSuggestedCategory) {
-//                    setupRecyclerViewSuggestedCategories(boxItem.getSuggestedCategory());
-//                    savingHolder.setVisibility(View.VISIBLE);
-//                } else {
-//                    savingHolder.setVisibility(View.GONE);
-//                }
 
                     if (boxItem.getQuantity() == 0) {
                         addButtonViewHolder.setVisibility(View.VISIBLE);
@@ -751,35 +743,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
-                                            //Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                             boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                             boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
-//                                    RealmList<Category> suggestedCategories = new RealmList<Category>();
+
                                             boxId = boxItems.get(position).getId();
                                             suggestedCategories.clear();
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                             currentPositionOfSuggestedCategory = position;
-
-                                            Log.d("Box ID ON Subscribe:", "" + boxId);
-                                            Log.d("POsition ON Subscribe:", "" + getAdapterPosition());
-                                            Log.d("POsitionVarSubscribe:", "" + position);
-                                            Log.d("currentPositionSubsc: ", "" + currentPositionOfSuggestedCategory);
-//                                    boxItems.get(position).setSuggestedCategory(suggestedCategories);
-
-//                                    int temp = currentPositionOfSuggestedCategory;
-//                                    currentPositionOfSuggestedCategory = position;
-
-
-                                            // We are showing suggested category section at most once in a category
-                                            // 1. At start "currentPositionOfSuggestedCategory" = -1 as defined
-                                            // 2. This section makes sure suggested caetgories are set of atmost one item
-
-
-//                                    if (temp != -1) {
-//                                        boxItems.get(temp).setSuggestedCategory(new RealmList<Category>());
-//                                        notifyItemChanged(temp);
-//                                    }
 
                                             notifyItemChanged(position);
                                             CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
@@ -801,13 +772,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void updateQuantity(int position, final int quantity) {
+        private void updateQuantity(int position, final int quantity) throws ArrayIndexOutOfBoundsException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
             int userItemId;
             if (userItems == null || userItems.isEmpty()) {
                 position = getAdapterPosition();
             }
-            userItemId = boxItems.get(position).getUserItemId();
+            userItemId = boxItems.get(getAdapterPosition()).getUserItemId();
             final int finalPosition = position;
             TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
