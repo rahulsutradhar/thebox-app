@@ -1,6 +1,7 @@
 package one.thebox.android.Helpers;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
@@ -152,7 +154,7 @@ public class OrderHelper {
         }
     }
 
-    public static ArrayList<AddressAndOrder> getAddressAndOrder(RealmList<Order> orders) {
+    public static synchronized ArrayList<AddressAndOrder> getAddressAndOrder(RealmList<Order> orders) {
         ArrayList<AddressAndOrder> addressAndOrders = new ArrayList<AddressAndOrder>();
         Address address = null;
         try {
@@ -168,6 +170,25 @@ public class OrderHelper {
         } catch (Exception e) {
         }
         return addressAndOrders;
+    }
+
+    public static synchronized boolean isOrderExist() {
+        boolean flag = false;
+
+        Realm realm = TheBox.getRealm();
+        RealmResults<Order> realmResults = realm.where(Order.class)
+                .notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll()
+                .where().notEqualTo("cart", true).findAll();
+
+        if (realmResults.isLoaded()) {
+            if (realmResults != null) {
+                if (realmResults.size() > 0) {
+                    flag = true;
+                }
+            }
+        }
+
+        return flag;
     }
 
 }

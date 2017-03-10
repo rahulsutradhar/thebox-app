@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -206,6 +207,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         onUpdateCart(new UpdateCartEvent(3));
     }
 
+    /**
+     * Logic to navigate users from cart
+     */
     public void checkAddressAndProceedPayment() {
         try {
             User user = PrefUtils.getUser(getActivity());
@@ -215,13 +219,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             if (user.getAddresses() != null) {
                 if (user.getAddresses().size() > 0) {
 
-                    //open Delivery Address Fragment
-                    Address address = user.getAddresses().first();
-                    Intent intent = new Intent(getActivity(), AddressActivity.class);
-                    intent.putExtra("called_from", 2);
-                    intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
-                    intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
-                    startActivity(intent);
+                    //if order exist move to slots else take to delivery address
+                    if (OrderHelper.isOrderExist()) {
+                        //move to slots
+                        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(),
+                                OrderHelper.getAddressAndOrder(orders), false));
+                    } else {
+                        //open Delivery Address Fragment
+                        displayDeliveryAddress(user, orders);
+                    }
 
                 } else {
                     //open Add Address Activity
@@ -237,7 +243,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         }
     }
 
-
+    /**
+     * Open Add Address Form
+     */
     public void addDeliverAddress(RealmList<Order> orders) {
         //open add address fragment blank
         Intent intent = new Intent(getActivity(), AddressActivity.class);
@@ -252,6 +260,18 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
          */
         intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
         intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        startActivity(intent);
+    }
+
+    /**
+     * Show Delivery Address
+     */
+    public void displayDeliveryAddress(User user, RealmList<Order> orders) {
+        Address address = user.getAddresses().first();
+        Intent intent = new Intent(getActivity(), AddressActivity.class);
+        intent.putExtra("called_from", 2);
+        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
         startActivity(intent);
     }
 }
