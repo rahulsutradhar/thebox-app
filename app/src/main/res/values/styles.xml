@@ -158,6 +158,12 @@
         <item name="fontPath">fonts/AvenirLTStd-Roman.otf</item>
     </style>
 
+    <style name="AppTheme.Widget.Montserrat.Regular" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="DefaultTextInputLayout" parent="TextAppearance.AppCompat">
