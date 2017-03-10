@@ -221,7 +221,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                     //check street validation
                     if (checkStreetValidation()) {
                         //request server to save addres
-                        //type == edit address
+                        //type == 2,3 edit address
                         if (type == 2 || type == 3) {
                             updateAddress(address);
                         }
@@ -391,8 +391,8 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         TheBox.getAPIService().updateAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
-                                address.getId()
-                                , address.getLocality().getCode(),
+                                address.getId(),
+                                address.getLocality().getCode(),
                                 address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
@@ -447,11 +447,11 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             //Cart frament
             else if (calledFrom == 2) {
                 //transact to delivery Address Fragment
-                transactToDeliveryAddressFragment();
+                transactToDeliveryAddressFragment(address);
             } else if (calledFrom == 3) {
                 //clear back stack
                 clearBackStack();
-                transactToDeliveryAddressFragment();
+                transactToDeliveryAddressFragment(address);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -459,7 +459,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     }
 
-    public void transactToDeliveryAddressFragment() {
+    public void transactToDeliveryAddressFragment(Address address) {
         DeliveryAddressFragment deliveryAddressFragment = new
                 DeliveryAddressFragment(address, orders);
         FragmentManager fragmentManager = addAddressFragment.getActivity().getSupportFragmentManager();

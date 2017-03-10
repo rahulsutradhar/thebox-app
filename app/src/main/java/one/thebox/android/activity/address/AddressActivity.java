@@ -49,7 +49,7 @@ public class AddressActivity extends BaseActivity {
         if (type == 1) {
             if (calledFrom == 1) {
                 addAddressFragment = new AddAddressFragment(calledFrom, type);
-            } else {
+            } else if (calledFrom == 2) {
                 //take orders list
                 addAddressFragment = new AddAddressFragment(calledFrom, type,
                         CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(Constants.EXTRA_LIST_ORDER), Order.class));

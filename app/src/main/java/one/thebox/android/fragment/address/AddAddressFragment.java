@@ -104,7 +104,7 @@ public class AddAddressFragment extends FragmentBase {
             if (calledFrom == 1) {
                 addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, calledFrom, type, view);
             } //called from cart fragment
-            else {
+            else if (calledFrom == 2) {
                 addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, orders, calledFrom, type, view);
             }
         }// Edit Address
