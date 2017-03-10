@@ -903,62 +903,89 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             quantityHolder.setVisibility(View.VISIBLE);
 
+            /**
+             *  Edit Subscription Botton Dialog upon clicking Edit Subscription
+             */
+
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     final EditItemFragment dialogFragment = EditItemFragment.newInstance();
+
                     dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                             , EditItemFragment.TAG);
                     dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
                         @Override
-                        public void onEditItemoptionSelected(Boolean change_size_or_reschedule) {
+                        public void onEditItemoptionSelected(int actionUserItemSubscription) {
 
                             dialogFragment.dismiss();
 
                             // true if change_size was clicked
                             // false otherwise
-                            if (change_size_or_reschedule) {
-
-                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                    @Override
-                                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                        dialogFragment.dismiss();
-                                        changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                                    }
-                                });
-
-                            } else {
-
-                                new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
-                                    @Override
-                                    public void onDelayActionCompleted(UserItem userItem) {
-
-                                        try {
-
-                                            if (userItem == null) {
-                                                userItems.remove(arrayListPosition);
-                                                if (onUserItemChange != null) {
-                                                    onUserItemChange.onUserItemChange(userItems);
-                                                }
-                                                notifyItemRemoved(getAdapterPosition());
-                                            } else {
-                                                userItems.set(arrayListPosition, userItem);
-                                                if (onUserItemChange != null) {
-                                                    onUserItemChange.onUserItemChange(userItems);
-                                                }
-                                                notifyItemChanged(getAdapterPosition());
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                            switch (actionUserItemSubscription) {
+                                case 1:
+                                    //Change Item Config
+                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                        @Override
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                            dialogFragment.dismiss();
+                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
                                         }
+                                    });
+                                    break;
+                                case 2:
+                                    //Reschedule
+                                    new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
+                                        @Override
+                                        public void onDelayActionCompleted(UserItem userItem) {
+
+                                            try {
+
+                                                if (userItem == null) {
+                                                    userItems.remove(arrayListPosition);
+                                                    if (onUserItemChange != null) {
+                                                        onUserItemChange.onUserItemChange(userItems);
+                                                    }
+                                                    notifyItemRemoved(getAdapterPosition());
+                                                } else {
+                                                    userItems.set(arrayListPosition, userItem);
+                                                    if (onUserItemChange != null) {
+                                                        onUserItemChange.onUserItemChange(userItems);
+                                                    }
+                                                    notifyItemChanged(getAdapterPosition());
+                                                }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).show(userItem);
+                                    break;
+                                case 3:
+                                    //cancel subscription
+                                    if (userItem.getQuantity() > 0) {
+                                        MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                                title("Unsubscribe " + userItem.getBoxItem().getTitle()).
+                                                positiveText("Cancel")
+                                                .negativeText("Unsubscribe").
+                                                        onNegative(new MaterialDialog.SingleButtonCallback() {
+                                                            @Override
+                                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                                    openCancelDialog(userItem, getAdapterPosition());
+                                                                }
+                                                            }
+                                                        }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                        dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                        dialog.show();
+                                    } else {
+                                        //error handling
                                     }
-                                }).show(userItem);
 
+                                    break;
                             }
-
                         }
                     });
                 }
