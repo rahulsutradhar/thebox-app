@@ -517,6 +517,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (userItems == null || userItems.isEmpty()) {
                 getAdapterPosition();
             }
+
             RealmList<ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
             Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
                 @Override
@@ -557,6 +558,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             frequencyAndPriceAdapter.setItemConfigs(itemConfigs);
             frequencyAndPriceAdapter.setQuantity(boxItem.getQuantity());
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
+            recyclerViewFrequency.setHasFixedSize(true);
+            frequencyAndPriceAdapter.notifyDataSetChanged();
             recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -654,27 +657,27 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            addItemToBox(getAdapterPosition());
+                            addItemToBox(position);
                         }
                     });
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(getAdapterPosition(), boxItem.getQuantity() + 1);
+                            updateQuantity(position, boxItem.getQuantity() + 1);
                         }
                     });
                     subtractButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (boxItem.getQuantity() > 0) {
-                                updateQuantity(getAdapterPosition(), boxItem.getQuantity() - 1);
+                                updateQuantity(position, boxItem.getQuantity() - 1);
                             } else {
                                 Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
 
-                    setupRecyclerViewFrequency(boxItem, getAdapterPosition(), shouldScrollToPosition);
+                    setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
 
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
 
@@ -778,7 +781,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (userItems == null || userItems.isEmpty()) {
                 position = getAdapterPosition();
             }
-            userItemId = boxItems.get(getAdapterPosition()).getUserItemId();
+            userItemId = boxItems.get(position).getUserItemId();
             final int finalPosition = position;
             TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
                     .enqueue(new Callback<UpdateItemConfigResponse>() {
@@ -801,9 +804,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             } else {
                                                 CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
                                                 if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                                    boxItems.remove(getAdapterPosition());
-                                                    notifyItemChanged(getAdapterPosition());
+                                                    boxItems.remove(finalPosition);
                                                     notifyItemRemoved(getAdapterPosition());
+                                                    notifyItemRangeChanged(getAdapterPosition(), getItemCount());
+
                                                 } else {
                                                     boxItems.get(finalPosition).setUserItemId(0);
                                                     notifyItemChanged(getAdapterPosition());

@@ -49,6 +49,12 @@ public class Box extends RealmObject implements Serializable {
 
 
     public Box() {
+        this.id = 0;
+        this.userId = 0;
+        this.boxId = 0;
+        this.remainingCategories = null;
+        this.userCategories = null;
+        this.box = null;
     }
 
     public Box(int id, int userId, int boxId, RealmList<Category> remainingCategories, RealmList<UserCategory> userCategories, BoxDetail box) {
