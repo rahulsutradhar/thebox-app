@@ -19,16 +19,22 @@ public class SearchDetailResponse extends ApiResponse implements Serializable {
 
     @SerializedName("search_items")
     private BoxItem searchedItem;
+
     @SerializedName("my_search_items")
     private UserItem mySearchItem;
+
     @SerializedName("searched_category")
     private Category searchedCategory;
+
     @SerializedName("rest_of_the_categories_in_box")
     private List<Category> restCategories;
+
     @SerializedName("box_name")
     private String boxName;
+
     @SerializedName("normal_items")
     private RealmList<BoxItem> normalItems;
+
     @SerializedName("my_non_searched_items")
     private RealmList<UserItem> myNonSearchedItems;
 

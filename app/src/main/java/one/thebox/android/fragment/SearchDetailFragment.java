@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -31,6 +32,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -449,6 +452,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
+
         TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
@@ -456,17 +460,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         connectionErrorViewHelper.isVisible(false);
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
+
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
-                            if (response.body().getMySearchItem().getId() != 0)
-                                userItems.add(response.body().getMySearchItem());
-                            userItems.addAll(response.body().getMyNonSearchedItems());
-                            if (response.body().getSearchedItem().getId() != 0)
-                                boxItems.add(response.body().getSearchedItem());
-                            boxItems.addAll(response.body().getNormalItems());
-                            categories.add(response.body().getSearchedCategory());
-                            categories.addAll(response.body().getRestCategories());
-                            setupViewPagerAndTabs();
+
+                            setBoxItemBasedOnSearch(response.body());
                         }
                     }
 
@@ -479,10 +477,73 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 });
     }
 
+    public void setBoxItemBasedOnSearch(SearchDetailResponse response) {
+        try {
+            /**
+             * Display the searched Item first
+             */
+            //searched Item if User Item
+            setUserItems(response.getMySearchItem());
+
+            //search Item if Box Item
+            if (response.getSearchedItem().getId() != 0) {
+                boxItems.add(response.getSearchedItem());
+            }
+
+            //set Subscribed item
+            for (UserItem item : response.getMyNonSearchedItems()) {
+                setUserItems(item);
+            }
+
+            //normal items
+            boxItems.addAll(response.getNormalItems());
+
+            categories.add(response.getSearchedCategory());
+            categories.addAll(response.getRestCategories());
+
+            setupViewPagerAndTabs();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * If Cart Item add it to boxItems
+     * else add it to user items
+     */
+    public void setUserItems(UserItem userItem) {
+
+        try {
+            if (userItem != null) {
+                if (userItem.getId() != 0) {
+                    //subscribed Item
+                    if (!TextUtils.isEmpty(userItem.getNextDeliveryScheduledAt())) {
+                        userItems.add(userItem);
+                    }//cart items
+                    else if (userItem.getStillSubscribed()) {
+
+                        BoxItem boxItem = userItem.getBoxItem();
+                        boxItem.setUserItemId(userItem.getId());
+                        boxItem.setQuantity(userItem.getQuantity());
+                        boxItems.add(boxItem);
+                    }
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void getCategoryDetail() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
+
         TheBox.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
                 .enqueue(new Callback<CategoryBoxItemsResponse>() {
                     @Override
@@ -493,8 +554,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
-                            userItems.addAll(response.body().getMyBoxItems());
+
+                            for (UserItem item : response.body().getMyBoxItems()) {
+                                setUserItems(item);
+                            }
                             boxItems.addAll(response.body().getNormalBoxItems());
+
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
                             setupViewPagerAndTabs();
@@ -519,10 +584,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         progressBar.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
+
+                            for (UserItem item : response.body().getMyItems()) {
+                                setUserItems(item);
+                            }
+                            boxItems.addAll(response.body().getNormalItems());
+
                             categories.add(response.body().getSelectedCategory());
                             categories.addAll(response.body().getRestCategories());
-                            boxItems.addAll(response.body().getNormalItems());
-                            userItems.addAll(response.body().getMyItems());
                             setupViewPagerAndTabs();
                         }
                     }
