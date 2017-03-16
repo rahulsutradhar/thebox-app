@@ -72,6 +72,20 @@ public class UserItem extends RealmObject implements Serializable {
     }
 
     public UserItem() {
+        this.id = 0;
+        this.userCategoryId = 0;
+        this.selectedItemId = 0;
+        this.userId = 0;
+        this.quantity = 0;
+        this.nextDeliveryScheduledAt = "";
+        this.stillSubscribed = false;
+        this.selectedConfigId = 0;
+        this.boxItem = null;
+        this.boxId = 0;
+        this.arrivingAt = "";
+        this.orderItemQty = 0;
+        this.orderId = 0;
+        this.cartId = 0;
     }
 
     public UserItem(int id, int userCategoryId, int selectedItemId, int userId, int quantity, String nextDeliveryScheduledAt, boolean stillSubscribed, int selectedConfigId, BoxItem boxItem) {

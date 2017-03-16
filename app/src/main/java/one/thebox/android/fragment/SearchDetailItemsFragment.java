@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -259,6 +260,7 @@ public class SearchDetailItemsFragment extends Fragment {
         } else {
             emptyText.setVisibility(View.GONE);
         }
+
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
@@ -278,6 +280,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+
         TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
                 .enqueue(new Callback<SearchDetailResponse>() {
                     @Override
@@ -327,21 +330,24 @@ public class SearchDetailItemsFragment extends Fragment {
                             if (pageNumber == 1) {
                                 clearData();
                             }
-//                            RealmController.addAllBoxItems(response.body().getNormalBoxItems());
-//                            RealmController.addAllUserItems(response.body().getMyBoxItems());
-//                            userItems.addAll(response.body().getMyBoxItems());
+
                             CategoryBoxItemsResponse categoryBoxItemsResponse = response.body();
                             totalItems = categoryBoxItemsResponse.getTotalCount();
                             maxPageNumber = (totalItems % PER_PAGE_ITEMS) > 0 ? (totalItems / PER_PAGE_ITEMS) + 1 : (totalItems / PER_PAGE_ITEMS);
-                            if (categoryBoxItemsResponse.getNormalBoxItems() != null)
+
+                            if (categoryBoxItemsResponse.getNormalBoxItems() != null) {
                                 boxItems.addAll(response.body().getNormalBoxItems());
+                            }
                             setBoxItemsBasedOnUserItems(response.body().getMyBoxItems(), boxItems);
-                            if (null != response.body().getSelectedCategory())
+
+                            if (null != response.body().getSelectedCategory()) {
                                 categories.add(response.body().getSelectedCategory());
-                            if (null != response.body().getRestCategories())
+                            }
+                            if (null != response.body().getRestCategories()) {
                                 categories.addAll(response.body().getRestCategories());
+                            }
                             initDataChangeListener();
-//                            fillAllUserItems();
+
                         } else {
                             progressBar.setVisibility(View.GONE);
                         }
@@ -365,34 +371,44 @@ public class SearchDetailItemsFragment extends Fragment {
                 items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
             }
             LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
+            LinkedHashMap<Integer, BoxItem> mapCart = new LinkedHashMap<>();
 
+            //boxitem maps
             for (BoxItem item : bItems) {
                 map.put(item.getId(), item);
             }
             userItems.clear();
-//            boxItems.clear();
             for (UserItem item : items) {
+
+                //Item subscribed and has devilvery scheduled
                 if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
                     userItems.add(item);
-                } else {
+                }// item not subscribed but is in cart; no delivery scheduled
+                else if (item.getStillSubscribed()) {
+
                     BoxItem boxItem = item.getBoxItem();
-                    if (map.containsKey(boxItem.getId())) {
-                        BoxItem box = map.get(boxItem.getId());
+                    if (mapCart.containsKey(boxItem.getId())) {
+                        BoxItem box = mapCart.get(boxItem.getId());
                         box.setUserItemId(item.getId());
                         box.setQuantity(item.getQuantity());
-                        map.put(box.getId(), box);
+                        mapCart.put(box.getId(), box);
                     } else {
                         boxItem.setUserItemId(item.getId());
                         boxItem.setQuantity(item.getQuantity());
-                        map.put(boxItem.getId(), boxItem);
+                        mapCart.put(boxItem.getId(), boxItem);
                     }
 
                 }
             }
             boxItems.clear();
-            boxItems.addAll(map.values());
-//            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
-//            boxItems.addAll(boxes);
+            //display all cart item on top
+            if (mapCart != null) {
+                boxItems.addAll(mapCart.values());
+            }
+            //normal items
+            if (map != null) {
+                boxItems.addAll(map.values());
+            }
             setupRecyclerView();
         } catch (Exception e) {
             e.printStackTrace();

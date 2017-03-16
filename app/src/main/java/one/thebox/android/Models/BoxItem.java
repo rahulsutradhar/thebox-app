@@ -68,6 +68,20 @@ public class BoxItem extends RealmObject implements Serializable {
     private int horizontalOffsetOfRecyclerView;
 
     public BoxItem() {
+        this.quantity = 0;
+        this.userItemId = 0;
+        this.title = "";
+        this.brand = "";
+        this.savings = 0;
+        this.in_stock = false;
+        this.no_of_sku = 0;
+        this.isSmartItems = false;
+        this.categoryId = 0;
+        this.itemConfigs = null;
+        this.photoUrl = "";
+        this.selectedItemConfig = null;
+        this.suggestedCategory = null;
+        this.horizontalOffsetOfRecyclerView = 0;
     }
 
     public ItemConfig getSelectedItemConfig() {
@@ -237,7 +251,7 @@ public class BoxItem extends RealmObject implements Serializable {
 
     public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {
         if (selectedItemConfig == null) {
-            selectedItemConfig = itemConfigs.get(0);
+            selectedItemConfig = itemConfigs.first();
         }
         RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
         for (int i = 0; i < itemConfigs.size(); i++) {

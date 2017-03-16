@@ -145,12 +145,15 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activity.ConfirmPaymentDetailsActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OrderDetailActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.address.AddressActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
@@ -173,12 +176,14 @@
         <activity
             android:name=".activity.ConfirmTimeSlotActivity"
             android:screenOrientation="portrait" />
+        android:launchMode="singleTop"
         <activity android:name=".activity.OrderItemsActivity" />
         <activity
             android:name=".activity.UniversalSearchActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.PaymentOptionActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.HotLineActivity"

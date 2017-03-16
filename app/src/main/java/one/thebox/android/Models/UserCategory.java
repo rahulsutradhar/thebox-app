@@ -25,9 +25,13 @@ public class UserCategory extends RealmObject implements Serializable {
     private Category category;
 
     public UserCategory() {
+        this.id = 0;
+        this.userItems = null;
+        this.category = null;
+        this.no_of_items = 0;
     }
 
-    public UserCategory(int id,int no_of_items, RealmList<UserItem> userItems, Category category) {
+    public UserCategory(int id, int no_of_items, RealmList<UserItem> userItems, Category category) {
         this.id = id;
         this.userItems = userItems;
         this.category = category;
@@ -54,7 +58,9 @@ public class UserCategory extends RealmObject implements Serializable {
         this.id = id;
     }
 
-    public int getNo_of_items() {return no_of_items;}
+    public int getNo_of_items() {
+        return no_of_items;
+    }
 
     public void setNo_of_items(int no_of_items) {
         this.no_of_items = no_of_items;
