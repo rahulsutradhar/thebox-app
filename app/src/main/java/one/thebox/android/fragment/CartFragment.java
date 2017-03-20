@@ -22,6 +22,8 @@ import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.HashMap;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
@@ -29,6 +31,7 @@ import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.address.AddressActivity;
@@ -205,6 +208,11 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 new IntentFilter(BROADCAST_EVENT_TAB));
 
         onUpdateCart(new UpdateCartEvent(3));
+
+        /**
+         * Save CleverTap Event; OpenCart
+         */
+        setCleverTapEventOpenCart();
     }
 
     /**
@@ -212,6 +220,12 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
      */
     public void checkAddressAndProceedPayment() {
         try {
+
+            /**
+             * set Clevertap Event Proceed from cart
+             */
+            setCleverTapEventProocedFromCart(order);
+
             User user = PrefUtils.getUser(getActivity());
             RealmList<Order> orders = new RealmList<>();
             orders.add(order);
@@ -273,5 +287,29 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
         intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
         startActivity(intent);
+    }
+
+    public void setCleverTapEventProocedFromCart(Order order) {
+        HashMap<String, Object> cartItems = new HashMap<>();
+        cartItems.put("cart_id", order.getId());
+        cartItems.put("user_id", order.getUserId());
+        cartItems.put("total_price_cart", order.getTotalPrice());
+        cartItems.put("item_quantity_cart", order.getUserItems().size());
+
+        TheBox.getCleverTap().event.push("proceed_from_cart", cartItems);
+    }
+
+    public void setCleverTapEventOpenCart() {
+        try {
+            HashMap<String, Object> cartItems = new HashMap<>();
+            cartItems.put("cart_id", order.getId());
+            cartItems.put("user_id", order.getUserId());
+            cartItems.put("total_price_cart", order.getTotalPrice());
+            cartItems.put("item_quantity_cart", order.getUserItems().size());
+
+            TheBox.getCleverTap().event.push("open_cart", cartItems);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

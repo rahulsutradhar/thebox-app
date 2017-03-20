@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -381,6 +382,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
                 mContext.startActivity(new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)

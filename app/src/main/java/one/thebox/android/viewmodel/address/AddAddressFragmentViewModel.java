@@ -10,6 +10,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Helpers.OrderHelper;
@@ -446,6 +447,10 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             }
             //Cart frament
             else if (calledFrom == 2) {
+
+                //Clevertap Event for Saved Address After Proceed from Cart
+                setCleverTapEventSaveAddress(address);
+
                 //transact to delivery Address Fragment
                 transactToDeliveryAddressFragment(address);
             } else if (calledFrom == 3) {
@@ -482,5 +487,16 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         for (int i = 0; i < addAddressFragment.getActivity().getSupportFragmentManager().getBackStackEntryCount(); ++i) {
             addAddressFragment.getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+    }
+
+    /**
+     *
+     */
+    public void setCleverTapEventSaveAddress(Address address) {
+        HashMap<String, Object> saveAddress = new HashMap<>();
+        saveAddress.put("delivery_address", address);
+
+        TheBox.getCleverTap().event.push("save_address", saveAddress);
+
     }
 }

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -114,6 +115,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 } else {
                     addressAndOrders.add(new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
                 }
+
+                /**
+                 * Save CleverTapEvent; TimeSlotMergeWithDeliveries
+                 */
+                setCleverTapEventTimeSlotsMergeWithDeliveries(mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId());
+
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
                         addressAndOrders,
                         mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));
@@ -144,6 +151,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 for (int i = 0; i < addressAndOrders.size(); i++) {
                     addressAndOrders.get(i).setOderDate(orderDate);
                 }
+
+                /**
+                 * Save Clever Tap Event; TimeSlotsFromCart
+                 */
+                setCleverTapEventTimeSlotsFromCart();
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
             }
         });
@@ -197,6 +209,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             public void onClick(View v) {
                 Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
                         timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
+
+                /**
+                 * save CleverTap Event; TimeSlotsRescheduleOrder
+                 */
+                setCleverTapEventTimeSlotsRescheduleOrder(orderId);
 
                 reSchedule(reschedule_to, orderId);
             }
@@ -378,4 +395,29 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void onStop() {
         super.onStop();
     }
+
+    /**
+     * Clever Tap Events
+     * <p>
+     * TimeSltf from Cart
+     */
+    public void setCleverTapEventTimeSlotsFromCart() {
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("address_and_orders", addressAndOrders);
+
+        TheBox.getCleverTap().event.push("time_slots_from_cart", objectHashMap);
+    }
+
+    public void setCleverTapEventTimeSlotsRescheduleOrder(int orderId) {
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("order_id", orderId);
+        TheBox.getCleverTap().event.push("time_slots_reschedule_order", objectHashMap);
+    }
+
+    public void setCleverTapEventTimeSlotsMergeWithDeliveries(int mergeOrderId) {
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("merge_order_id", mergeOrderId);
+        TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
+    }
+
 }

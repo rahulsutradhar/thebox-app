@@ -34,6 +34,9 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("id")
     private int userId;
 
+    @SerializedName("uuid")
+    private String userUniqueId;
+
     @SerializedName("email")
     private String email;
 
@@ -154,5 +157,13 @@ public class User extends RealmObject implements Serializable {
 
     public void setAddresses(RealmList<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getUserUniqueId() {
+        return userUniqueId;
+    }
+
+    public void setUserUniqueId(String userUniqueId) {
+        this.userUniqueId = userUniqueId;
     }
 }
