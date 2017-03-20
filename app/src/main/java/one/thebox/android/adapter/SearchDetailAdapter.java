@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -950,7 +951,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView productName, brand,
                 arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit;
         private ImageView productImageView;
-        private LinearLayout quantityHolder;
+        private RelativeLayout quantityHolder;
 
         public UserItemViewHolder(View itemView) {
             super(itemView);
@@ -961,7 +962,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
-            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
+            quantityHolder = (RelativeLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             edit = (TextView) itemView.findViewById(R.id.user_item_edit_button);
