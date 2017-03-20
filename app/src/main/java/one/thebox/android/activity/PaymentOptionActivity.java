@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,6 +96,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private boolean locationRefreshed;
     private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
     private String razorpayPaymentID;
+    private int cleverTapOrderId;
 
 
     @Override
@@ -209,6 +211,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     private void merge_cart_to_order_and_pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
+        cleverTapOrderId = mergeOrderId;
+
         TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
@@ -216,6 +220,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
+
+                                /**
+                                 * Save CleverTap Event; PaymentMode
+                                 */
+                                setCleverTapEventPaymentModeSuccess();
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
@@ -245,6 +254,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                setCleverTapEventPaymentModeFailure(3);
                             }
                         }
                     }
@@ -252,12 +262,15 @@ public class PaymentOptionActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
+                        setCleverTapEventPaymentModeFailure(2);
                     }
                 });
     }
 
     private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
+        cleverTapOrderId = mergeOrderId;
+
         TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this),
                 new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
@@ -267,6 +280,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
 
+                                /**
+                                 * Save CleverTap Event; Payment Mode
+                                 */
+                                setCleverTapEventPaymentModeSuccess();
+
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
                                         TheBox.getInstance(),
@@ -295,6 +313,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                setCleverTapEventPaymentModeFailure(3);
                             }
                         }
                     }
@@ -302,12 +321,15 @@ public class PaymentOptionActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
+                        setCleverTapEventPaymentModeFailure(2);
                     }
                 });
     }
 
     private void pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
+        cleverTapOrderId = addressAndOrders.get(0).getOrderId();
+
         TheBox.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
@@ -315,6 +337,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
+
+                                /**
+                                 * Save CleverTap Event; PaymentMode
+                                 */
+                                setCleverTapEventPaymentModeSuccess();
+
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
@@ -343,6 +371,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                setCleverTapEventPaymentModeFailure(3);
                             }
                         }
                     }
@@ -350,6 +379,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
+                        setCleverTapEventPaymentModeFailure(2);
                     }
                 });
     }
@@ -363,6 +393,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
         } else {
             orderId = addressAndOrders.get(0).getOrderId();
         }
+        cleverTapOrderId = orderId;
+
         TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
                 latitude, longitude, isMerging))
                 .enqueue(new Callback<PaymentResponse>() {
@@ -371,6 +403,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
+
+                                /**
+                                 * Save CleverTap Event; PaymentMode
+                                 */
+                                setCleverTapEventPaymentModeSuccess();
 
                                 // Updating "Behaviour Keys" Linked to Order Model
                                 PrefUtils.set_model_being_updated_on_server_details(
@@ -398,6 +435,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                setCleverTapEventPaymentModeFailure(3);
                             }
                         }
                     }
@@ -405,6 +443,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<PaymentResponse> call, Throwable t) {
                         dialog.dismiss();
+                        setCleverTapEventPaymentModeFailure(2);
                     }
                 });
     }
@@ -470,6 +509,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     public void onPaymentError(int code, String response) {
         try {
             Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
+            setCleverTapEventPaymentModeFailure(1);
         } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
         }
@@ -589,4 +629,56 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
 
     }
+
+    /**
+     * Clever Tap Event
+     * Success
+     */
+    public void setCleverTapEventPaymentModeSuccess() {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        if (POSITION_OF_VIEW_PAGER == 0) {
+            hashMap.put("mode", "razorpay");
+        } else if (POSITION_OF_VIEW_PAGER == 1) {
+            hashMap.put("mode", "cod");
+        }
+        hashMap.put("amount", totalPayment);
+        hashMap.put("payment_status", "success");
+        hashMap.put("order_id", cleverTapOrderId);
+
+        TheBox.getCleverTap().event.push("payment_mode", hashMap);
+    }
+
+    public void setCleverTapEventPaymentModeFailure(int failedMode) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        if (POSITION_OF_VIEW_PAGER == 0) {
+            hashMap.put("mode", "razorpay");
+        } else if (POSITION_OF_VIEW_PAGER == 1) {
+            hashMap.put("mode", "cod");
+        }
+        hashMap.put("amount", totalPayment);
+        hashMap.put("payment_status", "failed");
+        hashMap.put("order_id", cleverTapOrderId);
+
+        /**
+         * 1- razorpay
+         * 2- server failed or bad request
+         * 3- response returns failed
+         */
+        switch (failedMode) {
+            case 1:
+                hashMap.put("failed_mode", "razorpay");
+                break;
+            case 2:
+                hashMap.put("failed_mode", "server");
+                break;
+            case 3:
+                hashMap.put("failed_mode", "response");
+                break;
+        }
+
+
+        TheBox.getCleverTap().event.push("payment_mode", hashMap);
+    }
+
+
 }

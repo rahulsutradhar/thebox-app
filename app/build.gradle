@@ -84,6 +84,8 @@ android {
             resValue "string", "app_name", "The Box"
             resValue "string", "io.branch.sdk.BranchKey", "key_live_gpud56EtW1sAAy8sEcapQkloCwitt59c"
             resValue "string", "io.branch.schema", "thebox"
+            resValue "string", "clevertab_account_id", "W84-885-984Z"
+            resValue "string", "clevertab_account_token", "5bb-4b0"
             signingConfig signingConfigs.config
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -100,6 +102,8 @@ android {
             resValue "string", "app_name", "The Box Debug"
             resValue "string", "io.branch.sdk.BranchKey", "key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z"
             resValue "string", "io.branch.schema", "thebox.test"
+            resValue "string", "clevertab_account_id", "TEST-Z84-885-984Z"
+            resValue "string", "clevertab_account_token", "TEST-5bb-4b1"
         }
     }
 }
@@ -211,6 +215,11 @@ dependencies {
      * ViewPagerIndicator
      */
     compile 'com.mcxiaoke.viewpagerindicator:library:2.4.1@aar'
+
+    /**
+     * CleverTap Analytics
+     */
+    compile 'com.clevertap.android:clevertap-android-sdk:3.1.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

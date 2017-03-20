@@ -67,34 +67,53 @@ public class SplashActivity extends Activity {
     }
 
     private void jump() {
-        String token = PrefUtils.getToken(SplashActivity.this);
-        User user = PrefUtils.getUser(SplashActivity.this);
+        try {
+            String token = PrefUtils.getToken(SplashActivity.this);
+            User user = PrefUtils.getUser(SplashActivity.this);
 
-        if (authenticationService.isAuthenticated()) {
+            if (authenticationService.isAuthenticated()) {
 
-            if (authenticationService.isUserInfoExist()) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                if (authenticationService.isUserInfoExist()) {
+                    /**
+                     * Update user information to clevertap and crashlytics everytime users opens the app
+                     */
+                    authenticationService.setUserDataToCrashlytics();
+                    authenticationService.setCleverTapUserProfile();
+
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                } else {
+                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+                }
+
             } else {
-                startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
-            }
+                //From next version it should open OnBoardActivity
+                //startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
 
-        } else {
-            //From next version it should open OnBoardActivity
-            //startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+                /**
+                 * if the key returns false means the key don't exist
+                 * so repeat old methord of navigation
+                 */
+                if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
+                    startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+                } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
+                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+                } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
 
-            /**
-             * if the key returns false means the key don't exist
-             * so repeat old methord of navigation
-             */
-            if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
-                startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-            } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
-            } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    /**
+                     * Already user loggedin need to push data to crashlytics and clever tap
+                     *
+                     * Temporarry functions
+                     */
+                    authenticationService.setUserDataToCrashlyticsTemp();
+                    authenticationService.setCleverTapUserProfile();
+
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                }
             }
+            finish();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        finish();
     }
 
 

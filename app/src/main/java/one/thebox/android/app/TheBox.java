@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
+import com.clevertap.android.sdk.ActivityLifecycleCallback;
+import com.clevertap.android.sdk.CleverTapAPI;
+import com.clevertap.android.sdk.exceptions.CleverTapMetaDataNotFoundException;
+import com.clevertap.android.sdk.exceptions.CleverTapPermissionsNotSatisfied;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
@@ -51,6 +55,7 @@ public class TheBox extends MultiDexApplication {
     private static Context mContext;
     private static RealmConfiguration realmConfiguration;
     public final String TAG = TheBox.class.getSimpleName();
+    private static CleverTapAPI cleverTap;
 
     private static RestClient getRestClient() {
         if (restClient == null) {
@@ -113,6 +118,8 @@ public class TheBox extends MultiDexApplication {
 
     @Override
     public void onCreate() {
+        //Clevertap
+        ActivityLifecycleCallback.register(this);
         super.onCreate();
         try {
             theBox = this;
@@ -150,6 +157,9 @@ public class TheBox extends MultiDexApplication {
                 Fabric.with(this, crashlytics);
             }
 
+            /*CleverTap Instance*/
+            cleverTap = CleverTapAPI.getInstance(this);
+
             /*hotline*/
             HotlineConfig hlConfig = new HotlineConfig("28239649-48c6-4d9c-89e8-f69b6b67e22c", "e183d3ec-b70b-4833-8ff1-ad93f4b017da");
             hlConfig.setVoiceMessagingEnabled(true);
@@ -157,6 +167,10 @@ public class TheBox extends MultiDexApplication {
             hlConfig.setPictureMessagingEnabled(true);
             Hotline.getInstance(getApplicationContext()).init(hlConfig);
 
+        } catch (CleverTapMetaDataNotFoundException e) {
+            // thrown if you haven't specified your CleverTap Account ID or Token in your AndroidManifest.xml
+        } catch (CleverTapPermissionsNotSatisfied e) {
+            // thrown if you haven’t requested the required permissions in your AndroidManifest.xml
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -167,6 +181,14 @@ public class TheBox extends MultiDexApplication {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+    }
+
+    public static CleverTapAPI getCleverTap() {
+        return cleverTap;
+    }
+
+    public static void setCleverTap(CleverTapAPI cleverTap) {
+        TheBox.cleverTap = cleverTap;
     }
 
     public static Context getAppContext() {

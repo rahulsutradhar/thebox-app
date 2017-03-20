@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.realm.Realm;
 import one.thebox.android.Models.AddressAndOrder;
@@ -109,15 +110,27 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
+                /**
+                 * Save CleverTap Event; PaymentDetailsActivity
+                 */
+                setCleverTapEventPaymentDetailActivity();
+
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
                 intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, String.valueOf(amount_to_pay));
                 intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
                 intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
-                intent.putExtra(EXTRA_IS_MERGING,isMerging);
+                intent.putExtra(EXTRA_IS_MERGING, isMerging);
                 startActivity(intent);
 
             }
         });
+    }
+
+    public void setCleverTapEventPaymentDetailActivity() {
+        HashMap<String, Object> objectHashMap = new HashMap<>();
+        objectHashMap.put("amount_to_pay", amount_to_pay);
+
+        TheBox.getCleverTap().event.push("payment_details_activity", objectHashMap);
     }
 
 }

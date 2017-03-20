@@ -18,6 +18,8 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 import io.realm.RealmList;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.Address;
@@ -77,6 +79,9 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
      * Click Event
      */
     public void onClickProceedToPayment() {
+
+        //save CleverTap Event; Display Address Proceed
+        saveCleverTapEventDisplayAddressProceed();
 
         deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
                 OrderHelper.getAddressAndOrder(orders), false));
@@ -266,5 +271,13 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
     public void setAddressTypeIcon(int addressTypeIcon) {
         this.addressTypeIcon = addressTypeIcon;
     }
+
+    public void saveCleverTapEventDisplayAddressProceed() {
+        HashMap<String, Object> saveAddress = new HashMap<>();
+        saveAddress.put("delivery_address", address);
+
+        TheBox.getCleverTap().event.push("display_address_proceed", saveAddress);
+    }
+
 }
 

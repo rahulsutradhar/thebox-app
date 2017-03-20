@@ -43,6 +43,8 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <!-- GCM Push Notifications -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -56,21 +58,21 @@
         </receiver>
 
         <service
-            android:name=".services.MyGcmListenerService"
+            android:name="one.thebox.android.services.MyGcmListenerService"
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.MyInstanceIDListenerService"
+            android:name="one.thebox.android.services.MyInstanceIDListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.RegistrationIntentService"
+            android:name="one.thebox.android.services.RegistrationIntentService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -78,7 +80,7 @@
         </service>
         <!--HeartBeat -->
         <service
-            android:name=".services.MyTaskService"
+            android:name="one.thebox.android.services.MyTaskService"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>
@@ -175,8 +177,9 @@
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".activity.ConfirmTimeSlotActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        android:launchMode="singleTop"
+
         <activity android:name=".activity.OrderItemsActivity" />
         <activity
             android:name=".activity.UniversalSearchActivity"
@@ -196,6 +199,14 @@
         <activity
             android:name="com.razorpay.CheckoutActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
+
+        <!-- CleverTap, analytics-->
+        <meta-data
+            android:name="CLEVERTAP_ACCOUNT_ID"
+            android:value="@string/clevertab_account_id" />
+        <meta-data
+            android:name="CLEVERTAP_TOKEN"
+            android:value="@string/clevertab_account_token" />
 
         <service
             android:name=".services.UpdateOrderService"
