@@ -274,6 +274,11 @@ public class MainActivity extends BaseActivity implements
                         if (cartFragment != null && cartFragment.isVisible()) {
                             //blank
                         } else {
+
+                            /**
+                             * CleverTap Event Cart Icon clicked
+                             */
+
                             startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
                         }
 

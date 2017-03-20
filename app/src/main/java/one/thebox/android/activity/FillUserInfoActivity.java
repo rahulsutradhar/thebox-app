@@ -278,8 +278,11 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                                     if (response.body().getUser() != null) {
                                         PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
+
                                         //update crashlytics data when user fills details
                                         authenticationService.setUserDataToCrashlytics();
+                                        //update clevertap data when user fills details
+                                        authenticationService.setCleverTapUserProfile();
 
                                         startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
                                         finish();

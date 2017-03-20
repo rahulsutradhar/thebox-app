@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import io.realm.RealmList;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.User;
@@ -191,6 +193,12 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                             @Override
                             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
                                 dialog.dismiss();
+
+                                /**
+                                 * Save CleverTap Event; Logout
+                                 */
+                                setCleverTapEventLogout(PrefUtils.getUser(getActivity()));
+
                                 (new AccountManager(getActivity()))
                                         .delete_account_data();
                                 getActivity().finish();
@@ -254,6 +262,25 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
 
         }
 
+    }
+
+    /**
+     * Save Clever Tap Event
+     */
+    public void setCleverTapEventLogout(User user) {
+        try {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("Phone", user.getPhoneNumber());
+            hashMap.put("User_id", user.getUserId());
+            hashMap.put("Unique_id", user.getUserUniqueId());
+            hashMap.put("Email", user.getEmail());
+            hashMap.put("Name", user.getName());
+
+            TheBox.getCleverTap().event.push("Logout", hashMap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

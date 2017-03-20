@@ -54,13 +54,15 @@ public class RegistrationIntentService extends IntentService {
             String gcm_token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             this.gcm_token = gcm_token;
+
             // [END get_gcm_token]
             Log.i(TAG, "GCM Registration GcmToken: " + gcm_token);
+
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(gcm_token);
             Hotline.getInstance(this).updateGcmRegistrationToken(gcm_token);
-
+            
             // Subscribe to topic channels
             subscribeTopics(gcm_token);
 

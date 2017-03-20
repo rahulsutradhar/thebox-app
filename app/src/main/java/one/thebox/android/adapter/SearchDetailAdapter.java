@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -415,12 +416,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 setUserItems(response.body().getOrder().getUserItems());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
+                                                /**
+                                                 * Save CaleverTap Event; OrderItemRemoved
+                                                 */
+                                                setCleverTapEventOrderItemRemoved(order_id, userItems.get(getAdapterPosition()));
+
                                                 setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
                                                 setUserItems(response.body().getOrder().getUserItems());
                                                 notifyItemRemoved(getAdapterPosition());
 
                                                 //to update the UI in Upcoing fragment when the user removes item from ordered Item
                                                 PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
+
                                             }
                                             OrderHelper.addAndNotify(response.body().getOrder());
                                             EventBus.getDefault().post(new UpdateOrderItemEvent());
@@ -443,6 +450,27 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             dialog.dismiss();
                         }
                     });
+        }
+
+        /**
+         * Clever tap Event
+         */
+        public void setCleverTapEventOrderItemRemoved(int orderId, UserItem userItem) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("order_id", orderId);
+                hashMap.put("user_item_id", userItem.getId());
+                hashMap.put("box_item_id", userItem.getSelectedItemId());
+                hashMap.put("title", userItem.getBoxItem().getTitle());
+                hashMap.put("brand", userItem.getBoxItem().getBrand());
+                hashMap.put("category", userItem.getBoxItem().getCategoryId());
+                hashMap.put("item_config_id", userItem.getSelectedConfigId());
+
+                TheBox.getCleverTap().event.push("removed_order_item", hashMap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -757,6 +785,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                             notifyItemChanged(position);
                                             CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+
+                                            /**
+                                             * Save CleverTapEvent; ItemAddedToCart
+                                             */
+                                            setCleverTapEventItemAddedToCart(boxItems.get(position));
+
                                         } else {
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         }
@@ -802,6 +836,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
+
+                                                /**
+                                                 * Save CleverTap Event; ItemRemoveFromCart
+                                                 */
+                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
+
                                                 CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
                                                 if (shouldRemoveBoxItemOnEmptyQuantity) {
                                                     boxItems.remove(finalPosition);
@@ -879,6 +919,30 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }, 500);
             }
         }
+
+        /**
+         * CleverTap Event;
+         * <p>
+         * Item Added to Car; Subscribed
+         */
+        public void setCleverTapEventItemAddedToCart(BoxItem boxItem) {
+            TheBox.getCleverTap().event.push("item_added_to_cart", getParam(boxItem));
+        }
+
+        public void setCleverTapEventItemRemoveFromCart(BoxItem boxItem) {
+            TheBox.getCleverTap().event.push("item_remove_from_cart", getParam(boxItem));
+        }
+
+        public HashMap getParam(BoxItem boxItem) {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("box_item_id", boxItem.getId());
+            hashMap.put("title", boxItem.getTitle());
+            hashMap.put("brand", boxItem.getBrand());
+            hashMap.put("category_id", boxItem.getCategoryId());
+            hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
+            return hashMap;
+        }
+
     }
 
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
@@ -1315,6 +1379,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     OrderHelper.addAndNotify(response.body().getOrders());
                                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
+                                                    /**
+                                                     * Save CleverTap Event; ItemCancelSubscription
+                                                     */
+                                                    setCleverTapEventCancelSubscription(userItem);
+
                                                 } else {
                                                     Toast.makeText(TheBox.getInstance(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                                                 }
@@ -1346,6 +1415,23 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
             dialog.show();
         }
+
+        /**
+         * Clever tab Event Cancel Subscription
+         */
+        public void setCleverTapEventCancelSubscription(UserItem userItem) {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("user_item_id", userItem.getId());
+            hashMap.put("box_item_id", userItem.getBoxItem().getId());
+            hashMap.put("title", userItem.getBoxItem().getTitle());
+            hashMap.put("branch", userItem.getBoxItem().getBrand());
+            hashMap.put("item_config_id", userItem.getSelectedConfigId());
+            hashMap.put("quantitiy", userItem.getQuantity());
+            hashMap.put("category", userItem.getBoxItem().getCategoryId());
+
+            TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
+        }
+
     }
 
     public interface OnUserItemChange {

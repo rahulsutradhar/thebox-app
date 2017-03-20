@@ -15,11 +15,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
@@ -174,6 +176,11 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
                                     //set user information to crashlytics
                                     authenticationService.setUserDataToCrashlytics();
+                                    //set user information to CleverTap upon Login
+                                    authenticationService.setCleverTapOnLogin();
+
+                                    /*User Login Event*/
+                                    setUserLoginEventCleverTap(response.body().getUser());
 
                                     if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
 
@@ -232,6 +239,32 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         }
         otp = otpVerificationEditText.getText().toString();
         return true;
+    }
+
+    /**
+     * ClverTap Event
+     */
+    public void setUserLoginEventCleverTap(User user) {
+        try {
+            HashMap<String, Object> userLogin = new HashMap<>();
+            userLogin.put("Phone", user.getPhoneNumber());
+            userLogin.put("Unique Id", user.getUserUniqueId());
+            userLogin.put("User_id", user.getUserId());
+            if (user.getEmail() != null) {
+                if (!user.getEmail().isEmpty()) {
+                    userLogin.put("Email", user.getEmail());
+                }
+            }
+            if (user.getName() != null) {
+                if (!user.getName().isEmpty()) {
+                    userLogin.put("Name", user.getName());
+                }
+            }
+
+            TheBox.getCleverTap().event.push("Login", userLogin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

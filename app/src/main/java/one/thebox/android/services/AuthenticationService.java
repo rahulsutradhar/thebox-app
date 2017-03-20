@@ -5,6 +5,9 @@ import android.content.pm.PackageManager;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 import io.fabric.sdk.android.Fabric;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.User;
@@ -45,10 +48,12 @@ public class AuthenticationService {
 
                 if (Fabric.isInitialized() && user != null) {
                     // set user info to crashlytics
-                    Crashlytics.setUserIdentifier(String.valueOf(user.getUserId()));
+                    Crashlytics.setUserIdentifier(user.getUserUniqueId());
                     Crashlytics.setUserName(user.getName());
                     Crashlytics.setUserEmail(user.getEmail());
                     Crashlytics.setString("phone_number", user.getPhoneNumber());
+                    Crashlytics.setInt("user_id", user.getUserId());
+                    Crashlytics.setString("Platform", "Android");
 
                     PackageInfo pInfo = null;
                     pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
@@ -78,5 +83,85 @@ public class AuthenticationService {
             return true;
         }
     }
+
+    /**
+     * Post user information to clever tab
+     */
+    public void setCleverTapOnLogin() {
+        if (isAuthenticated()) {
+            TheBox.getCleverTap().onUserLogin(getCleverTabData());
+        }
+    }
+
+    public void setCleverTapUserProfile() {
+        TheBox.getCleverTap().profile.push(getCleverTabData());
+    }
+
+    private HashMap<String, Object> getCleverTabData() {
+        HashMap<String, Object> profileUpdate = new HashMap<String, Object>();
+        try {
+            User user = PrefUtils.getUser(TheBox.getAppContext());
+
+            if (user.getName() != null) {
+                if (!user.getName().isEmpty()) {
+                    profileUpdate.put("Name", user.getName());
+                }
+            }
+            if (user.getEmail() != null) {
+                if (!user.getEmail().isEmpty()) {
+                    profileUpdate.put("Email", user.getPhoneNumber());
+                }
+            }
+            profileUpdate.put("Phone", user.getPhoneNumber());
+            profileUpdate.put("Identity", user.getUserUniqueId());
+            profileUpdate.put("User Id", user.getUserId());
+            profileUpdate.put("Platform", "Android");
+
+            PackageInfo pInfo = null;
+            pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
+                    TheBox.getAppContext().getPackageName(), 0);
+
+            profileUpdate.put("App Version Name", pInfo.versionName);
+            profileUpdate.put("App Version Code", pInfo.versionCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return profileUpdate;
+    }
+
+    /**
+     * Temporary data setup for already loggedin users
+     */
+    public void setUserDataToCrashlyticsTemp() {
+        if (BuildConfig.enableCrashlytics) {
+            try {
+                User user = PrefUtils.getUser(TheBox.getAppContext());
+
+                if (Fabric.isInitialized() && user != null) {
+                    // set user info to crashlytics
+                    Crashlytics.setUserIdentifier(user.getUserUniqueId());
+                    Crashlytics.setUserName(user.getName());
+                    Crashlytics.setUserEmail(user.getEmail());
+                    Crashlytics.setString("phone_number", user.getPhoneNumber());
+                    Crashlytics.setInt("user_id", user.getUserId());
+                    Crashlytics.setString("Platform", "Android");
+
+                    PackageInfo pInfo = null;
+                    pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
+                            TheBox.getAppContext().getPackageName(), 0);
+
+                    Crashlytics.setString("app_version_name", pInfo.versionName);
+                    Crashlytics.setInt("app_version_code", pInfo.versionCode);
+                }
+
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 }

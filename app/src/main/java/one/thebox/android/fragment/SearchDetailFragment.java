@@ -32,6 +32,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -364,6 +365,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
             }
         });
+
+        /**
+         * Save CleverTap Event; BrowseCategory
+         */
+        setCleverTapEventBrowseCategory(categories.get(POSITION_OF_VIEW_PAGER));
     }
 
     private void setupViewPagerAndTabs() {
@@ -762,7 +768,25 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }
+    }
+
+    /**
+     * CleverTav Event
+     */
+    public void setCleverTapEventBrowseCategory(Category category) {
+        try {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("box_id", category.getBoxId());
+            hashMap.put("box_title", getArguments().getString(BOX_NAME));
+            hashMap.put("category_id", category.getId());
+            hashMap.put("category_title", category.getTitle());
+            hashMap.put("number_of_items", category.getNoOfItems());
+
+            TheBox.getCleverTap().event.push("browse_category", hashMap);
 
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -3,6 +3,7 @@ package one.thebox.android.services;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineNotificationConfig;
