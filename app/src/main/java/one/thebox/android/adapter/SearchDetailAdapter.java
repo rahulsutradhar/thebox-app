@@ -604,10 +604,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories, glideRequestManager);
+
+            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(
+                    TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
-            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false));
+            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(),
+                    LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
+
         }
 
         public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
@@ -709,14 +713,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
 
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-
-                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
-                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
                         savingHolder.setVisibility(View.VISIBLE);
+                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+
                     } else {
                         savingHolder.setVisibility(View.GONE);
                     }
 
+                    
                     if (boxItem.getQuantity() == 0) {
                         addButtonViewHolder.setVisibility(View.VISIBLE);
                         updateQuantityViewHolder.setVisibility(View.GONE);
@@ -779,12 +784,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 
                                             boxId = boxItems.get(position).getId();
+
+
                                             suggestedCategories.clear();
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                             currentPositionOfSuggestedCategory = position;
 
-                                            notifyItemChanged(position);
+                                            //not preferable; we must used notifyItemChanged(position)
+                                            notifyDataSetChanged();
                                             CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
 
                                             /**

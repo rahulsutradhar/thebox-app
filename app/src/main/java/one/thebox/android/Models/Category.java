@@ -114,10 +114,10 @@ public class Category extends RealmObject implements Serializable {
         this.minititle = minititle;
     }
 
-    @Override
+ /*   @Override
     public boolean equals(Object o) {
         Category category = (Category) o;
         return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
                 && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
-    }
+    }*/
 }
