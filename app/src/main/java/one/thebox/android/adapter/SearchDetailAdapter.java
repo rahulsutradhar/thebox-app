@@ -940,6 +940,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             hashMap.put("brand", boxItem.getBrand());
             hashMap.put("category_id", boxItem.getCategoryId());
             hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
+            hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
+                    boxItem.getSelectedItemConfig().getItemType());
+            hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
             return hashMap;
         }
 
