@@ -155,7 +155,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 /**
                  * Save Clever Tap Event; TimeSlotsFromCart
                  */
-                setCleverTapEventTimeSlotsFromCart();
+                setCleverTapEventTimeSlotsFromCart(currentSelectedDate, timeSlotAdapter.getTimeStrings().get(timeSlotAdapter.getCurrentSelection()));
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
             }
         });
@@ -401,22 +401,42 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * <p>
      * TimeSltf from Cart
      */
-    public void setCleverTapEventTimeSlotsFromCart() {
-        HashMap<String, Object> objectHashMap = new HashMap<>();
-        objectHashMap.put("address_and_orders", addressAndOrders);
+    public void setCleverTapEventTimeSlotsFromCart(Date date, String timeslot) {
+        try {
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            if (addressAndOrders != null) {
+                if (addressAndOrders.size() > 0) {
+                    objectHashMap.put("order_id", addressAndOrders.get(0).getOrderId());
+                }
+            }
+            objectHashMap.put("order_date", date);
+            objectHashMap.put("order_time_slot", timeslot);
 
-        TheBox.getCleverTap().event.push("time_slots_from_cart", objectHashMap);
+            TheBox.getCleverTap().event.push("time_slots_from_cart", objectHashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setCleverTapEventTimeSlotsRescheduleOrder(int orderId) {
         HashMap<String, Object> objectHashMap = new HashMap<>();
         objectHashMap.put("order_id", orderId);
+        if (addressAndOrders != null) {
+            if (addressAndOrders.size() > 0) {
+                objectHashMap.put("order_date", addressAndOrders.get(0).getDateString());
+            }
+        }
         TheBox.getCleverTap().event.push("time_slots_reschedule_order", objectHashMap);
     }
 
     public void setCleverTapEventTimeSlotsMergeWithDeliveries(int mergeOrderId) {
         HashMap<String, Object> objectHashMap = new HashMap<>();
         objectHashMap.put("merge_order_id", mergeOrderId);
+        if (addressAndOrders != null) {
+            if (addressAndOrders.size() > 0) {
+                objectHashMap.put("order_date", addressAndOrders.get(0).getDateString());
+            }
+        }
         TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
     }
 
