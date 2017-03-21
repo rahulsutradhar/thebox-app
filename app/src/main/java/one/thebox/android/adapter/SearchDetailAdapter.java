@@ -721,7 +721,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         savingHolder.setVisibility(View.GONE);
                     }
 
-                    
+
                     if (boxItem.getQuantity() == 0) {
                         addButtonViewHolder.setVisibility(View.VISIBLE);
                         updateQuantityViewHolder.setVisibility(View.GONE);
@@ -944,11 +944,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public HashMap getParam(BoxItem boxItem) {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("box_item_id", boxItem.getId());
-            hashMap.put("title", boxItem.getTitle());
-            hashMap.put("brand", boxItem.getBrand());
-            hashMap.put("category_id", boxItem.getCategoryId());
-            hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
+            try {
+                hashMap.put("box_item_id", boxItem.getId());
+                hashMap.put("title", boxItem.getTitle());
+                hashMap.put("brand", boxItem.getBrand());
+                hashMap.put("category_id", boxItem.getCategoryId());
+                hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
+                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
+                        boxItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return hashMap;
         }
 
