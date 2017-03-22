@@ -161,7 +161,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             }
             PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
         }
-
         setupAppBarObserver();
 
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));

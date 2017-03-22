@@ -1,6 +1,7 @@
 package one.thebox.android.ViewHelper;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -80,22 +81,18 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         TextView numberOfItems = (TextView) view.findViewById(R.id.number_of_item);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
-                title.setText(mFragmentCategoryList.get(position).getTitle());
+        title.setText(mFragmentCategoryList.get(position).getTitle());
         if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " item");
         } else {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
         }
 
-        if(mFragmentCategoryList.get(position).getTitle().contentEquals("CARD"))
-        {
+        if (mFragmentCategoryList.get(position).getTitle().contentEquals("CARD")) {
             icon.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_card));
-        }
-        else if(mFragmentCategoryList.get(position).getTitle().contentEquals("CASH"))
-        {
+        } else if (mFragmentCategoryList.get(position).getTitle().contentEquals("CASH")) {
             icon.setImageDrawable(context.getResources().getDrawable(R.drawable.icon_cash));
-        }
-        else {
+        } else {
 
             Glide.with(context)
                     .load(mFragmentCategoryList.get(position).getIconUrl())
@@ -105,22 +102,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         }
 
 
-
-        if(mFragmentCategoryList.get(position).getTitle().contentEquals("CARD"))
-        {
+        if (mFragmentCategoryList.get(position).getTitle().contentEquals("CARD")) {
             numberOfItems.setVisibility(View.GONE);
-        }
-        else if(mFragmentCategoryList.get(position).getTitle().contentEquals("CASH"))
-        {
+        } else if (mFragmentCategoryList.get(position).getTitle().contentEquals("CASH")) {
             numberOfItems.setVisibility(View.GONE);
         }
 
-
-
-        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).fit().into(icon);
-        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(42,42).into(icon);
-        //Integer image_size = DisplayUtil.dpToPx(context, 42);
-        //Picasso.with(context).load(mFragmentCategoryList.get(position).getIconUrl()).resize(image_size,image_size).into(icon);
+        Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/avenir_next_medium.ttf");
 
         if (isSelected) {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
@@ -128,6 +116,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             icon.requestLayout();
             title.setTextColor(context.getResources().getColor(R.color.black));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            title.setTypeface(font);
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
             layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
@@ -138,6 +127,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             icon.requestLayout();
             title.setTextColor(context.getResources().getColor(R.color.primary_text_color));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            title.setTypeface(font);
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             layout.setBackgroundResource(R.drawable.tab_layout);
             layout.setPadding(DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2));

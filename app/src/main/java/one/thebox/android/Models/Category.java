@@ -122,7 +122,7 @@ public class Category extends RealmObject implements Serializable {
     public void setMinititle(String minititle) {
         this.minititle = minititle;
     }
-
+    
     public String getAverageSavings() {
         return averageSavings;
     }
@@ -131,10 +131,10 @@ public class Category extends RealmObject implements Serializable {
         this.averageSavings = averageSavings;
     }
 
-    @Override
+ /*   @Override
     public boolean equals(Object o) {
         Category category = (Category) o;
         return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
                 && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
-    }
+    }*/
 }
