@@ -5,17 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.user.OrderedUserItem;
@@ -131,7 +128,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        headerViewHolder.setViews(monthly_bill, total_no_of_items);
+        headerViewHolder.setViews("12344", "34");
     }
 
     @Override
@@ -146,12 +143,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_my_boxes;
+        return R.layout.item_subscriptions;
     }
 
     @Override
     protected int getHeaderLayoutId() {
-        return R.layout.item_my_boxes_header;
+        return R.layout.item_subscriptions_savings_card;
     }
 
     @Override
@@ -167,7 +164,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewUserItems;
-        private MontserratTextView title;
+        private TextView title;
 
         private LinearLayoutManager verticalLinearLayoutManager;
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
@@ -192,7 +189,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         public ItemViewHolder(View itemView) {
             super(itemView);
             this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.useritem_list_recycler_view);
-            this.title = (MontserratTextView) itemView.findViewById(R.id.title);
+            this.title = (TextView) itemView.findViewById(R.id.title);
 
             recyclerViewUserItems.setNestedScrollingEnabled(false);
             recyclerViewUserItems.setItemViewCacheSize(20);

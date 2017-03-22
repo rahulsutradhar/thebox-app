@@ -49,6 +49,9 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("arriving_at")
     private String arrivingAt;
 
+    @SerializedName("savings_title")
+    private String selectedItemConfigSavingsTitle;
+
     @Ignore
     private int orderItemQty;
 
@@ -108,22 +111,22 @@ public class UserItem extends RealmObject implements Serializable {
         this.cartId = cartId;
     }
 
-  /*  @Override
-    public boolean equals(Object o) {
-        UserItem userItem = (UserItem) o;
-        return userItem != null && this.id == userItem.getId()
-                && userCategoryId == userItem.getUserCategoryId()
-                && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getUserId()
-                && quantity == userItem.getQuantity()
-                && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
-                && stillSubscribed == userItem.getStillSubscribed()
-                && selectedConfigId == userItem.getSelectedConfigId()
-                && boxItem.equals(userItem.getBoxItem())
-                && cartId == userItem.getCartId();
+    /*  @Override
+      public boolean equals(Object o) {
+          UserItem userItem = (UserItem) o;
+          return userItem != null && this.id == userItem.getId()
+                  && userCategoryId == userItem.getUserCategoryId()
+                  && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getUserId()
+                  && quantity == userItem.getQuantity()
+                  && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
+                  && stillSubscribed == userItem.getStillSubscribed()
+                  && selectedConfigId == userItem.getSelectedConfigId()
+                  && boxItem.equals(userItem.getBoxItem())
+                  && cartId == userItem.getCartId();
 
 
-    }
-*/
+      }
+  */
     public int getId() {
         return id;
     }
@@ -202,6 +205,14 @@ public class UserItem extends RealmObject implements Serializable {
 
     public void setArrivingAt(String arrivingAt) {
         this.arrivingAt = arrivingAt;
+    }
+
+    public String getSelectedItemConfigSavingsTitle() {
+        return selectedItemConfigSavingsTitle;
+    }
+
+    public void setSelectedItemConfigSavingsTitle(String selectedItemConfigSavingsTitle) {
+        this.selectedItemConfigSavingsTitle = selectedItemConfigSavingsTitle;
     }
 
     public BoxItem getFakeBoxItemObject() {
