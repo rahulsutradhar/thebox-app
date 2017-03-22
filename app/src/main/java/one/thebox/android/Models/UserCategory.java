@@ -38,7 +38,7 @@ public class UserCategory extends RealmObject implements Serializable {
         this.no_of_items = no_of_items;
     }
 
-    @Override
+   /* @Override
     public boolean equals(Object o) {
         UserCategory userCategory = (UserCategory) o;
         if (userCategory.getId() != this.id) {
@@ -49,7 +49,7 @@ public class UserCategory extends RealmObject implements Serializable {
         }
         return userCategory.getUserItems().equals(getUserItems());
     }
-
+*/
     public int getId() {
         return id;
     }

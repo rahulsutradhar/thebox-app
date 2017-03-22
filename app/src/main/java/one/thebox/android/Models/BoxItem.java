@@ -310,7 +310,7 @@ public class BoxItem extends RealmObject implements Serializable {
         return smallestItemConfig;
     }
 
-    @Override
+   /* @Override
     public boolean equals(Object o) {
         BoxItem boxItem = (BoxItem) o;
         return boxItem != null
@@ -322,5 +322,5 @@ public class BoxItem extends RealmObject implements Serializable {
                 && isSmartItems == boxItem.isSmartItems()
                 && categoryId == boxItem.getCategoryId()
                 && itemConfigs.equals(boxItem.getItemConfigs());
-    }
+    }*/
 }

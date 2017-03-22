@@ -66,7 +66,7 @@ public class Box extends RealmObject implements Serializable {
         this.box = box;
     }
 
-    @Override
+   /* @Override
     public boolean equals(Object o) {
         Box box = (Box) o;
         if (box.getId() != this.getId()) {
@@ -85,7 +85,7 @@ public class Box extends RealmObject implements Serializable {
 
         return box.getBoxDetail().equals(this.getBoxDetail());
     }
-
+*/
     public String getSubTitle() {
         return "You have " + getAllItemInTheBox().size() + " items in the box";
     }

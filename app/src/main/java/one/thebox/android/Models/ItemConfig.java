@@ -109,12 +109,12 @@ public class ItemConfig extends RealmObject implements Serializable {
         this.subscriptionType = subscriptionType;
     }
 
-    @Override
+   /* @Override
     public boolean equals(Object object) {
         ItemConfig itemConfig = (ItemConfig) object;
         return this.id == itemConfig.getId();
     }
-
+*/
     public String getPhotoUrl() {
         return photoUrl;
     }
