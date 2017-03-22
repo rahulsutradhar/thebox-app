@@ -28,19 +28,28 @@ public class Category extends RealmObject implements Serializable {
     @PrimaryKey
     @SerializedName("id")
     private int id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("minititle")
     private String minititle;
+
     @SerializedName("box_id")
     private int boxId;
+
     @SerializedName("no_of_items")
     private int noOfItems;
+
     @SerializedName("icon_url")
     private String iconUrl;
+
     @Ignore
     @SerializedName("items")
     private List<String> items;
+
+    @SerializedName("avg_savings")
+    private String averageSavings;
 
     public List<String> getItems() {
         return items;
@@ -115,6 +124,15 @@ public class Category extends RealmObject implements Serializable {
     }
 
  /*   @Override
+    public String getAverageSavings() {
+        return averageSavings;
+    }
+
+    public void setAverageSavings(String averageSavings) {
+        this.averageSavings = averageSavings;
+    }
+
+    @Override
     public boolean equals(Object o) {
         Category category = (Category) o;
         return this.id == category.getId() && this.noOfItems == category.getNoOfItems()

@@ -39,6 +39,7 @@
     <color name="transparent">#00000000</color>
     <color name="green_navigation_contact_us">#ff3bb44a</color>
     <!--reds-->
+    <color name="raspberry_red">#ec145b</color>
     <color name="md_red_50">#FFEBEE</color>
     <color name="md_red_100">#FFCDD2</color>
     <color name="md_red_200">#EF9A9A</color>
