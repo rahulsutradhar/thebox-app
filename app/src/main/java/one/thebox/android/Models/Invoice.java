@@ -54,11 +54,11 @@ public class Invoice extends RealmObject implements Serializable {
         return id;
     }
 
-    @Override
+ /*   @Override
     public boolean equals(Object o) {
         Invoice invoice = (Invoice) o;
         return invoice != null && this.id == invoice.getId()
                 && useritem_id == invoice.getUseritem_id() && this.orderId == invoice.getOrderId();
     }
-
+*/
 }

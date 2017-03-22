@@ -108,7 +108,7 @@ public class UserItem extends RealmObject implements Serializable {
         this.cartId = cartId;
     }
 
-    @Override
+  /*  @Override
     public boolean equals(Object o) {
         UserItem userItem = (UserItem) o;
         return userItem != null && this.id == userItem.getId()
@@ -123,7 +123,7 @@ public class UserItem extends RealmObject implements Serializable {
 
 
     }
-
+*/
     public int getId() {
         return id;
     }

@@ -31,14 +31,13 @@
         android:padding="8dp">
 
         <one.thebox.android.ViewHelper.AutoScaleTextView
-           android:id="@+id/text_view_category_name"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:maxLines="1"
-
-           android:text="This a big text to check if match parent is working or not"
-           android:textColor="@color/primary_text_color"
-           android:textSize="@dimen/text_small3" />
+            android:id="@+id/text_view_category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="This a big text to check if match parent is working or not"
+            android:textColor="@color/primary_text_color"
+            android:textSize="@dimen/text_small3" />
 
 
         <one.thebox.android.ViewHelper.MontserratTextView
