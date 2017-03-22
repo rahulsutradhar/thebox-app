@@ -354,6 +354,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             //store to local database
                             storeToRealm(response.body().getOrderedUserItems());
                         }
+
+                        Toast.makeText(TheBox.getAppContext(), "Saving " + response.body().getSavings().size(), Toast.LENGTH_SHORT).show();
                     } else {
                         //Parse Error
                         Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
