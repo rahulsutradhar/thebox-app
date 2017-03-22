@@ -24,12 +24,13 @@
     <color name="primary_text_color">#B7000000</color>
     <color name="primary_inverse_text_color">#B7FFFFFF</color>
     <color name="secondary_text_color">#8C000000</color>
+
     <color name="brilliant_rose">#F44336</color>
     <color name="neon_carrot">#ffa64d</color>
     <color name="bistre">#323030</color>
     <color name="cornflower_blue">#4da6ff</color>
     <color name="green">#50E1C1</color>
-    <color name="davy_grey">#575555</color>
+    <color name="davy_grey">#575757</color>
     <color name="medium_turquoise">#50e3c2</color>
     <color name="red_orange">#ff4d4d</color>
     <color name="lavender_indigo">#a64dff</color>
@@ -310,6 +311,7 @@
     <color name="md_brown_900">#3E2723</color>
 
     <!--grey-->
+
     <color name="md_grey_50">#FAFAFA</color>
     <color name="md_grey_100">#F5F5F5</color>
     <color name="md_grey_200">#EEEEEE</color>

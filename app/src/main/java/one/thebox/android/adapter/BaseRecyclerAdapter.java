@@ -40,7 +40,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d("Test OnCreateViewHolder", String.valueOf(adapterCurrentPosition));
+
         if (viewType == RECYCLER_ADAPTER_ITEM) {
 
             View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(getItemLayoutId(), parent, false);
@@ -64,7 +64,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Log.d("Test OnBindViewHolder", String.valueOf(adapterCurrentPosition));
+
         if (getItemViewType(position) == RECYCLER_ADAPTER_ITEM) {
             int itemPos = position;
             if (mViewType != RECYCLER_VIEW_TYPE_NORMAL && mViewType != RECYCLER_VIEW_TYPE_FOOTER) {

@@ -964,7 +964,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit, savingtextView;
         private ImageView productImageView;
         private RelativeLayout quantityHolder;
 
@@ -981,6 +981,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             edit = (TextView) itemView.findViewById(R.id.user_item_edit_button);
+            savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
         private void setViews(final UserItem userItem, final int arrayListPosition) {
@@ -1217,6 +1218,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     arrivingTime.setText("Item is added to your cart");
                 } else {
                     arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                //saving for selected item config
+                if (userItem.getSelectedItemConfigSavingsTitle() != null) {
+                    if (!userItem.getSelectedItemConfigSavingsTitle().isEmpty()) {
+                        savingtextView.setVisibility(View.VISIBLE);
+                        savingtextView.setText(userItem.getSelectedItemConfigSavingsTitle());
+                    } else {
+                        savingtextView.setVisibility(View.GONE);
+                        savingtextView.setText("");
+                    }
+                } else {
+                    savingtextView.setVisibility(View.GONE);
+                    savingtextView.setText("");
                 }
 
                 glideRequestManager.load(itemConfig.getPhotoUrl())

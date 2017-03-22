@@ -64,6 +64,7 @@ import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_T
  */
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
+    public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
@@ -247,6 +248,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             recyclerView.setLayoutManager(linearLayoutManager);
             myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), glideRequestManager);
             myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+            //This view will display the saving card as header and rest of the items
+            myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             recyclerView.setAdapter(myBoxRecyclerAdapter);
         } else {
             myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
