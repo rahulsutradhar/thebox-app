@@ -16,6 +16,8 @@ public class Saving extends RealmObject implements Serializable {
 
     private String month;
 
+    private boolean saving;
+
     @SerializedName("monthly_bill")
     private MonthlyBill monthlyBill;
 
@@ -43,6 +45,14 @@ public class Saving extends RealmObject implements Serializable {
 
     public void setMonth(String month) {
         this.month = month;
+    }
+
+    public boolean isSaving() {
+        return saving;
+    }
+
+    public void setSaving(boolean saving) {
+        this.saving = saving;
     }
 
     public MonthlyBill getMonthlyBill() {
