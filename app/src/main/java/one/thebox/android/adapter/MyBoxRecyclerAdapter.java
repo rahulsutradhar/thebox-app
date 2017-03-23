@@ -6,15 +6,20 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MontserratTextView;
@@ -30,8 +35,7 @@ import one.thebox.android.util.PrefUtils;
  */
 public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
-    private String monthly_bill;
-    private String total_no_of_items;
+    private Saving saving;
     private int stickyHeaderHeight = 0;
 
     /**
@@ -59,20 +63,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         notifyDataSetChanged();
     }
 
-    public String getMonthly_bill() {
-        return monthly_bill;
+    public Saving getSaving() {
+        return saving;
     }
 
-    public void setMonthly_bill(String monthly_bill) {
-        this.monthly_bill = monthly_bill;
-    }
-
-    public String getTotal_no_of_items() {
-        return total_no_of_items;
-    }
-
-    public void setTotal_no_of_items(String total_no_of_items) {
-        this.total_no_of_items = total_no_of_items;
+    public void setSaving(Saving saving) {
+        this.saving = saving;
     }
 
     public int getStickyHeaderHeight() {
@@ -128,12 +124,11 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
         HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        headerViewHolder.setViews("12344", "34");
+        headerViewHolder.setViews(saving);
     }
 
     @Override
-    public void onBindViewFooterHolder(FooterHolder holder, int position) {
-
+    public void onBindViewFooterHolder(BaseRecyclerAdapter.FooterHolder holder, int position) {
     }
 
     @Override
@@ -235,23 +230,43 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
 
-        private MontserratTextView monthly_bill;
-        private MontserratTextView total_no_of_items;
-
+        private TextView monthlyBillText, monthlyBillValue, totalMonthlySavingsText,
+                totalMonthlySavingsValue, totalItemsText, totalItemValue;
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-            this.monthly_bill = (MontserratTextView) itemView.findViewById(R.id.monthly_bill);
-            this.total_no_of_items = (MontserratTextView) itemView.findViewById(R.id.total_no_of_items);
+            monthlyBillText = (TextView) itemView.findViewById(R.id.monthly_bill_text);
+            monthlyBillValue = (TextView) itemView.findViewById(R.id.monthly_bill_value);
+            totalMonthlySavingsText = (TextView) itemView.findViewById(R.id.total_monthly_savings_text);
+            totalMonthlySavingsValue = (TextView) itemView.findViewById(R.id.total_monthly_savings_value);
+            totalItemsText = (TextView) itemView.findViewById(R.id.total_items_text);
+            totalItemValue = (TextView) itemView.findViewById(R.id.total_items_value);
         }
 
-        public void setViews(String monthly_bill, String total_no_of_items) {
+        public void setViews(Saving saving) {
+            try {
+                if (saving.getMonthlyBill() != null) {
+                    monthlyBillText.setText(saving.getMonthlyBill().getTitle());
+                    monthlyBillValue.setText(saving.getMonthlyBill().getValue());
+                }
 
-            this.monthly_bill.setText(monthly_bill);
-            this.total_no_of_items.setText(total_no_of_items);
+                if (saving.getMonthlySaving() != null) {
+                    totalMonthlySavingsText.setText(saving.getMonthlySaving().getTitle());
+                    totalMonthlySavingsValue.setText(saving.getMonthlySaving().getValue());
+                }
+
+                if (saving.getTotalItem() != null) {
+                    totalItemsText.setText(saving.getTotalItem().getTitle());
+                    totalItemValue.setText(saving.getTotalItem().getValue());
+                }
+            } catch (Exception e) {
+
+            }
 
         }
     }
+
+
 }
 
 

@@ -41,6 +41,7 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.R;
@@ -65,6 +66,7 @@ import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_T
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
@@ -79,6 +81,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private String total_no_of_items;
     private boolean show_loader_and_call = false;
     private boolean isRegistered;
+    private Saving saving;
 
     /**
      * GLide Request Manager
@@ -183,11 +186,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         ArrayList<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
         //Fetch OrderedUserItem if stored in local database
-        Realm realm1 = TheBox.getRealm();
-        RealmResults<OrderedUserItem> realmResults1 = realm1.where(OrderedUserItem.class).findAll();
+        Realm realm = TheBox.getRealm();
+        RealmResults<OrderedUserItem> realmResults1 = realm.where(OrderedUserItem.class).findAll();
 
         RealmList<OrderedUserItem> itemRealmList = new RealmList<>();
-        itemRealmList.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
+        itemRealmList.addAll(realm.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
 
         if (itemRealmList.size() > 0) {
             orderedUserItems.clear();
@@ -204,6 +207,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         } else {
             setupEmptyStateView();
         }
+
     }
 
 
@@ -248,13 +252,39 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             recyclerView.setLayoutManager(linearLayoutManager);
             myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), glideRequestManager);
             myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+
             //This view will display the saving card as header and rest of the items
-            myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+            setDataToRecyclerView(orderedUserItems);
             recyclerView.setAdapter(myBoxRecyclerAdapter);
         } else {
-            myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+            setDataToRecyclerView(orderedUserItems);
         }
+    }
 
+    /**
+     * Check and set the view type in recyclerview
+     */
+    public void setDataToRecyclerView(ArrayList<OrderedUserItem> orderedUserItems) {
+
+        myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+        myBoxRecyclerAdapter.setSaving(saving);
+        /**
+         * Show Header savings ;if savings is true
+         * and user items
+         */
+        if (orderedUserItems.size() > 0 && saving != null) {
+            if (saving.isSaving()) {
+                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+            } else {
+                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
+        }
+        /**
+         * Show only user items
+         */
+        else if (orderedUserItems.size() > 0 && saving == null) {
+            myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+        }
     }
 
     public void setupEmptyStateView() {
@@ -350,14 +380,21 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 try {
                     if (response.isSuccessful() && response.body() != null) {
 
-                        //get the OrderedUserItem
+
                         removeChangeListener();
-                        if (response.body().getOrderedUserItems().size() > 0) {
-                            //store to local database
-                            storeToRealm(response.body().getOrderedUserItems());
+                        //get savings
+                        if (response.body().getSavings() != null) {
+                            if (response.body().getSavings().size() > 0) {
+                                if (response.body().getSavings().first().getType().equals("current")) {
+                                    saving = response.body().getSavings().first();
+                                }
+                            }
                         }
 
-                        Toast.makeText(TheBox.getAppContext(), "Saving " + response.body().getSavings().size(), Toast.LENGTH_SHORT).show();
+                        //get the OrderedUserItem
+                        //store to local database
+                        storeToRealm(response.body().getOrderedUserItems());
+
                     } else {
                         //Parse Error
                         Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();

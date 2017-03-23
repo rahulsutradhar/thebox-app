@@ -83,8 +83,9 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
         } else if (getItemViewType(position) == RECYCLER_ADAPTER_HEADER) {
             onBindViewHeaderHolder((HeaderHolder) holder, position);
         } else {
-            if (position != -1)
+            if (position != -1 && getItemViewType(position) == RECYCLER_ADAPTER_FOOTER) {
                 onBindViewFooterHolder((FooterHolder) holder, position);
+            }
         }
     }
 
