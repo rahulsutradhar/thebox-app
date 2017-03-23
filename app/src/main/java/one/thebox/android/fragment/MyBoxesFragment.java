@@ -49,8 +49,10 @@ import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -201,6 +203,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 }
             }
         }
+
+        //get savings from the preferances
+        saving = CoreGsonUtils.fromJson(PrefUtils.getString(getActivity(), Constants.SAVINGS), Saving.class);
 
         if (orderedUserItems.size() > 0) {
             setupRecyclerView(orderedUserItems);
@@ -390,6 +395,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                                 }
                             }
                         }
+
+                        //save saving in the preferance
+                        PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
 
                         //get the OrderedUserItem
                         //store to local database
