@@ -152,6 +152,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+        RealmChangeManager.getInstance();
 
         initViews();
         initVariables();
@@ -160,20 +161,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
         if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
-            if (show_loader) {
-                fetchOrderedUserItem(false);
-            } else {
-                fetchOrderedUserItem(true);
-            }
+            fetchOrderedUserItem(show_loader_and_call);
             PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
         }
+
         setupAppBarObserver();
+        initDataChangeListener();
 
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
-
-        RealmChangeManager.getInstance();
-
-        initDataChangeListener();
 
         return rootLayout;
     }
@@ -345,11 +340,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeChangeListener();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        initDataChangeListener();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
@@ -385,8 +383,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 try {
                     if (response.isSuccessful() && response.body() != null) {
 
-
-                        removeChangeListener();
                         //get savings
                         if (response.body().getSavings() != null) {
                             if (response.body().getSavings().size() > 0) {
@@ -442,16 +438,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             @Override
             public void onSuccess() {
                 if (null != getActivity()) {
-                    initVariables();
 
+                    initVariables();
                     ((MainActivity) getActivity()).addBoxesToMenu();
-                    initDataChangeListener();
                 }
             }
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-
             }
         });
 

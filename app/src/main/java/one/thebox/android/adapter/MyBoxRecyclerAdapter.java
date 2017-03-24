@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -232,6 +234,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         private TextView monthlyBillText, monthlyBillValue, totalMonthlySavingsText,
                 totalMonthlySavingsValue, totalItemsText, totalItemValue;
+        private TextView subscriptionBoxTitle, subscriptionBoxDesc;
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
@@ -241,6 +244,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             totalMonthlySavingsValue = (TextView) itemView.findViewById(R.id.total_monthly_savings_value);
             totalItemsText = (TextView) itemView.findViewById(R.id.total_items_text);
             totalItemValue = (TextView) itemView.findViewById(R.id.total_items_value);
+            subscriptionBoxTitle = (TextView) itemView.findViewById(R.id.subscription_box_title);
+            subscriptionBoxDesc = (TextView) itemView.findViewById(R.id.subscription_box_description);
         }
 
         public void setViews(Saving saving) {
@@ -259,6 +264,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     totalItemsText.setText(saving.getTotalItem().getTitle());
                     totalItemValue.setText(saving.getTotalItem().getValue());
                 }
+
+                if (saving.getSuggestionBoxTitle() != null) {
+                    subscriptionBoxTitle.setText(Html.fromHtml(saving.getSuggestionBoxTitle()));
+                }
+
+                subscriptionBoxDesc.setText(saving.getSuggestionBoxDescription());
             } catch (Exception e) {
 
             }

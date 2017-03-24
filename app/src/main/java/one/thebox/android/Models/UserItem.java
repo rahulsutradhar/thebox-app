@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class UserItem extends RealmObject implements Serializable {
     @Ignore
@@ -46,9 +47,11 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("cart_id")
     private int cartId;
 
+    @Required
     @SerializedName("arriving_at")
     private String arrivingAt;
 
+    @Required
     @SerializedName("savings_title")
     private String selectedItemConfigSavingsTitle;
 
@@ -75,23 +78,11 @@ public class UserItem extends RealmObject implements Serializable {
     }
 
     public UserItem() {
-        this.id = 0;
-        this.userCategoryId = 0;
-        this.selectedItemId = 0;
-        this.userId = 0;
-        this.quantity = 0;
-        this.nextDeliveryScheduledAt = "";
-        this.stillSubscribed = false;
-        this.selectedConfigId = 0;
-        this.boxItem = null;
-        this.boxId = 0;
-        this.arrivingAt = "";
-        this.orderItemQty = 0;
-        this.orderId = 0;
-        this.cartId = 0;
     }
 
-    public UserItem(int id, int userCategoryId, int selectedItemId, int userId, int quantity, String nextDeliveryScheduledAt, boolean stillSubscribed, int selectedConfigId, BoxItem boxItem) {
+    public UserItem(int id, int userCategoryId, int selectedItemId,
+                    int userId, int quantity, String nextDeliveryScheduledAt,
+                    boolean stillSubscribed, int selectedConfigId, BoxItem boxItem, String arrivingAt, String selectedItemConfigSavingsTitle) {
         this.id = id;
         this.userCategoryId = userCategoryId;
         this.selectedItemId = selectedItemId;
@@ -101,6 +92,8 @@ public class UserItem extends RealmObject implements Serializable {
         this.stillSubscribed = stillSubscribed;
         this.selectedConfigId = selectedConfigId;
         this.boxItem = boxItem;
+        this.arrivingAt = arrivingAt;
+        this.selectedItemConfigSavingsTitle = selectedItemConfigSavingsTitle;
     }
 
     public int getCartId() {
