@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmList;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.Models.user.OrderedUserItem;
 
 /**
@@ -17,11 +19,25 @@ public class UserItemResponse {
     @Expose
     private ArrayList<OrderedUserItem> orderedUserItems;
 
+    private RealmList<Saving> savings;
+
+    public UserItemResponse() {
+
+    }
+
     public ArrayList<OrderedUserItem> getOrderedUserItems() {
         return orderedUserItems;
     }
 
     public void setOrderedUserItems(ArrayList<OrderedUserItem> orderedUserItems) {
         this.orderedUserItems = orderedUserItems;
+    }
+
+    public RealmList<Saving> getSavings() {
+        return savings;
+    }
+
+    public void setSavings(RealmList<Saving> savings) {
+        this.savings = savings;
     }
 }

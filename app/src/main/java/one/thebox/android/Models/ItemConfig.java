@@ -42,6 +42,9 @@ public class ItemConfig extends RealmObject implements Serializable {
     @SerializedName("in_stock")
     private boolean in_stock;
 
+    @SerializedName("savings_title")
+    private String savingsTitle;
+
     public ItemConfig() {
     }
 
@@ -145,5 +148,13 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setIn_stock(boolean in_stock) {
         this.in_stock = in_stock;
+    }
+
+    public String getSavingsTitle() {
+        return savingsTitle;
+    }
+
+    public void setSavingsTitle(String savingsTitle) {
+        this.savingsTitle = savingsTitle;
     }
 }

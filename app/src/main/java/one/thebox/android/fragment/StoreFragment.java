@@ -16,10 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
 import com.google.common.collect.Ordering;
+import com.squareup.haha.trove.THash;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -31,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -38,7 +41,9 @@ import io.realm.Sort;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.Size;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -99,14 +104,15 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                              Bundle savedInstanceState) {
         if (rootLayout == null) {
             rootLayout = inflater.inflate(R.layout.fragment_store, container, false);
-            initVariables();
+            RealmChangeManager.getInstance();
             initViews();
+            initVariables();
+
             getMyBoxes();
             setupAppBarObserver();
-            if (!boxes.isEmpty()) {
-                setupRecyclerView();
-            }
+
             onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+            initDataChangeListener();
         }
         return rootLayout;
     }
@@ -142,8 +148,11 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
         this.boxes.clear();
-        this.boxes.addAll(realm.copyFromRealm(boxes));
-//        setUpBoxes();
+        this.boxes.addAll(boxes);
+
+        if (!boxes.isEmpty()) {
+            setupRecyclerView();
+        }
     }
 
     private void setupAppBarObserver() {
@@ -159,11 +168,15 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private void setupRecyclerView() {
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity(), Glide.with(this));
-        storeRecyclerAdapter.setBoxes(boxes);
-        recyclerView.setAdapter(storeRecyclerAdapter);
+        if (storeRecyclerAdapter == null) {
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(linearLayoutManager);
+            storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity(), Glide.with(this));
+            storeRecyclerAdapter.setBoxes(boxes);
+            recyclerView.setAdapter(storeRecyclerAdapter);
+        } else {
+            storeRecyclerAdapter.setBoxes(boxes);
+        }
     }
 
     private void initViews() {
@@ -196,11 +209,13 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeChangeListener();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        initDataChangeListener();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
@@ -230,8 +245,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             if (!(boxes.equals(response.body().getBoxes()))) {
                                 boxes.clear();
                                 boxes.addAll(response.body().getBoxes());
+
                                 //save locally
-                                storeToRealm();
+                                storeToRealm(boxes);
                             }
                         } else if (response.raw().code() == 401) {
                             (new AccountManager(getActivity()))
@@ -249,7 +265,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                 });
     }
 
-    private void storeToRealm() {
+    private void storeToRealm(final RealmList<Box> boxes) {
         final Realm superRealm = TheBox.getRealm();
         superRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -262,7 +278,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             public void onSuccess() {
                 if (null != getActivity()) {
                     initVariables();
-                    setupRecyclerView();
+
                     ((MainActivity) getActivity()).addBoxesToMenu();
                 }
             }
@@ -321,5 +337,30 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             });
         }
     }
+
+    public void initDataChangeListener() {
+        Realm realm = TheBox.getRealm();
+        realm.addChangeListener(realmListener);
+    }
+
+    private void removeChangeListener() {
+        Realm realm = TheBox.getRealm();
+        realm.removeChangeListener(realmListener);
+    }
+
+    private RealmChangeListener realmListener = new RealmChangeListener() {
+
+        @Override
+        public void onChange(Object element) {
+            Log.d("RealmChanged", "RealmData Changed");
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                });
+            }
+        }
+    };
 
 }

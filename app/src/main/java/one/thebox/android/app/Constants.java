@@ -30,4 +30,9 @@ public class Constants {
      * Order List
      */
     public static final String EXTRA_LIST_ORDER = "list_order";
+
+    /**
+     * Savings
+     */
+    public static final String SAVINGS = "savings";
 }

@@ -28,7 +28,7 @@ public class MyBoxResponse extends ApiResponse implements Serializable {
     private String total_no_of_items;
 
 
-    public MyBoxResponse(RealmList<Box> boxes) {
+    public MyBoxResponse(RealmList<Box> boxes, String next_order_status) {
         this.boxes = boxes;
         this.next_order_status = next_order_status;
     }

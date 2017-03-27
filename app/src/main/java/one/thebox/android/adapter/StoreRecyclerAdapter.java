@@ -307,12 +307,13 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public class ItemViewHolder extends ItemHolder {
-            private TextView categoryNameTextView, noOfItems;
+            private TextView categoryNameTextView, noOfItems, savingTextView;
             private ImageView categoryIcon;
 
             public ItemViewHolder(View itemView) {
                 super(itemView);
                 categoryNameTextView = (TextView) itemView.findViewById(R.id.text_view_category_name);
+                savingTextView = (TextView) itemView.findViewById(R.id.text_view_savings);
                 noOfItems = (TextView) itemView.findViewById(R.id.number_of_item);
                 categoryIcon = (ImageView) itemView.findViewById(R.id.icon);
             }
@@ -322,6 +323,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     categoryNameTextView.setText(category.getMinititle());
                 } else {
                     categoryNameTextView.setText(category.getMinititle());
+                }
+
+                //Saving text display if not empty
+                if (category.getAverageSavings() != null) {
+                    if (!category.getAverageSavings().isEmpty()) {
+                        savingTextView.setVisibility(View.VISIBLE);
+                        savingTextView.setText(category.getAverageSavings());
+                    } else {
+                        savingTextView.setVisibility(View.GONE);
+                        savingTextView.setText("");
+                    }
+                } else {
+                    savingTextView.setVisibility(View.GONE);
+                    savingTextView.setText("");
                 }
 
                 mRequestManager.load(category.getIconUrl())
@@ -344,8 +359,21 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
                 categoryIcon.setMaxWidth(noOfItems.getWidth());
 
-                Glide.with(mContext)
-                        .load(userCategory.getCategory().getIconUrl())
+                //Saving text display if not empty
+                if (userCategory.getCategory().getAverageSavings() != null) {
+                    if (!userCategory.getCategory().getAverageSavings().isEmpty()) {
+                        savingTextView.setVisibility(View.VISIBLE);
+                        savingTextView.setText(userCategory.getCategory().getAverageSavings());
+                    } else {
+                        savingTextView.setVisibility(View.GONE);
+                        savingTextView.setText("");
+                    }
+                } else {
+                    savingTextView.setVisibility(View.GONE);
+                    savingTextView.setText("");
+                }
+
+                mRequestManager.load(userCategory.getCategory().getIconUrl())
                         .centerCrop()
                         .crossFade()
                         .into(categoryIcon);
@@ -375,7 +403,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private RemainingCategoryAdapter remainingCategoryAdapter;
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
-        private TextView title, add_more_items;
+        private TextView title, add_more_items, savingsTitle;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
@@ -407,6 +435,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             recyclerViewCategories.setNestedScrollingEnabled(false);
 
             this.title = (TextView) itemView.findViewById(R.id.title);
+            this.savingsTitle = (TextView) itemView.findViewById(R.id.text_view_savings);
 
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -419,6 +448,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);
             this.add_more_items.setOnClickListener(openBoxListener);
+
+            //savings
+            if (box.getBoxDetail().getSaving() != null) {
+                if (!box.getBoxDetail().getSaving().isEmpty()) {
+                    this.savingsTitle.setVisibility(View.VISIBLE);
+                    this.savingsTitle.setText(box.getBoxDetail().getSaving());
+                } else {
+                    this.savingsTitle.setText("");
+                    this.savingsTitle.setVisibility(View.GONE);
+                }
+            } else {
+                this.savingsTitle.setText("");
+                this.savingsTitle.setVisibility(View.GONE);
+            }
 
 //<!-- TODO:- Add how many saving are waiting for him -->
 //            if (box.getAllItemInTheBox().size() == 0) {
