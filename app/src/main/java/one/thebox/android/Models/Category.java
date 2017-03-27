@@ -123,7 +123,6 @@ public class Category extends RealmObject implements Serializable {
         this.minititle = minititle;
     }
 
-
     public String getAverageSavings() {
         return averageSavings;
     }
