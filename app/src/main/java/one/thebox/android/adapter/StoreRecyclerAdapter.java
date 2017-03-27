@@ -403,7 +403,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private RemainingCategoryAdapter remainingCategoryAdapter;
         private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
-        private TextView title, add_more_items;
+        private TextView title, add_more_items, savingsTitle;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
@@ -435,6 +435,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             recyclerViewCategories.setNestedScrollingEnabled(false);
 
             this.title = (TextView) itemView.findViewById(R.id.title);
+            this.savingsTitle = (TextView) itemView.findViewById(R.id.text_view_savings);
 
             this.boxImageView = (ImageView) itemView.findViewById(R.id.box_image_view);
             this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -447,6 +448,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);
             this.add_more_items.setOnClickListener(openBoxListener);
+
+            //savings
+            if (box.getBoxDetail().getSaving() != null) {
+                if (!box.getBoxDetail().getSaving().isEmpty()) {
+                    this.savingsTitle.setVisibility(View.VISIBLE);
+                    this.savingsTitle.setText(box.getBoxDetail().getSaving());
+                } else {
+                    this.savingsTitle.setText("");
+                    this.savingsTitle.setVisibility(View.GONE);
+                }
+            } else {
+                this.savingsTitle.setText("");
+                this.savingsTitle.setVisibility(View.GONE);
+            }
 
 //<!-- TODO:- Add how many saving are waiting for him -->
 //            if (box.getAllItemInTheBox().size() == 0) {
