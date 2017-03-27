@@ -461,6 +461,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         if (getActivity() == null) {
             return;
         }
+        fabHolder.setVisibility(View.GONE);
         FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));

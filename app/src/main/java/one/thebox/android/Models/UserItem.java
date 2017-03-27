@@ -47,11 +47,9 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("cart_id")
     private int cartId;
 
-    @Required
     @SerializedName("arriving_at")
     private String arrivingAt;
 
-    @Required
     @SerializedName("savings_title")
     private String selectedItemConfigSavingsTitle;
 
