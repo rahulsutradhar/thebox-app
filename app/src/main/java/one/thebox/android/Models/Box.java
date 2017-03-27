@@ -49,12 +49,6 @@ public class Box extends RealmObject implements Serializable {
 
 
     public Box() {
-        this.id = 0;
-        this.userId = 0;
-        this.boxId = 0;
-        this.remainingCategories = null;
-        this.userCategories = null;
-        this.box = null;
     }
 
     public Box(int id, int userId, int boxId, RealmList<Category> remainingCategories, RealmList<UserCategory> userCategories, BoxDetail box) {
@@ -66,26 +60,26 @@ public class Box extends RealmObject implements Serializable {
         this.box = box;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        Box box = (Box) o;
-        if (box.getId() != this.getId()) {
-            return false;
-        }
-        if (box.getUserId() != this.getUserId()) {
-            return false;
-        }
-        if (!box.getRemainingCategories().equals(this.getRemainingCategories())) {
-            return false;
-        }
+    /* @Override
+     public boolean equals(Object o) {
+         Box box = (Box) o;
+         if (box.getId() != this.getId()) {
+             return false;
+         }
+         if (box.getUserId() != this.getUserId()) {
+             return false;
+         }
+         if (!box.getRemainingCategories().equals(this.getRemainingCategories())) {
+             return false;
+         }
 
-        if (!(box.getUserCategories().equals(this.getUserCategories()))) {
-            return false;
-        }
+         if (!(box.getUserCategories().equals(this.getUserCategories()))) {
+             return false;
+         }
 
-        return box.getBoxDetail().equals(this.getBoxDetail());
-    }
-
+         return box.getBoxDetail().equals(this.getBoxDetail());
+     }
+ */
     public String getSubTitle() {
         return "You have " + getAllItemInTheBox().size() + " items in the box";
     }

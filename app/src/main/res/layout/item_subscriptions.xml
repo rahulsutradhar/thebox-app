@@ -1,22 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@color/md_grey_200"
     android:orientation="vertical">
 
 
-    <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/title"
+        style="@style/AppTheme.Widget.TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/margin_from_top_of_card"
-        android:paddingBottom="@dimen/margin_from_bottom_of_card"
-        android:gravity="center_horizontal"
         android:background="@color/md_grey_200"
+        android:gravity="center_horizontal"
+        android:paddingBottom="@dimen/margin_from_bottom_of_card"
+        android:paddingTop="@dimen/margin_from_top_of_card"
         android:text="Hygeine Box"
-        android:textColor="@color/primary_text_color"
+        android:textColor="@color/black"
         android:textSize="@dimen/text_medium1"
-        android:textStyle="bold"/>
+        android:textStyle="normal" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/useritem_list_recycler_view"

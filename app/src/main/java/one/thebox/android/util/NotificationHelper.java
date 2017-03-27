@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.squareup.picasso.Picasso;
 
@@ -162,7 +163,7 @@ public class NotificationHelper {
     private void setBitmaps() {
         if (largeIconBitmap == null) {
             builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.ic_box));
+                    R.drawable.ic_logo));
         } else {
             builder.setLargeIcon(largeIconBitmap);
         }

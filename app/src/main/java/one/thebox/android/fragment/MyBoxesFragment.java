@@ -41,6 +41,7 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.R;
@@ -48,8 +49,10 @@ import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.MyBoxRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -64,6 +67,8 @@ import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_T
  */
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
+    public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     private RecyclerView recyclerView;
     private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
     private View rootLayout;
@@ -78,6 +83,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private String total_no_of_items;
     private boolean show_loader_and_call = false;
     private boolean isRegistered;
+    private Saving saving;
 
     /**
      * GLide Request Manager
@@ -146,6 +152,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
+        RealmChangeManager.getInstance();
 
         initViews();
         initVariables();
@@ -154,21 +161,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
         if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
-            if (show_loader) {
-                fetchOrderedUserItem(false);
-            } else {
-                fetchOrderedUserItem(true);
-            }
+            fetchOrderedUserItem(show_loader_and_call);
             PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
         }
 
         setupAppBarObserver();
+        initDataChangeListener();
 
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
-
-        RealmChangeManager.getInstance();
-
-        initDataChangeListener();
 
         return rootLayout;
     }
@@ -183,11 +183,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         ArrayList<OrderedUserItem> orderedUserItems = new ArrayList<>();
 
         //Fetch OrderedUserItem if stored in local database
-        Realm realm1 = TheBox.getRealm();
-        RealmResults<OrderedUserItem> realmResults1 = realm1.where(OrderedUserItem.class).findAll();
+        Realm realm = TheBox.getRealm();
+        RealmResults<OrderedUserItem> realmResults1 = realm.where(OrderedUserItem.class).findAll();
 
         RealmList<OrderedUserItem> itemRealmList = new RealmList<>();
-        itemRealmList.addAll(realm1.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
+        itemRealmList.addAll(realm.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
 
         if (itemRealmList.size() > 0) {
             orderedUserItems.clear();
@@ -199,11 +199,15 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             }
         }
 
+        //get savings from the preferances
+        saving = CoreGsonUtils.fromJson(PrefUtils.getString(getActivity(), Constants.SAVINGS), Saving.class);
+
         if (orderedUserItems.size() > 0) {
             setupRecyclerView(orderedUserItems);
         } else {
             setupEmptyStateView();
         }
+
     }
 
 
@@ -248,11 +252,39 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             recyclerView.setLayoutManager(linearLayoutManager);
             myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), glideRequestManager);
             myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+
+            //This view will display the saving card as header and rest of the items
+            setDataToRecyclerView(orderedUserItems);
             recyclerView.setAdapter(myBoxRecyclerAdapter);
         } else {
-            myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+            setDataToRecyclerView(orderedUserItems);
         }
+    }
 
+    /**
+     * Check and set the view type in recyclerview
+     */
+    public void setDataToRecyclerView(ArrayList<OrderedUserItem> orderedUserItems) {
+
+        myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+        myBoxRecyclerAdapter.setSaving(saving);
+        /**
+         * Show Header savings ;if savings is true
+         * and user items
+         */
+        if (orderedUserItems.size() > 0 && saving != null) {
+            if (saving.isSaving()) {
+                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+            } else {
+                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
+        }
+        /**
+         * Show only user items
+         */
+        else if (orderedUserItems.size() > 0 && saving == null) {
+            myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+        }
     }
 
     public void setupEmptyStateView() {
@@ -308,11 +340,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeChangeListener();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        initDataChangeListener();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
@@ -348,12 +383,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 try {
                     if (response.isSuccessful() && response.body() != null) {
 
-                        //get the OrderedUserItem
-                        removeChangeListener();
-                        if (response.body().getOrderedUserItems().size() > 0) {
-                            //store to local database
-                            storeToRealm(response.body().getOrderedUserItems());
+                        //get savings
+                        if (response.body().getSavings() != null) {
+                            if (response.body().getSavings().size() > 0) {
+                                if (response.body().getSavings().first().getType().equals("current")) {
+                                    saving = response.body().getSavings().first();
+                                }
+                            }
                         }
+
+                        //save saving in the preferance
+                        PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
+
+                        //get the OrderedUserItem
+                        //store to local database
+                        storeToRealm(response.body().getOrderedUserItems());
+
                     } else {
                         //Parse Error
                         Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -393,16 +438,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             @Override
             public void onSuccess() {
                 if (null != getActivity()) {
-                    initVariables();
 
+                    initVariables();
                     ((MainActivity) getActivity()).addBoxesToMenu();
-                    initDataChangeListener();
                 }
             }
         }, new Realm.Transaction.OnError() {
             @Override
             public void onError(Throwable error) {
-
             }
         });
 
@@ -418,6 +461,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         if (getActivity() == null) {
             return;
         }
+        fabHolder.setVisibility(View.GONE);
         FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
         if (tabEvent.getNumberOfItemsInCart() > 0) {
             mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));

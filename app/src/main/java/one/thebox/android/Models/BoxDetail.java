@@ -19,13 +19,17 @@ public class BoxDetail extends RealmObject implements Serializable {
     @SerializedName("photo_url")
     private String photoUrl;
 
+    @SerializedName("saving_title")
+    private String saving;
+
     public BoxDetail() {
     }
 
-    public BoxDetail(int id, String title, String photoUrl) {
+    public BoxDetail(int id, String title, String photoUrl, String saving) {
         this.id = id;
         this.title = title;
         this.photoUrl = photoUrl;
+        this.saving = saving;
     }
 
     public int getId() {
@@ -52,9 +56,17 @@ public class BoxDetail extends RealmObject implements Serializable {
         this.photoUrl = photoUrl;
     }
 
-    @Override
+   /* @Override
     public boolean equals(Object o) {
         BoxDetail boxDetail = (BoxDetail) o;
         return this.id == boxDetail.getId() && this.title.equals(boxDetail.getTitle()) && this.photoUrl.equals(boxDetail.getPhotoUrl());
+    }*/
+
+    public String getSaving() {
+        return saving;
+    }
+
+    public void setSaving(String saving) {
+        this.saving = saving;
     }
 }

@@ -98,7 +98,7 @@ public class MyBoxTabFragment extends Fragment {
         //Attaching "MyItems"
         MyBoxesFragment my_box_fragment = new MyBoxesFragment();
         my_box_fragment.setArguments(args);
-        adapter.addFragment(my_box_fragment, "My Items");
+        adapter.addFragment(my_box_fragment, "Subscriptions");
 
         //Attaching Store
         StoreFragment store_fragment = new StoreFragment();
@@ -108,7 +108,7 @@ public class MyBoxTabFragment extends Fragment {
         //Attaching Deliveries
         UpComingOrderFragment upcoming_deliveries_fragment = new UpComingOrderFragment();
         upcoming_deliveries_fragment.setArguments(args);
-        adapter.addFragment(upcoming_deliveries_fragment, "My Deliveries");
+        adapter.addFragment(upcoming_deliveries_fragment, "Deliveries");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

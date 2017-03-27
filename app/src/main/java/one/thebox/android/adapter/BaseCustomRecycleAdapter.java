@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import io.realm.RealmObject;
-import one.thebox.android.Models.BaseAdapterModel;
 import one.thebox.android.R;
 import one.thebox.android.app.AppConstants;
 import one.thebox.android.holders.BaseHolder;
@@ -41,7 +40,7 @@ public class BaseCustomRecycleAdapter<T extends RealmObject> extends RecyclerVie
         BaseHolder holder = null;
         switch (viewType) {
             case AppConstants.ViewType.BOX_HEADER_ITEM:
-                holder = new BoxHolder(inflater.inflate(R.layout.item_my_boxes, null));
+                holder = new BoxHolder(inflater.inflate(R.layout.item_subscriptions, null));
                 break;
             case AppConstants.ViewType.USER_MY_BOX_ITEM:
                 holder = new UserItemHolder(inflater.inflate(R.layout.item_user_item, null));

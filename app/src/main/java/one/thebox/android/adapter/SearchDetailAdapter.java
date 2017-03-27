@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -603,10 +604,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(TheBox.getInstance(), suggestedCategories, glideRequestManager);
+
+            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(
+                    TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
-            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false));
+            recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(),
+                    LinearLayoutManager.HORIZONTAL, false));
             recyclerViewSavings.setAdapter(remainingCategoryAdapter);
+
         }
 
         public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
@@ -708,13 +713,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
 
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
-
-                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && getAdapterPosition() == currentPositionOfSuggestedCategory) {
-                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
                         savingHolder.setVisibility(View.VISIBLE);
+                        setupRecyclerViewSuggestedCategories(suggestedCategories);
+
                     } else {
                         savingHolder.setVisibility(View.GONE);
                     }
+
 
                     if (boxItem.getQuantity() == 0) {
                         addButtonViewHolder.setVisibility(View.VISIBLE);
@@ -778,12 +784,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 
                                             boxId = boxItems.get(position).getId();
+
+
                                             suggestedCategories.clear();
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
                                             currentPositionOfSuggestedCategory = position;
 
-                                            notifyItemChanged(position);
+                                            //not preferable; we must used notifyItemChanged(position)
+                                            notifyDataSetChanged();
                                             CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
 
                                             /**
@@ -935,14 +944,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public HashMap getParam(BoxItem boxItem) {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("box_item_id", boxItem.getId());
-            hashMap.put("title", boxItem.getTitle());
-            hashMap.put("brand", boxItem.getBrand());
-            hashMap.put("category_id", boxItem.getCategoryId());
-            hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
-            hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
-                    boxItem.getSelectedItemConfig().getItemType());
-            hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
+            try {
+                hashMap.put("box_item_id", boxItem.getId());
+                hashMap.put("title", boxItem.getTitle());
+                hashMap.put("brand", boxItem.getBrand());
+                hashMap.put("category_id", boxItem.getCategoryId());
+                hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
+                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
+                        boxItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return hashMap;
         }
 
@@ -951,9 +964,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit, savingtextView;
         private ImageView productImageView;
-        private LinearLayout quantityHolder;
+        private RelativeLayout quantityHolder;
 
         public UserItemViewHolder(View itemView) {
             super(itemView);
@@ -964,10 +977,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
-            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
+            quantityHolder = (RelativeLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             edit = (TextView) itemView.findViewById(R.id.user_item_edit_button);
+            savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
         private void setViews(final UserItem userItem, final int arrayListPosition) {
@@ -1204,6 +1218,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     arrivingTime.setText("Item is added to your cart");
                 } else {
                     arrivingTime.setText(userItem.getArrivingAt());
+                }
+
+                //saving for selected item config
+                if (userItem.getSelectedItemConfigSavingsTitle() != null) {
+                    if (!userItem.getSelectedItemConfigSavingsTitle().isEmpty()) {
+                        savingtextView.setVisibility(View.VISIBLE);
+                        savingtextView.setText(userItem.getSelectedItemConfigSavingsTitle());
+                    } else {
+                        savingtextView.setVisibility(View.GONE);
+                        savingtextView.setText("");
+                    }
+                } else {
+                    savingtextView.setVisibility(View.GONE);
+                    savingtextView.setText("");
                 }
 
                 glideRequestManager.load(itemConfig.getPhotoUrl())

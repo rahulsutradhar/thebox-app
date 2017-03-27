@@ -98,6 +98,9 @@ public class OrderHelper {
     }
 
 
+    /**
+     * Used to update the cart items
+     */
     private static void saveToRealm(final Order order) {
         try {
             final Realm superRealm1 = TheBox.getRealm();
@@ -124,7 +127,6 @@ public class OrderHelper {
 
                 }
             });
-            superRealm1.commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }

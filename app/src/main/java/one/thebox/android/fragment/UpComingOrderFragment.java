@@ -17,12 +17,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.OrdersItemAdapter;
@@ -64,7 +66,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
         initViews();
-
         initVariables(false);
 
 
@@ -168,6 +169,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     initVariables(false);
                     initViews();
 

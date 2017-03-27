@@ -310,66 +310,70 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
     private void setupViewPagerAndTabsMyBox() {
-        if (getActivity() == null) {
-            return;
+        try {
+            if (getActivity() == null) {
+                return;
+            }
+            progressBar.setVisibility(View.GONE);
+            final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
+            for (int i = 0; i < categories.size(); i++) {
+                adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
+            }
+            viewPager.setAdapter(adapter);
+            tabLayout.setupWithViewPager(viewPager);
+            int length = tabLayout.getTabCount();
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), true));
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), false));
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+            for (int i = 0; i < length; i++) {
+                if (i == 0) {
+                    tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
+                } else {
+                    tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
+                }
+            }
+            viewPager.setCurrentItem(clickPosition);
+            POSITION_OF_VIEW_PAGER = clickPosition;
+            ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), clickPosition);
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    POSITION_OF_VIEW_PAGER = position;
+                    ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), position);
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
+            /**
+             * Save CleverTap Event; BrowseCategory
+             */
+            setCleverTapEventBrowseCategory(categories.get(POSITION_OF_VIEW_PAGER));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        progressBar.setVisibility(View.GONE);
-        final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        for (int i = 0; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
-        }
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
-        int length = tabLayout.getTabCount();
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), true));
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), false));
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        for (int i = 0; i < length; i++) {
-            if (i == 0) {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
-            } else {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
-            }
-        }
-        viewPager.setCurrentItem(clickPosition);
-        POSITION_OF_VIEW_PAGER = clickPosition;
-        ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), clickPosition);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                POSITION_OF_VIEW_PAGER = position;
-                ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        /**
-         * Save CleverTap Event; BrowseCategory
-         */
-        setCleverTapEventBrowseCategory(categories.get(POSITION_OF_VIEW_PAGER));
     }
 
     private void setupViewPagerAndTabs() {
