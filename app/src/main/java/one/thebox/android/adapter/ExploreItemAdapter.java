@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**

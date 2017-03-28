@@ -1,7 +1,6 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,11 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 

@@ -24,7 +24,7 @@ import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
-import one.thebox.android.adapter.BaseRecyclerAdapter;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.DeliverySlotsAdapter;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.Responses.AdjustDeliveryResponse;

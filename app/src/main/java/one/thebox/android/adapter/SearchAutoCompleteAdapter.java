@@ -3,19 +3,17 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**

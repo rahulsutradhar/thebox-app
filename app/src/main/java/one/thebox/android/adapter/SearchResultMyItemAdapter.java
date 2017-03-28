@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.DisplayUtil;
 
 public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
