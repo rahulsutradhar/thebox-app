@@ -106,17 +106,19 @@
 
                 <TextView
                     android:id="@+id/product_name"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
+                    android:layout_marginRight="10dp"
                     android:text="Purifying Neem"
                     android:textColor="@color/davy_grey"
                     android:textSize="14sp"
-                    android:textStyle="normal" />
+                    android:textStyle="bold" />
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/product_brand"
+                    style="@style/AppTheme.Widget.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="By Himalaya"
@@ -131,47 +133,46 @@
                     android:orientation="horizontal"
                     android:paddingBottom="1dp">
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/text_view_size"
+                        style="@style/AppTheme.Widget.TextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"
                         android:text="55ml * 100 meter packet need"
-                        android:textColor="@color/black"
+                        android:textColor="@color/primary_text_color"
                         android:textSize="13sp" />
 
                     <TextView
                         android:id="@+id/no_of_options"
-                        style="@style/AppTheme.Widget.TextView"
+                        style="@style/AppTheme.Widget.Avenir.Next.Bold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_horizontal_between_co_element"
                         android:layout_weight="1"
                         android:background="@drawable/green_borders"
                         android:gravity="center"
-                        android:paddingBottom="8dp"
+                        android:paddingBottom="6dp"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
-                        android:paddingTop="8dp"
+                        android:paddingTop="6dp"
                         android:text=" + 5 more options"
                         android:textColor="@color/davy_grey"
-                        android:textSize="12sp"
-                        android:textStyle="normal" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/repeat_every"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Repeat:"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:textStyle="normal" />
+                    android:textColor="@color/davy_grey"
+                    android:textSize="12sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view_frequency"
@@ -183,7 +184,7 @@
                 <!-- Savings text -->
                 <TextView
                     android:id="@+id/savings_title"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Regular"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -192,7 +193,6 @@
                     android:text=""
                     android:textColor="@color/raspberry_red"
                     android:textSize="@dimen/text_small1"
-                    android:textStyle="bold"
                     android:visibility="visible" />
 
 

@@ -622,14 +622,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             try {
                 this.position = arrayListPosition;
                 productName.setText(boxItem.getTitle());
-                productBrand.setText(boxItem.getBrand());
+                if (!boxItem.getBrand().isEmpty()) {
+                    productBrand.setVisibility(View.VISIBLE);
+                    productBrand.setText(boxItem.getBrand());
+                } else {
+                    productBrand.setText("");
+                    productBrand.setVisibility(View.GONE);
+                }
 
                 //Updating no. of SKU's
                 if (boxItem.getNo_of_sku() < 2) {
                     no_of_options_holder.setVisibility(View.GONE);
                 } else {
                     no_of_options_holder.setVisibility(View.VISIBLE);
-                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
+                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " More Options");
                 }
 
 
