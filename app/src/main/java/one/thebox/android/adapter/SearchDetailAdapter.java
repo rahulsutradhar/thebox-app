@@ -564,8 +564,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             int selectedPosition = 0;
+
             for (int i = 0; i < itemConfigs.size(); i++) {
                 if (boxItem.getSelectedItemConfig().equals(itemConfigs.get(i))) {
+                    Log.d("ITEM_CONFIG", boxItem.getSelectedItemConfig().getId() + "  -  " + itemConfigs.get(i).getId() + "  pos- " + i);
                     selectedPosition = i;
                     break;
                 }
@@ -573,7 +575,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
             if (!shouldScrollToPosition) {
-                linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
+                //linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
+                // recyclerViewFrequency.smoothScrollToPosition(0);
             }
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
@@ -601,8 +604,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
                 }
             });
+            recyclerViewFrequency.smoothScrollToPosition(selectedPosition);
+
             if (shouldScrollToPosition) {
-                linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
+                //  linearLayoutManager.scrollToPosition(selectedPosition);
             }
         }
 
@@ -824,7 +829,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
 
                                             boxId = boxItems.get(position).getId();
-
 
                                             suggestedCategories.clear();
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());

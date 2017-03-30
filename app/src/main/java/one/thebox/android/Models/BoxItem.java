@@ -315,6 +315,7 @@ public class BoxItem extends RealmObject implements Serializable {
         this.savingsText = savingsText;
     }
 
+
     /* @Override
     public boolean equals(Object o) {
         BoxItem boxItem = (BoxItem) o;

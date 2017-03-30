@@ -79,14 +79,28 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public View getTabView(View view, int position, boolean isSelected) {
         TextView title = (TextView) view.findViewById(R.id.text_view_category_name);
         TextView numberOfItems = (TextView) view.findViewById(R.id.number_of_item);
+        TextView savings = (TextView) view.findViewById(R.id.savings_title);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
         title.setText(mFragmentCategoryList.get(position).getTitle());
 
         if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " item");
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Item");
         } else {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " items");
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Items");
+        }
+
+        if (mFragmentCategoryList.get(position).getAverageSavings() != null) {
+            if (!mFragmentCategoryList.get(position).getAverageSavings().isEmpty()) {
+                savings.setVisibility(View.VISIBLE);
+                savings.setText(mFragmentCategoryList.get(position).getAverageSavings());
+            } else {
+                savings.setText("");
+                savings.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            savings.setText("");
+            savings.setVisibility(View.INVISIBLE);
         }
 
         if (mFragmentCategoryList.get(position).getTitle().contentEquals("CARD")) {
@@ -105,8 +119,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         if (mFragmentCategoryList.get(position).getTitle().contentEquals("CARD")) {
             numberOfItems.setVisibility(View.GONE);
+            savings.setVisibility(View.GONE);
         } else if (mFragmentCategoryList.get(position).getTitle().contentEquals("CASH")) {
             numberOfItems.setVisibility(View.GONE);
+            savings.setVisibility(View.GONE);
         }
 
         Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/avenir_next_medium.ttf");
@@ -118,7 +134,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             title.setTextColor(context.getResources().getColor(R.color.black));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             title.setTypeface(font);
-            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            savings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
             layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
             layout.requestLayout();
@@ -129,7 +146,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             title.setTextColor(context.getResources().getColor(R.color.primary_text_color));
             title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             title.setTypeface(font);
-            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+            savings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
             layout.setBackgroundResource(R.drawable.tab_layout);
             layout.setPadding(DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2));
             layout.requestLayout();

@@ -113,8 +113,7 @@
                     android:layout_marginRight="10dp"
                     android:text="Purifying Neem"
                     android:textColor="@color/davy_grey"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/product_brand"

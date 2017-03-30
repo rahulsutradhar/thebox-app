@@ -16,8 +16,10 @@ import one.thebox.android.api.ApiResponse;
 public class CategoryBoxItemsResponse extends ApiResponse implements Serializable {
     @SerializedName("my_items")
     private ArrayList<UserItem> myBoxItems;
+
     @SerializedName("normal_items")
     private ArrayList<BoxItem> normalBoxItems;
+
     @SerializedName("data")
     private ItemsData itemsData;
 
@@ -94,8 +96,10 @@ public class CategoryBoxItemsResponse extends ApiResponse implements Serializabl
     }
 
     private class ItemsData {
+
         @SerializedName("my_items")
         private ArrayList<UserItem> myBoxItems;
+
         @SerializedName("items")
         private ArrayList<BoxItem> normalBoxItems;
 
