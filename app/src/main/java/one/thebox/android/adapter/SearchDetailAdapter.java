@@ -484,12 +484,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
         private TextView noOfItemSelected, repeat_every, out_of_stock;
-        private LinearLayout savingHolder, savingAmountHolder;
-        private TextView productName, productBrand, size, savings, no_of_options_holder;
+        private LinearLayout savingHolder;
+        private TextView productName, productBrand, size, no_of_options_holder;
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
-        private LinearLayout addButtonViewHolder, updateQuantityViewHolder;
+        private LinearLayout updateQuantityViewHolder;
+        private RelativeLayout addButtonViewHolder;
         private int position;
+        private TextView savingsTitle, savingsItemConfig, mrp;
 
         private SearchedItemViewHolder(View itemView) {
             super(itemView);
@@ -512,10 +514,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             size = (TextView) itemView.findViewById(R.id.text_view_size);
             no_of_options_holder = (TextView) itemView.findViewById(R.id.no_of_options);
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
-            savings = (TextView) itemView.findViewById(R.id.text_view_savings);
-            savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
-            addButtonViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_add_button);
+            addButtonViewHolder = (RelativeLayout) itemView.findViewById(R.id.holder_add_button);
             updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
+            savingsTitle = (TextView) itemView.findViewById(R.id.savings_title);
+            savingsItemConfig = (TextView) itemView.findViewById(R.id.savings_item_confid);
+            mrp = (TextView) itemView.findViewById(R.id.mrp);
+
+
         }
 
         private void setViewsBasedOnStock(boolean isOutOfStock) {
@@ -523,7 +528,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 addButtonViewHolder.setVisibility(View.GONE);
                 addButton.setVisibility(View.GONE);
                 subtractButton.setVisibility(View.GONE);
-                savingHolder.setVisibility(View.GONE);
                 repeat_every.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
 
@@ -533,7 +537,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 addButton.setVisibility(View.VISIBLE);
                 subtractButton.setVisibility(View.VISIBLE);
-                savingHolder.setVisibility(View.VISIBLE);
                 repeat_every.setVisibility(View.VISIBLE);
                 out_of_stock.setVisibility(View.GONE);
                 // Disable the change button
@@ -621,20 +624,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 productName.setText(boxItem.getTitle());
                 productBrand.setText(boxItem.getBrand());
 
-                //Updating Savings
-                if (boxItem.getSavings() == 0) {
-                    savingAmountHolder.setVisibility(View.GONE);
-                } else {
-                    savingAmountHolder.setVisibility(View.VISIBLE);
-                    savings.setText(boxItem.getSavings() + " Rs Savings");
-                }
-
                 //Updating no. of SKU's
                 if (boxItem.getNo_of_sku() < 2) {
                     no_of_options_holder.setVisibility(View.GONE);
-                } else if (boxItem.getNo_of_sku() == 2) {
-                    no_of_options_holder.setVisibility(View.VISIBLE);
-                    no_of_options_holder.setText(" + 1 more option");
                 } else {
                     no_of_options_holder.setVisibility(View.VISIBLE);
                     no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
@@ -653,6 +645,34 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .centerCrop()
                         .crossFade()
                         .into(productImage);
+
+                //savings ItemConfig
+                if (boxItem.getSelectedItemConfig().getSavingsText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getSavingsText().isEmpty()) {
+                        savingsItemConfig.setText(boxItem.getSelectedItemConfig().getSavingsText());
+                        savingsItemConfig.setVisibility(View.VISIBLE);
+                    } else {
+                        savingsItemConfig.setText("");
+                        savingsItemConfig.setVisibility(View.GONE);
+                    }
+                } else {
+                    savingsItemConfig.setText("");
+                    savingsItemConfig.setVisibility(View.GONE);
+                }
+
+                //mrp
+                if (boxItem.getSelectedItemConfig().getMrpText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getMrpText().isEmpty()) {
+                        mrp.setText(boxItem.getSelectedItemConfig().getMrpText());
+                        mrp.setVisibility(View.VISIBLE);
+                    } else {
+                        mrp.setText("");
+                        mrp.setVisibility(View.GONE);
+                    }
+                } else {
+                    mrp.setText("");
+                    mrp.setVisibility(View.GONE);
+                }
 
                 productImage.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -683,6 +703,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         });
                     }
                 });
+
+                //Savings Title
+                if (boxItem.getSavingsText() != null) {
+                    if (!boxItem.getSavingsText().isEmpty()) {
+                        savingsTitle.setVisibility(View.VISIBLE);
+                        savingsTitle.setText(boxItem.getSavingsText());
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
+                } else {
+                    savingsTitle.setText("");
+                    savingsTitle.setVisibility(View.GONE);
+                }
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {

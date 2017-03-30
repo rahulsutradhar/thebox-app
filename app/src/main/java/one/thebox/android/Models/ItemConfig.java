@@ -45,6 +45,12 @@ public class ItemConfig extends RealmObject implements Serializable {
     @SerializedName("savings_title")
     private String savingsTitle;
 
+    @SerializedName("savings_text")
+    private String savingsText;
+
+    @SerializedName("mrp_text")
+    private String mrpText;
+
     public ItemConfig() {
     }
 
@@ -112,12 +118,12 @@ public class ItemConfig extends RealmObject implements Serializable {
         this.subscriptionType = subscriptionType;
     }
 
-   /* @Override
-    public boolean equals(Object object) {
-        ItemConfig itemConfig = (ItemConfig) object;
-        return this.id == itemConfig.getId();
-    }
-*/
+    /* @Override
+     public boolean equals(Object object) {
+         ItemConfig itemConfig = (ItemConfig) object;
+         return this.id == itemConfig.getId();
+     }
+ */
     public String getPhotoUrl() {
         return photoUrl;
     }
@@ -156,5 +162,21 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setSavingsTitle(String savingsTitle) {
         this.savingsTitle = savingsTitle;
+    }
+
+    public String getSavingsText() {
+        return savingsText;
+    }
+
+    public void setSavingsText(String savingsText) {
+        this.savingsText = savingsText;
+    }
+
+    public String getMrpText() {
+        return mrpText;
+    }
+
+    public void setMrpText(String mrpText) {
+        this.mrpText = mrpText;
     }
 }

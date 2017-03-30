@@ -82,6 +82,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
         title.setText(mFragmentCategoryList.get(position).getTitle());
+
         if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " item");
         } else {
