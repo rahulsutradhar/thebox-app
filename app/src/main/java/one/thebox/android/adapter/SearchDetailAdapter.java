@@ -566,10 +566,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             int selectedPosition = 0;
 
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if (boxItem.getSelectedItemConfig().equals(itemConfigs.get(i))) {
-                    Log.d("ITEM_CONFIG", boxItem.getSelectedItemConfig().getId() + "  -  " + itemConfigs.get(i).getId() + "  pos- " + i);
+                if (boxItem.getSelectedItemConfig().getId() == itemConfigs.get(i).getId()) {
                     selectedPosition = i;
-                    break;
                 }
             }
 
