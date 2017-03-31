@@ -19,16 +19,22 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
 
     @SerializedName("success")
     private boolean success;
+
     @SerializedName("info")
     private String info;
+
     @SerializedName("useritem")
     private UserItem userItem;
+
     @SerializedName("rest_of_the_categories")
     private List<Category> restCategories;
+
     @SerializedName("orders")
     private RealmList<Order> orders;
+
     @SerializedName("cart")
     private Order cart;
+
     @SerializedName("box_id")
     private int boxId;
 

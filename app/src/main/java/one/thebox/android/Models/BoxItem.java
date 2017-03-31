@@ -60,9 +60,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("photo_url")
     private String photoUrl;
 
-    @SerializedName("savings_text")
-    private String savingsText;
-
     @Ignore
     private ItemConfig selectedItemConfig;
     private RealmList<Category> suggestedCategory = new RealmList<>();
@@ -305,14 +302,6 @@ public class BoxItem extends RealmObject implements Serializable {
 
     public void setIn_stock(boolean in_stock) {
         this.in_stock = in_stock;
-    }
-
-    public String getSavingsText() {
-        return savingsText;
-    }
-
-    public void setSavingsText(String savingsText) {
-        this.savingsText = savingsText;
     }
 
 

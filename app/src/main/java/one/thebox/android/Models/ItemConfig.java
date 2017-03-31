@@ -51,6 +51,9 @@ public class ItemConfig extends RealmObject implements Serializable {
     @SerializedName("mrp_text")
     private String mrpText;
 
+    @SerializedName("monthly_savings_text")
+    private String monthlySavingsText;
+
     public ItemConfig() {
     }
 
@@ -178,5 +181,13 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setMrpText(String mrpText) {
         this.mrpText = mrpText;
+    }
+
+    public String getMonthlySavingsText() {
+        return monthlySavingsText;
+    }
+
+    public void setMonthlySavingsText(String monthlySavingsText) {
+        this.monthlySavingsText = monthlySavingsText;
     }
 }

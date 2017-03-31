@@ -655,6 +655,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .crossFade()
                         .into(productImage);
 
+                //Monthly Savings Text
+                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                        savingsTitle.setVisibility(View.VISIBLE);
+                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
+                } else {
+                    savingsTitle.setText("");
+                    savingsTitle.setVisibility(View.GONE);
+                }
+
                 //savings ItemConfig
                 if (boxItem.getSelectedItemConfig().getSavingsText() != null) {
                     if (!boxItem.getSelectedItemConfig().getSavingsText().isEmpty()) {
@@ -713,19 +727,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 });
 
-                //Savings Title
-                if (boxItem.getSavingsText() != null) {
-                    if (!boxItem.getSavingsText().isEmpty()) {
-                        savingsTitle.setVisibility(View.VISIBLE);
-                        savingsTitle.setText(boxItem.getSavingsText());
-                    } else {
-                        savingsTitle.setText("");
-                        savingsTitle.setVisibility(View.GONE);
-                    }
-                } else {
-                    savingsTitle.setText("");
-                    savingsTitle.setVisibility(View.GONE);
-                }
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {
@@ -881,9 +882,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             if (quantity >= 1) {
                                                 response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
 
-                                                //Updating the SearchDetailitem fragment's data if change is made in cart
-                                                //SearchDetailItemsFragment.update_boxitem(response.body().getUserItem().getSelectedItemId(),response.body().getUserItem().getQuantity());
-
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
@@ -933,13 +931,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
-                                            boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
-                                            boxItems.get(position).setSuggestedCategory(suggestionsCategories);
-                                            notifyItemChanged(getAdapterPosition());
-                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-                                        }
+
+                                        RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
+                                        boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
+                                        boxItems.get(position).setSuggestedCategory(suggestionsCategories);
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+                                        notifyItemChanged(position);
+
                                     }
                                 }
                             } catch (Exception e) {
