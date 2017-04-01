@@ -484,12 +484,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
         private TextView noOfItemSelected, repeat_every, out_of_stock;
-        private LinearLayout savingHolder, savingAmountHolder;
-        private TextView productName, productBrand, size, savings, no_of_options_holder;
+        private LinearLayout savingHolder;
+        private TextView productName, productBrand, size, no_of_options_holder;
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
-        private LinearLayout addButtonViewHolder, updateQuantityViewHolder;
+        private LinearLayout updateQuantityViewHolder;
+        private RelativeLayout addButtonViewHolder;
         private int position;
+        private TextView savingsTitle, savingsItemConfig, mrp;
 
         private SearchedItemViewHolder(View itemView) {
             super(itemView);
@@ -512,10 +514,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             size = (TextView) itemView.findViewById(R.id.text_view_size);
             no_of_options_holder = (TextView) itemView.findViewById(R.id.no_of_options);
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
-            savings = (TextView) itemView.findViewById(R.id.text_view_savings);
-            savingAmountHolder = (LinearLayout) itemView.findViewById(R.id.holder_saving_amount);
-            addButtonViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_add_button);
+            addButtonViewHolder = (RelativeLayout) itemView.findViewById(R.id.holder_add_button);
             updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
+            savingsTitle = (TextView) itemView.findViewById(R.id.savings_title);
+            savingsItemConfig = (TextView) itemView.findViewById(R.id.savings_item_confid);
+            mrp = (TextView) itemView.findViewById(R.id.mrp);
+
+
         }
 
         private void setViewsBasedOnStock(boolean isOutOfStock) {
@@ -523,7 +528,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 addButtonViewHolder.setVisibility(View.GONE);
                 addButton.setVisibility(View.GONE);
                 subtractButton.setVisibility(View.GONE);
-                savingHolder.setVisibility(View.GONE);
                 repeat_every.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
 
@@ -533,7 +537,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 addButtonViewHolder.setVisibility(View.VISIBLE);
                 addButton.setVisibility(View.VISIBLE);
                 subtractButton.setVisibility(View.VISIBLE);
-                savingHolder.setVisibility(View.VISIBLE);
                 repeat_every.setVisibility(View.VISIBLE);
                 out_of_stock.setVisibility(View.GONE);
                 // Disable the change button
@@ -561,16 +564,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             int selectedPosition = 0;
+
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if (boxItem.getSelectedItemConfig().equals(itemConfigs.get(i))) {
+                if (boxItem.getSelectedItemConfig().getId() == itemConfigs.get(i).getId()) {
                     selectedPosition = i;
-                    break;
                 }
             }
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
             if (!shouldScrollToPosition) {
-                linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
+                //linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
+                // recyclerViewFrequency.smoothScrollToPosition(0);
             }
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
@@ -598,8 +602,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
                 }
             });
+            recyclerViewFrequency.smoothScrollToPosition(selectedPosition);
+
             if (shouldScrollToPosition) {
-                linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
+                //  linearLayoutManager.scrollToPosition(selectedPosition);
             }
         }
 
@@ -619,27 +625,21 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             try {
                 this.position = arrayListPosition;
                 productName.setText(boxItem.getTitle());
-                productBrand.setText(boxItem.getBrand());
-
-                //Updating Savings
-                if (boxItem.getSavings() == 0) {
-                    savingAmountHolder.setVisibility(View.GONE);
+                if (!boxItem.getBrand().isEmpty()) {
+                    productBrand.setVisibility(View.VISIBLE);
+                    productBrand.setText(boxItem.getBrand());
                 } else {
-                    savingAmountHolder.setVisibility(View.VISIBLE);
-                    savings.setText(boxItem.getSavings() + " Rs Savings");
+                    productBrand.setText("");
+                    productBrand.setVisibility(View.GONE);
                 }
 
                 //Updating no. of SKU's
                 if (boxItem.getNo_of_sku() < 2) {
                     no_of_options_holder.setVisibility(View.GONE);
-                } else if (boxItem.getNo_of_sku() == 2) {
-                    no_of_options_holder.setVisibility(View.VISIBLE);
-                    no_of_options_holder.setText(" + 1 more option");
                 } else {
                     no_of_options_holder.setVisibility(View.VISIBLE);
-                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " more options");
+                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " More Options");
                 }
-
 
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
                     if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
@@ -653,6 +653,48 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .centerCrop()
                         .crossFade()
                         .into(productImage);
+
+                //Monthly Savings Text
+                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                        savingsTitle.setVisibility(View.VISIBLE);
+                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
+                } else {
+                    savingsTitle.setText("");
+                    savingsTitle.setVisibility(View.GONE);
+                }
+
+                //savings ItemConfig
+                if (boxItem.getSelectedItemConfig().getSavingsText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getSavingsText().isEmpty()) {
+                        savingsItemConfig.setText(boxItem.getSelectedItemConfig().getSavingsText());
+                        savingsItemConfig.setVisibility(View.VISIBLE);
+                    } else {
+                        savingsItemConfig.setText("");
+                        savingsItemConfig.setVisibility(View.GONE);
+                    }
+                } else {
+                    savingsItemConfig.setText("");
+                    savingsItemConfig.setVisibility(View.GONE);
+                }
+
+                //mrp
+                if (boxItem.getSelectedItemConfig().getMrpText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getMrpText().isEmpty()) {
+                        mrp.setText(boxItem.getSelectedItemConfig().getMrpText());
+                        mrp.setVisibility(View.VISIBLE);
+                    } else {
+                        mrp.setText("");
+                        mrp.setVisibility(View.GONE);
+                    }
+                } else {
+                    mrp.setText("");
+                    mrp.setVisibility(View.GONE);
+                }
 
                 productImage.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -673,6 +715,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             @Override
                             public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                 dialogFragment.dismiss();
+
                                 if (boxItem.getUserItemId() == 0) {
                                     boxItem.setSelectedItemConfig(selectedItemConfig);
                                     setViews(boxItem, getAdapterPosition(), true);
@@ -683,6 +726,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         });
                     }
                 });
+
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {
@@ -785,7 +829,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                             boxId = boxItems.get(position).getId();
 
-
                                             suggestedCategories.clear();
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
                                             suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
@@ -839,9 +882,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             if (quantity >= 1) {
                                                 response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
 
-                                                //Updating the SearchDetailitem fragment's data if change is made in cart
-                                                //SearchDetailItemsFragment.update_boxitem(response.body().getUserItem().getSelectedItemId(),response.body().getUserItem().getQuantity());
-
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
@@ -891,13 +931,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
-                                            boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
-                                            boxItems.get(position).setSuggestedCategory(suggestionsCategories);
-                                            notifyItemChanged(getAdapterPosition());
-                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-                                        }
+                                        RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
+                                        boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
+                                        boxItems.get(position).setSuggestedCategory(suggestionsCategories);
+
+                                        notifyItemChanged(position);
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+
                                     }
                                 }
                             } catch (Exception e) {

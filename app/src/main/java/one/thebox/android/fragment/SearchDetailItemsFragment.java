@@ -391,10 +391,12 @@ public class SearchDetailItemsFragment extends Fragment {
                         BoxItem box = mapCart.get(boxItem.getId());
                         box.setUserItemId(item.getId());
                         box.setQuantity(item.getQuantity());
+                        box.setSelectedItemConfig(box.getItemConfigById(item.getSelectedConfigId()));
                         mapCart.put(box.getId(), box);
                     } else {
                         boxItem.setUserItemId(item.getId());
                         boxItem.setQuantity(item.getQuantity());
+                        boxItem.setSelectedItemConfig(boxItem.getItemConfigById(item.getSelectedConfigId()));
                         mapCart.put(boxItem.getId(), boxItem);
                     }
 

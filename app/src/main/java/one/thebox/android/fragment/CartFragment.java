@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +70,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
                     initVariables();
-                    setupRecyclerView();
+                    doCartHasItems();
                 }
             });
 
@@ -112,26 +113,32 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         return rootView;
     }
 
-    private void setupRecyclerView() {
+    public boolean doCartHasItems() {
+
         if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
             emptyCartText.setVisibility(View.VISIBLE);
             proceedToPayment.setVisibility(View.GONE);
-            return;
+            return false;
         } else {
             emptyCartText.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
             proceedToPayment.setText("Total Cost: Rs " + order.getTotalPrice() + "\n" + "Proceed to Payment");
+            return true;
         }
+    }
 
-        if (userItemRecyclerAdapter == null) {
-            userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
-            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-            userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(userItemRecyclerAdapter);
-        } else {
-            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-            userItemRecyclerAdapter.notifyDataSetChanged();
+    private void setupRecyclerView() {
+        if (doCartHasItems()) {
+            if (userItemRecyclerAdapter == null) {
+                userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
+                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+                userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.setAdapter(userItemRecyclerAdapter);
+            } else {
+                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+                userItemRecyclerAdapter.notifyDataSetChanged();
+            }
         }
 
     }
@@ -167,7 +174,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
                     initVariables();
-                    setupRecyclerView();
+                    doCartHasItems();
                 }
             });
         }

@@ -296,7 +296,16 @@ public class BoxItem extends RealmObject implements Serializable {
         return smallestItemConfig;
     }
 
-   /* @Override
+    public boolean isIn_stock() {
+        return in_stock;
+    }
+
+    public void setIn_stock(boolean in_stock) {
+        this.in_stock = in_stock;
+    }
+
+
+    /* @Override
     public boolean equals(Object o) {
         BoxItem boxItem = (BoxItem) o;
         return boxItem != null

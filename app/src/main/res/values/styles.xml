@@ -158,6 +158,14 @@
         <item name="fontPath">fonts/AvenirLTStd-Roman.otf</item>
     </style>
 
+    <style name="AppTheme.Widget.TextView.Avenir.Book" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirLTStd-Book.otf</item>
+    </style>
+
+    <style name="AppTheme.Widget.TextView.Avenir.Light" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirLTStd-Light.otf</item>
+    </style>
+
     <style name="AppTheme.Widget.Montserrat.Regular" parent="android:Widget.Holo.Light.TextView">
         <item name="fontPath">fonts/Montserrat-Regular.otf</item>
         <item name="android:textSize">16sp</item>
