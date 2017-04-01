@@ -16,6 +16,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -537,6 +538,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         BoxItem boxItem = userItem.getBoxItem();
                         boxItem.setUserItemId(userItem.getId());
                         boxItem.setQuantity(userItem.getQuantity());
+                        boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
+                        Log.d("ITEM_CONFIG", userItem.getSelectedConfigId()+" -> "+boxItem.getSelectedItemConfig().getId());
+
                         boxItems.add(boxItem);
                     }
                 }

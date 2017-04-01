@@ -16,9 +16,11 @@
         <one.thebox.android.ViewHelper.CustomTabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="86dp"
+            android:layout_height="92dp"
             android:layout_marginBottom="4dp"
             android:background="@color/white"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable" />

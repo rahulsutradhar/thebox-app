@@ -139,16 +139,16 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
 
             if (getAdapterPosition() == currentSelectedPosition) {
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.davy_grey));
+                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.davy_grey));
                 textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
                 textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
                 selector.setVisibility(View.VISIBLE);
             } else {
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.primary_text_color));
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.primary_text_color));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
+                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_500));
+                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_500));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
                 selector.setVisibility(View.INVISIBLE);
             }
 

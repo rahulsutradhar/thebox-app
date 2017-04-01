@@ -9,21 +9,23 @@
     android:paddingRight="16dp"
     android:paddingTop="8dp">
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/text_view_frequency"
+        style="@style/AppTheme.Widget.Avenir.Next.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Monthly"
-        android:textColor="@color/primary_text_color"
+        android:textColor="@color/md_grey_500"
         android:textSize="@dimen/text_small1" />
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/text_view_price"
+        style="@style/AppTheme.Widget.Avenir.Next.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:text="Rs 52"
-        android:textColor="@color/primary_text_color"
+        android:textColor="@color/md_grey_500"
         android:textSize="@dimen/text_small1" />
 
     <View
