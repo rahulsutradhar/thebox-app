@@ -641,7 +641,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " More Options");
                 }
 
-
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
                     if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
                         size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
@@ -716,6 +715,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             @Override
                             public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                 dialogFragment.dismiss();
+
                                 if (boxItem.getUserItemId() == 0) {
                                     boxItem.setSelectedItemConfig(selectedItemConfig);
                                     setViews(boxItem, getAdapterPosition(), true);
@@ -931,12 +931,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
-
                                         RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
                                         boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
                                         boxItems.get(position).setSuggestedCategory(suggestionsCategories);
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
+
                                         notifyItemChanged(position);
+                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
 
                                     }
                                 }

@@ -64,27 +64,11 @@ public class CartHelper {
     }
 
     public static void addOrUpdateUserItem(final UserItem userItem, Order cart) {
-
-        try {
-            Realm realm = TheBox.getRealm();
-            realm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    realm.copyToRealmOrUpdate(userItem);
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
 
         if (cart != null) {
             OrderHelper.addAndNotify(cart);
