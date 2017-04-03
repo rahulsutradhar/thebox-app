@@ -4,17 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,14 +27,16 @@ import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserCategory;
+import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.adapter.carousel.AdapterCarousel;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -43,7 +44,9 @@ import one.thebox.android.util.PrefUtils;
  */
 public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     private RealmList<Box> boxes;
+    private ArrayList<Offer> carousel;
     private int stickyHeaderHeight = 0;
     private SparseIntArray boxHeights = new SparseIntArray();
 
@@ -70,6 +73,14 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         notifyDataSetChanged();
     }
 
+    public ArrayList<Offer> getCarousel() {
+        return carousel;
+    }
+
+    public void setCarousel(ArrayList<Offer> carousel) {
+        this.carousel = carousel;
+    }
+
     public int getStickyHeaderHeight() {
         return stickyHeaderHeight;
     }
@@ -90,7 +101,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected BaseRecyclerAdapter.HeaderHolder getHeaderHolder(View view) {
-        return new ItemHeaderHolder(view);
+        return new HeaderViewHolder(view);
     }
 
     @Override
@@ -101,7 +112,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(final BaseRecyclerAdapter.ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(boxes.get(position));
+        itemViewHolder.setViews(boxes.get(position), position);
 
         if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper((Activity) mContext, 3)
@@ -119,7 +130,8 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(BaseRecyclerAdapter.HeaderHolder holder, int position) {
-
+        HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+        headerViewHolder.setViews(carousel);
     }
 
 
@@ -140,7 +152,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
-        return R.layout.empty_space_header;
+        return R.layout.carousel_banner_header;
     }
 
     @Override
@@ -382,19 +394,34 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    public class ItemHeaderHolder extends BaseRecyclerAdapter.HeaderHolder {
+    public class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
 
-        private LinearLayout linearLayout;
+        private RecyclerView recyclerView;
+        private AdapterCarousel adapterCarousel;
+        private LinearLayoutManager linearLayoutManager;
 
-        public ItemHeaderHolder(View itemView) {
+
+        public HeaderViewHolder(View itemView) {
             super(itemView);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
+            this.recyclerView = (RecyclerView) itemView.findViewById(R.id.carousel_list);
         }
 
-        public void setHeight(int heightInDp) {
-            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
-            layoutParams.height = DisplayUtil.dpToPx(mContext, heightInDp);
-            linearLayout.setLayoutParams(layoutParams);
+        public void setViews(ArrayList<Offer> carousel) {
+            if (adapterCarousel == null || null == recyclerView.getAdapter()) {
+                linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+                this.recyclerView.setLayoutManager(linearLayoutManager);
+                SnapHelper snapHelper = new PagerSnapHelper();
+                adapterCarousel = new AdapterCarousel(mContext, glideRequestManager);
+                adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+                adapterCarousel.setCarousel(carousel);
+                this.recyclerView.setAdapter(adapterCarousel);
+                snapHelper.attachToRecyclerView(recyclerView);
+                linearLayoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+            } else {
+                adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+                adapterCarousel.setCarousel(carousel);
+                linearLayoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+            }
 
         }
     }
@@ -443,7 +470,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.add_more_items = (TextView) itemView.findViewById(R.id.add_more_items);
         }
 
-        public void setViews(Box box) {
+        public void setViews(Box box, int position) {
             this.title.setText(box.getBoxDetail().getTitle().substring(4));
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);
@@ -463,40 +490,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 this.savingsTitle.setVisibility(View.GONE);
             }
 
-//<!-- TODO:- Add how many saving are waiting for him -->
-//            if (box.getAllItemInTheBox().size() == 0) {
-//                this.subTitle.setText("Suggestions for you");
-//            }
-//            else if (box.getRemainingCategories() == null || box.getRemainingCategories().isEmpty()) {
-//                this.subTitle.setText("All Box Categories Subscribed");
-//            }
-//            else {
-//                this.subTitle.setText("Remaining Categories");
-//            }
-//
-//            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-//                viewItems.setText("Add Items");
-//                viewItems.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-//                noOfItemSubscribed.setText("     Empty Box    ");
-//                viewItems.setOnClickListener(openBoxListener);
-//                noOfItemSubscribed.setOnClickListener(openBoxListener);
-//            } else {
-//                if (box.isExpandedListVisible()) {
-//                    viewItems.setText("Hide My Items");
-//                } else {
-//                    viewItems.setText("View My Items");
-//                }
-//                viewItems.setTextColor(mContext.getResources().getColor(R.color.md_green_500));
-//                if (box.getAllItemInTheBox().size() == 1) {
-//                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " item subscribed");
-//                } else {
-//                    noOfItemSubscribed.setText(box.getAllItemInTheBox().size() + " items subscribed");
-//                }
-//                viewItems.setOnClickListener(viewItemsListener);
-//                noOfItemSubscribed.setOnClickListener(viewItemsListener);
-//            }
-
-
             glideRequestManager.load(box.getBoxDetail().getPhotoUrl())
                     .centerCrop()
                     .crossFade()
@@ -507,7 +500,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             RealmList<Category> categories = new RealmList<>();
             categories.addAll(box.getRemainingCategories());
             this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories, box.getUserCategories(), glideRequestManager);
-            this.remainingCategoryAdapter.setBox(boxes.get(getAdapterPosition()));
+            this.remainingCategoryAdapter.setBox(boxes.get(position));
             this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
 
         }
