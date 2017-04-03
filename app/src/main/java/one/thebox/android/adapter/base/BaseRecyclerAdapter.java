@@ -1,4 +1,4 @@
-package one.thebox.android.adapter;
+package one.thebox.android.adapter.base;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +16,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter {
     public static final int RECYCLER_ADAPTER_ITEM = 200;
     public static final int RECYCLER_ADAPTER_HEADER = 201;
     public static final int RECYCLER_ADAPTER_FOOTER = 202;
+
     public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;

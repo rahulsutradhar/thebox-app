@@ -8,13 +8,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 /**
  * Created by Ajeet Kumar Meena on 30-04-2016.

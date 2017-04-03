@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.Category;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 public class SearchCategoryAdapter extends BaseRecyclerAdapter {
 

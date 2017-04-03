@@ -2,6 +2,7 @@ package one.thebox.android.api;
 
 
 import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -123,7 +124,7 @@ public interface APIService {
     Call<MyBoxResponse> getMyBoxes(@Header("authtoken") String authToken);
 
     @GET("/gogetmyuseritems")
-    Call<UserItemResponse>  getMyItems(@Header("authtoken") String authToken);
+    Call<UserItemResponse> getMyItems(@Header("authtoken") String authToken);
 
     @POST("/updateitemquantity")
     Call<UpdateItemConfigResponse> updateQuantity(@Header("authtoken") String authToken,
@@ -191,4 +192,12 @@ public interface APIService {
 
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
+
+
+    /**
+     * Carousel API service
+     */
+    @GET("/public/app-offers")
+    Call<CarouselApiResponse> getCarousel();
+
 }

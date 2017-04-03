@@ -35,4 +35,9 @@ public class Constants {
      * Savings
      */
     public static final String SAVINGS = "savings";
+
+    /**
+     * Carousel Banner
+     */
+    public static final String CAROUSEL_BANNER = "carousel_banner";
 }
