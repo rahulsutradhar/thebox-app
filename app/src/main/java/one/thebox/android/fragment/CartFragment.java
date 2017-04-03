@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +54,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private TextView proceedToPayment;
     private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
-    private TextView emptyCartText;
+    private RelativeLayout emptyCartLayout;
 
     /**
      * GLide Request Manager
@@ -116,11 +117,11 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public boolean doCartHasItems() {
 
         if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
-            emptyCartText.setVisibility(View.VISIBLE);
+            emptyCartLayout.setVisibility(View.VISIBLE);
             proceedToPayment.setVisibility(View.GONE);
             return false;
         } else {
-            emptyCartText.setVisibility(View.GONE);
+            emptyCartLayout.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
             proceedToPayment.setText("Total Cost: Rs " + order.getTotalPrice() + "\n" + "Proceed to Payment");
             return true;
@@ -158,7 +159,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
             }
         });
-        emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);
+        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
     }
 
     @Override

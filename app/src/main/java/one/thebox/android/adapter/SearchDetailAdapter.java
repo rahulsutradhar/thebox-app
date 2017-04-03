@@ -9,7 +9,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -521,16 +523,19 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setViewsBasedOnStock(boolean isOutOfStock) {
             if (isOutOfStock) {
                 addButtonViewHolder.setVisibility(View.GONE);
+                updateQuantityViewHolder.setVisibility(View.GONE);
+                out_of_stock.setVisibility(View.VISIBLE);
+
                 addButton.setVisibility(View.GONE);
                 subtractButton.setVisibility(View.GONE);
                 repeat_every.setVisibility(View.GONE);
-                out_of_stock.setVisibility(View.VISIBLE);
                 savingHolder.setVisibility(View.GONE);
 
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
             } else {
                 addButtonViewHolder.setVisibility(View.VISIBLE);
+                updateQuantityViewHolder.setVisibility(View.VISIBLE);
                 addButton.setVisibility(View.VISIBLE);
                 subtractButton.setVisibility(View.VISIBLE);
                 repeat_every.setVisibility(View.VISIBLE);
@@ -572,6 +577,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 //linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
                 // recyclerViewFrequency.smoothScrollToPosition(0);
             }
+            SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerViewFrequency);
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
@@ -598,7 +605,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
                 }
             });
-            recyclerViewFrequency.smoothScrollToPosition(selectedPosition);
+            linearLayoutManager.scrollToPosition(selectedPosition);
 
             if (shouldScrollToPosition) {
                 //  linearLayoutManager.scrollToPosition(selectedPosition);

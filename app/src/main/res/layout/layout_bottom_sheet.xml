@@ -74,7 +74,7 @@
                 android:layout_weight="2">
 
                 <RelativeLayout
-                    android:id="@+id/holder_add_button"
+                    android:id="@+id/holder_skip_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"

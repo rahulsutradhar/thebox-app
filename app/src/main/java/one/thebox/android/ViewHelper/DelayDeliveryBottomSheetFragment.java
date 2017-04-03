@@ -48,11 +48,11 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private ViewPager viewPager;
     private ViewPagerAdapterReschedule pagerAdapterReschedule;
 
-    private TextView header, arrivingAtText, deliveryDate, skip;
+    private TextView header, arrivingAtText, deliveryDate;
     private Reschedule rescheduleSkip;
     private View rootView;
     private UserItem userItem;
-    private RelativeLayout loader;
+    private RelativeLayout loader, skipLayout;
 
     public DelayDeliveryBottomSheetFragment() {
 
@@ -92,12 +92,12 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         header = (TextView) rootView.findViewById(R.id.header_title);
         arrivingAtText = (TextView) rootView.findViewById(R.id.arriving_at_text);
         deliveryDate = (TextView) rootView.findViewById(R.id.delivery_date_text);
-        skip = (TextView) rootView.findViewById(R.id.skip);
+        skipLayout = (RelativeLayout) rootView.findViewById(R.id.holder_skip_button);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
 
 
-        skip.setOnClickListener(new View.OnClickListener() {
+        skipLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSkipDeliveryDailog();
@@ -239,11 +239,11 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         if (rescheduleSkip != null) {
             header.setText(rescheduleSkip.getTitle());
 
-            if (!rescheduleSkip.getDescription().isEmpty()) {
+           /* if (!rescheduleSkip.getDescription().isEmpty()) {
                 description.setText(rescheduleSkip.getDescription());
             } else {
                 description.setVisibility(View.GONE);
-            }
+            }*/
         }
 
         cancel.setOnClickListener(new View.OnClickListener() {

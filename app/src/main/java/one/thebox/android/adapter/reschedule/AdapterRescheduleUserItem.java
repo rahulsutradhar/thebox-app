@@ -10,8 +10,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.R;
-import one.thebox.android.adapter.BaseRecyclerAdapter;
-import one.thebox.android.app.TheBox;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 /**
  * Created by developers on 03/04/17.
