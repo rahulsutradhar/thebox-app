@@ -17,6 +17,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.app.TheBox;

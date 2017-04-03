@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
-import one.thebox.android.adapter.BaseRecyclerAdapter;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.adapter.TimeSlotAdapter;
 import one.thebox.android.util.Constants;

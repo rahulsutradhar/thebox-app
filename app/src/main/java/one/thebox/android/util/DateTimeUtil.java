@@ -93,4 +93,9 @@ public class DateTimeUtil {
         return (((time_difference > fetch_after_miliseconds)) ? true : false);
     }
 
+    public static boolean checkCurrentDateIsWithinRange(Date startDate, Date endDate, Date currentDate) {
+
+        return currentDate.getTime() >= startDate.getTime() && currentDate.getTime() <= endDate.getTime();
+    }
+
 }
