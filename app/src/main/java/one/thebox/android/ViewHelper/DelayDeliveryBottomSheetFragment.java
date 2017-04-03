@@ -1,5 +1,6 @@
 package one.thebox.android.ViewHelper;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -9,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -74,18 +77,6 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         return rootView;
     }
 
-
-    /*public void show(UserItem userItem, FragmentManager fragmentManager) {
-            this.userItem = userItem;
-            this.fragmentManager = fragmentManager;
-            bottomSheet = (context).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-            bottomSheetDialog.setContentView(bottomSheet);
-            bottomSheetDialog.show();
-            initViews();
-            getRescheduleOption();
-        }
-    */
-
     public void initVariable() {
         this.userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
     }
@@ -101,6 +92,12 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
 
 
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSkipDeliveryDailog();
+            }
+        });
     }
 
     public void getRescheduleOption() {
@@ -219,6 +216,47 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             n.printStackTrace();
         }
 
+    }
+
+    public void openSkipDeliveryDailog() {
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(R.layout.dailog_skip_reschedule_delivery);
+        dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+        dialog.show();
+
+        TextView header = (TextView) dialog.findViewById(R.id.header_title);
+        TextView description = (TextView) dialog.findViewById(R.id.text_description);
+        TextView cancel = (TextView) dialog.findViewById(R.id.cancel);
+        RelativeLayout skip = (RelativeLayout) dialog.findViewById(R.id.holder_skip_button);
+
+        if (rescheduleSkip != null) {
+            header.setText(rescheduleSkip.getTitle());
+
+            if (!rescheduleSkip.getDescription().isEmpty()) {
+                description.setText(rescheduleSkip.getDescription());
+            } else {
+                description.setVisibility(View.GONE);
+            }
+        }
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        dismiss();
     }
 
 

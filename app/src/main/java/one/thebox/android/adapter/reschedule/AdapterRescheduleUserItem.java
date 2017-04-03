@@ -126,6 +126,15 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                 textViewArrivingAt.setText(delivery.getArrivingAt());
             }
 
+            //Holder merge click event
+            merge.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+
+                }
+            });
 
         }
     }
