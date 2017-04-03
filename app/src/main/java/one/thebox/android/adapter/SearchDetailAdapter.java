@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +23,11 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,7 +36,6 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -51,7 +47,7 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.FullImageActivity;
@@ -70,7 +66,6 @@ import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
-import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -1063,12 +1058,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     break;
                                 case 2:
                                     //Reschedule
-                                    new DelayDeliveryBottomSheet((Activity) mContext, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
+                                    final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(userItem);
+                                    deliveryBottomSheet.show(((AppCompatActivity)mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
+                                    deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
                                         @Override
                                         public void onDelayActionCompleted(UserItem userItem) {
 
-                                            try {
+                                        }
+                                    });
 
+
+                                   /* new DelayDeliveryBottomSheetFragment((Activity) mContext, new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
+                                        @Override
+                                        public void onDelayActionCompleted(UserItem userItem) {
+                                            try {
                                                 if (userItem == null) {
                                                     userItems.remove(arrayListPosition);
                                                     if (onUserItemChange != null) {
@@ -1086,7 +1089,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 e.printStackTrace();
                                             }
                                         }
-                                    }).show(userItem);
+                                    }).show(userItem,((Activity) mContext).getFragmentManager());*/
                                     break;
                                 case 3:
                                     //cancel subscription

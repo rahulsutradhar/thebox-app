@@ -1,6 +1,5 @@
 package one.thebox.android.holders;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
@@ -104,24 +102,24 @@ public class UserItemHolder extends BaseHolder {
                                 break;
                             case 2:
 
-                                new DelayDeliveryBottomSheet((Activity) context, new DelayDeliveryBottomSheet.OnDelayActionCompleted() {
+                               /* new DelayDeliveryBottomSheetFragment((Activity) context, new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
                                     @Override
                                     public void onDelayActionCompleted(UserItem userItem) {
-//                                    if (userItem == null) {
-//                                        userItems.remove(arrayListPosition);
-//                                        if (onUserItemChange != null) {
-//                                            onUserItemChange.onUserItemChange(userItems);
-//                                        }
-//                                        notifyItemRemoved(getAdapterPosition());
-//                                    } else {
-//                                        userItems.set(arrayListPosition, userItem);
-//                                        if (onUserItemChange != null) {
-//                                            onUserItemChange.onUserItemChange(userItems);
-//                                        }
-//                                        notifyItemChanged(getAdapterPosition());
-//                                    }
+                                   if (userItem == null) {
+                                        userItems.remove(arrayListPosition);
+                                        if (onUserItemChange != null) {
+                                            onUserItemChange.onUserItemChange(userItems);
+                                        }
+                                        notifyItemRemoved(getAdapterPosition());
+                                    } else {
+                                        userItems.set(arrayListPosition, userItem);
+                                        if (onUserItemChange != null) {
+                                            onUserItemChange.onUserItemChange(userItems);
+                                        }
+                                        notifyItemChanged(getAdapterPosition());
                                     }
-                                }).show(userItem);
+                                    }
+                                }).show(userItem,((Activity) mContext).getSupportFragmentManager()));*/
 
                                 break;
                             case 3:

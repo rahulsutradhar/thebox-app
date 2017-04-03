@@ -1,38 +1,28 @@
 package one.thebox.android.ViewHelper;
 
-import android.app.Activity;
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.reschedule.Reschedule;
 import one.thebox.android.R;
-import one.thebox.android.adapter.BaseRecyclerAdapter;
-import one.thebox.android.adapter.DeliverySlotsAdapter;
-import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
-import one.thebox.android.api.Responses.AdjustDeliveryResponse;
-import one.thebox.android.api.Responses.CancelSubscriptionResponse;
+import one.thebox.android.adapter.viewpager.ViewPagerAdapterReschedule;
+import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.DateTimeUtil;
+import one.thebox.android.fragment.reshedule.FragmentRescheduleUserItem;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,87 +30,203 @@ import retrofit2.Response;
 /**
  * Created by Ajeet Kumar Meena on 03-05-2016.
  */
-public class DelayDeliveryBottomSheet {
-    private Activity context;
-    private BottomSheetDialog bottomSheetDialog;
-    private View bottomSheet;
-    private RecyclerView recyclerView;
-    private GifImageView progressBar;
-    private AdjustDeliverySlotAdapter adjustDeliverySlotAdapter;
-    private ArrayList<Order> nextOrder = new ArrayList<>();
-    private ArrayList<Order> beforeNextDeliveryOrders = new ArrayList<>();
-    private UserItem userItem;
-    private OnDelayActionCompleted onDelayActionCompleted;
+public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment {
 
-    public DelayDeliveryBottomSheet(Activity context, OnDelayActionCompleted onDelayActionCompleted) {
-        this.context = context;
-        bottomSheetDialog = new BottomSheetDialog(context);
+    private static final String EXTRA_USER_ITEM = "extra_user_item";
+    public static final String TAG = "Reschulde User item";
+
+    private OnDelayActionCompleted onDelayActionCompleted;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPagerAdapterReschedule pagerAdapterReschedule;
+
+    private TextView header, arrivingAtText, deliveryDate, skip;
+    private Reschedule rescheduleSkip;
+    private View rootView;
+    private UserItem userItem;
+    private RelativeLayout loader;
+
+    public DelayDeliveryBottomSheetFragment() {
+
+    }
+
+    public static DelayDeliveryBottomSheetFragment newInstance(UserItem userItem) {
+
+        Bundle args = new Bundle();
+        args.putString(EXTRA_USER_ITEM, CoreGsonUtils.toJson(userItem));
+        DelayDeliveryBottomSheetFragment delayDeliveryBottomSheetFragment = new DelayDeliveryBottomSheetFragment();
+        delayDeliveryBottomSheetFragment.setArguments(args);
+        return delayDeliveryBottomSheetFragment;
+    }
+
+    public void attachListener(OnDelayActionCompleted onDelayActionCompleted) {
         this.onDelayActionCompleted = onDelayActionCompleted;
     }
 
-    public void show(UserItem userItem) {
-        this.userItem = userItem;
-        bottomSheet = (context).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
-        bottomSheetDialog.setContentView(bottomSheet);
-        bottomSheetDialog.show();
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.layout_bottom_sheet, container, false);
         initViews();
-        getAllOrders();
+        initVariable();
+        getRescheduleOption();
+        return rootView;
     }
+
+
+    /*public void show(UserItem userItem, FragmentManager fragmentManager) {
+            this.userItem = userItem;
+            this.fragmentManager = fragmentManager;
+            bottomSheet = (context).getLayoutInflater().inflate(R.layout.layout_bottom_sheet, null);
+            bottomSheetDialog.setContentView(bottomSheet);
+            bottomSheetDialog.show();
+            initViews();
+            getRescheduleOption();
+        }
+    */
+
+    public void initVariable() {
+        this.userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
+    }
+
 
     public void initViews() {
-        recyclerView = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view);
-        recyclerView.setItemViewCacheSize(20);
-        recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        progressBar = (GifImageView) bottomSheet.findViewById(R.id.progress_bar);
+        loader = (RelativeLayout) rootView.findViewById(R.id.loader);
+        header = (TextView) rootView.findViewById(R.id.header_title);
+        arrivingAtText = (TextView) rootView.findViewById(R.id.arriving_at_text);
+        deliveryDate = (TextView) rootView.findViewById(R.id.delivery_date_text);
+        skip = (TextView) rootView.findViewById(R.id.skip);
+        tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
+        viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
+
+
     }
 
-    public void setupRecyclerView() {
-        ArrayList<String> reasonString = new ArrayList<>();
-        if (beforeNextDeliveryOrders != null && !beforeNextDeliveryOrders.isEmpty()) {
-            reasonString.add("Item Finished. I want it early");
+    public void getRescheduleOption() {
+
+        loader.setVisibility(View.VISIBLE);
+        TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), userItem.getId())
+                .enqueue(new Callback<RescheduleResponse>() {
+                    @Override
+                    public void onResponse(Call<RescheduleResponse> call, Response<RescheduleResponse> response) {
+                        loader.setVisibility(View.GONE);
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                parseData(response.body());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RescheduleResponse> call, Throwable t) {
+                        loader.setVisibility(View.GONE);
+                    }
+                });
+
+    }
+
+    public void parseData(RescheduleResponse rescheduleResponse) {
+        ArrayList<Reschedule> tabsList = new ArrayList<>();
+
+        for (Reschedule reschedule : rescheduleResponse.getReschedules()) {
+            if (reschedule.getPriority() == 1) {
+                this.rescheduleSkip = reschedule;
+            } else {
+                tabsList.add(reschedule);
+            }
         }
-        if (nextOrder != null && !nextOrder.isEmpty()) {
-            reasonString.add("Item Not Finished Yet. I want to delay delivery");
+
+        setData(rescheduleResponse);
+        setupViewPagerWithTab(tabsList);
+    }
+
+    public void setData(RescheduleResponse rescheduleResponse) {
+        try {
+
+            if (rescheduleResponse.getTitle() != null) {
+                if (!rescheduleResponse.getTitle().isEmpty()) {
+                    header.setText(rescheduleResponse.getTitle());
+                }
+            }
+
+            if (rescheduleResponse.getNextArrivingAt() != null) {
+                if (!rescheduleResponse.getNextArrivingAt().isEmpty()) {
+                    arrivingAtText.setText(rescheduleResponse.getNextArrivingAt());
+                }
+            }
+
+            if (rescheduleResponse.getNextDeliveryAt() != null) {
+                if (!rescheduleResponse.getNextDeliveryAt().isEmpty()) {
+                    deliveryDate.setText(rescheduleResponse.getNextDeliveryAt());
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        adjustDeliverySlotAdapter = new AdjustDeliverySlotAdapter(context, reasonString);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(adjustDeliverySlotAdapter);
     }
 
-    public void getAllOrders() {
-        TheBox.getAPIService().getAdjustDeliveryOrders(PrefUtils.getToken(context), userItem.getId())
-                .enqueue(new Callback<AdjustDeliveryResponse>() {
-                             @Override
-                             public void onResponse(Call<AdjustDeliveryResponse> call, Response<AdjustDeliveryResponse> response) {
-                                 progressBar.setVisibility(View.GONE);
-                                 if (response.body() != null) {
-                                     if (response.body().isSuccess()) {
-                                         nextOrder.addAll(response.body().getNextOrder());
-                                         beforeNextDeliveryOrders.addAll(response.body().getOrdersBeforeNextOrder());
-                                         setupRecyclerView();
-                                     } else {
-                                         Toast.makeText(context, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                     }
-                                 }
-                             }
+    public void setupViewPagerWithTab(ArrayList<Reschedule> tabsList) {
+        if (getActivity() == null) {
+            return;
+        }
+        try {
+            pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
+            for (int i = 0; i < tabsList.size(); i++) {
+                pagerAdapterReschedule.addFragment(FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getDeliveries(), i));
+            }
+
+            viewPager.setAdapter(pagerAdapterReschedule);
+            tabLayout.setupWithViewPager(viewPager);
+            viewPager.setOffscreenPageLimit(tabsList.size());
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            if (tabsList.size() > 2) {
+                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            } else {
+                tabLayout.setTabMode(TabLayout.MODE_FIXED);
+            }
 
 
-                             @Override
-                             public void onFailure(Call<AdjustDeliveryResponse> call, Throwable t) {
-                                 progressBar.setVisibility(View.GONE);
-                             }
-                         }
+            if (tabsList.size() > 0) {
+                for (int i = 0; i < tabLayout.getTabCount(); i++) {
+                    TabLayout.Tab newTab = tabLayout.getTabAt(i);
+                    newTab.setCustomView(pagerAdapterReschedule.getTabView(i));
+                }
+            }
 
-                );
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+            viewPager.setCurrentItem(0);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } catch (NullPointerException n) {
+            n.printStackTrace();
+        }
+
     }
+
 
     public interface OnDelayActionCompleted {
         void onDelayActionCompleted(UserItem userItem);
     }
 
-    class AdjustDeliverySlotAdapter extends BaseRecyclerAdapter {
+   /* class AdjustDeliverySlotAdapter extends BaseRecyclerAdapter {
 
         private ArrayList<String> reasonString = new ArrayList<>();
         private int currentSelection = -1;
@@ -154,7 +260,7 @@ public class DelayDeliveryBottomSheet {
                     notifyItemChanged(currentSelection + 1);
                 }
             });
-            itemViewHolder.setupViews(reasonString.get(position).contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
+         //   itemViewHolder.setupViews(reasonString.get(position).contains("early") ? beforeNextDeliveryOrders : nextOrder, reasonString.get(position));
         }
 
         @Override
@@ -399,6 +505,6 @@ public class DelayDeliveryBottomSheet {
                 dialog.show();
             }
         }
-    }
+    }*/
 
 }
