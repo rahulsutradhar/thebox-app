@@ -525,6 +525,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 subtractButton.setVisibility(View.GONE);
                 repeat_every.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
+                savingHolder.setVisibility(View.GONE);
 
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
@@ -1059,7 +1060,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 case 2:
                                     //Reschedule
                                     final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(userItem);
-                                    deliveryBottomSheet.show(((AppCompatActivity)mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
+                                    deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
                                     deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
                                         @Override
                                         public void onDelayActionCompleted(UserItem userItem) {
