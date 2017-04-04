@@ -5,10 +5,9 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 /**
  * Created by Ajeet Kumar Meena on 12-04-2016.

@@ -7,26 +7,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
-import org.greenrobot.eventbus.EventBus;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.Models.user.OrderedUserItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.MontserratTextView;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;

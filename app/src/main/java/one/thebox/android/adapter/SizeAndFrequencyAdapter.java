@@ -8,6 +8,7 @@ import android.widget.TextView;
 import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
@@ -129,25 +130,56 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private TextView sizeTextView;
+        private TextView savingsTextView, mrpTextView;
         private TextView costTextView;
         private int colorDimGray, colorRose;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             sizeTextView = (TextView) itemView.findViewById(R.id.size_text_view);
+            mrpTextView = (TextView) itemView.findViewById(R.id.mrp_text_view);
             costTextView = (TextView) itemView.findViewById(R.id.cost_text_view);
+            savingsTextView = (TextView) itemView.findViewById(R.id.text_view_savings);
             colorDimGray = mContext.getResources().getColor(R.color.primary_text_color);
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 
         public void setViewHolder(ItemConfig itemConfig) {
 
-                if (itemConfig.getCorrectQuantity().equals("NA")) {
-                    sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            if (itemConfig.getCorrectQuantity().equals("NA")) {
+                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            } else {
+                sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            }
+            costTextView.setText("\u20B9 " + itemConfig.getPrice());
+
+            //savings text
+            if (itemConfig.getSavingsText() != null) {
+                if (!itemConfig.getSavingsText().isEmpty()) {
+                    savingsTextView.setVisibility(View.VISIBLE);
+                    savingsTextView.setText(itemConfig.getSavingsText());
                 } else {
-                    sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+                    savingsTextView.setText("");
+                    savingsTextView.setVisibility(View.GONE);
                 }
-                costTextView.setText("Rs " + itemConfig.getPrice());
+            } else {
+                savingsTextView.setText("");
+                savingsTextView.setVisibility(View.GONE);
+            }
+
+            //mrp textView
+            if (itemConfig.getMrpText() != null) {
+                if (!itemConfig.getMrpText().isEmpty()) {
+                    mrpTextView.setVisibility(View.VISIBLE);
+                    mrpTextView.setText(itemConfig.getMrpText());
+                } else {
+                    mrpTextView.setText("");
+                    mrpTextView.setVisibility(View.GONE);
+                }
+            } else {
+                mrpTextView.setText("");
+                mrpTextView.setVisibility(View.GONE);
+            }
 
             if (itemConfig.is_in_stock()) {
                 if (getAdapterPosition() == currentItemSelected) {
@@ -157,8 +189,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                     sizeTextView.setTextColor(colorDimGray);
                     costTextView.setTextColor(colorDimGray);
                 }
-            }
-            else{
+            } else {
                 sizeTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
                 costTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
                 sizeTextView.setPaintFlags(sizeTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

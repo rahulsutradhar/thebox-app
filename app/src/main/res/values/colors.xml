@@ -39,6 +39,9 @@
     <color name="isabelline">#ededed</color>
     <color name="transparent">#00000000</color>
     <color name="green_navigation_contact_us">#ff3bb44a</color>
+
+    <color name="off_white">#E6FFFFFF</color>
+
     <!--reds-->
     <color name="raspberry_red">#ec145b</color>
     <color name="md_red_50">#FFEBEE</color>

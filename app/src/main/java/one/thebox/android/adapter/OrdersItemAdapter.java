@@ -18,6 +18,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.OrderItemsActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.DateTimeUtil;
 
 

@@ -26,11 +26,14 @@ import com.squareup.haha.trove.THash;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -45,14 +48,19 @@ import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Size;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.StoreRecyclerAdapter;
+import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
+import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -63,12 +71,16 @@ import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_T
 
 public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
+    public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
+
     private RecyclerView recyclerView;
     private StoreRecyclerAdapter storeRecyclerAdapter;
     private View rootLayout;
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
     private RealmList<Box> boxes = new RealmList<>();
+    private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
 
@@ -108,7 +120,11 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             initViews();
             initVariables();
 
+            //fetch box from server
             getMyBoxes();
+            //fetch carousel from server
+            getCarousel();
+
             setupAppBarObserver();
 
             onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
@@ -150,8 +166,53 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         this.boxes.clear();
         this.boxes.addAll(boxes);
 
+        /**
+         * Fetch Carousel from Preferances
+         */
+        getValidOffer(CoreGsonUtils.fromJsontoArrayList(PrefUtils.getString(getActivity(), Constants.CAROUSEL_BANNER), Offer.class));
+
+
         if (!boxes.isEmpty()) {
             setupRecyclerView();
+        }
+    }
+
+    public void getValidOffer(ArrayList<Offer> carousel) {
+        try {
+
+            ArrayList<Offer> offers = new
+                    ArrayList<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            Date date = sdf.parse("2017-03-06T03:05:00.000+05:30");
+            sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+            String current = sdf.format(date);
+            Date currentDate = DateTimeUtil.convertStringToDate(current);
+
+            for (Offer offer : carousel) {
+                Date startDate = DateTimeUtil.convertStringToDate(offer.getStartDate());
+                Date endDate = DateTimeUtil.convertStringToDate(offer.getEndDate());
+
+                if (DateTimeUtil.checkCurrentDateIsWithinRange(startDate, endDate, currentDate)) {
+                    offers.add(offer);
+                }
+            }
+
+            if (offers.size() > 0) {
+                //sort the items priority wise
+                Collections.sort(offers, new Comparator<Offer>() {
+                    @Override
+                    public int compare(Offer offer1, Offer offer2) {
+                        return offer1.getPriority() > offer2.getPriority() ? -1 : (offer1.getPriority() < offer2.getPriority()) ? 1 : 0;
+
+                    }
+                });
+
+                this.carousel.clear();
+                this.carousel.addAll(offers);
+                offers.clear();
+            }
+        } catch (Exception e) {
+
         }
     }
 
@@ -172,10 +233,28 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(linearLayoutManager);
             storeRecyclerAdapter = new StoreRecyclerAdapter(getActivity(), Glide.with(this));
-            storeRecyclerAdapter.setBoxes(boxes);
+            setRecycelerViewData();
             recyclerView.setAdapter(storeRecyclerAdapter);
         } else {
+            setRecycelerViewData();
+        }
+    }
+
+    public void setRecycelerViewData() {
+        try {
             storeRecyclerAdapter.setBoxes(boxes);
+            storeRecyclerAdapter.setCarousel(carousel);
+
+            if (carousel == null) {
+                storeRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            } else if (carousel.size() == 0) {
+                storeRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            } else {
+                storeRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -261,6 +340,34 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         progressBar.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(true);
+                    }
+                });
+    }
+
+    public void getCarousel() {
+        TheBox.getAPIService().getCarousel()
+                .enqueue(new Callback<CarouselApiResponse>() {
+                    @Override
+                    public void onResponse(Call<CarouselApiResponse> call, Response<CarouselApiResponse> response) {
+                        try {
+                            if (response.body() != null) {
+
+                                if (response.body().getOffers() != null) {
+
+                                    //save in the Preferances
+                                    PrefUtils.putString(getActivity(), Constants.CAROUSEL_BANNER, CoreGsonUtils.toJson(response.body().getOffers()));
+
+                                    initVariables();
+                                }
+
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<CarouselApiResponse> call, Throwable t) {
                     }
                 });
     }

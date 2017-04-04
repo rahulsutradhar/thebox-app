@@ -45,21 +45,22 @@
                     android:orientation="vertical">
 
                     <TextView
-                        style="@style/AppTheme.Widget.TextView"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:text="The"
-                        android:textColor="@color/davy_grey" />
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_medium1" />
 
                     <TextView
                         android:id="@+id/title"
-                        style="@style/AppTheme.Widget.TextView"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="Hygeine Box"
-                        android:textColor="@color/davy_grey"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/text_medium1" />
                 </LinearLayout>
 
@@ -69,8 +70,9 @@
                     android:layout_marginTop="4dp"
                     android:layout_weight="2.5">
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/add_more_items"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
@@ -87,8 +89,9 @@
             </LinearLayout>
 
             <!-- Savings -->
-            <one.thebox.android.ViewHelper.MontserratTextView
+            <TextView
                 android:id="@+id/text_view_savings"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"

@@ -1,7 +1,6 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -9,11 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
@@ -132,7 +131,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(UserItem userItem) {
             itemText.setText(userItem.getBoxItem().getTitle());
-            amountText.setText("Rs " + userItem.getTotalPriceForAnOrder());
+            amountText.setText("\u20B9 " + userItem.getTotalPriceForAnOrder());
             if (userItem.getNextDeliveryScheduledAt() == null) {
                 itemText.setTextColor(mContext.getResources().getColor(R.color.black));
                 amountText.setTextColor(mContext.getResources().getColor(R.color.md_red_700));
@@ -174,9 +173,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
                 deliveryCharge.setText("Free");
                 deliveryCharge.setTextColor(context.getResources().getColor(R.color.md_green_800));
             } else {
-                deliveryCharge.setText("Rs " + getTotalDeliverCharges());
+                deliveryCharge.setText("\u20B9 " + getTotalDeliverCharges());
             }
-            amount.setText("Rs " + getFinalPaymentAmount());
+            amount.setText("\u20B9 " + getFinalPaymentAmount());
         }
     }
 

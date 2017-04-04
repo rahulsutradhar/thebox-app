@@ -29,30 +29,93 @@
             android:orientation="horizontal"
             android:paddingBottom="18dp">
 
-            <ImageView
-                android:id="@+id/product_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp" />
+            <!-- Left Image view -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.8">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/price_tags">
+
+                    <ImageView
+                        android:id="@+id/product_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/price_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:paddingBottom="0dp"
+                    android:paddingTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/savings_item_confid"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:paddingTop="5dp"
+                            android:text=""
+                            android:textColor="@color/raspberry_red"
+                            android:textSize="@dimen/text_small2"
+                            android:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/mrp"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@drawable/strike_through"
+                            android:padding="2dp"
+                            android:text=""
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_medium1"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <!-- Right side view -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/product_name"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
+                    android:layout_marginRight="10dp"
                     android:text="Purifying Neem"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/product_brand"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="By Himalaya"
@@ -67,45 +130,47 @@
                     android:orientation="horizontal"
                     android:paddingBottom="1dp">
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/text_view_size"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"
                         android:text="55ml * 100 meter packet need"
-                        android:textColor="@color/black"
+                        android:textColor="@color/primary_text_color"
                         android:textSize="13sp" />
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/no_of_options"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_horizontal_between_co_element"
                         android:layout_weight="1"
                         android:background="@drawable/green_borders"
                         android:gravity="center"
-                        android:paddingBottom="8dp"
+                        android:paddingBottom="4dp"
                         android:paddingLeft="4dp"
                         android:paddingRight="4dp"
-                        android:paddingTop="8dp"
+                        android:paddingTop="4dp"
                         android:text=" + 5 more options"
-                        android:textColor="@color/md_green_500"
+                        android:textColor="@color/black"
                         android:textSize="12sp"
-                        app:typeface="montserratSemiBold" />
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/repeat_every"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Repeat:"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
-                    app:typeface="montserratSemiBold" />
+                    android:textSize="12sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view_frequency"
@@ -114,59 +179,75 @@
                     android:gravity="center_vertical"
                     android:scrollbars="horizontal" />
 
-                <LinearLayout
+                <!-- Savings text -->
+                <TextView
+                    android:id="@+id/savings_title"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_marginRight="10dp"
+                    android:paddingBottom="2dp"
+                    android:paddingTop="2dp"
+                    android:text=""
+                    android:textColor="@color/raspberry_red"
+                    android:textSize="@dimen/text_small1"
+                    android:visibility="visible" />
 
-                    <FrameLayout
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp">
+
+                    <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:id="@+id/holder_add_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/green_background"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:paddingBottom="8dp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:paddingTop="8dp">
 
                             <one.thebox.android.ViewHelper.MontserratTextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="8dp"
-                                android:layout_marginLeft="12dp"
-                                android:layout_marginRight="12dp"
-                                android:layout_marginTop="8dp"
+                                android:layout_gravity="center"
                                 android:text="@string/subscribe"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/text_medium1"
                                 app:typeface="montserratSemiBold" />
 
 
-                        </LinearLayout>
+                        </RelativeLayout>
 
                         <LinearLayout
                             android:id="@+id/holder_adjust_quantity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:background="@color/white"
                             android:orientation="horizontal"
                             android:visibility="gone">
 
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/button_subtract"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="-"
-                                android:textColor="@color/md_green_500" />
+                                android:textColor="@color/black" />
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/no_of_item_selected"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingBottom="8dp"
@@ -174,18 +255,19 @@
                                 android:paddingRight="12dp"
                                 android:paddingTop="8dp"
                                 android:text="0"
-                                android:textColor="@color/primary_text_color"
+                                android:textColor="@color/black"
                                 android:textSize="12dp" />
 
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/button_add"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="+"
-                                android:textColor="@color/md_green_500" />
+                                android:textColor="@color/black" />
 
                         </LinearLayout>
 
@@ -203,34 +285,10 @@
                             android:visibility="gone"
                             app:typeface="montserratSemiBold" />
 
-                    </FrameLayout>
+                    </RelativeLayout>
 
 
-                    <LinearLayout
-                        android:id="@+id/holder_saving_amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:background="@color/brilliant_rose" />
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/text_view_savings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
-                            android:text="5 Rs Saving"
-                            android:textColor="@color/brilliant_rose"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
+                </RelativeLayout>
 
 
             </LinearLayout>
@@ -242,7 +300,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <View
                 android:layout_width="wrap_content"

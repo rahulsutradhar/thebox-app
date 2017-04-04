@@ -14,6 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
+            android:focusableInTouchMode="true"
+            android:descendantFocusability="blocksDescendants"
             android:orientation="vertical"
             tools:context=".fragment.MyBoxesFragment">
 
@@ -22,9 +24,7 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/md_grey_200"
-                android:clipToPadding="true"
-                android:scrollbars="vertical" />
+                android:background="@color/md_grey_200" />
 
             <FrameLayout
                 android:id="@+id/fab_holder"

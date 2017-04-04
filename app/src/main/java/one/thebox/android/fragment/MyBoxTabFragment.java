@@ -98,7 +98,7 @@ public class MyBoxTabFragment extends Fragment {
         //Attaching "MyItems"
         MyBoxesFragment my_box_fragment = new MyBoxesFragment();
         my_box_fragment.setArguments(args);
-        adapter.addFragment(my_box_fragment, "Subscriptions");
+        adapter.addFragment(my_box_fragment, "Subscription");
 
         //Attaching Store
         StoreFragment store_fragment = new StoreFragment();
@@ -114,6 +114,8 @@ public class MyBoxTabFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(default_position);
         viewPager.setOffscreenPageLimit(3);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
     }
 
     @Override

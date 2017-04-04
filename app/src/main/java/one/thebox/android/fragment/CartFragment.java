@@ -11,9 +11,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +55,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private TextView proceedToPayment;
     private SearchDetailAdapter userItemRecyclerAdapter;
     private View rootView;
-    private TextView emptyCartText;
+    private RelativeLayout emptyCartLayout;
 
     /**
      * GLide Request Manager
@@ -69,7 +72,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
                     initVariables();
-                    setupRecyclerView();
+                    doCartHasItems();
                 }
             });
 
@@ -112,26 +115,32 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         return rootView;
     }
 
-    private void setupRecyclerView() {
-        if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
-            emptyCartText.setVisibility(View.VISIBLE);
-            proceedToPayment.setVisibility(View.GONE);
-            return;
-        } else {
-            emptyCartText.setVisibility(View.GONE);
-            proceedToPayment.setVisibility(View.VISIBLE);
-            proceedToPayment.setText("Total Cost: Rs " + order.getTotalPrice() + "\n" + "Proceed to Payment");
-        }
+    public boolean doCartHasItems() {
 
-        if (userItemRecyclerAdapter == null) {
-            userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
-            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-            userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(userItemRecyclerAdapter);
+        if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
+            emptyCartLayout.setVisibility(View.VISIBLE);
+            proceedToPayment.setVisibility(View.GONE);
+            return false;
         } else {
-            userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-            userItemRecyclerAdapter.notifyDataSetChanged();
+            emptyCartLayout.setVisibility(View.GONE);
+            proceedToPayment.setVisibility(View.VISIBLE);
+            proceedToPayment.setText("Total Cost: \u20B9 " + order.getTotalPrice() + "\n" + "Proceed to Payment");
+            return true;
+        }
+    }
+
+    private void setupRecyclerView() {
+        if (doCartHasItems()) {
+            if (userItemRecyclerAdapter == null) {
+                userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
+                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+                userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.setAdapter(userItemRecyclerAdapter);
+            } else {
+                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
+                userItemRecyclerAdapter.notifyDataSetChanged();
+            }
         }
 
     }
@@ -151,8 +160,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
             }
         });
-        emptyCartText = (TextView) rootView.findViewById(R.id.empty_text);
+        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
     }
+
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
@@ -167,7 +177,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
                     initVariables();
-                    setupRecyclerView();
+                    doCartHasItems();
                 }
             });
         }
@@ -312,4 +322,5 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             e.printStackTrace();
         }
     }
+
 }

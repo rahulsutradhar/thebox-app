@@ -16,12 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
+            android:elevation="5dp"
+            app:tabBackground="@color/white"
             app:tabGravity="fill"
+            app:tabIndicatorColor="@color/raspberry_red"
+            app:tabIndicatorHeight="3dp"
             app:tabMaxWidth="0dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/black"
-            app:tabTextAppearance="@style/AppTheme.Widget.Avenir.Next.Bold"
-            app:tabTextColor="@color/manatee" />
+            app:tabTextAppearance="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            app:tabTextColor="@color/md_grey_600" />
 
         <View
             android:layout_width="wrap_content"

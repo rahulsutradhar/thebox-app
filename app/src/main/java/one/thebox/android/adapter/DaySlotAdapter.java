@@ -5,9 +5,8 @@ import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import one.thebox.android.R;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 /**
  * Created by Ajeet Kumar Meena on 17-04-2016.
