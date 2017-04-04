@@ -8,7 +8,7 @@
 
 
     <TextView
-        style="@style/AppTheme.Widget.TextView"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -16,12 +16,11 @@
         android:gravity="center_horizontal"
         android:text="Choose Size and Subscription"
         android:textColor="@color/light_white"
-        android:textSize="@dimen/text_medium1"
-        android:textStyle="normal" />
+        android:textSize="@dimen/text_medium1" />
 
 
     <TextView
-        style="@style/AppTheme.Widget.TextView"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="0dp"
@@ -32,8 +31,7 @@
         android:paddingTop="5dp"
         android:text="Deliver this item:"
         android:textColor="@color/light_white"
-        android:textSize="@dimen/text_small3"
-        android:textStyle="normal" />
+        android:textSize="@dimen/text_small3" />
 
 
     <one.thebox.android.ViewHelper.CustomTabLayout

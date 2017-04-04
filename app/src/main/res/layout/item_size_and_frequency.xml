@@ -18,14 +18,14 @@
 
             <TextView
                 android:id="@+id/size_text_view"
-                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_weight="1"
                 android:text="55 ml - Tube"
-                android:textColor="@color/md_grey_600"
-                android:textSize="@dimen/text_small3" />
+                android:textColor="@color/davy_grey"
+                android:textSize="@dimen/text_medium1" />
         </RelativeLayout>
 
         <LinearLayout
@@ -41,15 +41,15 @@
 
                 <TextView
                     android:id="@+id/cost_text_view"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:text="52 Rs"
-                    android:textColor="@color/md_grey_600"
-                    android:textSize="@dimen/text_small3" />
+                    android:textColor="@color/davy_grey"
+                    android:textSize="@dimen/text_medium1" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -58,28 +58,28 @@
 
                     <TextView
                         android:id="@+id/mrp_text_view"
-                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:background="@drawable/strike_through"
                         android:gravity="left"
                         android:text="52 Rs"
-                        android:textColor="@color/md_grey_600"
-                        android:textSize="@dimen/text_small1" />
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_small3" />
                 </RelativeLayout>
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/text_view_savings"
-                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/text_view_category_name"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="2dp"
                 android:gravity="center_horizontal"
+                android:padding="3dp"
                 android:text=""
                 android:textColor="@color/raspberry_red"
                 android:textSize="@dimen/text_small1"

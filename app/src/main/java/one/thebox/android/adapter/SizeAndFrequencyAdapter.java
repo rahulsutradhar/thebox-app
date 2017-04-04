@@ -151,7 +151,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             } else {
                 sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
             }
-            costTextView.setText("Rs " + itemConfig.getPrice());
+            costTextView.setText("\u20B9 " + itemConfig.getPrice());
 
             //savings text
             if (itemConfig.getSavingsText() != null) {
