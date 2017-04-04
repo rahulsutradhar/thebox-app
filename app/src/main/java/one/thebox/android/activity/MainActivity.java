@@ -490,6 +490,7 @@ public class MainActivity extends BaseActivity implements
 
     private void attachOrderFragment() {
 
+
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");

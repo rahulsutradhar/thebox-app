@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ public class FragmentRescheduleUserItem extends Fragment {
     private int positionInViewPager;
     private RecyclerView recyclerView;
     private AdapterRescheduleUserItem adapter;
-    private RelativeLayout emptyState;
+    private LinearLayout emptyState;
 
 
     public static FragmentRescheduleUserItem getInstance(Context activity, ArrayList<Delivery> deliveries, int positionInViewPager) {
@@ -75,7 +76,7 @@ public class FragmentRescheduleUserItem extends Fragment {
 
     public void initView() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.list_delivery);
-        emptyState = (RelativeLayout) rootView.findViewById(R.id.empty_state);
+        emptyState = (LinearLayout) rootView.findViewById(R.id.empty_state);
     }
 
     public void initVariable() {

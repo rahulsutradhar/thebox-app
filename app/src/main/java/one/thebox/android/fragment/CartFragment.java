@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -161,6 +162,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         });
         emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
     }
+
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
@@ -320,4 +322,5 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             e.printStackTrace();
         }
     }
+
 }
