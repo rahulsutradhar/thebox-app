@@ -620,7 +620,7 @@ public class MainActivity extends BaseActivity implements
 
 
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentManager.popBackStackImmediate();
         } else {
             if (doubleBackToExitPressedOnce) {
                 super.onBackPressed();

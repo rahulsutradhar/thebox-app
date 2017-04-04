@@ -84,7 +84,7 @@
                             android:background="@drawable/strike_through"
                             android:padding="2dp"
                             android:text=""
-                            android:textColor="@color/davy_grey"
+                            android:textColor="@color/black"
                             android:textSize="@dimen/text_medium1"
                             android:visibility="visible" />
 
@@ -235,17 +235,19 @@
                             android:visibility="gone">
 
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/button_subtract"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="-"
-                                android:textColor="@color/md_green_500" />
+                                android:textColor="@color/black" />
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/no_of_item_selected"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingBottom="8dp"
@@ -253,18 +255,19 @@
                                 android:paddingRight="12dp"
                                 android:paddingTop="8dp"
                                 android:text="0"
-                                android:textColor="@color/primary_text_color"
+                                android:textColor="@color/black"
                                 android:textSize="12dp" />
 
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <TextView
                                 android:id="@+id/button_add"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/circular_drawable"
                                 android:gravity="center"
                                 android:text="+"
-                                android:textColor="@color/md_green_500" />
+                                android:textColor="@color/black" />
 
                         </LinearLayout>
 

@@ -60,25 +60,21 @@ public class PaymentSelectorFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CARD"))
-        {
+        if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CARD")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_card));
-            txtPaymentMessage.setText("Please aunthenticate payment for Rs. "+fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT)))+".");
-        }
-        else if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CASH"))
-        {
+            txtPaymentMessage.setText("Please aunthenticate payment for \u20B9 " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + ".");
+        } else if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CASH")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_cash));
-            txtPaymentMessage.setText("Please pay Rs. "+fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT)))+" to delivery executive after delivery.");
+            txtPaymentMessage.setText("Please pay \u20B9 " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + " to delivery executive after delivery.");
         }
 
 
     }
 
-    public static String fmt(double d)
-    {
-        if(d == (long) d)
-            return String.format("%d",(long)d);
+    public static String fmt(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
         else
-            return String.format("%s",d);
+            return String.format("%s", d);
     }
 }
