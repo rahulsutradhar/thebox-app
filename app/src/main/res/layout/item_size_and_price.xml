@@ -11,7 +11,7 @@
 
     <TextView
         android:id="@+id/text_view_frequency"
-        style="@style/AppTheme.Widget.Avenir.Next.Regular"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Monthly"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/text_view_price"
-        style="@style/AppTheme.Widget.Avenir.Next.Regular"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"

@@ -24,7 +24,7 @@
             app:tabMaxWidth="0dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/black"
-            app:tabTextAppearance="@style/AppTheme.Widget.Avenir.Next.Bold"
+            app:tabTextAppearance="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
             app:tabTextColor="@color/manatee" />
 
         <View

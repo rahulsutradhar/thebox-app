@@ -106,7 +106,7 @@
 
                 <TextView
                     android:id="@+id/product_name"
-                    style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp"
@@ -146,7 +146,7 @@
 
                     <TextView
                         android:id="@+id/no_of_options"
-                        style="@style/AppTheme.Widget.Avenir.Next.Bold"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/margin_horizontal_between_co_element"
@@ -165,7 +165,7 @@
 
                 <TextView
                     android:id="@+id/repeat_every"
-                    style="@style/AppTheme.Widget.Avenir.Next.Bold"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -183,7 +183,7 @@
                 <!-- Savings text -->
                 <TextView
                     android:id="@+id/savings_title"
-                    style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -298,7 +298,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <View
                 android:layout_width="wrap_content"

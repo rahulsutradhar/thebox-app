@@ -18,7 +18,7 @@
 
             <TextView
                 android:id="@+id/size_text_view"
-                style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -41,7 +41,7 @@
 
                 <TextView
                     android:id="@+id/cost_text_view"
-                    style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -58,7 +58,7 @@
 
                     <TextView
                         android:id="@+id/mrp_text_view"
-                        style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -73,7 +73,7 @@
 
             <TextView
                 android:id="@+id/text_view_savings"
-                style="@style/AppTheme.Widget.Avenir.Next.Regular"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/text_view_category_name"

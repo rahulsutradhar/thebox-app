@@ -520,28 +520,63 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void setViewsBasedOnStock(boolean isOutOfStock) {
+        private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem) {
+            //true
             if (isOutOfStock) {
                 addButtonViewHolder.setVisibility(View.GONE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
 
-                addButton.setVisibility(View.GONE);
-                subtractButton.setVisibility(View.GONE);
                 repeat_every.setVisibility(View.GONE);
                 savingHolder.setVisibility(View.GONE);
 
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
             } else {
-                addButtonViewHolder.setVisibility(View.VISIBLE);
-                updateQuantityViewHolder.setVisibility(View.VISIBLE);
-                addButton.setVisibility(View.VISIBLE);
-                subtractButton.setVisibility(View.VISIBLE);
+
                 repeat_every.setVisibility(View.VISIBLE);
                 out_of_stock.setVisibility(View.GONE);
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
+
+                //check the quantitiy and show ui
+                if (boxItem.getQuantity() > 0) {
+                    addButtonViewHolder.setVisibility(View.GONE);
+                    updateQuantityViewHolder.setVisibility(View.VISIBLE);
+                    noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
+                } else {
+                    addButtonViewHolder.setVisibility(View.VISIBLE);
+                    updateQuantityViewHolder.setVisibility(View.GONE);
+                    noOfItemSelected.setText(String.valueOf(0));
+                    if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
+                        if (getAdapterPosition() == 0) {
+                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
+                                moveRecyclerView(true);
+                            }
+                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
+                                new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
+                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                            @Override
+                                            public void onComplete() {
+                                                PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
+                                                PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
+                                                new ShowcaseHelper((Activity) mContext, 2)
+                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
+                                                            @Override
+                                                            public void onComplete() {
+                                                                EventBus.getDefault().post(new ShowTabTutorialEvent());
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                moveRecyclerView(true);
+                            }
+                        }
+                    }
+                }
+
+
             }
         }
 
@@ -733,7 +768,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {
-                    setViewsBasedOnStock(false);
+                    setViewsBasedOnStock(false, boxItem);
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -759,7 +794,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
 
-                    noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
                     if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
                         savingHolder.setVisibility(View.VISIBLE);
                         setupRecyclerViewSuggestedCategories(suggestedCategories);
@@ -768,45 +802,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         savingHolder.setVisibility(View.GONE);
                     }
 
-
-                    if (boxItem.getQuantity() == 0) {
-                        addButtonViewHolder.setVisibility(View.VISIBLE);
-                        updateQuantityViewHolder.setVisibility(View.GONE);
-                        if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
-                            if (getAdapterPosition() == 0) {
-                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
-                                    moveRecyclerView(true);
-                                }
-                                if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
-                                    new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                                @Override
-                                                public void onComplete() {
-                                                    PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
-                                                    PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
-                                                    new ShowcaseHelper((Activity) mContext, 2)
-                                                            .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
-                                                            .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                                                @Override
-                                                                public void onComplete() {
-                                                                    EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                                }
-                                                            });
-                                                }
-                                            });
-                                    moveRecyclerView(true);
-                                }
-                            }
-                        }
-                    } else {
-                        addButtonViewHolder.setVisibility(View.GONE);
-                        updateQuantityViewHolder.setVisibility(View.VISIBLE);
-                    }
                 }
-
                 // If Item is not in stock
                 else {
-                    setViewsBasedOnStock(true);
+                    setViewsBasedOnStock(true, boxItem);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
