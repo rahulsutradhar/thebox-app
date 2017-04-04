@@ -576,6 +576,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 }
 
+                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
+                    savingHolder.setVisibility(View.VISIBLE);
+                    setupRecyclerViewSuggestedCategories(suggestedCategories);
+
+                } else {
+                    savingHolder.setVisibility(View.GONE);
+                }
+
 
             }
         }
@@ -793,14 +801,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
 
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-
-                    if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
-                        savingHolder.setVisibility(View.VISIBLE);
-                        setupRecyclerViewSuggestedCategories(suggestedCategories);
-
-                    } else {
-                        savingHolder.setVisibility(View.GONE);
-                    }
 
                 }
                 // If Item is not in stock

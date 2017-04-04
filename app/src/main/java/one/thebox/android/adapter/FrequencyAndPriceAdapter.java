@@ -132,22 +132,22 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
         public void setView(ItemConfig itemConfig) {
             if (quantity != 0) {
-                textViewPrice.setText("Rs " + itemConfig.getPrice() * quantity);
+                textViewPrice.setText("\u20B9 " + itemConfig.getPrice() * quantity);
             } else {
-                textViewPrice.setText("Rs " + itemConfig.getPrice());
+                textViewPrice.setText("\u20B9 " + itemConfig.getPrice());
             }
             textViewSize.setText(itemConfig.getSubscriptionText());
 
 
             if (getAdapterPosition() == currentSelectedPosition) {
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.davy_grey));
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.davy_grey));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
+                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small4));
+                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small4));
                 selector.setVisibility(View.VISIBLE);
             } else {
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_500));
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_500));
+                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
+                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
                 textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
                 textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
                 selector.setVisibility(View.INVISIBLE);
