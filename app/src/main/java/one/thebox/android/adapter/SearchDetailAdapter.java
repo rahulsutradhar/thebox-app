@@ -1249,7 +1249,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-                price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
+                price.setText("\u20B9 " + itemConfig.getPrice() * userItem.getQuantity());
                 frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());

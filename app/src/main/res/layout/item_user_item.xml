@@ -54,14 +54,13 @@
 
                     <TextView
                         android:id="@+id/product_name"
-                        style="@style/AppTheme.Widget.TextView"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingBottom="1dp"
-                        android:text="Purifying Neem"
-                        android:textColor="@color/davy_grey"
-                        android:textSize="@dimen/text_small1"
-                        android:textStyle="normal" />
+                        android:text="Coke - Diet"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_small3" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/arriving_time"
@@ -105,8 +104,9 @@
                     android:background="@color/white"
                     android:orientation="vertical">
 
-                    <one.thebox.android.ViewHelper.AutoScaleTextView
+                    <TextView
                         android:id="@+id/frequency"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/margin_horizontal_between_co_element"
@@ -115,11 +115,12 @@
                         android:lines="1"
                         android:text="Repeats every two monts"
                         android:textColor="@color/secondary_text_color"
-                        android:textSize="@dimen/text_small1" />
+                        android:textSize="@dimen/text_extra_small4" />
 
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/config"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/margin_horizontal_between_co_element"
@@ -131,20 +132,20 @@
 
                     <TextView
                         android:id="@+id/price"
-                        style="@style/AppTheme.Widget.TextView"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="8dp"
                         android:layout_marginTop="4dp"
                         android:lines="1"
                         android:text="Rs 55"
-                        android:textColor="@color/davy_grey"
-                        android:textSize="@dimen/text_small2"
-                        android:textStyle="normal" />
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_small3" />
 
                     <!-- Savings -->
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/text_view_savings"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/text_view_category_name"
