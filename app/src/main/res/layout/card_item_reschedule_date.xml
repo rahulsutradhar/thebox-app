@@ -26,7 +26,7 @@
 
             <TextView
                 android:id="@+id/delivery_date_text"
-                style="@style/AppTheme.Widget.TextView"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
@@ -39,7 +39,7 @@
 
             <TextView
                 android:id="@+id/arriving_at_text"
-                style="@style/AppTheme.Widget.TextView"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
@@ -48,8 +48,7 @@
                 android:paddingTop="0dp"
                 android:text="Ariving in 3days"
                 android:textColor="@color/md_grey_600"
-                android:textSize="@dimen/text_extra_small2"
-                android:textStyle="normal" />
+                android:textSize="@dimen/text_extra_small2" />
 
 
         </LinearLayout>
@@ -73,7 +72,7 @@
 
                 <TextView
                     android:id="@+id/merge"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

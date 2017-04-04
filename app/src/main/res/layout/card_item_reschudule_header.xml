@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/delivery_date_text"
-        style="@style/AppTheme.Widget.TextView"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

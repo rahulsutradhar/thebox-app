@@ -12,7 +12,7 @@
 
         <TextView
             android:id="@+id/header_title"
-            style="@style/AppTheme.Widget.TextView"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -39,7 +39,7 @@
 
                 <TextView
                     android:id="@+id/arriving_at_text"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
@@ -48,12 +48,11 @@
                     android:paddingTop="0dp"
                     android:text="Item is arriving in 4 days"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_small1"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/text_small2" />
 
                 <TextView
                     android:id="@+id/delivery_date_text"
-                    style="@style/AppTheme.Widget.TextView"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
@@ -62,8 +61,7 @@
                     android:paddingTop="0dp"
                     android:text="Delivered on 11 March, Sunday"
                     android:textColor="@color/primary_inverse_text_color"
-                    android:textSize="@dimen/text_extra_small2"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/text_extra_small2" />
 
 
             </LinearLayout>
@@ -93,7 +91,6 @@
                         android:text="@string/skip"
                         android:textColor="@color/white"
                         android:textSize="@dimen/text_medium1"
-                        android:textStyle="bold"
                         app:typeface="montserratSemiBold" />
 
                 </RelativeLayout>

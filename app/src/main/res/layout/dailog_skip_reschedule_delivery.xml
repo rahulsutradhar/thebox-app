@@ -16,13 +16,14 @@
 
         <TextView
             android:id="@+id/header_title"
-            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Skip Delivery"
             android:textColor="@color/raspberry_red"
-            android:textSize="@dimen/text_medium1" />
+            android:textSize="@dimen/text_medium1"
+            android:textStyle="bold" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -33,15 +34,14 @@
 
             <TextView
                 android:id="@+id/text_description"
-                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:lineSpacingExtra="2dp"
                 android:text="Item delivery will skip once, However  will continue your subscription"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_small1"
-                android:textStyle="normal" />
+                android:textSize="@dimen/text_small3" />
 
         </RelativeLayout>
 
@@ -57,7 +57,7 @@
 
                 <TextView
                     android:id="@+id/cancel"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -66,7 +66,8 @@
                     android:paddingRight="10dp"
                     android:text="Cancel"
                     android:textColor="@color/md_grey_600"
-                    android:textSize="@dimen/text_small3" />
+                    android:textSize="@dimen/text_small3"
+                    android:textStyle="bold" />
 
             </RelativeLayout>
 
