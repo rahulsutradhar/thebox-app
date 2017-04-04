@@ -66,8 +66,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true">
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/text_view_category_name"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -77,8 +78,9 @@
                     android:textSize="@dimen/text_small3" />
 
                 <!-- Saving -->
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/text_view_savings"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/text_view_category_name"

@@ -779,7 +779,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
     /**
-     * CleverTav Event
+     * CleverTap Event
      */
     public void setCleverTapEventBrowseCategory(Category category) {
         try {

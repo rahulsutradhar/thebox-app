@@ -99,7 +99,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
         //show the final price
         amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
-        payButton.setText("Pay: Rs " + amount_to_pay);
+        payButton.setText("Pay: \u20B9 " + amount_to_pay);
 
     }
 

@@ -16,7 +16,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.DelayDeliveryBottomSheet;
+import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
@@ -35,9 +35,9 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
     private ArrayList<Order> orders = new ArrayList<>();
     private UserItem userItem;
     private BottomSheetDialog bottomSheetDialog;
-    private DelayDeliveryBottomSheet.OnDelayActionCompleted onDelayActionCompleted;
+    private DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted;
 
-    public DeliverySlotsAdapter(Context context, UserItem userItem, BottomSheetDialog bottomSheetDialog, DelayDeliveryBottomSheet.OnDelayActionCompleted onDelayActionCompleted) {
+    public DeliverySlotsAdapter(Context context, UserItem userItem, BottomSheetDialog bottomSheetDialog, DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted) {
         super(context);
         this.userItem = userItem;
         this.bottomSheetDialog = bottomSheetDialog;
@@ -99,7 +99,7 @@ public class DeliverySlotsAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final BoxLoader loader =   new BoxLoader(mContext).show();
+                final BoxLoader loader = new BoxLoader(mContext).show();
                 TheBox.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(mContext),
                         new MergeSubscriptionRequest(userItem.getId(), orders.get(position).getId()))
                         .enqueue(new Callback<MergeSubscriptionResponse>() {

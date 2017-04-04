@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/title"
-        style="@style/AppTheme.Widget.TextView"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/md_grey_200"
@@ -16,8 +16,7 @@
         android:paddingTop="@dimen/margin_from_top_of_card"
         android:text="Hygeine Box"
         android:textColor="@color/black"
-        android:textSize="@dimen/text_medium1"
-        android:textStyle="normal" />
+        android:textSize="@dimen/text_medium2" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/useritem_list_recycler_view"

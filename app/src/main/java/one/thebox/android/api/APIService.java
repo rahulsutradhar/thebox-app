@@ -2,6 +2,7 @@ package one.thebox.android.api;
 
 
 import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
@@ -193,6 +194,12 @@ public interface APIService {
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
+    /**
+     * Reschdule User Item
+     */
+    @GET("/reschedule-options")
+            Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
+                                                         @Query("useritem[id]") int userItemId);
 
     /**
      * Carousel API service

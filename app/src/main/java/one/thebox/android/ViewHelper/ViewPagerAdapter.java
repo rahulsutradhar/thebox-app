@@ -8,15 +8,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +80,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
         title.setText(mFragmentCategoryList.get(position).getTitle());
 
+
         if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Item");
         } else {
@@ -125,17 +122,17 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             savings.setVisibility(View.GONE);
         }
 
-        Typeface font = Typeface.createFromAsset(context.getAssets(), "fonts/avenir_next_medium.ttf");
 
         if (isSelected) {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 48);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 48);
             icon.requestLayout();
             title.setTextColor(context.getResources().getColor(R.color.black));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            title.setTypeface(font);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             savings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
             layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
             layout.requestLayout();
@@ -143,11 +140,12 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             icon.getLayoutParams().height = DisplayUtil.dpToPx(context, 42);
             icon.getLayoutParams().width = DisplayUtil.dpToPx(context, 42);
             icon.requestLayout();
-            title.setTextColor(context.getResources().getColor(R.color.primary_text_color));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            title.setTypeface(font);
+            title.setTextColor(context.getResources().getColor(R.color.md_grey_800));
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+
             numberOfItems.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
             savings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+
             layout.setBackgroundResource(R.drawable.tab_layout);
             layout.setPadding(DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2));
             layout.requestLayout();
