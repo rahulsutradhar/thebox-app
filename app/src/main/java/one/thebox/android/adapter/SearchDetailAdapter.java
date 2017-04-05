@@ -64,6 +64,7 @@ import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
@@ -358,7 +359,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
 
-                price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
+                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * quantity_for_this_order);
                 frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());
@@ -371,7 +372,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             itemConfig.getSize() + " " + itemConfig.getSizeUnit());
                 }
 
-                savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
+                savings.setText(userItem.getBoxItem().getSavings() + " " + Constants.RUPEE_SYMBOL + " saved per month");
 
 
                 if (isHasUneditableUserItem()) {
@@ -1249,7 +1250,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-                price.setText("\u20B9 " + itemConfig.getPrice() * userItem.getQuantity());
+                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * userItem.getQuantity());
                 frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());

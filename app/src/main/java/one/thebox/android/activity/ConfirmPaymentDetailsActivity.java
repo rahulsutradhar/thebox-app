@@ -17,6 +17,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.adapter.PaymentDetailAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -99,7 +100,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
         //show the final price
         amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
-        payButton.setText("Pay: \u20B9 " + amount_to_pay);
+        payButton.setText("Pay: " + Constants.RUPEE_SYMBOL + " " + amount_to_pay);
 
     }
 

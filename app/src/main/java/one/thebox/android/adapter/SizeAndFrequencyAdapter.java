@@ -9,6 +9,7 @@ import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
@@ -151,7 +152,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
             } else {
                 sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
             }
-            costTextView.setText("\u20B9 " + itemConfig.getPrice());
+            costTextView.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
 
             //savings text
             if (itemConfig.getSavingsText() != null) {
