@@ -182,7 +182,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             viewPager.setAdapter(pagerAdapterReschedule);
             tabLayout.setupWithViewPager(viewPager);
             viewPager.setOffscreenPageLimit(tabsList.size());
-            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
             if (tabsList.size() > 2) {
                 tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
             } else {

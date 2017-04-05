@@ -27,6 +27,8 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
     private static final String EXTRA_IS_MERGING = "is_merging_order";
+    public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
+
 
     private Order cart;
     private Context context;
@@ -95,8 +97,12 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         }
         paymentDetailAdapter = new PaymentDetailAdapter(this);
         paymentDetailAdapter.setOrders(orders);
-        recyclerViewPaymentDetail.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewPaymentDetail.setItemViewCacheSize(1);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);
         recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
+        paymentDetailAdapter.setViewType(RECYCLER_VIEW_TYPE_FOOTER);
 
         //show the final price
         amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
@@ -125,6 +131,10 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
             }
         });
+
+        recyclerViewPaymentDetail.setItemViewCacheSize(20);
+        recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
+        recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
     }
 
     public void setCleverTapEventPaymentDetailActivity() {
