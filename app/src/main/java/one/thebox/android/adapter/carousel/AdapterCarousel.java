@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import io.realm.RealmList;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 
 /**
  * Created by developers on 28/03/17.
@@ -122,7 +124,7 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
             this.imageView = (ImageView) itemView.findViewById(R.id.carousel_image);
         }
 
-        public void setView(Offer offer, int position) {
+        public void setView(final Offer offer, int position) {
 
             if (offer.getImageUrl() != null) {
                 if (!offer.getImageUrl().isEmpty()) {
@@ -131,6 +133,20 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                             .crossFade()
                             .into(imageView);
                 }
+
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (offer.isOpenLink() && offer.getCategoryId() > 0) {
+                            //open search DetailFragment
+                            Intent intent = new Intent(mContext, MainActivity.class);
+                            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
+                            intent.putExtra(Constants.CATEGORY_ID, offer.getCategoryId());
+                            context.startActivity(intent);
+                        }
+                    }
+                });
+
             }
 
         }

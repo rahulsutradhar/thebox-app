@@ -179,26 +179,26 @@
                     android:gravity="center_vertical"
                     android:scrollbars="horizontal" />
 
-                <!-- Savings text -->
-                <TextView
-                    android:id="@+id/savings_title"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="8dp"
-                    android:paddingBottom="0dp"
-                    android:paddingTop="2dp"
-                    android:text=""
-                    android:textColor="@color/raspberry_red"
-                    android:textSize="@dimen/text_small1"
-                    android:visibility="visible" />
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
 
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp">
+                    <!-- Savings text -->
+                    <TextView
+                        android:id="@+id/savings_title"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="0dp"
+                        android:text=""
+                        android:textColor="@color/raspberry_red"
+                        android:textSize="@dimen/text_small1"
+                        android:visibility="visible" />
 
                     <RelativeLayout
                         android:layout_width="wrap_content"
@@ -289,7 +289,7 @@
                     </RelativeLayout>
 
 
-                </RelativeLayout>
+                </LinearLayout>
 
 
             </LinearLayout>

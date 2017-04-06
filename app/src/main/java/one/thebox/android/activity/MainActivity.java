@@ -755,6 +755,10 @@ public class MainActivity extends BaseActivity implements
                 attachMyBoxesFragment(1, false);
                 break;
             }
+            //carosuel
+            case 8:
+                attachCategoryFragmentForCarousel(intent);
+                break;
 
             /**
              * Notifications Action Handiling
@@ -851,6 +855,35 @@ public class MainActivity extends BaseActivity implements
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         appBarLayout.setExpanded(true, true);
 
+    }
+
+    /**
+     * Attach Search Detail Fragment on Click Carosuel
+     */
+    public void attachCategoryFragmentForCarousel(Intent intent) {
+
+        int categoryId = intent.getIntExtra(Constants.CATEGORY_ID, 0);
+
+        getToolbar().setSubtitle(null);
+        searchView.getText().clear();
+        searchViewHolder.setVisibility(View.GONE);
+        buttonSpecialAction.setVisibility(View.VISIBLE);
+        buttonSpecialAction.setImageResource(R.drawable.ic_box);
+        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachMyBoxesFragment(1, false);
+            }
+        });
+
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(categoryId, "");
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
+        fragmentTransaction.commit();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+        appBarLayout.setExpanded(true, true);
     }
 
     @Override

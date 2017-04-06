@@ -45,4 +45,9 @@ public class Constants {
      * Rupe Symbol
      */
     public static final String RUPEE_SYMBOL = "₹";
+
+    /**
+     * Category Id
+     */
+    public static final String CATEGORY_ID = "extra_category_id";
 }
