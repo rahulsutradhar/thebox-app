@@ -6,8 +6,9 @@
     android:background="@color/md_grey_200"
     android:orientation="vertical">
 
-    <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/month"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -17,8 +18,7 @@
         android:paddingTop="16dp"
         android:text="June"
         android:textColor="@color/black"
-        android:textSize="@dimen/text_large1"
-        card_view:typeface="montserratSemiBold" />
+        android:textSize="@dimen/text_large1" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
@@ -72,23 +72,25 @@
                         android:orientation="vertical">
 
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
                             android:id="@+id/text_order_state"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
                             android:text="Arriving on: "
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_medium1" />
+                            android:textColor="@color/davy_grey"
+                            android:textSize="@dimen/text_small1" />
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
                             android:id="@+id/text_date"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
                             android:text="@string/sample_date"
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_small2" />
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_small3" />
 
                     </LinearLayout>
 
@@ -99,26 +101,29 @@
                         android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
                         android:orientation="horizontal">
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Between "
-                            android:textColor="@color/secondary_text_color"
-                            android:textSize="@dimen/text_small2" />
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_small1" />
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
                             android:id="@+id/time_slot"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/sample_slot"
-                            android:textColor="@color/secondary_text_color"
-                            android:textSize="@dimen/text_small2" />
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_small1" />
 
 
                     </LinearLayout>
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/reschdule_order_button"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/green_borders"
@@ -128,7 +133,7 @@
                         android:paddingRight="@dimen/padding_medium_button_horizontal"
                         android:paddingTop="@dimen/padding_medium_button_vertical"
                         android:text="@string/adjust"
-                        android:textColor="@color/primary_text_color"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/text_small3"
                         android:visibility="gone" />
 
@@ -148,16 +153,18 @@
                     android:paddingRight="@dimen/padding_medium_button_horizontal"
                     android:paddingTop="@dimen/padding_medium_button_vertical">
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/text_view_view_items"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/view_items"
-                        android:textColor="@color/primary_text_color"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/text_small3" />
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
+                    <TextView
                         android:id="@+id/text_items_name"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -183,18 +190,21 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/message"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
                     android:gravity="center"
                     android:text="Please confirm the payment to confirm delivery"
-                    android:textColor="@color/accent" />
+                    android:textColor="@color/accent"
+                    android:textSize="@dimen/text_small3" />
 
-                <one.thebox.android.ViewHelper.MontserratTextView
+                <TextView
                     android:id="@+id/text_amount_to_be_paid"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -205,7 +215,7 @@
                     android:paddingRight="@dimen/padding_medium_button_horizontal"
                     android:paddingTop="@dimen/padding_medium_button_vertical"
                     android:text="Pay Rs. 200"
-                    android:textColor="@color/primary_text_color"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/text_small3" />
 
             </LinearLayout>

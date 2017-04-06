@@ -269,7 +269,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class OrderItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView adjustButton, productName, brand,
-                arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price, monthlySavings;
         private ImageView productImageView;
         private LinearLayout quantityHolder;
         private int quantity_for_this_order = 0;
@@ -279,7 +279,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             productName = (TextView) itemView.findViewById(R.id.product_name);
             arrivingTime = (TextView) itemView.findViewById(R.id.arriving_time);
             config = (TextView) itemView.findViewById(R.id.config);
-            savings = (TextView) itemView.findViewById(R.id.savings);
             productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
@@ -287,6 +286,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
+            monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
         }
 
         private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, final int arrayListPosition) {
@@ -360,7 +360,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
 
                 price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * quantity_for_this_order);
-                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+                frequency.setText("Repeat delivery " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());
 
@@ -372,18 +372,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             itemConfig.getSize() + " " + itemConfig.getSizeUnit());
                 }
 
-                savings.setText(userItem.getBoxItem().getSavings() + " " + Constants.RUPEE_SYMBOL + " saved per month");
-
+                //show savings text if exist
+                if (itemConfig.getMonthlySavingsText() != null) {
+                    if (!itemConfig.getMonthlySavingsText().isEmpty()) {
+                        monthlySavings.setText(itemConfig.getMonthlySavingsText());
+                        monthlySavings.setVisibility(View.VISIBLE);
+                    } else {
+                        monthlySavings.setText("");
+                        monthlySavings.setVisibility(View.GONE);
+                    }
+                } else {
+                    monthlySavings.setText("");
+                    monthlySavings.setVisibility(View.GONE);
+                }
 
                 if (isHasUneditableUserItem()) {
                     arrivingTime.setVisibility(View.GONE);
-
                 }
 
                 if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                    arrivingTime.setText("Item is added to your cart");
-
+                    arrivingTime.setText("");
+                    arrivingTime.setVisibility(View.GONE);
                 } else {
+                    arrivingTime.setVisibility(View.VISIBLE);
                     arrivingTime.setText(userItem.getArrivingAt());
                 }
 

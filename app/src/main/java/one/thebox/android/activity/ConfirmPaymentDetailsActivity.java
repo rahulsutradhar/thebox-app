@@ -91,13 +91,14 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     }
 
     private void setupRecyclerAdapter() {
+
         ArrayList<Order> orders = new ArrayList<>();
         for (AddressAndOrder addressAndOrder : addressAndOrders) {
             orders.add(addressAndOrder.getOrder());
         }
         paymentDetailAdapter = new PaymentDetailAdapter(this);
         paymentDetailAdapter.setOrders(orders);
-        recyclerViewPaymentDetail.setItemViewCacheSize(1);
+        recyclerViewPaymentDetail.setItemViewCacheSize(paymentDetailAdapter.getItemsCount());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);

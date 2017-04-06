@@ -19,6 +19,7 @@ import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.DateTimeUtil;
 
 
@@ -183,7 +184,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                             RealmList<Order> orders = new RealmList<>();
                             orders.add(order);
                             //open time slots activity
-                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders),order.getId(), true));
+                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), order.getId(), true));
                         }
                     });
                 }
@@ -216,9 +217,9 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
                     amountTobePaidTextView.setOnClickListener(null);
                     if (order.isCod()) {
-                        amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid via COD");
+                        amountTobePaidTextView.setText( Constants.RUPEE_SYMBOL+" " + Math.round(order.getTotalPrice()) + " paid via COD");
                     } else {
-                        amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid Online");
+                        amountTobePaidTextView.setText( Constants.RUPEE_SYMBOL+" " + Math.round(order.getTotalPrice()) + " paid Online");
                     }
 
                 }
@@ -228,7 +229,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 else if (order.isCod() && order.isDelivered() && !order.isPaid()) {
                     message.setText("Payment Pending. Please pay next delivery.");
                     message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
-                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid");
+                    amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()) + " to be paid");
                     amountTobePaidTextView.setOnClickListener(null);
                 }
                 // Order was choosen to be cod and is not delivered yet
@@ -236,7 +237,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 else if (order.isCod() && !order.isDelivered()) {
                     message.setText("Please pay the delivery boy");
                     message.setTextColor(mContext.getResources().getColor(R.color.md_orange_500));
-                    amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " to be paid");
+                    amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()) + " to be paid");
                     amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -256,11 +257,11 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         // OR
                         // This order was paid online earlier and items were subscribed to an earlier order and have been added to this order to complete subscription
 
-                        message.setText("Partial payment complete. Rs. " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) +
+                        message.setText("Partial payment complete. " + Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice() - order.get_payment_amount_remaining()) +
                                 " were paid online. New items worth " + Math.round(order.get_payment_amount_remaining()) + " were added to your subscription");
                         message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
                         amountTobePaidTextView.setBackgroundColor(Color.WHITE);
-                        amountTobePaidTextView.setText("Rs " + Math.round(order.get_payment_amount_remaining()) + " to be paid via COD");
+                        amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.get_payment_amount_remaining()) + " to be paid via COD");
                         amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -275,7 +276,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         message.setText("Payment complete");
                         message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
                         amountTobePaidTextView.setBackgroundColor(Color.WHITE);
-                        amountTobePaidTextView.setText("Rs " + Math.round(order.getTotalPrice()) + " paid online");
+                        amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()) + " paid online");
                     }
                 }
                 //Order made not confirmed yet
@@ -283,7 +284,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                 else if (!order.isPaid() && !order.isCod()) {
                     message.setText("Please confirm delivery");
                     message.setTextColor(mContext.getResources().getColor(R.color.md_orange_800));
-                    amountTobePaidTextView.setText("Pay Rs " + Math.round(order.getTotalPrice()));
+                    amountTobePaidTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()));
                     amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
