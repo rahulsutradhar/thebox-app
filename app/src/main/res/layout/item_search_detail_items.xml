@@ -107,7 +107,7 @@
                     style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
+                    android:layout_marginBottom="0dp"
                     android:layout_marginRight="10dp"
                     android:text="Purifying Neem"
                     android:textColor="@color/black"
@@ -167,10 +167,10 @@
                     style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Repeat:"
+                    android:layout_marginTop="6dp"
+                    android:text="Repeat delivery:"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_view_frequency"
@@ -186,7 +186,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:paddingBottom="2dp"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="0dp"
                     android:paddingTop="2dp"
                     android:text=""
                     android:textColor="@color/raspberry_red"

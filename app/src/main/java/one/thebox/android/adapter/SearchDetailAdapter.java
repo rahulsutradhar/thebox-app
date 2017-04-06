@@ -521,7 +521,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem) {
+        private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem, int position) {
             //true
             if (isOutOfStock) {
                 addButtonViewHolder.setVisibility(View.GONE);
@@ -540,6 +540,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
 
+
                 //check the quantitiy and show ui
                 if (boxItem.getQuantity() > 0) {
                     addButtonViewHolder.setVisibility(View.GONE);
@@ -549,6 +550,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButtonViewHolder.setVisibility(View.VISIBLE);
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     noOfItemSelected.setText(String.valueOf(0));
+
                     if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                         if (getAdapterPosition() == 0) {
                             if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
@@ -584,8 +586,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 } else {
                     savingHolder.setVisibility(View.GONE);
                 }
-
-
             }
         }
 
@@ -614,15 +614,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (boxItem.getSelectedItemConfig().getId() == itemConfigs.get(i).getId()) {
                     selectedPosition = i;
                 }
+
             }
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
+
             if (!shouldScrollToPosition) {
-                //linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
-                // recyclerViewFrequency.smoothScrollToPosition(0);
+                //  linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
             }
-            SnapHelper snapHelper = new LinearSnapHelper();
-            snapHelper.attachToRecyclerView(recyclerViewFrequency);
+
+          /*  SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerViewFrequency);*/
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
@@ -650,10 +652,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             linearLayoutManager.scrollToPosition(selectedPosition);
-
             if (shouldScrollToPosition) {
-                //  linearLayoutManager.scrollToPosition(selectedPosition);
+                // linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
             }
+
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
@@ -777,7 +779,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {
-                    setViewsBasedOnStock(false, boxItem);
+                    setViewsBasedOnStock(false, boxItem, position);
+
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -802,11 +805,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
 
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-
                 }
                 // If Item is not in stock
                 else {
-                    setViewsBasedOnStock(true, boxItem);
+                    setViewsBasedOnStock(true, boxItem, position);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

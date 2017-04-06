@@ -9,6 +9,7 @@ import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 
 class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
@@ -131,26 +132,30 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         }
 
         public void setView(ItemConfig itemConfig) {
-            if (quantity != 0) {
-                textViewPrice.setText("\u20B9 " + itemConfig.getPrice() * quantity);
-            } else {
-                textViewPrice.setText("\u20B9 " + itemConfig.getPrice());
-            }
-            textViewSize.setText(itemConfig.getSubscriptionText());
+            try {
 
+                if (quantity != 0) {
+                    textViewPrice.setText(Constants.RUPEE_SYMBOL + " " + (itemConfig.getPrice() * quantity));
+                } else {
+                    textViewPrice.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
+                }
+                textViewSize.setText(itemConfig.getSubscriptionText());
 
-            if (getAdapterPosition() == currentSelectedPosition) {
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small4));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small4));
-                selector.setVisibility(View.VISIBLE);
-            } else {
-                textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
-                textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
-                textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
-                textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small2));
-                selector.setVisibility(View.INVISIBLE);
+                if (getAdapterPosition() == currentSelectedPosition) {
+                    textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                    textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
+                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
+                    selector.setVisibility(View.VISIBLE);
+                } else {
+                    textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
+                    textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
+                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
+                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
+                    selector.setVisibility(View.INVISIBLE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
 
