@@ -39,6 +39,7 @@ import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -1361,6 +1362,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
 
+                                            //update Savings Card in Subscription tab
+                                            EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
+
                                             OrderHelper.updateUserItemAndNotifiy(item);
 
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -1465,6 +1469,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     OrderHelper.addAndNotify(response.body().getOrders());
                                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
+                                                    //update Savings Card in Subscription tab
+                                                    EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
                                                     /**
                                                      * Save CleverTap Event; ItemCancelSubscription
                                                      */

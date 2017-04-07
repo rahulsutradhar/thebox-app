@@ -10,6 +10,7 @@ import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -37,6 +38,9 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
 
     @SerializedName("box_id")
     private int boxId;
+
+    @SerializedName("saving_data")
+    private RealmList<Saving> savings;
 
     public Order getCart() {
         return cart;
@@ -103,5 +107,13 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
 
     public void setOrders(RealmList<Order> orders) {
         this.orders = orders;
+    }
+
+    public RealmList<Saving> getSavings() {
+        return savings;
+    }
+
+    public void setSavings(RealmList<Saving> savings) {
+        this.savings = savings;
     }
 }
