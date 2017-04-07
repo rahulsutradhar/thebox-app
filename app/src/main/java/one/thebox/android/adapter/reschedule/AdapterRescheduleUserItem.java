@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.UserItem;
@@ -153,7 +154,7 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
 
         }
 
-        public void requestMergeDeliveries(Delivery delivery) {
+        public void requestMergeDeliveries(final Delivery delivery) {
 
             fragmentRescheduleUserItem.showLoader();
             merge.setClickable(false);
@@ -172,6 +173,9 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                                         onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
                                         OrderHelper.updateUserItem(response.body().getUserItem());
                                         Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                        //setClevertap Event
+                                        setCleverTapEventRescheduleDelivery(response.body().getUserItem(), delivery);
                                     }
                                 }
                             } catch (Exception e) {
@@ -187,6 +191,30 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                             mergeTextView.setText("Merge");
                         }
                     });
+        }
+
+        /**
+         * Clever Tap Event
+         */
+        public void setCleverTapEventRescheduleDelivery(UserItem userItem, Delivery delivery) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("user_item_id", userItem.getId());
+                hashMap.put("box_item_id", userItem.getBoxItem().getId());
+                hashMap.put("title", userItem.getBoxItem().getTitle());
+                hashMap.put("brand", userItem.getBoxItem().getBrand());
+                hashMap.put("item_config_id", userItem.getSelectedConfigId());
+                hashMap.put("quantitiy", userItem.getQuantity());
+                hashMap.put("category", userItem.getBoxItem().getCategoryId());
+                hashMap.put("reschedule_type", "merge");
+                hashMap.put("merge_order_id", delivery.getOrderId());
+                hashMap.put("delivery_date", delivery.getDeliveryDate());
+
+                TheBox.getCleverTap().event.push("reschedule_delivery", hashMap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }

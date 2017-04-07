@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.carousel.Offer;
@@ -16,6 +17,7 @@ import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 
 /**
  * Created by developers on 28/03/17.
@@ -138,6 +140,10 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
                         if (offer.isOpenLink() && offer.getCategoryId() > 0) {
+
+                            //Clevertap event for carousel click
+                            setCleverTapEventForCarousel(offer);
+
                             //open search DetailFragment
                             Intent intent = new Intent(mContext, MainActivity.class);
                             intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
@@ -149,6 +155,20 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
 
             }
 
+        }
+
+        /**
+         * Clever tap Event
+         */
+        public void setCleverTapEventForCarousel(Offer offer) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("category_id", offer.getCategoryId());
+
+                TheBox.getCleverTap().event.push("carousel_click", hashMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

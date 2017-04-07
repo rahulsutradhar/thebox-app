@@ -1510,7 +1510,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             hashMap.put("user_item_id", userItem.getId());
             hashMap.put("box_item_id", userItem.getBoxItem().getId());
             hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("branch", userItem.getBoxItem().getBrand());
+            hashMap.put("brand", userItem.getBoxItem().getBrand());
             hashMap.put("item_config_id", userItem.getSelectedConfigId());
             hashMap.put("quantitiy", userItem.getQuantity());
             hashMap.put("category", userItem.getBoxItem().getCategoryId());
