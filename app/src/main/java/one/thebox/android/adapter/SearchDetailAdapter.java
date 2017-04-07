@@ -37,6 +37,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
+import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
@@ -1085,32 +1086,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         @Override
                                         public void onDelayActionCompleted(UserItem userItem) {
 
+                                            if (userItem != null) {
+                                                userItems.set(arrayListPosition, userItem);
+                                            }
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
+                                            notifyItemChanged(arrayListPosition);
+
+                                            //refetch orders and update, which also updates locally
+                                            EventBus.getDefault().post(new UpdateDeliveriesAfterReschedule());
+                                            if (deliveryBottomSheet != null) {
+                                                deliveryBottomSheet.dismiss();
+                                            }
+
                                         }
                                     });
-
-
-                                   /* new DelayDeliveryBottomSheetFragment((Activity) mContext, new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
-                                        @Override
-                                        public void onDelayActionCompleted(UserItem userItem) {
-                                            try {
-                                                if (userItem == null) {
-                                                    userItems.remove(arrayListPosition);
-                                                    if (onUserItemChange != null) {
-                                                        onUserItemChange.onUserItemChange(userItems);
-                                                    }
-                                                    notifyItemRemoved(getAdapterPosition());
-                                                } else {
-                                                    userItems.set(arrayListPosition, userItem);
-                                                    if (onUserItemChange != null) {
-                                                        onUserItemChange.onUserItemChange(userItems);
-                                                    }
-                                                    notifyItemChanged(getAdapterPosition());
-                                                }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }).show(userItem,((Activity) mContext).getFragmentManager());*/
                                     break;
                                 case 3:
                                     //cancel subscription

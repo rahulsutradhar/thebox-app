@@ -2,6 +2,7 @@ package one.thebox.android.ViewHelper;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.TabLayout;
@@ -12,15 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.Models.reschedule.Reschedule;
 import one.thebox.android.R;
 import one.thebox.android.adapter.viewpager.ViewPagerAdapterReschedule;
+import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
+import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.DeliverySlotsAdapter;
@@ -53,6 +64,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private View rootView;
     private UserItem userItem;
     private RelativeLayout loader, skipLayout;
+    private Dialog dialog;
 
     public DelayDeliveryBottomSheetFragment() {
 
@@ -176,7 +188,10 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         try {
             pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
             for (int i = 0; i < tabsList.size(); i++) {
-                pagerAdapterReschedule.addFragment(FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getDeliveries(), i));
+                FragmentRescheduleUserItem fragmentRescheduleUserItem =
+                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getDeliveries(), userItem, i);
+                fragmentRescheduleUserItem.addListener(onDelayActionCompleted);
+                pagerAdapterReschedule.addFragment(fragmentRescheduleUserItem);
             }
 
             viewPager.setAdapter(pagerAdapterReschedule);
@@ -224,7 +239,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     }
 
     public void openSkipDeliveryDailog() {
-        final Dialog dialog = new Dialog(getActivity());
+        dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCanceledOnTouchOutside(true);
         dialog.setContentView(R.layout.dailog_skip_reschedule_delivery);
@@ -239,11 +254,11 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         if (rescheduleSkip != null) {
             header.setText(rescheduleSkip.getTitle());
 
-           /* if (!rescheduleSkip.getDescription().isEmpty()) {
+            if (!rescheduleSkip.getDescription().isEmpty()) {
                 description.setText(rescheduleSkip.getDescription());
             } else {
                 description.setVisibility(View.GONE);
-            }*/
+            }
         }
 
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -256,7 +271,8 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                openDeliverInNextCycleDialog();
+                dialog.dismiss();
             }
         });
 
@@ -268,6 +284,57 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public interface OnDelayActionCompleted {
         void onDelayActionCompleted(UserItem userItem);
     }
+
+
+    private void openDeliverInNextCycleDialog() {
+        MaterialDialog dialogMaterial = new MaterialDialog.Builder(dialog.getContext())
+                .title("Skip Delivery")
+                .customView(R.layout.layout_skip_delivery, true)
+                .positiveText("Submit")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
+                        View customView = dialog.getCustomView();
+                        RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
+                        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                        View radioButton = radioGroup.findViewById(radioButtonID);
+                        int idx = radioGroup.indexOfChild(radioButton);
+                        RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
+                        if (r == null) {
+                            Toast.makeText(dialog.getContext(), "Select at least one option", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String selectedtext = r.getText().toString();
+
+                        final BoxLoader loader = new BoxLoader(dialog.getContext()).show();
+                        TheBox.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(TheBox.getAppContext())
+                                , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                                .enqueue(new Callback<CancelSubscriptionResponse>() {
+                                    @Override
+                                    public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
+                                        loader.dismiss();
+                                        if (response.body() != null) {
+                                            if (response.body().isSuccess()) {
+                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                                OrderHelper.updateUserItem(response.body().getUserItem());
+                                                Toast.makeText(dialog.getContext(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
+                                        loader.dismiss();
+                                    }
+                                });
+                    }
+                }).build();
+        dialogMaterial.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+        dialogMaterial.show();
+    }
+
+
 
    /* class AdjustDeliverySlotAdapter extends BaseRecyclerAdapter {
 

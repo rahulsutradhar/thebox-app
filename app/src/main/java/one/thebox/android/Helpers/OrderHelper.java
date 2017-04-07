@@ -87,6 +87,13 @@ public class OrderHelper {
         sendUpdateOrderItemBroadcast();
     }
 
+    public static void updateUserItem(final UserItem userItem) {
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
+    }
+
 
     private static void saveToRealm(final RealmList<Order> orders) {
         Realm realm = TheBox.getRealm();

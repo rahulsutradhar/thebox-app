@@ -19,6 +19,7 @@
         android:text="Deliver in Next Cycle"
         android:textColor="@color/primary_text_color" />
 
+
     <one.thebox.android.ViewHelper.MontserratTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
