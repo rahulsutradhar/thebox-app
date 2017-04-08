@@ -233,9 +233,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
-
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -246,13 +243,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
-                                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
-                                /*intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);*/
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
-                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
-                                finish();
+                                //payment complete move to home
+                                paymentCompleteMoveToHome();
+
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 setCleverTapEventPaymentModeFailure(3);
@@ -293,9 +286,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
-
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -306,13 +296,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
-                                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
-                                /*intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);*/
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
-                                //startService(new Intent(PaymentOptionActivity.this, UpdateOrderService.class));
-                                finish();
+                                //payment complete move to home
+                                paymentCompleteMoveToHome();
+
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 setCleverTapEventPaymentModeFailure(3);
@@ -353,8 +339,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -365,13 +349,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
-                                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
-                               /* intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);*/
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(intent);
+                                //payment complete move to home
+                                paymentCompleteMoveToHome();
 
-                                finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 setCleverTapEventPaymentModeFailure(3);
@@ -420,8 +400,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                         (new Date(System.currentTimeMillis())).getTime()
                                 );
 
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-                                PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -431,13 +409,9 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
-                                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
-                               /* intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);*/
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                //payment complete move to home
+                                paymentCompleteMoveToHome();
 
-                                finish();
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                 setCleverTapEventPaymentModeFailure(3);
@@ -451,6 +425,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         setCleverTapEventPaymentModeFailure(2);
                     }
                 });
+    }
+
+    public void paymentCompleteMoveToHome() {
+        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
+        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
+
+        Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
 
