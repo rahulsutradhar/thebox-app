@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.PageIndicator;
@@ -58,7 +59,7 @@ public class OnBoardSequenceContainerFragment extends FragmentBase {
         pageIndicator.setViewPager(viewPager);
 
         //move to signin Activity
-        MontserratTextView getStartedButton = (MontserratTextView) getView().findViewById(R.id.button_get_started);
+        TextView getStartedButton = (TextView) getView().findViewById(R.id.button_get_started);
         getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
