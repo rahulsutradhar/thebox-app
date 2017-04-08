@@ -522,7 +522,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().first()));
 
                             //update savings data in Adapter
-                            myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().first());
+                            if (recyclerView != null && null != myBoxRecyclerAdapter) {
+                                myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().first());
+                            }
 
                         }
                     }
