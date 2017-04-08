@@ -55,19 +55,6 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_small3" />
 
-
-            <TextView
-                android:id="@+id/arriving_time"
-                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/delivery_time"
-                android:layout_marginTop="0dp"
-                android:gravity="center_vertical"
-                android:text="Arriving in 6 days"
-                android:textColor="@color/md_green_500"
-                android:textSize="@dimen/text_extra_small3" />
-
             <TextView
                 android:id="@+id/frequency"
                 style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
@@ -77,16 +64,17 @@
                 android:layout_marginTop="5dp"
                 android:lines="1"
                 android:text="Repeats every two monts"
-                android:textColor="@color/black"
+                android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_small1" />
 
-            <one.thebox.android.ViewHelper.MontserratTextView
+            <TextView
                 android:id="@+id/config"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:text="55ml Tube"
-                android:textColor="@color/primary_text_color"
+                android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_small1" />
 
             <TextView
@@ -108,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="6dp"
                 android:lines="1"
                 android:text="Save rs 20 every month"
                 android:textColor="@color/raspberry_red"
