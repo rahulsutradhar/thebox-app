@@ -271,7 +271,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class OrderItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView adjustButton, productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price, monthlySavings;
+                config, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price, monthlySavings;
         private ImageView productImageView;
         private LinearLayout quantityHolder;
         private int quantity_for_this_order = 0;
@@ -279,7 +279,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public OrderItemViewHolder(View itemView) {
             super(itemView);
             productName = (TextView) itemView.findViewById(R.id.product_name);
-            arrivingTime = (TextView) itemView.findViewById(R.id.arriving_time);
             config = (TextView) itemView.findViewById(R.id.config);
             productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
@@ -387,19 +386,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     monthlySavings.setText("");
                     monthlySavings.setVisibility(View.GONE);
                 }
-
-                if (isHasUneditableUserItem()) {
-                    arrivingTime.setVisibility(View.GONE);
-                }
-
-                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                    arrivingTime.setText("");
-                    arrivingTime.setVisibility(View.GONE);
-                } else {
-                    arrivingTime.setVisibility(View.VISIBLE);
-                    arrivingTime.setText(userItem.getArrivingAt());
-                }
-
+                
                 //image loading
                 glideRequestManager.load(itemConfig.getPhotoUrl())
                         .centerCrop()
