@@ -5,9 +5,9 @@
     android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingBottom="8dp"
+    android:paddingBottom="0dp"
     android:paddingRight="16dp"
-    android:paddingTop="8dp">
+    android:paddingTop="0dp">
 
     <TextView
         android:id="@+id/text_view_frequency"

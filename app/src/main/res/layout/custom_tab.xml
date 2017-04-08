@@ -46,6 +46,7 @@
             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:text="10 items"
             android:textColor="@color/brilliant_rose"
             android:textSize="@dimen/text_extra_small4" />
@@ -54,9 +55,10 @@
         <TextView
             android:id="@+id/savings_title"
             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
+            android:maxLines="1"
             android:text="Save Rs. 10"
             android:textColor="@color/raspberry_red"
             android:textSize="@dimen/text_extra_small3"

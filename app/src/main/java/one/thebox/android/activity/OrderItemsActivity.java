@@ -30,6 +30,7 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SearchDetailAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -106,7 +107,7 @@ public class OrderItemsActivity extends BaseActivity {
             payTextView.setBackgroundColor(Color.LTGRAY);
             payTextView.setOnClickListener(null);
         } else {
-            payTextView.setText("Pay Rs " + order.getTotalPrice());
+            payTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + order.getTotalPrice());
             payTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -131,9 +132,12 @@ public class OrderItemsActivity extends BaseActivity {
         userItemRecyclerAdapter = new SearchDetailAdapter(this, glideRequestManager);
         userItemRecyclerAdapter.setBoxItems(null, userItems);
         userItemRecyclerAdapter.setUserItemQuantities(order.getId(), order.getUserItemQuantities());
-        userItemRecyclerAdapter.setHasUneditableUserItem(true);
         if (order.isPaid()) {
             userItemRecyclerAdapter.setHide_quantity_selector_in_this_order_item_view(true);
+            userItemRecyclerAdapter.setHasUneditableUserItem(true);
+        } else {
+            userItemRecyclerAdapter.setHide_quantity_selector_in_this_order_item_view(false);
+            userItemRecyclerAdapter.setHasUneditableUserItem(false);
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userItemRecyclerAdapter);

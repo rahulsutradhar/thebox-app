@@ -38,6 +38,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.UserItem;
@@ -506,5 +507,31 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 }
             });
         }
+    }
+
+    @Subscribe
+    public void onUpdateSavingsEvent(final UpdateSavingsEvent updateSavingsEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //update the saving card
+                    if (updateSavingsEvent.getSavings() != null) {
+                        if (updateSavingsEvent.getSavings().size() > 0) {
+                            //save saving in the preferance
+                            PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().first()));
+
+                            //update savings data in Adapter
+                            if (recyclerView != null && null != myBoxRecyclerAdapter) {
+                                myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().first());
+                            }
+
+                        }
+                    }
+
+                }
+            });
+        }
+
     }
 }

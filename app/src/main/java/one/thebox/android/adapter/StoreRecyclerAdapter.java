@@ -3,6 +3,7 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -417,6 +419,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 this.recyclerView.setAdapter(adapterCarousel);
                 snapHelper.attachToRecyclerView(recyclerView);
                 linearLayoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+
             } else {
                 adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
                 adapterCarousel.setCarousel(carousel);

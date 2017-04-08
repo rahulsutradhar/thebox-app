@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -23,6 +24,9 @@ public class CancelSubscriptionResponse extends ApiResponse implements Serializa
     private UserItem userItem;
     @SerializedName("orders")
     private RealmList<Order> orders;
+
+    @SerializedName("saving_data")
+    private RealmList<Saving> savings;
 
     public UserItem getUserItem() {
         return userItem;
@@ -58,6 +62,14 @@ public class CancelSubscriptionResponse extends ApiResponse implements Serializa
 
     public void setOrders(RealmList<Order> orders) {
         this.orders = orders;
+    }
+
+    public RealmList<Saving> getSavings() {
+        return savings;
+    }
+
+    public void setSavings(RealmList<Saving> savings) {
+        this.savings = savings;
     }
 
     public static class CancelReason {

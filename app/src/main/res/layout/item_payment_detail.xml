@@ -7,29 +7,30 @@
 
     <TextView
         android:id="@+id/section_heading"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text = "Newly Added Item"
-        android:textColor="@color/primary_text_color"
         android:background="@color/light_white"
         android:gravity="center"
-        android:textSize="@dimen/text_medium1"
         android:padding="8dp"
-        android:visibility="gone"/>
+        android:text="Newly Added Item"
+        android:textColor="@color/davy_grey"
+        android:textSize="@dimen/text_medium1"
+        android:visibility="gone" />
 
 
     <TextView
         android:id="@+id/payment_status"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
-        android:padding="@dimen/padding_small_button_vertical"
-        android:gravity="center"
         android:background="@color/light_white"
+        android:gravity="center"
+        android:padding="@dimen/padding_small_button_vertical"
         android:textColor="@color/accent"
         android:textSize="@dimen/text_small1"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,21 +40,32 @@
         android:padding="16dp">
 
 
-        <one.thebox.android.ViewHelper.MontserratTextView
+        <TextView
             android:id="@+id/item_text"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Milk, Gillete, Razor, Harpic ... 21 items"
-            android:textColor="@color/primary_text_color" />
+            android:text=""
+            android:textColor="@color/davy_grey"
+            android:textSize="@dimen/text_small3" />
 
 
-        <one.thebox.android.ViewHelper.MontserratTextView
+        <TextView
             android:id="@+id/amount_text"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="200 Rs"
-            android:textColor="@color/accent" />
+            android:text=""
+            android:textColor="@color/accent"
+            android:textSize="@dimen/text_small3" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/md_grey_100" />
 
 </LinearLayout>

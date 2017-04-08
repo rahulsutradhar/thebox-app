@@ -66,6 +66,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public void setSaving(Saving saving) {
         this.saving = saving;
+        notifyDataSetChanged();
     }
 
     public int getStickyHeaderHeight() {
