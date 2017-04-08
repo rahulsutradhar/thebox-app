@@ -3,6 +3,7 @@ package one.thebox.android.adapter;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 
 public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
@@ -85,12 +88,10 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-
     }
 
     @Override
     public void onBindViewFooterHolder(FooterHolder holder, int position) {
-
     }
 
     @Override
@@ -118,7 +119,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
         return R.layout.footer_payment_detail;
     }
 
-    class ItemViewHolder extends ItemHolder {
+    class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private TextView itemText, amountText, section_heading, payment_status;
 
         public ItemViewHolder(View itemView) {
@@ -131,7 +132,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(UserItem userItem) {
             itemText.setText(userItem.getBoxItem().getTitle());
-            amountText.setText("\u20B9 " + userItem.getTotalPriceForAnOrder());
+            amountText.setText(Constants.RUPEE_SYMBOL + " " + userItem.getTotalPriceForAnOrder());
             if (userItem.getNextDeliveryScheduledAt() == null) {
                 itemText.setTextColor(mContext.getResources().getColor(R.color.black));
                 amountText.setTextColor(mContext.getResources().getColor(R.color.md_red_700));
@@ -161,7 +162,7 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    class FooterViewHolder extends FooterHolder {
+    class FooterViewHolder extends BaseRecyclerAdapter.FooterHolder {
 
         private TextView deliveryCharge, amount;
 
@@ -173,9 +174,9 @@ public class PaymentDetailAdapter extends BaseRecyclerAdapter {
                 deliveryCharge.setText("Free");
                 deliveryCharge.setTextColor(context.getResources().getColor(R.color.md_green_800));
             } else {
-                deliveryCharge.setText("\u20B9 " + getTotalDeliverCharges());
+                deliveryCharge.setText(Constants.RUPEE_SYMBOL + " " + getTotalDeliverCharges());
             }
-            amount.setText("\u20B9 " + getFinalPaymentAmount());
+            amount.setText(Constants.RUPEE_SYMBOL + " " + getFinalPaymentAmount());
         }
     }
 

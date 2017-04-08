@@ -37,7 +37,9 @@ import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
+import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
@@ -64,6 +66,7 @@ import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
@@ -268,7 +271,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private class OrderItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView adjustButton, productName, brand,
-                arrivingTime, config, savings, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price, monthlySavings;
         private ImageView productImageView;
         private LinearLayout quantityHolder;
         private int quantity_for_this_order = 0;
@@ -278,7 +281,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             productName = (TextView) itemView.findViewById(R.id.product_name);
             arrivingTime = (TextView) itemView.findViewById(R.id.arriving_time);
             config = (TextView) itemView.findViewById(R.id.config);
-            savings = (TextView) itemView.findViewById(R.id.savings);
             productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
@@ -286,6 +288,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
+            monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
         }
 
         private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, final int arrayListPosition) {
@@ -358,8 +361,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
 
-                price.setText("Rs " + itemConfig.getPrice() * quantity_for_this_order);
-                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * quantity_for_this_order);
+                frequency.setText("Repeat delivery " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());
 
@@ -371,18 +374,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             itemConfig.getSize() + " " + itemConfig.getSizeUnit());
                 }
 
-                savings.setText(userItem.getBoxItem().getSavings() + " Rs saved per month");
-
+                //show savings text if exist
+                if (itemConfig.getMonthlySavingsText() != null) {
+                    if (!itemConfig.getMonthlySavingsText().isEmpty()) {
+                        monthlySavings.setText(itemConfig.getMonthlySavingsText());
+                        monthlySavings.setVisibility(View.VISIBLE);
+                    } else {
+                        monthlySavings.setText("");
+                        monthlySavings.setVisibility(View.GONE);
+                    }
+                } else {
+                    monthlySavings.setText("");
+                    monthlySavings.setVisibility(View.GONE);
+                }
 
                 if (isHasUneditableUserItem()) {
                     arrivingTime.setVisibility(View.GONE);
-
                 }
 
                 if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                    arrivingTime.setText("Item is added to your cart");
-
+                    arrivingTime.setText("");
+                    arrivingTime.setVisibility(View.GONE);
                 } else {
+                    arrivingTime.setVisibility(View.VISIBLE);
                     arrivingTime.setText(userItem.getArrivingAt());
                 }
 
@@ -520,7 +534,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem) {
+        private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem, int position) {
             //true
             if (isOutOfStock) {
                 addButtonViewHolder.setVisibility(View.GONE);
@@ -539,6 +553,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 // Disable the change button
                 no_of_options_holder.setTextColor(TheBox.getInstance().getResources().getColor(R.color.dim_gray));
 
+
                 //check the quantitiy and show ui
                 if (boxItem.getQuantity() > 0) {
                     addButtonViewHolder.setVisibility(View.GONE);
@@ -548,6 +563,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButtonViewHolder.setVisibility(View.VISIBLE);
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     noOfItemSelected.setText(String.valueOf(0));
+
                     if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
                         if (getAdapterPosition() == 0) {
                             if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
@@ -583,8 +599,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 } else {
                     savingHolder.setVisibility(View.GONE);
                 }
-
-
             }
         }
 
@@ -613,15 +627,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (boxItem.getSelectedItemConfig().getId() == itemConfigs.get(i).getId()) {
                     selectedPosition = i;
                 }
+
             }
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
+
             if (!shouldScrollToPosition) {
-                //linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
-                // recyclerViewFrequency.smoothScrollToPosition(0);
+                //  linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
             }
-            SnapHelper snapHelper = new LinearSnapHelper();
-            snapHelper.attachToRecyclerView(recyclerViewFrequency);
+
+          /*  SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerViewFrequency);*/
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
@@ -649,10 +665,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
             linearLayoutManager.scrollToPosition(selectedPosition);
-
             if (shouldScrollToPosition) {
-                //  linearLayoutManager.scrollToPosition(selectedPosition);
+                // linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
             }
+
         }
 
         private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
@@ -776,7 +792,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 // Checking if item is in stock
                 if (boxItem.is_in_stock()) {
-                    setViewsBasedOnStock(false, boxItem);
+                    setViewsBasedOnStock(false, boxItem, position);
+
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -801,11 +818,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
 
                     setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
-
                 }
                 // If Item is not in stock
                 else {
-                    setViewsBasedOnStock(true, boxItem);
+                    setViewsBasedOnStock(true, boxItem, position);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1071,32 +1087,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         @Override
                                         public void onDelayActionCompleted(UserItem userItem) {
 
+                                            if (userItem != null) {
+                                                userItems.set(arrayListPosition, userItem);
+                                            }
+                                            if (onUserItemChange != null) {
+                                                onUserItemChange.onUserItemChange(userItems);
+                                            }
+                                            notifyItemChanged(arrayListPosition);
+
+                                            //refetch orders and update, which also updates locally
+                                            EventBus.getDefault().post(new UpdateDeliveriesAfterReschedule());
+                                            if (deliveryBottomSheet != null) {
+                                                deliveryBottomSheet.dismiss();
+                                            }
+
                                         }
                                     });
-
-
-                                   /* new DelayDeliveryBottomSheetFragment((Activity) mContext, new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
-                                        @Override
-                                        public void onDelayActionCompleted(UserItem userItem) {
-                                            try {
-                                                if (userItem == null) {
-                                                    userItems.remove(arrayListPosition);
-                                                    if (onUserItemChange != null) {
-                                                        onUserItemChange.onUserItemChange(userItems);
-                                                    }
-                                                    notifyItemRemoved(getAdapterPosition());
-                                                } else {
-                                                    userItems.set(arrayListPosition, userItem);
-                                                    if (onUserItemChange != null) {
-                                                        onUserItemChange.onUserItemChange(userItems);
-                                                    }
-                                                    notifyItemChanged(getAdapterPosition());
-                                                }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }).show(userItem,((Activity) mContext).getFragmentManager());*/
                                     break;
                                 case 3:
                                     //cancel subscription
@@ -1249,7 +1255,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
                 ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-                price.setText("\u20B9 " + itemConfig.getPrice() * userItem.getQuantity());
+                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * userItem.getQuantity());
                 frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(userItem.getBoxItem().getTitle());
@@ -1356,6 +1362,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
 
+                                            //update Savings Card in Subscription tab
+                                            EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
+
                                             OrderHelper.updateUserItemAndNotifiy(item);
 
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -1460,6 +1469,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     OrderHelper.addAndNotify(response.body().getOrders());
                                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
+                                                    //update Savings Card in Subscription tab
+                                                    EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
                                                     /**
                                                      * Save CleverTap Event; ItemCancelSubscription
                                                      */
@@ -1505,7 +1516,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             hashMap.put("user_item_id", userItem.getId());
             hashMap.put("box_item_id", userItem.getBoxItem().getId());
             hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("branch", userItem.getBoxItem().getBrand());
+            hashMap.put("brand", userItem.getBoxItem().getBrand());
             hashMap.put("item_config_id", userItem.getSelectedConfigId());
             hashMap.put("quantitiy", userItem.getQuantity());
             hashMap.put("category", userItem.getBoxItem().getCategoryId());

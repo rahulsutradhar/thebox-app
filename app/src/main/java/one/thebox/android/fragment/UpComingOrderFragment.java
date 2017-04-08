@@ -22,6 +22,7 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
+import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
@@ -176,6 +177,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 }
             });
         }
+    }
+
+    //called after rescheudle delivery
+    @Subscribe
+    public void onUpdateDeliveries(UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule) {
+        fetchDeliveriesFromServer();
     }
 
     @Override

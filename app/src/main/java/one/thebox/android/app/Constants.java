@@ -40,4 +40,14 @@ public class Constants {
      * Carousel Banner
      */
     public static final String CAROUSEL_BANNER = "carousel_banner";
+
+    /**
+     * Rupe Symbol
+     */
+    public static final String RUPEE_SYMBOL = "₹";
+
+    /**
+     * Category Id
+     */
+    public static final String CATEGORY_ID = "extra_category_id";
 }

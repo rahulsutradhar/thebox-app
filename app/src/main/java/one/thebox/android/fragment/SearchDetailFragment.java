@@ -539,7 +539,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         boxItem.setUserItemId(userItem.getId());
                         boxItem.setQuantity(userItem.getQuantity());
                         boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
-                        Log.d("ITEM_CONFIG", userItem.getSelectedConfigId()+" -> "+boxItem.getSelectedItemConfig().getId());
+                        Log.d("ITEM_CONFIG", userItem.getSelectedConfigId() + " -> " + boxItem.getSelectedItemConfig().getId());
 
                         boxItems.add(boxItem);
                     }
@@ -568,6 +568,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
                         if (response.body() != null) {
                             boxName = response.body().getBoxName();
+                            title = response.body().getBoxName();
 
                             for (UserItem item : response.body().getMyBoxItems()) {
                                 setUserItems(item);

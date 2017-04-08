@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import one.thebox.android.R;
+import one.thebox.android.app.Constants;
 
 /**
  * Created by Ruchit on 9/28/2016.
@@ -62,10 +63,10 @@ public class PaymentSelectorFragment extends Fragment {
 
         if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CARD")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_card));
-            txtPaymentMessage.setText("Please aunthenticate payment for \u20B9 " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + ".");
+            txtPaymentMessage.setText("Please aunthenticate payment for " + Constants.RUPEE_SYMBOL + " " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + ".");
         } else if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CASH")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_cash));
-            txtPaymentMessage.setText("Please pay \u20B9 " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + " to delivery executive after delivery.");
+            txtPaymentMessage.setText("Please pay " + Constants.RUPEE_SYMBOL + " " + fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT))) + " to delivery executive after delivery.");
         }
 
 

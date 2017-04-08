@@ -25,6 +25,12 @@ public class Offer extends RealmObject implements Serializable {
     @SerializedName("image_url")
     private String imageUrl;
 
+    @SerializedName("category_id")
+    private int categoryId;
+
+    @SerializedName("open_link")
+    private boolean openLink;
+
     /***********************************************
      * Getter Setter
      ***********************************************/
@@ -67,5 +73,21 @@ public class Offer extends RealmObject implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public boolean isOpenLink() {
+        return openLink;
+    }
+
+    public void setOpenLink(boolean openLink) {
+        this.openLink = openLink;
     }
 }
