@@ -32,6 +32,7 @@ public class FragmentRescheduleUserItem extends Fragment {
     private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
     private static final String EXTRA_DELIVERIES = "extra_delivery_Dates";
     private static final String EXTRA_USER_ITEM = "extra_user_item";
+    private static final String EXTRA_MERGE_DESCRIPTION = "extra_merge_description";
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
 
     private View rootView;
@@ -43,10 +44,12 @@ public class FragmentRescheduleUserItem extends Fragment {
     private LinearLayout emptyState;
     private RelativeLayout loader;
     private DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted;
+    private String mergeDescription;
 
 
-    public static FragmentRescheduleUserItem getInstance(Context activity, ArrayList<Delivery> deliveries, UserItem userItem, int positionInViewPager) {
+    public static FragmentRescheduleUserItem getInstance(Context activity, String mergeDescription, ArrayList<Delivery> deliveries, UserItem userItem, int positionInViewPager) {
         Bundle bundle = new Bundle();
+        bundle.putString(EXTRA_MERGE_DESCRIPTION, mergeDescription);
         bundle.putString(EXTRA_DELIVERIES, CoreGsonUtils.toJson(deliveries));
         bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
         bundle.putString(EXTRA_USER_ITEM, CoreGsonUtils.toJson(userItem));
@@ -95,6 +98,7 @@ public class FragmentRescheduleUserItem extends Fragment {
         positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
         deliveries = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_DELIVERIES), Delivery.class);
         userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
+        mergeDescription = getArguments().getString(EXTRA_MERGE_DESCRIPTION);
     }
 
     public void checkForEmptyState() {
@@ -116,10 +120,10 @@ public class FragmentRescheduleUserItem extends Fragment {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(linearLayoutManager);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            adapter = new AdapterRescheduleUserItem(getActivity(), this, deliveries, userItem, onDelayActionCompleted);
+            adapter = new AdapterRescheduleUserItem(getActivity(), this, deliveries, userItem, onDelayActionCompleted, mergeDescription);
             adapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             recyclerView.setAdapter(adapter);
-            recyclerView.setHasFixedSize(true);
+            recyclerView.setNestedScrollingEnabled(true);
         }
     }
 

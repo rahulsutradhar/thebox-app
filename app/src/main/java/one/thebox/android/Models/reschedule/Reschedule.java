@@ -20,6 +20,9 @@ public class Reschedule implements Serializable {
     @SerializedName("deliveries")
     private ArrayList<Delivery> deliveries;
 
+    @SerializedName("merge_description")
+    private String mergeDescription;
+
     /*******************************
      * Getter Setter
      *******************************/
@@ -53,5 +56,13 @@ public class Reschedule implements Serializable {
 
     public void setDeliveries(ArrayList<Delivery> deliveries) {
         this.deliveries = deliveries;
+    }
+
+    public String getMergeDescription() {
+        return mergeDescription;
+    }
+
+    public void setMergeDescription(String mergeDescription) {
+        this.mergeDescription = mergeDescription;
     }
 }

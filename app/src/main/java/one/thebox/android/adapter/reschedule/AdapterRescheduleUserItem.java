@@ -35,18 +35,21 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
     private FragmentRescheduleUserItem fragmentRescheduleUserItem;
     private UserItem userItem;
     private DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted;
+    private String mergeDescription;
 
     /**
      * Constructor
      */
     public AdapterRescheduleUserItem(Context context, FragmentRescheduleUserItem fragmentRescheduleUserItem, ArrayList<Delivery> deliveries,
-                                     UserItem userItem, DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted) {
+                                     UserItem userItem, DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted,
+                                     String mergeDescription) {
         super(context);
         this.context = context;
         this.fragmentRescheduleUserItem = fragmentRescheduleUserItem;
         this.deliveries = deliveries;
         this.userItem = userItem;
         this.onDelayActionCompleted = onDelayActionCompleted;
+        this.mergeDescription = mergeDescription;
         notifyDataSetChanged();
     }
 
@@ -221,8 +224,20 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
 
     private class ItemHeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
 
+        private TextView textView;
+
         public ItemHeaderViewHolder(View itemView) {
             super(itemView);
+            textView = (TextView) itemView.findViewById(R.id.merge_description_text);
+            if (mergeDescription != null) {
+                if (!mergeDescription.isEmpty()) {
+                    textView.setText(mergeDescription);
+                } else {
+                    textView.setVisibility(View.GONE);
+                }
+            } else {
+                textView.setVisibility(View.GONE);
+            }
         }
     }
 

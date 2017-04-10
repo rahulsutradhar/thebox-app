@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import one.thebox.android.Models.ExploreItem;
@@ -284,6 +285,12 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
 
+                        /**
+                         * SetCleverTapEventSubscribeNextSavings
+                         */
+                        setCleverTapEventSubscribeNextSavings(saving);
+
+
                         String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
                         context.startActivity(new Intent(mContext, MainActivity.class)
                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
@@ -296,6 +303,24 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
             }
 
+        }
+
+        /**
+         * Clvertap Event
+         */
+
+        public void setCleverTapEventSubscribeNextSavings(Saving saving) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("box_id", saving.getSuggestionBoxId());
+                hashMap.put("box_name", saving.getSuggestionBoxName());
+
+                TheBox.getCleverTap().event.push("subscribe_next_savings", hashMap);
+
+
+            } catch (Exception e) {
+
+            }
         }
     }
 
