@@ -17,6 +17,8 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Models.SearchResult;
@@ -24,6 +26,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.viewpager.ViewPagerAdapterHome;
 import one.thebox.android.util.CoreGsonUtils;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -84,38 +87,74 @@ public class MyBoxTabFragment extends Fragment {
     }
 
     private void setupViewPagerAndTabs(int default_position, boolean show_loader) {
-        if (getActivity() == null) {
-            return;
+        try {
+            if (getActivity() == null) {
+                return;
+            }
+            progressBar.setVisibility(View.GONE);
+            holder.setVisibility(View.VISIBLE);
+
+            ArrayList<String> listTitle = new ArrayList<>();
+            listTitle.add("Subscriptions");
+            listTitle.add("Store");
+            listTitle.add("Deliveries");
+
+
+            ViewPagerAdapterHome adapter = new ViewPagerAdapterHome(getActivity().getSupportFragmentManager(), getActivity(), listTitle);
+            Bundle args = new Bundle();
+            args.putBoolean("show_loader", show_loader);
+
+            //Attaching "MyItems"
+            MyBoxesFragment my_box_fragment = new MyBoxesFragment();
+            my_box_fragment.setArguments(args);
+            adapter.addFragment(my_box_fragment);
+
+            //Attaching Store
+            StoreFragment store_fragment = new StoreFragment();
+            store_fragment.setArguments(args);
+            adapter.addFragment(store_fragment);
+
+            //Attaching Deliveries
+            UpComingOrderFragment upcoming_deliveries_fragment = new UpComingOrderFragment();
+            upcoming_deliveries_fragment.setArguments(args);
+            adapter.addFragment(upcoming_deliveries_fragment);
+
+            viewPager.setAdapter(adapter);
+            tabLayout.setupWithViewPager(viewPager);
+            viewPager.setCurrentItem(default_position);
+            viewPager.setOffscreenPageLimit(3);
+            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
+
+            if (listTitle.size() > 0) {
+                for (int i = 0; i < tabLayout.getTabCount(); i++) {
+                    TabLayout.Tab newTab = tabLayout.getTabAt(i);
+                    newTab.setCustomView(adapter.getTabView(i));
+                }
+            }
+
+            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+            viewPager.setCurrentItem(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        progressBar.setVisibility(View.GONE);
-        holder.setVisibility(View.VISIBLE);
-
-
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        Bundle args = new Bundle();
-        args.putBoolean("show_loader", show_loader);
-
-        //Attaching "MyItems"
-        MyBoxesFragment my_box_fragment = new MyBoxesFragment();
-        my_box_fragment.setArguments(args);
-        adapter.addFragment(my_box_fragment, "Subscription");
-
-        //Attaching Store
-        StoreFragment store_fragment = new StoreFragment();
-        store_fragment.setArguments(args);
-        adapter.addFragment(store_fragment, "Store");
-
-        //Attaching Deliveries
-        UpComingOrderFragment upcoming_deliveries_fragment = new UpComingOrderFragment();
-        upcoming_deliveries_fragment.setArguments(args);
-        adapter.addFragment(upcoming_deliveries_fragment, "Deliveries");
-
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
-        viewPager.setCurrentItem(default_position);
-        viewPager.setOffscreenPageLimit(3);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
     }
 
     @Override
