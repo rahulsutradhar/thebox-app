@@ -168,6 +168,7 @@
 
             <!-- Subscription details -->
             <RelativeLayout
+                android:id="@+id/subscribe_next"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/md_green_500"

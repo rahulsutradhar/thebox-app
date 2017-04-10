@@ -137,6 +137,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
     public void parseData(RescheduleResponse rescheduleResponse) {
         ArrayList<Reschedule> tabsList = new ArrayList<>();
+        ArrayList<String> mergeDescription = new ArrayList<>();
 
         for (Reschedule reschedule : rescheduleResponse.getReschedules()) {
             if (reschedule.getPriority() == 1) {
@@ -184,7 +185,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
             for (int i = 0; i < tabsList.size(); i++) {
                 FragmentRescheduleUserItem fragmentRescheduleUserItem =
-                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getDeliveries(), userItem, i);
+                        FragmentRescheduleUserItem.getInstance(getActivity(),tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), userItem, i);
                 fragmentRescheduleUserItem.addListener(onDelayActionCompleted);
                 pagerAdapterReschedule.addFragment(fragmentRescheduleUserItem);
             }
