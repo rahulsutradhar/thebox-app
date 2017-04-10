@@ -18,6 +18,12 @@ public class Saving extends RealmObject implements Serializable {
 
     private boolean saving;
 
+    @SerializedName("suggestion_box_id")
+    private int suggestionBoxId;
+
+    @SerializedName("suggestion_box_name")
+    private String suggestionBoxName;
+
     @SerializedName("suggestion_box_title")
     private String suggestionBoxTitle;
 
@@ -99,5 +105,21 @@ public class Saving extends RealmObject implements Serializable {
 
     public void setSuggestionBoxDescription(String suggestionBoxDescription) {
         this.suggestionBoxDescription = suggestionBoxDescription;
+    }
+
+    public int getSuggestionBoxId() {
+        return suggestionBoxId;
+    }
+
+    public void setSuggestionBoxId(int suggestionBoxId) {
+        this.suggestionBoxId = suggestionBoxId;
+    }
+
+    public String getSuggestionBoxName() {
+        return suggestionBoxName;
+    }
+
+    public void setSuggestionBoxName(String suggestionBoxName) {
+        this.suggestionBoxName = suggestionBoxName;
     }
 }

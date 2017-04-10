@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
@@ -34,6 +35,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     private Saving saving;
     private int stickyHeaderHeight = 0;
+    private Context context;
 
     /**
      * GLide Request Manager
@@ -47,11 +49,20 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     public MyBoxRecyclerAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
+        this.context = context;
         this.glideRequestManager = glideRequestManager;
     }
 
     public List<OrderedUserItem> getOrderedUserItems() {
         return orderedUserItems;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public void setOrderedUserItems(List<OrderedUserItem> orderedUserItems) {
@@ -231,6 +242,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private TextView monthlyBillText, monthlyBillValue, totalMonthlySavingsText,
                 totalMonthlySavingsValue, totalItemsText, totalItemValue;
         private TextView subscriptionBoxTitle, subscriptionBoxDesc;
+        private RelativeLayout subscribeNext;
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
@@ -242,9 +254,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
             totalItemValue = (TextView) itemView.findViewById(R.id.total_items_value);
             subscriptionBoxTitle = (TextView) itemView.findViewById(R.id.subscription_box_title);
             subscriptionBoxDesc = (TextView) itemView.findViewById(R.id.subscription_box_description);
+            subscribeNext = (RelativeLayout) itemView.findViewById(R.id.subscribe_next);
         }
 
-        public void setViews(Saving saving) {
+        public void setViews(final Saving saving) {
             try {
                 if (saving.getMonthlyBill() != null) {
                     monthlyBillText.setText(saving.getMonthlyBill().getTitle());
@@ -266,6 +279,19 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                 }
 
                 subscriptionBoxDesc.setText(saving.getSuggestionBoxDescription());
+
+                subscribeNext.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
+                        context.startActivity(new Intent(mContext, MainActivity.class)
+                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
+                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+
+                    }
+                });
+
             } catch (Exception e) {
 
             }
