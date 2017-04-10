@@ -7,7 +7,7 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/delivery_date_text"
+        android:id="@+id/merge_description_text"
         style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +17,6 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="8dp"
-        android:text="@string/merge_description"
         android:textColor="@color/md_grey_600"
         android:textSize="@dimen/text_small3" />
 
