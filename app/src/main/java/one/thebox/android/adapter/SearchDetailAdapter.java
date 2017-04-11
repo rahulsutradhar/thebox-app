@@ -386,7 +386,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     monthlySavings.setText("");
                     monthlySavings.setVisibility(View.GONE);
                 }
-                
+
                 //image loading
                 glideRequestManager.load(itemConfig.getPhotoUrl())
                         .centerCrop()
@@ -1396,6 +1396,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
                                             }
+
+                                            //update Savings Card in Subscription tab
+                                            EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
 
                                             OrderHelper.updateUserItemAndNotifiy(item);
                                         }
