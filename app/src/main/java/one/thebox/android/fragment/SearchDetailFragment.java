@@ -592,6 +592,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     public void getExploreDetails() {
         connectionErrorViewHelper.isVisible(false);
+        title = exploreItem.getTitle();
         TheBox.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
                 .enqueue(new Callback<ExploreBoxResponse>() {
                     @Override

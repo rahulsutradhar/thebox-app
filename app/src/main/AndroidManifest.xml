@@ -37,7 +37,7 @@
         android:name=".app.TheBox"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:largeHeap="false"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <receiver android:name=".services.SmsReceiver">
             <intent-filter>
