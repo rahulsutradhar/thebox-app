@@ -3,6 +3,7 @@ package one.thebox.android.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -183,6 +184,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         public void onClick(View v) {
                             RealmList<Order> orders = new RealmList<>();
                             orders.add(order);
+
                             //open time slots activity
                             mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), order.getId(), true));
                         }
@@ -217,9 +219,9 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
                     amountTobePaidTextView.setOnClickListener(null);
                     if (order.isCod()) {
-                        amountTobePaidTextView.setText( Constants.RUPEE_SYMBOL+" " + Math.round(order.getTotalPrice()) + " paid via COD");
+                        amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()) + " paid via COD");
                     } else {
-                        amountTobePaidTextView.setText( Constants.RUPEE_SYMBOL+" " + Math.round(order.getTotalPrice()) + " paid Online");
+                        amountTobePaidTextView.setText(Constants.RUPEE_SYMBOL + " " + Math.round(order.getTotalPrice()) + " paid Online");
                     }
 
                 }

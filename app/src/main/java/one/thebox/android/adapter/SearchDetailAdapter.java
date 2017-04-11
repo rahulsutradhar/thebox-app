@@ -290,7 +290,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
         }
 
-        private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, final int arrayListPosition) {
+        private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, int arrayListPosition) {
 
 
             try {
@@ -313,7 +313,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(arrayListPosition, quantity_for_this_order + 1);
+                            updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
                         }
                     });
 
@@ -321,7 +321,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onClick(View v) {
                             if (quantity_for_this_order > 1) {
-                                updateQuantity(arrayListPosition, quantity_for_this_order - 1);
+                                updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
                             } else if (quantity_for_this_order == 1) {
                                 MaterialDialog dialog = new MaterialDialog.Builder(mContext).
                                         title("Remove " + userItem.getBoxItem().getTitle())
@@ -413,7 +413,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             if (quantity >= 1) {
                                                 setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
                                                 setUserItems(response.body().getOrder().getUserItems());
-                                                notifyItemChanged(getAdapterPosition());
+                                                notifyDataSetChanged();
                                             } else {
                                                 /**
                                                  * Save CaleverTap Event; OrderItemRemoved
@@ -423,13 +423,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
                                                 setUserItems(response.body().getOrder().getUserItems());
                                                 notifyItemRemoved(getAdapterPosition());
-
-                                                //to update the UI in Upcoing fragment when the user removes item from ordered Item
-                                                PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
-
                                             }
                                             OrderHelper.addAndNotify(response.body().getOrder());
-                                            EventBus.getDefault().post(new UpdateOrderItemEvent());
+
+                                            //pass order to the OrderItemActivity to update the payment value
+                                            UpdateOrderItemEvent updateOrderItemEvent = new UpdateOrderItemEvent();
+                                            updateOrderItemEvent.setOrder(response.body().getOrder());
+                                            EventBus.getDefault().post(updateOrderItemEvent);
+
+                                            //to update the UI in Upcoing fragment when the user removes or increase quantity of an item from ordered Item
+                                            PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
 
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {

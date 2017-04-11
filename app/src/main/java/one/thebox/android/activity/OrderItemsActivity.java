@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -161,8 +162,11 @@ public class OrderItemsActivity extends BaseActivity {
             OrderItemsActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    orderId = order.getId();
-                    initVariables();
+
+                    //update the new order data after updating useritem
+                    if (updateOrderItemEvent.getOrder() != null) {
+                        order = updateOrderItemEvent.getOrder();
+                    }
                     setPayButton();
                 }
             });
