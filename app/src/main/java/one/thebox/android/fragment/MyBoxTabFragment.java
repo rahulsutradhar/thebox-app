@@ -150,7 +150,6 @@ public class MyBoxTabFragment extends Fragment {
 
                 }
             });
-            viewPager.setCurrentItem(0);
 
         } catch (Exception e) {
             e.printStackTrace();

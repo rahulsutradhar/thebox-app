@@ -406,21 +406,21 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                     }
 
                 } catch (Exception e) {
+                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.GONE);
                     no_item_subscribed_view_holder.setVisibility(View.GONE);
                     connectionErrorViewHelper.isVisible(true);
-                    Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserItemResponse> call, Throwable t) {
+                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
                 no_item_subscribed_view_holder.setVisibility(View.GONE);
                 connectionErrorViewHelper.isVisible(true);
-                Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
 
