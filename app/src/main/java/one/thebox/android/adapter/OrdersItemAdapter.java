@@ -297,6 +297,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                         }
                     });
                 }
+            } catch (IndexOutOfBoundsException i) {
+                i.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

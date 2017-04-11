@@ -431,7 +431,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             updateOrderItemEvent.setOrder(response.body().getOrder());
                                             EventBus.getDefault().post(updateOrderItemEvent);
 
-                                            //to update the UI in Upcoing fragment when the user removes or increase quantity of an item from ordered Item
+                                            //to update the UI in Upcoing fragment when the user removes or increase quantity of a item from ordered Item
                                             PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
 
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
