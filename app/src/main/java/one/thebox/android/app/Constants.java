@@ -50,4 +50,13 @@ public class Constants {
      * Category Id
      */
     public static final String CATEGORY_ID = "extra_category_id";
+
+    /**
+     * Constants to Notify Boradcast
+     */
+    public static final int DELIVERIES = 2;
+    public static final int SUBSCRIPTION = 1;
+    public static final int CART = 3;
+
+    public static final int BROADCAST_SUBSCRIPTION_AND_DELIVERIES = 4;
 }

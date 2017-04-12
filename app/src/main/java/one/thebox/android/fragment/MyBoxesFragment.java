@@ -137,7 +137,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
         @Override
         public void onChange(Object element) {
-            Log.d("RealmChanged", "RealmData Changed");
             if (getActivity() != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

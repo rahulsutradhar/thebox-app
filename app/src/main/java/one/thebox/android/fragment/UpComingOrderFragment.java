@@ -182,7 +182,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     //called after rescheudle delivery
     @Subscribe
     public void onUpdateDeliveries(UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule) {
-        fetchDeliveriesFromServer();
+        try {
+            //fetch order and update accordingly
+            OrderHelper.getOrderAndNotify(updateDeliveriesAfterReschedule.getNotifyTo(), updateDeliveriesAfterReschedule.isShallNotifyAll());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

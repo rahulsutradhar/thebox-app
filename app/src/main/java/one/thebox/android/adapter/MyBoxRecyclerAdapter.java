@@ -230,6 +230,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
                         }
                     });
+                    this.userItemRecyclerAdapter.setCalledFromSearchDetailItem(false);
                     this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
                 }
             } catch (Exception e) {
