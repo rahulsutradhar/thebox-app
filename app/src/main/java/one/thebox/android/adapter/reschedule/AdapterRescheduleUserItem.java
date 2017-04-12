@@ -17,6 +17,7 @@ import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.reshedule.FragmentRescheduleUserItem;
 import one.thebox.android.util.PrefUtils;
@@ -173,9 +174,10 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
+                                        Toast.makeText(TheBox.getAppContext(), response.body().getUserItem().getArrivingAt() + " Server", Toast.LENGTH_SHORT).show();
                                         onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
-                                        OrderHelper.updateUserItem(response.body().getUserItem());
-                                        Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
+                                        // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
 
                                         //setClevertap Event
                                         setCleverTapEventRescheduleDelivery(response.body().getUserItem(), delivery);
