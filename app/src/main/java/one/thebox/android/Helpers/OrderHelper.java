@@ -48,11 +48,45 @@ public class OrderHelper {
         saveToRealm(order);
     }
 
+    public static void addAndNotify(RealmList<Order> orders, int notify) {
+        if (orders == null) {
+            return;
+        }
+        saveToRealm(orders, notify);
+    }
+
     public static void build_and_show_order_delivered_notification() {
         NotificationInfo.NotificationAction content_action = new NotificationInfo.NotificationAction(10, "");
         NotificationInfo notificationInfo = new NotificationInfo(10, "Delivery Done", "Why don't you add more items for next delivery?", 0, content_action);
         new NotificationHelper(TheBox.getInstance(), notificationInfo).show();
         Log.v("Notification shown", "Here");
+    }
+
+    /**
+     * Used to notify any perticular List
+     */
+    public static void getOrderAndNotify(final int notifyTo, final boolean shallNotifyAll) {
+        TheBox.getAPIService().getMyOrders(PrefUtils.getToken(TheBox.getInstance())).enqueue(
+                new Callback<OrdersApiResponse>() {
+                    @Override
+                    public void onResponse(Call<OrdersApiResponse> call, Response<OrdersApiResponse> response) {
+                        if (response.body() != null) {
+                            if (response.body().isSuccess()) {
+                                if (shallNotifyAll) {
+                                    addAndNotify(response.body().getOrders());
+                                } else {
+                                    addAndNotify(response.body().getOrders(), notifyTo);
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<OrdersApiResponse> call, Throwable t) {
+
+                    }
+                }
+        );
     }
 
     public static void getOrderAndNotify(final Boolean show_notification) {
@@ -78,6 +112,7 @@ public class OrderHelper {
         );
     }
 
+
     public static void updateUserItemAndNotifiy(final UserItem userItem) {
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
@@ -85,6 +120,37 @@ public class OrderHelper {
         realm.commitTransaction();
 
         sendUpdateOrderItemBroadcast();
+    }
+
+    public static void updateUserItemAndNotifiy(final UserItem userItem, int notifyTo) {
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(userItem);
+        realm.commitTransaction();
+
+        sendBroadCast(notifyTo);
+    }
+
+    public static void sendBroadCast(int notigfy) {
+        switch (notigfy) {
+            case 1:
+                //subscription
+                sendBroadCastToSubscription();
+                break;
+            case 2:
+                //deliveries
+                sendBroadCastToDeliveries();
+                break;
+            case 3:
+                //cart
+                sendBroadCastToCart();
+                break;
+            case 4:
+                //subscription and Delivery
+                sendBroadCastToSubscription();
+                sendBroadCastToDeliveries();
+                break;
+        }
     }
 
     public static void updateUserItem(final UserItem userItem) {
@@ -102,6 +168,16 @@ public class OrderHelper {
         realm.copyToRealmOrUpdate(orders);
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();
+    }
+
+    private static void saveToRealm(final RealmList<Order> orders, int notifyTo) {
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+        realm.copyToRealmOrUpdate(orders);
+        realm.commitTransaction();
+
+        sendBroadCast(notifyTo);
     }
 
 
@@ -149,6 +225,17 @@ public class OrderHelper {
         EventBus.getDefault().post(new UpdateOrderItemEvent());
     }
 
+    private static void sendBroadCastToDeliveries() {
+        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
+    }
+
+    private static void sendBroadCastToCart() {
+        EventBus.getDefault().post(new UpdateCartEvent(1));
+    }
+
+    private static void sendBroadCastToSubscription() {
+        EventBus.getDefault().post(new UpdateOrderItemEvent());
+    }
 
     public static void getOrderAndNotifySynchronusly() {
         try {

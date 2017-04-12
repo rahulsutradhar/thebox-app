@@ -270,9 +270,11 @@ public class SearchDetailItemsFragment extends Fragment {
             listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
             recyclerView.addOnScrollListener(listener);
+            searchDetailAdapter.setCalledFromSearchDetailItem(true);
         } else {
             searchDetailAdapter.setBoxItems(boxItems, userItems);
             searchDetailAdapter.notifyDataSetChanged();
+            searchDetailAdapter.setCalledFromSearchDetailItem(true);
         }
     }
 

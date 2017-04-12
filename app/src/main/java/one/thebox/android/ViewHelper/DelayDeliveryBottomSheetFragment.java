@@ -33,6 +33,7 @@ import one.thebox.android.adapter.viewpager.ViewPagerAdapterReschedule;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.reshedule.FragmentRescheduleUserItem;
 import one.thebox.android.util.CoreGsonUtils;
@@ -185,7 +186,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
             for (int i = 0; i < tabsList.size(); i++) {
                 FragmentRescheduleUserItem fragmentRescheduleUserItem =
-                        FragmentRescheduleUserItem.getInstance(getActivity(),tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), userItem, i);
+                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), userItem, i);
                 fragmentRescheduleUserItem.addListener(onDelayActionCompleted);
                 pagerAdapterReschedule.addFragment(fragmentRescheduleUserItem);
             }
@@ -315,9 +316,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
                                         if (response.body() != null) {
                                             if (response.body().isSuccess()) {
                                                 onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
-                                                OrderHelper.updateUserItem(response.body().getUserItem());
-                                                Toast.makeText(dialog.getContext(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
+                                                // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
                                                 //Save Clevertap event
                                                 setCleverTapEventRescheduleDelivery(userItem);
                                                 dialog.dismiss();
@@ -351,7 +350,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             hashMap.put("category", userItem.getBoxItem().getCategoryId());
             hashMap.put("reschedule_type", "skip");
 
-            TheBox.getCleverTap().event.push("reschedule_delivery",hashMap);
+            TheBox.getCleverTap().event.push("reschedule_delivery", hashMap);
 
         } catch (Exception e) {
             e.printStackTrace();
