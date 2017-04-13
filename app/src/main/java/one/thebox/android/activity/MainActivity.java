@@ -205,6 +205,7 @@ public class MainActivity extends BaseActivity implements
         //Preference to load OrderedUserItem when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
+        PrefUtils.putBoolean(this,Keys.LOAD_CAROUSEL,true);
 
     }
 
@@ -215,6 +216,7 @@ public class MainActivity extends BaseActivity implements
         //Preference to load OrderedUserItem when user open the app be false
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, false);
+        PrefUtils.putBoolean(this,Keys.LOAD_CAROUSEL,false);
 
     }
 
