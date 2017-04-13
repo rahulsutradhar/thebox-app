@@ -427,12 +427,12 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 this.recyclerView.setAdapter(adapterCarousel);
                 SnapHelper snapHelper = new PagerSnapHelper();
                 snapHelper.attachToRecyclerView(recyclerView);
-                recyclerView.scrollToPosition(100);
+                linearLayoutManager.scrollToPosition(100);
 
             } else {
                 adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
                 adapterCarousel.setCarousel(carousel);
-                recyclerView.scrollToPosition(100);
+                linearLayoutManager.scrollToPosition(100);
             }
 
         }
