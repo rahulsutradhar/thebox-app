@@ -57,6 +57,7 @@ import one.thebox.android.adapter.StoreRecyclerAdapter;
 import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.MyBoxResponse;
 import one.thebox.android.app.Constants;
+import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.CoreGsonUtils;
@@ -122,8 +123,12 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
 
             //fetch box from server
             getMyBoxes();
-            //fetch carousel from server
-            getCarousel();
+
+            if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_CAROUSEL)) {
+                //fetch carousel from server
+                getCarousel();
+                PrefUtils.putBoolean(getActivity(), Keys.LOAD_CAROUSEL, false);
+            }
 
             setupAppBarObserver();
 
