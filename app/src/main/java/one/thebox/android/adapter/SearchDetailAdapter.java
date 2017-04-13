@@ -859,9 +859,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                              * Save CleverTapEvent; ItemAddedToCart
                                              */
                                             setCleverTapEventItemAddedToCart(boxItems.get(position));
-
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -895,6 +892,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
+
                                             boxItems.get(finalPosition).setQuantity(quantity);
                                             if (quantity >= 1) {
                                                 response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
@@ -902,15 +900,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
-
-                                                /**
-                                                 * Save CleverTap Event; ItemRemoveFromCart
-                                                 */
-                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
-
-                                                CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
+                                                CartHelper.removeUserItem(boxItems.get(getAdapterPosition()).getUserItemId(), response.body().get_cart());
+                                                
                                                 if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                                    boxItems.remove(finalPosition);
+                                                    boxItems.remove(getAdapterPosition());
                                                     notifyItemRemoved(getAdapterPosition());
                                                     notifyItemRangeChanged(getAdapterPosition(), getItemCount());
 
@@ -918,10 +911,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     boxItems.get(finalPosition).setUserItemId(0);
                                                     notifyItemChanged(getAdapterPosition());
                                                 }
+
+                                                /**
+                                                 * Save CleverTap Event; ItemRemoveFromCart
+                                                 */
+                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
+
                                             }
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                         }
                                     }
                                 }

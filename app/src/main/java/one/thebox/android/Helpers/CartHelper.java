@@ -63,29 +63,81 @@ public class CartHelper {
         }
     }
 
-    public static void addOrUpdateUserItem(final UserItem userItem, Order cart) {
-        
+    public static void addOrUpdateUserItem(final UserItem userItem, final Order cart) {
         Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(userItem);
-        realm.commitTransaction();
+        realm.executeTransactionAsync
+                (new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.copyToRealmOrUpdate(userItem);
 
-        if (cart != null) {
-            OrderHelper.addAndNotify(cart);
-            sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
-        }
+                        //update cart
+                        if (cart.getUserItems() != null) {
+                            if (cart.getUserItems().size() > 0) {
+                                realm.copyToRealmOrUpdate(cart);
+                            } else {
+                                //delete the order row
+                                realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                            }
+                        }
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+                        if (cart != null) {
+                            // OrderHelper.addAndNotify(cart);
+                            sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
+                        }
+                    }
+                }, new Realm.Transaction.OnError() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
     }
 
-    public static void removeUserItem(final int userItemId, Order cart) {
+    public static void removeUserItem(final int userItemId, final Order cart) {
 
         Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        realm.where(UserItem.class).equalTo("id", userItemId).findFirst().deleteFromRealm();
-        realm.commitTransaction();
-        if (cart != null) {
-            OrderHelper.addAndNotify(cart);
-            sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
-        }
+        realm.executeTransactionAsync
+                (new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.where(UserItem.class).equalTo("id", userItemId).findFirst().deleteFromRealm();
+
+                        //update cart
+                        if (cart.getUserItems() != null) {
+                            if (cart.getUserItems().size() > 0) {
+                                realm.copyToRealmOrUpdate(cart);
+                            } else {
+                                //delete the order row
+                                realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                            }
+                        }
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+
+                        if (cart != null) {
+                            // OrderHelper.addAndNotify(cart);
+                            if (cart.getUserItems() != null) {
+                                sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
+                            } else {
+                                clearCart();
+                                sendUpdateNoItemsInCartBroadcast(0);
+                            }
+                        }
+
+                    }
+                }, new Realm.Transaction.OnError() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
+
     }
 
     public static void clearCart() {

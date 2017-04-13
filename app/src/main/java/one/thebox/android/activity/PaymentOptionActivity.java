@@ -430,6 +430,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     public void paymentCompleteMoveToHome() {
         PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
         PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
+        PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
         Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
         intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);

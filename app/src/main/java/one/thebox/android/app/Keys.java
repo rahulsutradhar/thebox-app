@@ -21,4 +21,9 @@ public class Keys {
      */
     public static final String LOAD_ORDERED_MY_DELIVERIES = "LOAD_ORDERED_MY_DELIVERIES";
 
+    /**
+     * Keys to load Carousel
+     */
+    public static final String LOAD_CAROUSEL = "LOAD_CAROUSEL";
+
 }
