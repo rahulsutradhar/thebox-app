@@ -3,18 +3,24 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.Display;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
@@ -28,6 +34,7 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
+import one.thebox.android.Models.Size;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
@@ -38,7 +45,9 @@ import one.thebox.android.adapter.carousel.AdapterCarousel;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
+import one.thebox.android.fragment.StoreFragment;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -50,7 +59,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     private RealmList<Box> boxes;
     private ArrayList<Offer> carousel;
     private int stickyHeaderHeight = 0;
-    private SparseIntArray boxHeights = new SparseIntArray();
+    private Context mContext;
 
     /**
      * Glide Request Manager
@@ -59,6 +68,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public StoreRecyclerAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
+        this.mContext = context;
         this.glideRequestManager = glideRequestManager;
     }
 
@@ -402,28 +412,27 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         private AdapterCarousel adapterCarousel;
         private LinearLayoutManager linearLayoutManager;
 
-
         public HeaderViewHolder(View itemView) {
             super(itemView);
             this.recyclerView = (RecyclerView) itemView.findViewById(R.id.carousel_list);
         }
 
-        public void setViews(ArrayList<Offer> carousel) {
+        public void setViews(final ArrayList<Offer> carousel) {
             if (adapterCarousel == null || null == recyclerView.getAdapter()) {
                 linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
                 this.recyclerView.setLayoutManager(linearLayoutManager);
-                SnapHelper snapHelper = new PagerSnapHelper();
                 adapterCarousel = new AdapterCarousel(mContext, glideRequestManager);
                 adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
                 adapterCarousel.setCarousel(carousel);
                 this.recyclerView.setAdapter(adapterCarousel);
+                SnapHelper snapHelper = new PagerSnapHelper();
                 snapHelper.attachToRecyclerView(recyclerView);
-                linearLayoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+                linearLayoutManager.scrollToPosition(100);
 
             } else {
                 adapterCarousel.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
                 adapterCarousel.setCarousel(carousel);
-                linearLayoutManager.scrollToPosition(Integer.MAX_VALUE / 2);
+                linearLayoutManager.scrollToPosition(100);
             }
 
         }

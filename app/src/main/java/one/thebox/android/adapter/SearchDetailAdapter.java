@@ -95,6 +95,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Order order;
     private List<Category> suggestedCategories = new ArrayList<>();
     private int boxId;
+    private boolean isCalledFromSearchDetailItem;
 
     /**
      * GLide Request Manager
@@ -143,6 +144,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {
         this.mContext = context;
         this.glideRequestManager = glideRequestManager;
+    }
+
+    public boolean isCalledFromSearchDetailItem() {
+        return isCalledFromSearchDetailItem;
+    }
+
+    public void setCalledFromSearchDetailItem(boolean calledFromSearchDetailItem) {
+        isCalledFromSearchDetailItem = calledFromSearchDetailItem;
     }
 
     public boolean isHide_quantity_selector_in_this_order_item_view() {
@@ -850,9 +859,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                              * Save CleverTapEvent; ItemAddedToCart
                                              */
                                             setCleverTapEventItemAddedToCart(boxItems.get(position));
-
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -886,6 +892,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
+
                                             boxItems.get(finalPosition).setQuantity(quantity);
                                             if (quantity >= 1) {
                                                 response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
@@ -893,15 +900,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
-
-                                                /**
-                                                 * Save CleverTap Event; ItemRemoveFromCart
-                                                 */
-                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
-
-                                                CartHelper.removeUserItem(boxItems.get(finalPosition).getUserItemId(), response.body().get_cart());
+                                                CartHelper.removeUserItem(boxItems.get(getAdapterPosition()).getUserItemId(), response.body().get_cart());
+                                                
                                                 if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                                    boxItems.remove(finalPosition);
+                                                    boxItems.remove(getAdapterPosition());
                                                     notifyItemRemoved(getAdapterPosition());
                                                     notifyItemRangeChanged(getAdapterPosition(), getItemCount());
 
@@ -909,10 +911,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     boxItems.get(finalPosition).setUserItemId(0);
                                                     notifyItemChanged(getAdapterPosition());
                                                 }
+
+                                                /**
+                                                 * Save CleverTap Event; ItemRemoveFromCart
+                                                 */
+                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
+
                                             }
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+
                                         }
                                     }
                                 }
@@ -1065,7 +1073,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         @Override
                                         public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                             dialogFragment.dismiss();
-                                            changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+
+                                            changeConfig(arrayListPosition, selectedItemConfig.getId());
                                         }
                                     });
                                     break;
@@ -1083,10 +1092,23 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             if (onUserItemChange != null) {
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
-                                            notifyItemChanged(arrayListPosition);
+                                            notifyItemChanged(getAdapterPosition());
 
                                             //refetch orders and update, which also updates locally
-                                            EventBus.getDefault().post(new UpdateDeliveriesAfterReschedule());
+                                            UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
+                                            /*
+                                            *when called from SearchDeatilItemFragment update Subscription and Deliveries
+                                            *
+                                            * Else only Update only Deleivery
+                                            * */
+                                            if (isCalledFromSearchDetailItem) {
+                                                updateDeliveriesAfterReschedule.setNotifyTo(Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
+                                            } else {
+                                                updateDeliveriesAfterReschedule.setNotifyTo(Constants.DELIVERIES);
+                                            }
+                                            updateDeliveriesAfterReschedule.setShallNotifyAll(false);
+                                            EventBus.getDefault().post(updateDeliveriesAfterReschedule);
+
                                             if (deliveryBottomSheet != null) {
                                                 deliveryBottomSheet.dismiss();
                                             }
@@ -1341,11 +1363,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             int prevQuantity = userItems.get(position).getQuantity();
                                             UserItem item = response.body().getUserItem();
                                             item.setBoxId(response.body().getBoxId());
+
                                             if (quantity >= 1) {
+                                                userItems.set(position, item);
+                                                notifyItemChanged(position);
                                                 CartHelper.addOrUpdateUserItem(item, null);
-                                                notifyItemChanged(getAdapterPosition());
                                             } else {
                                                 CartHelper.removeUserItem(userItems.get(position).getId(), null);
+                                                userItems.remove(position);
                                                 notifyItemRemoved(getAdapterPosition());
                                             }
                                             if (onUserItemChange != null) {
@@ -1355,7 +1380,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             //update Savings Card in Subscription tab
                                             EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
 
-                                            OrderHelper.updateUserItemAndNotifiy(item);
+                                            /**
+                                             *  when called from SearchDeatilItemFragment update Subscription and Deliveries
+                                             *  Else only Update only Deleivery
+                                             */
+                                            if (isCalledFromSearchDetailItem) {
+                                                OrderHelper.updateUserItemAndNotifiy(item, Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
+                                            } else {
+                                                OrderHelper.updateUserItemAndNotifiy(item, Constants.DELIVERIES);
+                                            }
 
                                             Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                         } else {
@@ -1388,22 +1421,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            UserItem item = response.body().getUserItem();
-                                            userItems.set(position, item);
-                                            if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
-                                            }
-                                            notifyItemChanged(getAdapterPosition());
-                                            if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
-                                                    || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
-                                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
-                                            }
+                                        UserItem item = response.body().getUserItem();
+                                        userItems.set(position, item);
+                                        if (onUserItemChange != null) {
+                                            onUserItemChange.onUserItemChange(userItems);
+                                        }
 
-                                            //update Savings Card in Subscription tab
-                                            EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
+                                        notifyItemChanged(position);
+                                        if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
+                                                || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
+                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
+                                        }
 
-                                            OrderHelper.updateUserItemAndNotifiy(item);
+                                        //update Savings Card in Subscription tab
+                                        EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
+
+                                        /**
+                                         *  when called from SearchDeatilItemFragment update Subscription and Deliveries
+                                         *  Else only Update only Deleivery
+                                         */
+                                        if (isCalledFromSearchDetailItem) {
+                                            OrderHelper.updateUserItemAndNotifiy(item, Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
+                                        } else {
+                                            OrderHelper.updateUserItemAndNotifiy(item, Constants.DELIVERIES);
                                         }
                                     }
                                 } else {
@@ -1456,10 +1496,21 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     if (onUserItemChange != null) {
                                                         onUserItemChange.onUserItemChange(userItems);
                                                     }
+
                                                     notifyItemRemoved(positionInArrayList);
                                                     dialog.dismiss();
                                                     CartHelper.removeUserItem(userItem.getId(), null);
-                                                    OrderHelper.addAndNotify(response.body().getOrders());
+
+                                                    /**
+                                                     *  when called from SearchDeatilItemFragment update Subscription and Deliveries
+                                                     *  Else only Update only Deleivery
+                                                     */
+                                                    if (isCalledFromSearchDetailItem) {
+                                                        OrderHelper.addAndNotify(response.body().getOrders(), Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
+                                                    } else {
+                                                        OrderHelper.addAndNotify(response.body().getOrders(), Constants.DELIVERIES);
+                                                    }
+
                                                     Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
                                                     //update Savings Card in Subscription tab

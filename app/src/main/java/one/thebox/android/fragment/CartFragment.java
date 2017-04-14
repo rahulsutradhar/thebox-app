@@ -71,8 +71,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     initVariables();
-                    doCartHasItems();
                 }
             });
 
@@ -95,13 +95,16 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 .equalTo(Order.FIELD_ID, cartId).findFirst();
         if (order != null) {
             this.order = realm.copyFromRealm(order);
+        } else {
+            this.order = null;
         }
+
+        doCartHasItems();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initVariables();
     }
 
 
@@ -110,8 +113,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         initViews();
-        setupRecyclerView();
+        initVariables();
         setupAppBarObserver();
+        setupRecyclerView();
         return rootView;
     }
 
@@ -122,6 +126,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             proceedToPayment.setVisibility(View.GONE);
             return false;
         } else {
+            // Toast.makeText(TheBox.getAppContext(), "Cart Has Item ELSEEE " + order.getTotalPrice(), Toast.LENGTH_SHORT).show();
             emptyCartLayout.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
             proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + order.getTotalPrice() + "\n" + "Proceed to Payment");
@@ -176,8 +181,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     initVariables();
-                    doCartHasItems();
                 }
             });
         }
