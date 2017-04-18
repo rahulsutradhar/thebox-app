@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -716,17 +717,35 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .into(productImage);
 
                 //Monthly Savings Text
-                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
-                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
-                        savingsTitle.setVisibility(View.VISIBLE);
-                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                if (boxItem.getQuantity() > 0) {
+                    //when item is subscribed to cart
+                    if (boxItem.getSavingsTitle() != null) {
+                        if (!boxItem.getSavingsTitle().isEmpty()) {
+                            savingsTitle.setText(boxItem.getSavingsTitle());
+                            savingsTitle.setVisibility(View.VISIBLE);
+                        } else {
+                            savingsTitle.setText("");
+                            savingsTitle.setVisibility(View.GONE);
+                        }
                     } else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }
+
                 } else {
-                    savingsTitle.setText("");
-                    savingsTitle.setVisibility(View.GONE);
+                    //when item is not subscribed to cart
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                        if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                            savingsTitle.setVisibility(View.VISIBLE);
+                            savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                        } else {
+                            savingsTitle.setText("");
+                            savingsTitle.setVisibility(View.GONE);
+                        }
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
                 }
 
                 //savings ItemConfig
@@ -742,6 +761,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     savingsItemConfig.setText("");
                     savingsItemConfig.setVisibility(View.GONE);
                 }
+
 
                 //mrp
                 if (boxItem.getSelectedItemConfig().getMrpText() != null) {
@@ -843,6 +863,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         if (response.body().isSuccess()) {
                                             boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
                                             boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
+                                            boxItems.get(position).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
 
                                             boxId = boxItems.get(position).getId();
 
@@ -894,6 +915,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         if (response.body().isSuccess()) {
 
                                             boxItems.get(finalPosition).setQuantity(quantity);
+                                            boxItems.get(finalPosition).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
                                             if (quantity >= 1) {
                                                 response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
 
@@ -901,7 +923,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 notifyItemChanged(getAdapterPosition());
                                             } else {
                                                 CartHelper.removeUserItem(boxItems.get(getAdapterPosition()).getUserItemId(), response.body().get_cart());
-                                                
+
                                                 if (shouldRemoveBoxItemOnEmptyQuantity) {
                                                     boxItems.remove(getAdapterPosition());
                                                     notifyItemRemoved(getAdapterPosition());
@@ -950,8 +972,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
                                         boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
                                         boxItems.get(position).setSuggestedCategory(suggestionsCategories);
+                                        boxItems.get(position).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
 
-                                        notifyItemChanged(position);
+                                        notifyItemChanged(getAdapterPosition());
                                         CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
 
                                     }

@@ -25,6 +25,9 @@ public class BoxItem extends RealmObject implements Serializable {
     @Ignore
     private int userItemId;
 
+    @SerializedName("savings_title")
+    private String savingsTitle;
+
     @PrimaryKey
     @SerializedName("id")
     private int id;
@@ -182,7 +185,15 @@ public class BoxItem extends RealmObject implements Serializable {
         this.categoryId = categoryId;
     }
 
-//    public String getPhotoFileName() {
+    public String getSavingsTitle() {
+        return savingsTitle;
+    }
+
+    public void setSavingsTitle(String savingsTitle) {
+        this.savingsTitle = savingsTitle;
+    }
+
+    //    public String getPhotoFileName() {
 ////        return photoFileName;
 ////    }
 ////
