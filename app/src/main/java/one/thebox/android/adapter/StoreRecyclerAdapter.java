@@ -246,45 +246,15 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
 
             if (position < categories.size()) {
-                itemViewHolder.setViewHolder(categories.get(position));
+                itemViewHolder.setViewHolder(categories.get(position), position);
             } else {
-                itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()));
+                itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()), position);
             }
 
             // When used in Search Detail Fragment
             if (isSearchDetailItemFragment) {
                 setAnimation(itemViewHolder.itemView);
             }
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isSearchDetailItemFragment) {
-                        EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
-                    } else {
-                        ArrayList<Integer> catIds = new ArrayList<>();
-                        for (Category category : categories) {
-                            catIds.add(category.getId());
-                        }
-                        ArrayList<Integer> user_catIds = new ArrayList<>();
-                        if (!my_catIds.isEmpty()) {
-                            for (UserCategory usercategory : my_catIds) {
-                                user_catIds.add(usercategory.getCategory().getId());
-                            }
-                        }
-                        Intent intent = new Intent(mContext, MainActivity.class)
-                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
-                                .putExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(
-                                        catIds))
-                                .putExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(
-                                        user_catIds))
-                                .putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
-                                .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
-                        mContext.startActivity(intent);
-                    }
-                }
-            });
-
         }
 
         @Override
@@ -333,16 +303,18 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         public class ItemViewHolder extends ItemHolder {
             private TextView categoryNameTextView, noOfItems, savingTextView;
             private ImageView categoryIcon;
+            private View itemView;
 
             public ItemViewHolder(View itemView) {
                 super(itemView);
+                this.itemView = itemView;
                 categoryNameTextView = (TextView) itemView.findViewById(R.id.text_view_category_name);
                 savingTextView = (TextView) itemView.findViewById(R.id.text_view_savings);
                 noOfItems = (TextView) itemView.findViewById(R.id.number_of_item);
                 categoryIcon = (ImageView) itemView.findViewById(R.id.icon);
             }
 
-            public void setViewHolder(Category category) {
+            public void setViewHolder(final Category category, final int position) {
                 if (isSearchDetailItemFragment) {
                     categoryNameTextView.setText(category.getMinititle());
                 } else {
@@ -363,6 +335,15 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     savingTextView.setText("");
                 }
 
+                //clickevent
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handleCLickEvent(category, position);
+                    }
+                });
+
+
                 mRequestManager.load(category.getIconUrl())
                         .centerCrop()
                         .crossFade()
@@ -370,7 +351,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
             }
 
-            public void setViewHolder(UserCategory userCategory) {
+            public void setViewHolder(final UserCategory userCategory, final int position) {
                 categoryNameTextView.setText(userCategory.getCategory().getMinititle());
 
                 noOfItems.setVisibility(View.VISIBLE);
@@ -397,11 +378,48 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                     savingTextView.setText("");
                 }
 
+                //clickevent
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        handleCLickEvent(userCategory.getCategory(), position);
+                    }
+                });
+
+
                 mRequestManager.load(userCategory.getCategory().getIconUrl())
                         .centerCrop()
                         .crossFade()
                         .into(categoryIcon);
 
+            }
+
+            public void handleCLickEvent(Category category, int position) {
+                if (isSearchDetailItemFragment) {
+                    EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
+                } else {
+                    ArrayList<Integer> catIds = new ArrayList<>();
+                    for (Category category1 : categories) {
+                        catIds.add(category1.getId());
+                    }
+                    ArrayList<Integer> user_catIds = new ArrayList<>();
+                    if (!my_catIds.isEmpty()) {
+                        for (UserCategory usercategory : my_catIds) {
+                            user_catIds.add(usercategory.getCategory().getId());
+                        }
+                    }
+                    Intent intent = new Intent(mContext, MainActivity.class)
+                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                            .putExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(
+                                    catIds))
+                            .putExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(
+                                    user_catIds))
+                            .putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
+                            .putExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY, category.getId())
+                            .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
+
+                    mContext.startActivity(intent);
+                }
             }
         }
     }

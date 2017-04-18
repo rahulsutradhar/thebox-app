@@ -77,6 +77,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public static final String EXTRA_MY_BOX_USER_CATEGORIES_ID = "my_box_user_category_click_event";
     public static final String EXTRA_CLICK_POSITION = "extra_click_position";
     public static final String BOX_NAME = "box_name";
+    public static final String EXTRA_CLICKED_CATEGORY = "extra_clicked_category";
     public static final String TRIGERED_FROM = "trigered_from";
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
@@ -98,7 +99,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds = new ArrayList<>();
     private ArrayList<Integer> user_catIds = new ArrayList<>();
-    private int clickPosition;
+
+    private int clickPosition, clickedCategoryId;
     private TextView noResultFound, itemsInCart, savings;
     //    private FrameLayout fabHolder;
     private CardView specialCardView;
@@ -129,12 +131,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         // Required empty public constructor
     }
 
-    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName) {
+    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName, int clickedCategoryId) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
         bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
         bundle.putString(EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(user_catIds));
         bundle.putString(BOX_NAME, boxName);
+        bundle.putInt(EXTRA_CLICKED_CATEGORY, clickedCategoryId);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
         return searchDetailFragment;
@@ -178,6 +181,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
             user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
             clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
+            clickedCategoryId = getArguments().getInt(EXTRA_CLICKED_CATEGORY);
             if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
                 setCategories();
             }
@@ -200,6 +204,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             RealmResults<Category> realmResults = query.findAll();
             for (Category category : realmResults) {
                 categories.add(category);
+
+                if (clickedCategoryId != -1) {
+                    if (clickedCategoryId == category.getId()) {
+                        clickPosition = categories.size() - 1;
+                    }
+                }
             }
         }
         RealmQuery<Category> query_user_cat = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
@@ -214,6 +224,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             RealmResults<Category> realmResults_user_cat = query_user_cat.findAll();
             for (Category category : realmResults_user_cat) {
                 categories.add(category);
+
+                if (clickedCategoryId != -1) {
+                    if (clickedCategoryId == category.getId()) {
+                        clickPosition = categories.size() - 1;
+                    }
+                }
             }
         }
     }
