@@ -18,7 +18,6 @@ import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,8 +32,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -77,7 +73,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public static final String EXTRA_MY_BOX_USER_CATEGORIES_ID = "my_box_user_category_click_event";
     public static final String EXTRA_CLICK_POSITION = "extra_click_position";
     public static final String BOX_NAME = "box_name";
-    public static final String EXTRA_CLICKED_CATEGORY = "extra_clicked_category";
+    public static final String EXTRA_CLICKED_CATEGORY_ID = "extra_clicked_category";
     public static final String TRIGERED_FROM = "trigered_from";
     private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
@@ -137,7 +133,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
         bundle.putString(EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(user_catIds));
         bundle.putString(BOX_NAME, boxName);
-        bundle.putInt(EXTRA_CLICKED_CATEGORY, clickedCategoryId);
+        bundle.putInt(EXTRA_CLICKED_CATEGORY_ID, clickedCategoryId);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
         return searchDetailFragment;
@@ -181,7 +177,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
             user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
             clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
-            clickedCategoryId = getArguments().getInt(EXTRA_CLICKED_CATEGORY);
+            clickedCategoryId = getArguments().getInt(EXTRA_CLICKED_CATEGORY_ID);
             if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
                 setCategories();
             }

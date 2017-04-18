@@ -3,24 +3,15 @@ package one.thebox.android.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Point;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
-import android.util.SparseIntArray;
-import android.view.Display;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
@@ -34,7 +25,6 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.Size;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
@@ -45,9 +35,7 @@ import one.thebox.android.adapter.carousel.AdapterCarousel;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.fragment.StoreFragment;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.DisplayUtil;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -415,7 +403,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                             .putExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(
                                     user_catIds))
                             .putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
-                            .putExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY, category.getId())
+                            .putExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, category.getId())
                             .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
 
                     mContext.startActivity(intent);

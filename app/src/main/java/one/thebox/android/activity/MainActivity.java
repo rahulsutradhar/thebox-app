@@ -1,6 +1,5 @@
 package one.thebox.android.activity;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,7 +45,6 @@ import io.realm.RealmResults;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.ExploreItem;
@@ -818,7 +816,7 @@ public class MainActivity extends BaseActivity implements
 
         int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
         String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
-        int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY, -1);
+        int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
 
         SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName,clickedCategoryId);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
