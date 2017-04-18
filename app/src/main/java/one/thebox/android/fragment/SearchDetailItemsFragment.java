@@ -394,11 +394,13 @@ public class SearchDetailItemsFragment extends Fragment {
                         box.setUserItemId(item.getId());
                         box.setQuantity(item.getQuantity());
                         box.setSelectedItemConfig(box.getItemConfigById(item.getSelectedConfigId()));
+                        box.setSavingsTitle(item.getSelectedItemConfigSavingsTitle());
                         mapCart.put(box.getId(), box);
                     } else {
                         boxItem.setUserItemId(item.getId());
                         boxItem.setQuantity(item.getQuantity());
                         boxItem.setSelectedItemConfig(boxItem.getItemConfigById(item.getSelectedConfigId()));
+                        boxItem.setSavingsTitle(item.getSelectedItemConfigSavingsTitle());
                         mapCart.put(boxItem.getId(), boxItem);
                     }
 
