@@ -46,7 +46,7 @@ public class UserItem extends RealmObject implements Serializable {
 
     @SerializedName("cart_id")
     private int cartId;
-    
+
     @SerializedName("arriving_at")
     private String arrivingAt;
 
