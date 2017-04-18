@@ -117,17 +117,17 @@ public class Order extends RealmObject implements Serializable {
     }
 
     public boolean is_partial_payment_amount_remaining() {
-        if (this.payment_amount_remaining > 0){
+        if (this.payment_amount_remaining > 0) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
-    public int get_payment_amount_remaining(){
+    public int get_payment_amount_remaining() {
         return payment_amount_remaining;
     }
+
     public RealmList<UserItem> getUserItems() {
         return userItems;
     }
@@ -151,6 +151,7 @@ public class Order extends RealmObject implements Serializable {
             boxItem.setUserItemId(userItem.getId());
             boxItem.setQuantity(userItem.getQuantity());
             boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
+            boxItem.setSavingsTitle(userItem.getSelectedItemConfigSavingsTitle());
             boxItems.add(boxItem);
         }
         return boxItems;
