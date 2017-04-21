@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
@@ -78,18 +79,22 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
 
-        if (itemConfigs.get(position).is_in_stock()) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemConfigs.get(position).is_in_stock()) {
                     prevItemSelected = currentItemSelected;
                     currentItemSelected = position;
                     notifyItemChanged(prevItemSelected);
                     notifyItemChanged(currentItemSelected);
                     onSizeAndFrequencySelected.onSizeAndFrequencySelected(itemConfigs.get(currentItemSelected));
+
+                } else {
+                    Toast.makeText(TheBox.getAppContext(), "This product is out of stock.", Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+        });
         itemViewHolder.setViewHolder(itemConfigs.get(position));
     }
 

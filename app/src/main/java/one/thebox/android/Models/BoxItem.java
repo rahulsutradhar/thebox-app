@@ -1,5 +1,6 @@
 package one.thebox.android.Models;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.annotations.SerializedName;
@@ -52,10 +53,6 @@ public class BoxItem extends RealmObject implements Serializable {
 
     @SerializedName("category_id")
     private int categoryId;
-    //    @SerializedName("photo_file_name")
-//    private String photoFileName;
-//    @SerializedName("photo_content_type")
-//    private String photoContentType;
 
     @SerializedName("itemconfigs")
     private RealmList<ItemConfig> itemConfigs;
@@ -193,22 +190,6 @@ public class BoxItem extends RealmObject implements Serializable {
         this.savingsTitle = savingsTitle;
     }
 
-    //    public String getPhotoFileName() {
-////        return photoFileName;
-////    }
-////
-////    public void setPhotoFileName(String photoFileName) {
-////        this.photoFileName = photoFileName;
-////    }
-
-//    public String getPhotoContentType() {
-//        return photoContentType;
-//    }
-//
-//    public void setPhotoContentType(String photoContentType) {
-//        this.photoContentType = photoContentType;
-//    }
-
     public RealmList<ItemConfig> getItemConfigs() {
         return itemConfigs;
     }
@@ -295,14 +276,32 @@ public class BoxItem extends RealmObject implements Serializable {
     }
 
     public ItemConfig getSmallestInStockItemConfig() {
+        ItemConfig smallestItemConfig = null;
+        boolean isInStockExist = false;
+        try {
 
-        ItemConfig smallestItemConfig = itemConfigs.get(0);
-
-
-        for (int i = 0; i < itemConfigs.size(); i++) {
-            if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
-                smallestItemConfig = itemConfigs.get(i);
+            for (ItemConfig itemConfig : itemConfigs) {
+                if (itemConfig.is_in_stock()) {
+                    smallestItemConfig = itemConfig;
+                    isInStockExist = true;
+                    break;
+                }
             }
+
+            if (isInStockExist == false) {
+                smallestItemConfig = itemConfigs.first();
+            }
+
+            for (int i = 0; i < itemConfigs.size(); i++) {
+                if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
+                    //check if item config is in stock
+                    if (itemConfigs.get(i).is_in_stock()) {
+                        smallestItemConfig = itemConfigs.get(i);
+                    }
+                }
+            }
+        } catch (NullPointerException n) {
+            n.printStackTrace();
         }
         return smallestItemConfig;
     }
