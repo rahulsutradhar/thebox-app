@@ -88,6 +88,7 @@ public class User extends RealmObject implements Serializable {
     }
 
     public int getCartId() {
+
         return cartId;
     }
 
@@ -128,7 +129,10 @@ public class User extends RealmObject implements Serializable {
     }
 
     public String getName() {
-        return name;
+        if (name != null) {
+            return name;
+        }
+        return "";
     }
 
     public void setName(String name) {
