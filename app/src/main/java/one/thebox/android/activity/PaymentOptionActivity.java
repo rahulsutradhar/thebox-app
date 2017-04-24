@@ -43,6 +43,7 @@ import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
+import one.thebox.android.R2;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
@@ -76,16 +77,16 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private String latitude = "0.0", longitude = "0.0";
     private int locationPermisionCounter = 0;
 
-    @BindView(R.id.tabsPaymentOption)
+    @BindView(R2.id.tabsPaymentOption)
     TabLayout tabsPaymentOption;
-    @BindView(R.id.viewPagerPaymentOption)
+    @BindView(R2.id.viewPagerPaymentOption)
     ViewPager viewPagerPaymentOption;
-    @BindView(R.id.txtTotalAmount)
+    @BindView(R2.id.txtTotalAmount)
     TextView txtTotalAmount;
 
-    @BindView(R.id.txtPlaceOrder)
+    @BindView(R2.id.txtPlaceOrder)
     TextView txtPlaceOrder;
-    @BindView(R.id.imgPaymentBack)
+    @BindView(R2.id.imgPaymentBack)
     ImageView imgPaymentBack;
 
 
