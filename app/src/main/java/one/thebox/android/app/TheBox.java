@@ -44,7 +44,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  * Created by harsh on 10/12/15.
  */
 @ReportsCrashes(buildConfigClass = TheBox.class)
-public class TheBox extends Application {
+public class TheBox extends MultiDexApplication {
 
     private static final int READ_TIMEOUT = 60 * 1000;
     private static final int CONNECTION_TIMEOUT = 60 * 1000;
@@ -129,7 +129,7 @@ public class TheBox extends Application {
             FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
             /*Local database*/
-            Realm.init(getInstance());
+            Realm.init(this);
             getRealm();
             RealmChangeManager.getInstance();
 
@@ -177,6 +177,12 @@ public class TheBox extends Application {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public static CleverTapAPI getCleverTap() {
