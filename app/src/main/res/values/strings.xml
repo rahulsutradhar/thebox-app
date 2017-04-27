@@ -19,12 +19,12 @@
     <string name="view_items">View Items</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="adjust">Reschedule</string>
-  <string name="change_button">
+    <string name="change_button">
     <b>
       <u>Select</u>
     </b>
   </string>
-  <string name="select_button">
+    <string name="select_button">
     <b>
       <u>Change</u>
     </b>
@@ -36,16 +36,16 @@
     <string name="swap_with_similar_product">Swap with Similar Product</string>
     <string name="delay_delivery">Delay Delivery</string>
     <string name="app_label">explore</string>
-  <string name="subscribe">
+    <string name="subscribe">
     <b>Subscribe</b>
   </string>
-  <string name="out_of_stock">
+    <string name="out_of_stock">
     <b>Out of Stock</b>
   </string>
     <string name="skip">
     <b>Skip</b>
   </string>
-     <string name="merge">
+    <string name="merge">
     <b>Merge</b>
   </string>
     <string name="search_hint">Search</string>
@@ -53,7 +53,7 @@
     <string name="no_connection_error">No internet Connection</string>
     <string name="tap_to_retry">Tap to retry</string>
     <string name="sign_out">Sign out</string>
-  <string name="enter_details">
+    <string name="enter_details">
     <u>Enter Details</u>
   </string>
 
@@ -83,7 +83,7 @@
     <string name="faq_options">FAQ Options</string>
     <!-- Sample DataUnits -->
     <string name="sample_date">Sun 14 Feb, Wednesday</string>
-    <string name="sample_slot">10:00 A.M - 11:30 A.M</string>
+    <string name="sample_slot">Between 10:00 A.M - 11:30 A.M</string>
     <string name="contact_us">Talk to us</string>
     <string name="reach_us_at">Reach us at</string>
     <string name="support_thebox.one">support@thebox.one</string>
