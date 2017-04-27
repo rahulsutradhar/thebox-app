@@ -552,7 +552,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         boxItem.setQuantity(userItem.getQuantity());
                         boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
                         boxItem.setSavingsTitle(userItem.getSelectedItemConfigSavingsTitle());
-                        Log.d("SAVINGS_SEARCH_DE_FR", "   " + userItem.getSelectedItemConfigSavingsTitle());
 
                         boxItems.add(boxItem);
                     }

@@ -27,6 +27,8 @@ public class OnlinePaymentRequest implements Serializable {
     private String lat;
     private String lng;
 
+    private long timestamp;
+
 
     public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String order_date) {
         this.order_id = order_id;
@@ -39,7 +41,7 @@ public class OnlinePaymentRequest implements Serializable {
         this.razorpay_payment_id = razorpay_payment_id;
     }
 
-    public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String amount, String order_date, String lat, String lng, boolean merge) {
+    public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String amount, String order_date, String lat, String lng, boolean merge, long timestamp) {
         this.order_id = order_id;
         this.razorpay_payment_id = razorpay_payment_id;
         this.amount = amount;
@@ -47,6 +49,7 @@ public class OnlinePaymentRequest implements Serializable {
         this.lat = lat;
         this.lng = lng;
         this.merge = merge;
+        this.timestamp = timestamp;
     }
 
     public OnlinePaymentRequest(int order_id, String razorpay_payment_id, String amount, String lat, String lng, boolean merge) {

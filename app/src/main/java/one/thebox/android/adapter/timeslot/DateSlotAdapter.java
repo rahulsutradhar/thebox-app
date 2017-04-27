@@ -1,47 +1,32 @@
-package one.thebox.android.adapter;
+package one.thebox.android.adapter.timeslot;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
+import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 
 /**
  * Created by Ajeet Kumar Meena on 17-04-2016.
  */
-public class TimeSlotAdapter extends BaseRecyclerAdapter {
+public class DateSlotAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<String> timeStrings = new ArrayList<>();
-    private int currentSelection;
-    private OnTimeSlotSelected onTimeSlotSelected;
+    private ArrayList<TimeSlot> timeSlots;
 
-    public TimeSlotAdapter(Context context) {
+    private OnDateSelected onDateSelected;
+    private int selectedDatePosition;
+
+    public DateSlotAdapter(Context context, ArrayList<TimeSlot> timeSlots, int selectedDatePosition, OnDateSelected onDateSelected) {
         super(context);
-    }
-
-    public TimeSlotAdapter(Context context, OnTimeSlotSelected onTimeSlotSelected) {
-        super(context);
-        this.onTimeSlotSelected = onTimeSlotSelected;
-    }
-
-    public ArrayList<String> getTimeStrings() {
-        return timeStrings;
-    }
-
-    public void setTimeStrings(ArrayList<String> timeStrings) {
-        this.timeStrings = timeStrings;
-    }
-
-    public int getCurrentSelection() {
-        return currentSelection;
-    }
-
-    public void setCurrentSelection(int currentSelection) {
-        this.currentSelection = currentSelection;
+        this.timeSlots = timeSlots;
+        this.selectedDatePosition = selectedDatePosition;
+        this.onDateSelected = onDateSelected;
     }
 
     @Override
@@ -69,17 +54,18 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int temp = currentSelection;
-                currentSelection = position;
-                notifyItemChanged(currentSelection);
+                int temp = selectedDatePosition;
+                selectedDatePosition = position;
+                notifyItemChanged(selectedDatePosition);
                 notifyItemChanged(temp);
-                if (onTimeSlotSelected != null) {
-                    onTimeSlotSelected.onTimeSlotSelected(timeStrings.get(position));
+
+                if (onDateSelected != null) {
+                    onDateSelected.onDateSelected(timeSlots.get(position), position);
                 }
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setupView(timeStrings.get(position));
+        itemViewHolder.setupView(timeSlots.get(position));
     }
 
     @Override
@@ -94,7 +80,7 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return timeStrings.size();
+        return timeSlots.size();
     }
 
     @Override
@@ -117,8 +103,11 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    public interface OnTimeSlotSelected {
-        void onTimeSlotSelected(String timeSlot);
+    /**
+     * Interface for communication
+     */
+    public interface OnDateSelected {
+        void onDateSelected(TimeSlot timeSlot, int position);
     }
 
     class ItemViewHolder extends ItemHolder {
@@ -130,14 +119,19 @@ public class TimeSlotAdapter extends BaseRecyclerAdapter {
             timeTextView = (TextView) itemView.findViewById(R.id.text_view);
         }
 
-        public void setupView(String time) {
-            timeTextView.setText(time);
-            if (currentSelection == getAdapterPosition()) {
-                timeTextView.setTextColor(mContext.getResources().getColor(R.color.accent));
-                timeTextView.setTypeface(null, Typeface.BOLD);
-            } else {
-                timeTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
-                timeTextView.setTypeface(null, Typeface.NORMAL);
+        public void setupView(TimeSlot timeSlot) {
+            try {
+                timeTextView.setText(timeSlot.getDate());
+
+                if (selectedDatePosition == getAdapterPosition()) {
+                    timeTextView.setTextColor(mContext.getResources().getColor(R.color.accent));
+                    timeTextView.setTypeface(null, Typeface.BOLD);
+                } else {
+                    timeTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text_color));
+                    timeTextView.setTypeface(null, Typeface.NORMAL);
+                }
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
             }
         }
     }

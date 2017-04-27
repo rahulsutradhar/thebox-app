@@ -10,7 +10,7 @@ import io.realm.RealmObject;
  * Created by developers on 22/03/17.
  */
 
-public class Saving extends RealmObject implements Serializable {
+public class Saving implements Serializable {
 
     private String type;
 

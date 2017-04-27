@@ -3,6 +3,7 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
@@ -26,7 +27,7 @@ public class CancelSubscriptionResponse extends ApiResponse implements Serializa
     private RealmList<Order> orders;
 
     @SerializedName("saving_data")
-    private RealmList<Saving> savings;
+    private ArrayList<Saving> savings;
 
     public UserItem getUserItem() {
         return userItem;
@@ -64,11 +65,11 @@ public class CancelSubscriptionResponse extends ApiResponse implements Serializa
         this.orders = orders;
     }
 
-    public RealmList<Saving> getSavings() {
+    public ArrayList<Saving> getSavings() {
         return savings;
     }
 
-    public void setSavings(RealmList<Saving> savings) {
+    public void setSavings(ArrayList<Saving> savings) {
         this.savings = savings;
     }
 

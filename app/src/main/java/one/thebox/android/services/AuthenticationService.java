@@ -112,8 +112,8 @@ public class AuthenticationService {
                     profileUpdate.put("Email", user.getPhoneNumber());
                 }
             }
-            profileUpdate.put("Phone", user.getPhoneNumber());
-            profileUpdate.put("Identity", user.getUserUniqueId());
+            profileUpdate.put("Unique-Id", user.getUserUniqueId());
+            profileUpdate.put("Identity", user.getPhoneNumber());
             profileUpdate.put("User Id", user.getUserId());
             profileUpdate.put("Platform", "Android");
 

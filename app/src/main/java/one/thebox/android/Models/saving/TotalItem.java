@@ -8,7 +8,7 @@ import io.realm.RealmObject;
  * Created by developers on 22/03/17.
  */
 
-public class TotalItem extends RealmObject implements Serializable {
+public class TotalItem implements Serializable {
 
     private String title;
 

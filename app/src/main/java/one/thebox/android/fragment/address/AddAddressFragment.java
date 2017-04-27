@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-
 import io.realm.RealmList;
 import one.thebox.android.Models.Address;
 import one.thebox.android.Models.Order;

@@ -3,13 +3,13 @@ package one.thebox.android.ViewHelper;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import one.thebox.android.R;
 
 
-public class MontserratTextView extends TextView {
+public class MontserratTextView extends AppCompatTextView {
 
     private Context context;
 

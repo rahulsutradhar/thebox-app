@@ -1,5 +1,6 @@
 package one.thebox.android.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
@@ -78,8 +79,8 @@ public class TheBox extends MultiDexApplication {
     }
 
     public static RealmConfiguration getRealmConfiguration() {
-        realmConfiguration = new RealmConfiguration.Builder(getInstance()).name("thebox.realm")
-                .deleteRealmIfMigrationNeeded().schemaVersion(8).build();
+        realmConfiguration = new RealmConfiguration.Builder().name("thebox.realm")
+                .deleteRealmIfMigrationNeeded().schemaVersion(9).build();
         return realmConfiguration;
     }
 
@@ -128,6 +129,7 @@ public class TheBox extends MultiDexApplication {
             FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
             /*Local database*/
+            Realm.init(this);
             getRealm();
             RealmChangeManager.getInstance();
 

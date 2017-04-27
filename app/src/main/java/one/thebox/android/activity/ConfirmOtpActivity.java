@@ -71,8 +71,8 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
 
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
-        if (smsEvent.getMessage().contains("awesome")) {
-            otp = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
+        if (smsEvent.getOtp() != null) {
+            otp = smsEvent.getOtp();
             final BoxLoader dialog = new BoxLoader(this).show();
             TheBox.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
