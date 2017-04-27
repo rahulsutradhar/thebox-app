@@ -94,7 +94,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             setContentView(R.layout.activity_confirm_time_slot);
             setTitle("Reschedule Order");
             initViewCase4();
-            setupTimeSlotRecyclerView();
+            // setupTimeSlotRecyclerView();
         } else {
             if (hasPreviousOrder() && isCart()) {
                 setContentView(R.layout.confirm_time_slot_when_user_have_orders);
@@ -107,10 +107,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 initViewCase2();
                 // setupTimeSlotRecyclerView();
             } else {
+                //pay from orders; Arriving on
                 setContentView(R.layout.activity_confirm_time_slot);
                 setTitle("Select Time Slot");
-                initViewsCase3();
-                setupTimeSlotRecyclerView();
+                Toast.makeText(TheBox.getInstance(), "InitCase - 4", Toast.LENGTH_SHORT).show();
+                //initViewsCase3();
+                // setupTimeSlotRecyclerView();
             }
         }
     }
@@ -218,28 +220,38 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
-        timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showBottomSheet();
-            }
-        });
+        /*timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));*/
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setText("Reschedule");
+
+        timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //showBottomSheet();
+                if (timeSlots != null) {
+                    showDateBottomSheet();
+                }
+            }
+        });
+
+        //fetch time slot data
+        fetchTimeSlot();
+
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
+               /* Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
                         dateSlotAdapter.getTimeStrings().get(dateSlotAdapter.getCurrentSelection()));
+*/
+                if (selectedSlot != null) {
+                    /**
+                     * save CleverTap Event; TimeSlotsRescheduleOrder
+                     */
+                    setCleverTapEventTimeSlotsRescheduleOrder(orderId);
 
-                /**
-                 * save CleverTap Event; TimeSlotsRescheduleOrder
-                 */
-                setCleverTapEventTimeSlotsRescheduleOrder(orderId);
-
-                reSchedule(reschedule_to, orderId);
+                    reSchedule(orderId);
+                }
             }
         });
     }
@@ -407,9 +419,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     /**
      * Reschedule API
      */
-    public void reSchedule(Date reschedule_to, int orderId) {
+    public void reSchedule(int orderId) {
+        Toast.makeText(TheBox.getInstance(), "Slot = " + selectedSlot.getTimestamp(), Toast.LENGTH_SHORT).show();
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(reschedule_to, orderId))
+        TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(selectedSlot.getTimestamp(), orderId))
                 .enqueue(new Callback<RescheduleResponseBody>() {
                     @Override
                     public void onResponse(Call<RescheduleResponseBody> call, Response<RescheduleResponseBody> response) {
@@ -453,9 +466,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     private void initVariable() {
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
+        is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
 
-        if (getIntent().getBooleanExtra(IS_RESCHEDULING, false)) {
-            is_rescheduling = true;
+        if (is_rescheduling) {
             nextSlotDate = getNextSlotDate(DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt()));
         } else {
             nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
@@ -562,14 +575,17 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     public void setCleverTapEventTimeSlotsRescheduleOrder(int orderId) {
-        HashMap<String, Object> objectHashMap = new HashMap<>();
-        objectHashMap.put("order_id", orderId);
-        if (addressAndOrders != null) {
-            if (addressAndOrders.size() > 0) {
-                objectHashMap.put("order_date", addressAndOrders.get(0).getDateString());
-            }
+        try {
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            objectHashMap.put("order_id", orderId);
+            objectHashMap.put("order_date", selectedTimeSlot.getDate());
+            objectHashMap.put("order_time_slot", selectedSlot.getName());
+            objectHashMap.put("order_time_stamp", selectedSlot.getTimestamp());
+
+            TheBox.getCleverTap().event.push("time_slots_reschedule_order", objectHashMap);
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
-        TheBox.getCleverTap().event.push("time_slots_reschedule_order", objectHashMap);
     }
 
     public void setCleverTapEventTimeSlotsMergeWithDeliveries(int mergeOrderId) {
