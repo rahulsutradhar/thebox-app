@@ -133,6 +133,17 @@
             </intent-filter>
         </service>
 
+        <!-- HOTLINE -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="one.thebox.android.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/hotline_file_provider_paths" />
+        </provider>
+
 
         <activity
             android:name=".activity.LoginActivity"
