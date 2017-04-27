@@ -4,6 +4,7 @@ package one.thebox.android.api;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
+import one.thebox.android.api.Responses.TimeSlotResponse;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -206,5 +207,11 @@ public interface APIService {
      */
     @GET("/public/app-offers")
     Call<CarouselApiResponse> getCarousel();
+
+    /**
+     * Available Time Slot
+     */
+    @GET("/consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getTimeSlots();
 
 }

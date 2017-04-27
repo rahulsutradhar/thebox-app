@@ -42,6 +42,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.R;
 import one.thebox.android.R2;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -318,8 +319,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private void pay_offline() {
         final BoxLoader dialog = new BoxLoader(this).show();
         cleverTapOrderId = addressAndOrders.get(0).getOrderId();
+        Slot slot = addressAndOrders.get(0).getSlot();
+        if (slot == null) {
+            slot.setTimestamp(0);
+        }
 
-        TheBox.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
+        TheBox.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), slot.getTimestamp()))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
@@ -372,15 +377,20 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private void pay_online(String razorpayPaymentID) {
         final BoxLoader dialog = new BoxLoader(this).show();
         int orderId = 0;
+        Slot slot;
         if (isMerging) {
             orderId = mergeOrderId;
         } else {
             orderId = addressAndOrders.get(0).getOrderId();
         }
+        slot = addressAndOrders.get(0).getSlot();
+        if (slot == null) {
+            slot.setTimestamp(0);
+        }
         cleverTapOrderId = orderId;
-
+        
         TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
-                latitude, longitude, isMerging))
+                latitude, longitude, isMerging, slot.getTimestamp()))
                 .enqueue(new Callback<PaymentResponse>() {
                     @Override
                     public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {

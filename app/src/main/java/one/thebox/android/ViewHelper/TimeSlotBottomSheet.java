@@ -15,10 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.OrdersItemAdapter;
-import one.thebox.android.adapter.TimeSlotAdapter;
+import one.thebox.android.adapter.timeslot.DateSlotAdapter;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -32,19 +33,35 @@ public class TimeSlotBottomSheet {
     private View bottomSheet;
     private OnTimePicked onTimePicked;
     private RecyclerView recyclerViewDay;
-    private ArrayList<String> timeSlots = new ArrayList<>();
+    private ArrayList<String> timeSlotsList = new ArrayList<>();
     private ArrayList<String> daySlots = new ArrayList<>();
-    private TimeSlotAdapter timeSlotAdapterDay;
+    private DateSlotAdapter dateSlotAdapterDay;
     private int currentSelectedPosition;
     private Date currentSelectedDate;
     private Date endDate = null;
     private Date startDate = null;
+    private OnDatePicked onDatePicked;
+    private ArrayList<TimeSlot> timeSlots;
+    private TimeSlot selectedTimeSlot;
+    private int selectedDatePosition;
+
 
     public TimeSlotBottomSheet(Activity context, Date startDate, Date currentSelectedDate, OnTimePicked onTimePicked) {
         this.context = context;
         this.onTimePicked = onTimePicked;
         this.startDate = startDate;
         this.currentSelectedDate = currentSelectedDate;
+    }
+
+    /**
+     * Constructor
+     * TimeSlot
+     */
+    public TimeSlotBottomSheet(Activity context, ArrayList<TimeSlot> timeSlots, int selectedDatePosition, OnDatePicked onDatePicked) {
+        this.context = context;
+        this.timeSlots = timeSlots;
+        this.selectedDatePosition = selectedDatePosition;
+        this.onDatePicked = onDatePicked;
     }
 
     public void showTimeSlotBottomSheet() {
@@ -80,6 +97,33 @@ public class TimeSlotBottomSheet {
         recyclerViewDay.setAdapter(ordersItemAdapter);
     }
 
+    /**
+     * Show date Slot Bottom Sheet
+     */
+    public void showDateSlotBottomSheet() {
+        bottomSheet = context.getLayoutInflater().inflate(R.layout.layout_time_slot, null);
+        recyclerViewDay = (RecyclerView) bottomSheet.findViewById(R.id.recycler_view_day);
+        bottomSheetDialog = new BottomSheetDialog(context);
+        bottomSheetDialog.setContentView(bottomSheet);
+        bottomSheetDialog.show();
+
+        setupRecyclerViewForDates();
+    }
+
+    public void setupRecyclerViewForDates() {
+        recyclerViewDay.setLayoutManager(new LinearLayoutManager(context));
+        dateSlotAdapterDay = new DateSlotAdapter(context, timeSlots, selectedDatePosition, new DateSlotAdapter.OnDateSelected() {
+            @Override
+            public void onDateSelected(TimeSlot timeSlot, int position) {
+                onDatePicked.onDatePicked(timeSlot, position);
+                bottomSheetDialog.dismiss();
+            }
+        });
+        recyclerViewDay.setAdapter(dateSlotAdapterDay);
+        recyclerViewDay.scrollToPosition(selectedDatePosition);
+
+    }
+
     private void showTimeBottomSheet() {
 
 
@@ -102,19 +146,19 @@ public class TimeSlotBottomSheet {
         daySlots.addAll(getDateArrayList(startDate, endDate));
 
         for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
-            timeSlots.add(Constants.DATE_RANGE[i]);
+            timeSlotsList.add(Constants.DATE_RANGE[i]);
         }
 
 
-        timeSlotAdapterDay = new TimeSlotAdapter(context);
-        timeSlotAdapterDay.setTimeStrings(daySlots);
-        timeSlotAdapterDay.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
+        dateSlotAdapterDay = new DateSlotAdapter(context);
+        dateSlotAdapterDay.setTimeStrings(daySlots);
+        dateSlotAdapterDay.setOnItemClickListener(new BaseRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(int position) {
 
                 try {
                     int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-                    String dayMonth = timeSlotAdapterDay.getTimeStrings().get(position);
+                    String dayMonth = dateSlotAdapterDay.getTimeStrings().get(position);
                     String[] strings = dayMonth.split(",");
                     int day = Integer.parseInt(strings[0]);
                     int month = 0;
@@ -127,8 +171,8 @@ public class TimeSlotBottomSheet {
                 }
             }
         });
-        timeSlotAdapterDay.setCurrentSelection(currentSelectedPosition);
-        recyclerViewDay.setAdapter(timeSlotAdapterDay);
+        dateSlotAdapterDay.setCurrentSelection(currentSelectedPosition);
+        recyclerViewDay.setAdapter(dateSlotAdapterDay);
         recyclerViewDay.scrollToPosition(currentSelectedPosition);
     }
 
@@ -182,5 +226,9 @@ public class TimeSlotBottomSheet {
 
     public interface OnTimePicked {
         void onTimePicked(Date date, Order order);
+    }
+
+    public interface OnDatePicked {
+        void onDatePicked(TimeSlot timeSlot, int position);
     }
 }

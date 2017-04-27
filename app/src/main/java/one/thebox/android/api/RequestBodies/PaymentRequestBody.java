@@ -15,11 +15,11 @@ public class PaymentRequestBody implements Serializable {
     @SerializedName("address_order_dates")
     private ArrayList<AddressOrderDate> addressAndOrders = new ArrayList<>();
 
-    public PaymentRequestBody(ArrayList<AddressAndOrder> addressAndOrders,String lat,String lng) {
+    public PaymentRequestBody(ArrayList<AddressAndOrder> addressAndOrders, String lat, String lng, long timestamp) {
         for (AddressAndOrder addressAndOrder : addressAndOrders) {
             this.addressAndOrders.add(new AddressOrderDate(
                     new AddressOrderDate.Address(addressAndOrder.getAddress().getId()),
-                    new AddressOrderDate.Order(addressAndOrder.getOrder().getId(),lat,lng),
+                    new AddressOrderDate.Order(addressAndOrder.getOrder().getId(), lat, lng, timestamp),
                     addressAndOrder.getOderDate().toString()
             ));
         }
@@ -54,15 +54,17 @@ public class PaymentRequestBody implements Serializable {
             private int orderId;
             private String lat;
             private String lng;
+            private long timestamp;
 
             public Order(int orderId) {
                 this.orderId = orderId;
             }
 
-            public Order(int orderId, String lat, String lng) {
+            public Order(int orderId, String lat, String lng, long timestamp) {
                 this.orderId = orderId;
                 this.lat = lat;
                 this.lng = lng;
+                this.timestamp = timestamp;
             }
         }
     }
