@@ -57,7 +57,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private TextView timeSlotTextView, textViewSelectDate;
     private Date nextSlotDate;
     private RecyclerView timeSlotRecyclerView;
-    private DateSlotAdapter dateSlotAdapter;
     private Order currentSelectedOrder;
     private ImageView dropDownIcon;
     private MergeOrderAdapter mergeOrderAdapter;
@@ -70,6 +69,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private Slot selectedSlot;
     private int selectedSlotPosition = -1;
     private TimeSlotAdapter timeSlotAdapter;
+    private int orderId = 0;
 
     public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
         return new Intent(context, ConfirmTimeSlotActivity.class)
@@ -94,29 +94,30 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             setContentView(R.layout.activity_confirm_time_slot);
             setTitle("Reschedule Order");
             initViewCase4();
-            // setupTimeSlotRecyclerView();
         } else {
             if (hasPreviousOrder() && isCart()) {
                 setContentView(R.layout.confirm_time_slot_when_user_have_orders);
                 setTitle("Merge with future deliveries");
                 initViewsCase1();
                 setupMergeDeliveryRecyclerView();
+
             } else if (!hasPreviousOrder() && isCart()) {
                 setContentView(R.layout.activity_confirm_time_slot);
                 setTitle("Select Time Slot");
                 initViewCase2();
-                // setupTimeSlotRecyclerView();
             } else {
                 //pay from orders; Arriving on
                 setContentView(R.layout.activity_confirm_time_slot);
                 setTitle("Select Time Slot");
-                Toast.makeText(TheBox.getInstance(), "InitCase - 4", Toast.LENGTH_SHORT).show();
-                //initViewsCase3();
-                // setupTimeSlotRecyclerView();
+                initViewsCase3();
             }
         }
     }
 
+
+    /**
+     * Case: Merge with Deliveries
+     */
     private void initViewsCase1() {
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
@@ -142,7 +143,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     /**
-     * Order placing First time
+     * Order placing First time; Or Pay from cart
      */
     public void initViewCase2() {
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
@@ -154,7 +155,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
 
         //Fetch Time slot data
-        fetchTimeSlot();
+        fetchGeneralTimeSlot();
 
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,35 +188,43 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     }
 
+    /**
+     * Case: Pay from Order
+     */
     public void initViewsCase3() {
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        currentSelectedDate = DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt());
-        timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));
+
         timeHolderLinearLayout.setOnClickListener(null);
-        timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
         dropDownIcon.setVisibility(View.GONE);
         textViewSelectDate.setText("Arriving on:");
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+
+        //fetch slots for orders
+        fetchTimeSlotForOrder();
+
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Date orderDate = getDateWithTimeSlot(currentSelectedDate,
-                        dateSlotAdapter.getTimeStrings().get(dateSlotAdapter.getCurrentSelection()));
-                for (int i = 0; i < addressAndOrders.size(); i++) {
-                    addressAndOrders.get(i).setOderDate(orderDate);
+                if (selectedSlot != null) {
+                    for (int i = 0; i < addressAndOrders.size(); i++) {
+                        addressAndOrders.get(i).setSlot(selectedSlot);
+                    }
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
                 }
-                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
             }
         });
     }
 
+    /**
+     * Case; Reschedule Order
+     */
     public void initViewCase4() {
 
-        final int orderId = getIntent().getIntExtra(RESCHEDULE_ORDER_ID, 0);
+        orderId = getIntent().getIntExtra(RESCHEDULE_ORDER_ID, 0);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
@@ -228,7 +237,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeHolderLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //showBottomSheet();
                 if (timeSlots != null) {
                     showDateBottomSheet();
                 }
@@ -236,40 +244,25 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         });
 
         //fetch time slot data
-        fetchTimeSlot();
+        fetchGeneralTimeSlot();
 
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               /* Date reschedule_to = getDateWithTimeSlot(currentSelectedDate,
-                        dateSlotAdapter.getTimeStrings().get(dateSlotAdapter.getCurrentSelection()));
-*/
                 if (selectedSlot != null) {
+                    //api call for rescheduling
+                    reSchedule();
                     /**
                      * save CleverTap Event; TimeSlotsRescheduleOrder
                      */
-                    setCleverTapEventTimeSlotsRescheduleOrder(orderId);
-
-                    reSchedule(orderId);
+                    setCleverTapEventTimeSlotsRescheduleOrder();
                 }
             }
         });
     }
 
-    private void showBottomSheet() {
-        new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, nextSlotDate, currentSelectedDate, new TimeSlotBottomSheet.OnTimePicked() {
-            @Override
-            public void onTimePicked(Date date, Order order) {
-                currentSelectedDate = date;
-                timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-            }
-        }).showTimeSlotBottomSheet();
-    }
-
-
     public void setupMergeDeliveryRecyclerView() {
         mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
-        ArrayList<String> timeSlotArrayList = new ArrayList<>();
         timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
     }
@@ -304,7 +297,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     /**
      * Get Time Slots
      */
-    public void fetchTimeSlot() {
+    public void fetchGeneralTimeSlot() {
         final BoxLoader dialog = new BoxLoader(this).show();
 
         TheBox.getAPIService().getTimeSlots()
@@ -343,6 +336,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 selectedTimeSlot = timeSlots.get(selectedDatePosition);
                 timeSlotTextView.setText(selectedTimeSlot.getDate());
 
+                //set Initial data for slots
                 setInitialTimeSlotData(selectedTimeSlot.getSlots());
             }
 
@@ -351,6 +345,27 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Set Initial Slot data for Order
+     */
+    public void setInitialSlotDataForOrder(String date, ArrayList<Slot> slots) {
+        try {
+            if (date != null) {
+                timeSlotTextView.setText(date);
+
+                //set Initial dat for slots
+                setInitialTimeSlotData(slots);
+            }
+
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
+    }
+
+    /**
+     * List ot show TimeSLot - dates
+     */
     public void showDateBottomSheet() {
         new TimeSlotBottomSheet(ConfirmTimeSlotActivity.this, timeSlots, selectedDatePosition, new TimeSlotBottomSheet.OnDatePicked() {
             @Override
@@ -359,7 +374,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 selectedTimeSlot = timeSlot;
                 selectedDatePosition = position;
                 timeSlotTextView.setText(timeSlot.getDate());
-                Toast.makeText(TheBox.getInstance(), "Selected Date- \n" + timeSlot.getDate(), Toast.LENGTH_SHORT).show();
 
                 //set time slot recyclerview on date slected
                 setInitialTimeSlotData(timeSlot.getSlots());
@@ -367,6 +381,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         }).showDateSlotBottomSheet();
     }
 
+    /**
+     * Set Initial Data for Slot Time
+     */
     public void setInitialTimeSlotData(ArrayList<Slot> slots) {
         try {
             if (slots != null) {
@@ -390,7 +407,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     /**
-     * SetupSlot Recyclerview
+     * SetUpSlot Recyclerview
      */
     public void setUpSlotRecyclerview() {
         if (timeSlotAdapter == null || null == timeSlotRecyclerView.getAdapter()) {
@@ -402,7 +419,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 public void onTimeSlotSelected(Slot slot, int position) {
                     selectedSlot = slot;
                     selectedSlotPosition = position;
-                    Toast.makeText(TheBox.getInstance(), "Selected Slot = " + slot.getName() + "\n" + slot.getTimestamp(), Toast.LENGTH_SHORT).show();
                 }
             });
             timeSlotAdapter.setSlots(slots);
@@ -410,7 +426,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             timeSlotRecyclerView.setAdapter(timeSlotAdapter);
 
         } else {
-            Toast.makeText(TheBox.getInstance(), "Update Slot List = " + selectedSlot.getName() + "\n" + selectedSlot.getTimestamp(), Toast.LENGTH_SHORT).show();
             timeSlotAdapter.setSlots(slots);
             timeSlotAdapter.setSelectedSlotPosition(selectedSlotPosition);
         }
@@ -419,8 +434,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     /**
      * Reschedule API
      */
-    public void reSchedule(int orderId) {
-        Toast.makeText(TheBox.getInstance(), "Slot = " + selectedSlot.getTimestamp(), Toast.LENGTH_SHORT).show();
+    public void reSchedule() {
         final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(selectedSlot.getTimestamp(), orderId))
                 .enqueue(new Callback<RescheduleResponseBody>() {
@@ -448,22 +462,40 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     }
 
-    private void setupTimeSlotRecyclerView() {
-        dateSlotAdapter = new DateSlotAdapter(this, new DateSlotAdapter.OnTimeSlotSelected() {
-            @Override
-            public void onTimeSlotSelected(String timeSlot) {
-                currentSelectedDate = getDateWithTimeSlot(currentSelectedDate, timeSlot);
-            }
-        });
-        ArrayList<String> timeSlotArrayList = new ArrayList<>();
-        for (int i = 0; i < Constants.DATE_RANGE.length; i++) {
-            timeSlotArrayList.add(Constants.DATE_RANGE[i]);
-        }
-        dateSlotAdapter.setTimeStrings(timeSlotArrayList);
-        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        timeSlotRecyclerView.setAdapter(dateSlotAdapter);
+    /**
+     * Time Slots for particular order
+     */
+    public void fetchTimeSlotForOrder() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        TheBox.getAPIService().getTimeSlotForOrder(orderId)
+                .enqueue(new Callback<TimeSlotResponse>() {
+                    @Override
+                    public void onResponse(Call<TimeSlotResponse> call, Response<TimeSlotResponse> response) {
+                        try {
+                            dialog.dismiss();
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    //set Initial data for slots
+                                    setInitialSlotDataForOrder(response.body().getDate(), response.body().getSlots());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TimeSlotResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+
     }
 
+
+    /**
+     * Initialize values
+     */
     private void initVariable() {
         addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
         is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
@@ -474,19 +506,15 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
         }
 
-
         currentSelectedDate = nextSlotDate;
         for (int i = 0; i < addressAndOrders.size(); i++) {
             addressAndOrders.get(i).setOderDate(nextSlotDate);
+            //set the order Id
+            orderId = addressAndOrders.get(i).getOrderId();
             if (addressAndOrders.get(i).getOrder().isCart()) {
                 isCart = true;
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     public Date getNextSlotDate(Date date) {
@@ -494,61 +522,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         c.setTime(date);
         c.add(Calendar.DATE, 1);
         return c.getTime();
-    }
-
-    public Date setHourAndMinuteToCurrentDate(String hour, String minute, String am_pm) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currentSelectedDate);
-        calendar.set(Calendar.HOUR, Integer.parseInt(hour));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(minute));
-        if (am_pm.equals("A")) {
-            calendar.set(Calendar.AM_PM, Calendar.AM);
-        } else {
-            calendar.set(Calendar.AM_PM, Calendar.PM);
-        }
-        return calendar.getTime();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-    }
-
-    public Date getDateWithTimeSlot(Date date, String timeSlot) {
-        int hour = Integer.parseInt(timeSlot.substring(0, 2));
-        int minute = Integer.parseInt(timeSlot.substring(3, 5));
-        String am_pm = timeSlot.substring(6, 7);
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, date.getYear() + 1900);
-        cal.set(Calendar.MONTH, date.getMonth());
-        cal.set(Calendar.DAY_OF_MONTH, date.getDate());
-        //Date added_date = cal.getTime();
-        if (am_pm.equals("A")) {
-            //cal.set(Calendar.AM_PM, Calendar.AM);
-            cal.set(Calendar.HOUR_OF_DAY, hour);
-        } else {
-            if (hour == 12) {
-                cal.set(Calendar.HOUR_OF_DAY, hour);
-            } else {
-                Integer hr_format_hour = hour + 12;
-                cal.set(Calendar.HOUR_OF_DAY, hr_format_hour);
-            }
-            //cal.set(Calendar.AM_PM, Calendar.PM);
-        }
-
-
-        //Date added_hour = cal.getTime();
-        cal.set(Calendar.MINUTE, minute);
-        //Date added_minute = cal.getTime();
-
-        return cal.getTime();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
     }
 
     /**
@@ -574,7 +547,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         }
     }
 
-    public void setCleverTapEventTimeSlotsRescheduleOrder(int orderId) {
+    public void setCleverTapEventTimeSlotsRescheduleOrder() {
         try {
             HashMap<String, Object> objectHashMap = new HashMap<>();
             objectHashMap.put("order_id", orderId);

@@ -17,51 +17,16 @@ import one.thebox.android.adapter.base.BaseRecyclerAdapter;
  */
 public class DateSlotAdapter extends BaseRecyclerAdapter {
 
-    ArrayList<String> timeStrings = new ArrayList<>();
-    ArrayList<TimeSlot> timeSlots;
-    private int currentSelection;
-    private OnTimeSlotSelected onTimeSlotSelected;
+    private ArrayList<TimeSlot> timeSlots;
+
     private OnDateSelected onDateSelected;
     private int selectedDatePosition;
-
-    public DateSlotAdapter(Context context) {
-        super(context);
-    }
-
-    public DateSlotAdapter(Context context, OnTimeSlotSelected onTimeSlotSelected) {
-        super(context);
-        this.onTimeSlotSelected = onTimeSlotSelected;
-    }
 
     public DateSlotAdapter(Context context, ArrayList<TimeSlot> timeSlots, int selectedDatePosition, OnDateSelected onDateSelected) {
         super(context);
         this.timeSlots = timeSlots;
         this.selectedDatePosition = selectedDatePosition;
         this.onDateSelected = onDateSelected;
-    }
-
-    public ArrayList<String> getTimeStrings() {
-        return timeStrings;
-    }
-
-    public void setTimeStrings(ArrayList<String> timeStrings) {
-        this.timeStrings = timeStrings;
-    }
-
-    public int getCurrentSelection() {
-        return currentSelection;
-    }
-
-    public void setCurrentSelection(int currentSelection) {
-        this.currentSelection = currentSelection;
-    }
-
-    public ArrayList<TimeSlot> getTimeSlots() {
-        return timeSlots;
-    }
-
-    public void setTimeSlots(ArrayList<TimeSlot> timeSlots) {
-        this.timeSlots = timeSlots;
     }
 
     @Override
@@ -97,9 +62,6 @@ public class DateSlotAdapter extends BaseRecyclerAdapter {
                 if (onDateSelected != null) {
                     onDateSelected.onDateSelected(timeSlots.get(position), position);
                 }
-                /*if (onTimeSlotSelected != null) {
-                    onTimeSlotSelected.onTimeSlotSelected(timeSlots.get(position));
-                }*/
             }
         });
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
@@ -141,10 +103,9 @@ public class DateSlotAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    public interface OnTimeSlotSelected {
-        void onTimeSlotSelected(String timeSlot);
-    }
-
+    /**
+     * Interface for communication
+     */
     public interface OnDateSelected {
         void onDateSelected(TimeSlot timeSlot, int position);
     }

@@ -199,8 +199,8 @@ public interface APIService {
      * Reschdule User Item
      */
     @GET("/reschedule-options")
-            Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
-                                                         @Query("useritem[id]") int userItemId);
+    Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
+                                                 @Query("useritem[id]") int userItemId);
 
     /**
      * Carousel API service
@@ -209,9 +209,15 @@ public interface APIService {
     Call<CarouselApiResponse> getCarousel();
 
     /**
-     * Available Time Slot
+     * Available Time Slot General
      */
     @GET("/consumer/api/v1/slots-available")
     Call<TimeSlotResponse> getTimeSlots();
+
+    /**
+     * Time Slot for a Order
+     */
+    @GET("consumer/api/v1/order-slots")
+    Call<TimeSlotResponse> getTimeSlotForOrder(@Query("order_id") int orderId);
 
 }
