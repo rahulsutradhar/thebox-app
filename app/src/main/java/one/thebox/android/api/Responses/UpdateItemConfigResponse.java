@@ -3,6 +3,7 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -40,7 +41,7 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
     private int boxId;
 
     @SerializedName("saving_data")
-    private RealmList<Saving> savings;
+    private ArrayList<Saving> savings;
 
     public Order getCart() {
         return cart;
@@ -109,11 +110,11 @@ public class UpdateItemConfigResponse extends ApiResponse implements Serializabl
         this.orders = orders;
     }
 
-    public RealmList<Saving> getSavings() {
+    public ArrayList<Saving> getSavings() {
         return savings;
     }
 
-    public void setSavings(RealmList<Saving> savings) {
+    public void setSavings(ArrayList<Saving> savings) {
         this.savings = savings;
     }
 }

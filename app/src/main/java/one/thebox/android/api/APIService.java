@@ -4,6 +4,7 @@ package one.thebox.android.api;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
+import one.thebox.android.api.Responses.TimeSlotResponse;
 import one.thebox.android.api.Responses.UserItemResponse;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
@@ -198,13 +199,25 @@ public interface APIService {
      * Reschdule User Item
      */
     @GET("/reschedule-options")
-            Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
-                                                         @Query("useritem[id]") int userItemId);
+    Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
+                                                 @Query("useritem[id]") int userItemId);
 
     /**
      * Carousel API service
      */
     @GET("/public/app-offers")
     Call<CarouselApiResponse> getCarousel();
+
+    /**
+     * Available Time Slot General
+     */
+    @GET("/consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getTimeSlots();
+
+    /**
+     * Time Slot for a Order
+     */
+    @GET("consumer/api/v1/order-slots")
+    Call<TimeSlotResponse> getTimeSlotForOrder(@Query("order_id") int orderId);
 
 }

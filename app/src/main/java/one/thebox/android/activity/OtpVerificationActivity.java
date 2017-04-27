@@ -106,16 +106,12 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
-        if (smsEvent.getMessage().contains("awesome") || smsEvent.getMessage().toLowerCase().contains("the box")) {
-            String otpString = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
-
-            if (otpString != null || !otpString.isEmpty()) {
-                otpVerificationEditText.setText(otpString);
-            }
-            //request server with otp
-            verifyOtpFromServer(phoneNumber, otpString);
+        String otpString = smsEvent.getOtp();
+        if (otpString != null || !otpString.isEmpty()) {
+            otpVerificationEditText.setText(otpString);
         }
-
+        //request server with otp
+        verifyOtpFromServer(phoneNumber, otpString);
     }
 
     @Override

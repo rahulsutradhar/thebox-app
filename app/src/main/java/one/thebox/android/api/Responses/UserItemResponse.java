@@ -19,7 +19,7 @@ public class UserItemResponse {
     @Expose
     private ArrayList<OrderedUserItem> orderedUserItems;
 
-    private RealmList<Saving> savings;
+    private ArrayList<Saving> savings;
 
     public UserItemResponse() {
 
@@ -33,11 +33,11 @@ public class UserItemResponse {
         this.orderedUserItems = orderedUserItems;
     }
 
-    public RealmList<Saving> getSavings() {
+    public ArrayList<Saving> getSavings() {
         return savings;
     }
 
-    public void setSavings(RealmList<Saving> savings) {
+    public void setSavings(ArrayList<Saving> savings) {
         this.savings = savings;
     }
 }

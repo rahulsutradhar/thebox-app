@@ -386,8 +386,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         //get savings
                         if (response.body().getSavings() != null) {
                             if (response.body().getSavings().size() > 0) {
-                                if (response.body().getSavings().first().getType().equals("current")) {
-                                    saving = response.body().getSavings().first();
+                                if (response.body().getSavings().get(0).getType().equals("current")) {
+                                    saving = response.body().getSavings().get(0);
                                 }
                             }
                         }
@@ -514,18 +514,24 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //update the saving card
-                    if (updateSavingsEvent.getSavings() != null) {
-                        if (updateSavingsEvent.getSavings().size() > 0) {
-                            //save saving in the preferance
-                            PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().first()));
+                    try {
+                        //update the saving card
+                        if (updateSavingsEvent.getSavings() != null) {
+                            if (updateSavingsEvent.getSavings().size() > 0) {
 
-                            //update savings data in Adapter
-                            if (recyclerView != null && null != myBoxRecyclerAdapter) {
-                                myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().first());
+                                //save saving in the preferance
+                                PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().get(0)));
+
+                                //update savings data in Adapter
+                                if (recyclerView != null && null != myBoxRecyclerAdapter) {
+                                    myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().get(0));
+
+                                }
+
                             }
-
                         }
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
                     }
 
                 }

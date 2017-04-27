@@ -70,6 +70,12 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("payment_amount_remaining")
     private int payment_amount_remaining;
 
+    @SerializedName("order_date")
+    private String orderDate;
+
+    @SerializedName("delivery_slot_duration")
+    private String deliverySlot;
+
     public Order() {
     }
 
@@ -292,5 +298,21 @@ public class Order extends RealmObject implements Serializable {
 
     public void setSuccessful(boolean successful) {
         this.successful = successful;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getDeliverySlot() {
+        return deliverySlot;
+    }
+
+    public void setDeliverySlot(String deliverySlot) {
+        this.deliverySlot = deliverySlot;
     }
 }

@@ -8,7 +8,7 @@ import io.realm.RealmObject;
  * Created by developers on 22/03/17.
  */
 
-public class MonthlySaving extends RealmObject implements Serializable {
+public class MonthlySaving implements Serializable {
 
     private String title;
 

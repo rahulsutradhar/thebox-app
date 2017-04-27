@@ -191,9 +191,19 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     });
                 }
 
+                if (order.getOrderDate() != null) {
+                    dateTextView.setText(order.getOrderDate());
+                } else {
+                    dateTextView.setText("");
+                }
+
+                if (order.getDeliverySlot() != null) {
+                    timeSlot.setText(order.getDeliverySlot());
+                } else {
+                    timeSlot.setText("");
+                }
+
                 Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
                 String currentMonth = new SimpleDateFormat("MMMM").format(date);
                 if (monthPrintPosition.contains(position)) {
                     month.setVisibility(View.VISIBLE);

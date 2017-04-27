@@ -52,8 +52,9 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <android.support.v7.widget.AppCompatTextView
                                 android:id="@+id/textAddressType"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Address Type"
@@ -217,7 +218,8 @@
 
                         </LinearLayout>
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="30dp"
@@ -232,8 +234,9 @@
 
             </RelativeLayout>
 
-            <one.thebox.android.ViewHelper.MontserratTextView
+            <TextView
                 android:id="@+id/button_save_address"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -245,7 +248,6 @@
                 android:text="Save Address"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 android:visibility="visible" />
 
         </RelativeLayout>

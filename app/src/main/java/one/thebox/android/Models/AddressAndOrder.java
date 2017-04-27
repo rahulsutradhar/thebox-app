@@ -11,6 +11,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
@@ -21,10 +22,15 @@ import one.thebox.android.util.PrefUtils;
 public class AddressAndOrder implements Serializable {
     @SerializedName("address")
     private int addressId;
+
     @SerializedName("order")
     private int orderId;
+
     @SerializedName("date")
     private Date oderDate;
+
+    private Slot slot;
+
     private User user;
 
     private transient Address address;
@@ -77,6 +83,14 @@ public class AddressAndOrder implements Serializable {
 
     public void setOderDate(Date oderDate) {
         this.oderDate = oderDate;
+    }
+
+    public Slot getSlot() {
+        return slot;
+    }
+
+    public void setSlot(Slot slot) {
+        this.slot = slot;
     }
 
     public int getAddressId() {

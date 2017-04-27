@@ -10,8 +10,9 @@
     android:paddingRight="8dp"
     android:paddingTop="16dp">
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/text_view"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"

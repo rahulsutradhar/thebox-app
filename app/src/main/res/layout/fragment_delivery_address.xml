@@ -81,7 +81,8 @@
 
 
                         <!--Flat Number -->
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
@@ -91,7 +92,8 @@
                             android:textStyle="normal" />
 
                         <!-- Society -->
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@{viewModel.addressSociety}"
@@ -100,7 +102,8 @@
                             android:textStyle="normal" />
 
                         <!-- Street -->
-                        <one.thebox.android.ViewHelper.MontserratTextView
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@{viewModel.addressStreet}"
@@ -146,8 +149,9 @@
         </RelativeLayout>
 
 
-        <one.thebox.android.ViewHelper.MontserratTextView
+        <TextView
             android:id="@+id/button_proceed"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -159,7 +163,6 @@
             android:text="Proceed to Payments"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:visibility="visible" />
 
 
