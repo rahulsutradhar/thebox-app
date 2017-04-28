@@ -144,6 +144,14 @@
                 android:resource="@xml/hotline_file_provider_paths" />
         </provider>
 
+        <!-- BRANCH.io Install Refferal -->
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.LoginActivity"
@@ -165,6 +173,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoAnimation"
             android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
@@ -185,9 +194,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-
-
         </activity>
+
         <activity
             android:name=".activity.FillUserInfoActivity"
             android:screenOrientation="portrait"

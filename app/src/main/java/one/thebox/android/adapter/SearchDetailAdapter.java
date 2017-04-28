@@ -655,7 +655,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
             recyclerViewFrequency.setHasFixedSize(true);
             frequencyAndPriceAdapter.notifyDataSetChanged();
-            recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            /*recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
@@ -663,7 +663,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     temp = temp + dx;
                     boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
                 }
-            });
+            });*/
             linearLayoutManager.scrollToPosition(selectedPosition);
             if (shouldScrollToPosition) {
                 // linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);

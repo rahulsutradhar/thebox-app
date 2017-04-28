@@ -48,7 +48,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
     private static final String IS_RESCHEDULING = "is_rescheduling";
     private static final String RESCHEDULE_ORDER_ID = "reschedule_order_id";
-    boolean isCart;
+    boolean isCart = true;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private RealmList<Order> mergeOrders;
     private TextView proceedToPayment;
@@ -290,8 +290,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         return !(mergeOrders == null || mergeOrders.isEmpty());
     }
 
+    public void setCart(boolean cart) {
+        isCart = cart;
+    }
+
     private boolean isCart() {
-        return addressAndOrders.get(0).getOrder().isCart();
+        return isCart;
     }
 
     /**
@@ -497,23 +501,29 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * Initialize values
      */
     private void initVariable() {
-        addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
-        is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
+        try {
+            addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
+            is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
 
-        if (is_rescheduling) {
-            nextSlotDate = getNextSlotDate(DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt()));
-        } else {
-            nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
-        }
-
-        currentSelectedDate = nextSlotDate;
-        for (int i = 0; i < addressAndOrders.size(); i++) {
-            addressAndOrders.get(i).setOderDate(nextSlotDate);
-            //set the order Id
-            orderId = addressAndOrders.get(i).getOrderId();
-            if (addressAndOrders.get(i).getOrder().isCart()) {
-                isCart = true;
+            if (is_rescheduling) {
+                nextSlotDate = getNextSlotDate(DateTimeUtil.convertStringToDate(addressAndOrders.get(0).getOrder().getDeliveryScheduleAt()));
+            } else {
+                nextSlotDate = getNextSlotDate(Calendar.getInstance().getTime());
             }
+
+            currentSelectedDate = nextSlotDate;
+            for (int i = 0; i < addressAndOrders.size(); i++) {
+                addressAndOrders.get(i).setOderDate(nextSlotDate);
+                //set the order Id
+                orderId = addressAndOrders.get(i).getOrderId();
+                if (addressAndOrders.get(i).getOrder().isCart()) {
+                    isCart = true;
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
         }
     }
 
