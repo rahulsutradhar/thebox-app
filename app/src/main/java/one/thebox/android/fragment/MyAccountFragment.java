@@ -199,8 +199,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                                  */
                                 setCleverTapEventLogout(PrefUtils.getUser(getActivity()));
 
-                                (new AccountManager(getActivity()))
-                                        .delete_account_data();
+                                (new AccountManager(getActivity())).delete_account_data();
                                 getActivity().finish();
                             }
 

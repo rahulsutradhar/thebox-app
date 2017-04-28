@@ -162,9 +162,10 @@ public class OrderHelper {
 
 
     private static void saveToRealm(final RealmList<Order> orders) {
+
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
-        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+        realm.where(Order.class).notEqualTo(Order.FIELD_ID, getCartId()).findAll().deleteAllFromRealm();
         realm.copyToRealmOrUpdate(orders);
         realm.commitTransaction();
         sendUpdateOrderItemBroadcast();
@@ -173,7 +174,7 @@ public class OrderHelper {
     private static void saveToRealm(final RealmList<Order> orders, int notifyTo) {
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
-        realm.where(Order.class).notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll().deleteAllFromRealm();
+        realm.where(Order.class).notEqualTo(Order.FIELD_ID, getCartId()).findAll().deleteAllFromRealm();
         realm.copyToRealmOrUpdate(orders);
         realm.commitTransaction();
 
@@ -273,7 +274,7 @@ public class OrderHelper {
 
         Realm realm = TheBox.getRealm();
         RealmResults<Order> realmResults = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, PrefUtils.getUser(TheBox.getInstance()).getCartId()).findAll()
+                .notEqualTo(Order.FIELD_ID, getCartId()).findAll()
                 .where().notEqualTo("cart", true).findAll();
 
         if (realmResults.isLoaded()) {
@@ -285,6 +286,19 @@ public class OrderHelper {
         }
 
         return flag;
+    }
+
+    public static int getCartId() {
+        int cartId = 0;
+        try {
+            User user = PrefUtils.getUser(TheBox.getInstance());
+            if (user != null) {
+                cartId = user.getCartId();
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+        return cartId;
     }
 
 }

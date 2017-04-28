@@ -88,7 +88,6 @@ public class User extends RealmObject implements Serializable {
     }
 
     public int getCartId() {
-
         return cartId;
     }
 
