@@ -321,6 +321,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         cleverTapOrderId = addressAndOrders.get(0).getOrderId();
         Slot slot = addressAndOrders.get(0).getSlot();
         if (slot == null) {
+            slot = new Slot();
             slot.setTimestamp(0);
         }
 
@@ -385,10 +386,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
         slot = addressAndOrders.get(0).getSlot();
         if (slot == null) {
+            slot = new Slot();
             slot.setTimestamp(0);
         }
         cleverTapOrderId = orderId;
-        
+
         TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
                 latitude, longitude, isMerging, slot.getTimestamp()))
                 .enqueue(new Callback<PaymentResponse>() {

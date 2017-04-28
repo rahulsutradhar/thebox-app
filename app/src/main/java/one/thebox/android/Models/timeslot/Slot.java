@@ -12,6 +12,10 @@ public class Slot implements Serializable {
 
     private long timestamp;
 
+    public Slot() {
+
+    }
+
     /*********************************************
      * Getter Setter
      *********************************************/
