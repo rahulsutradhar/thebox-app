@@ -182,11 +182,14 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     reschedule_order_button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            RealmList<Order> orders = new RealmList<>();
-                            orders.add(order);
 
-                            //open time slots activity
-                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), order.getId(), true));
+                            if (order != null) {
+                                RealmList<Order> orders = new RealmList<>();
+                                orders.add(order);
+
+                                //open time slots activity
+                                mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(orders), order.getId(), true));
+                            }
                         }
                     });
                 }
