@@ -183,7 +183,9 @@ dependencies {
     /**
      * branch.io
      */
-    compile 'io.branch.sdk.android:library:2.+'
+    compile ('io.branch.sdk.android:library:2.+') {
+        exclude module: 'answers-shim'
+    }
 
     /**
      * Fabric crashlytics
