@@ -217,7 +217,13 @@ public interface APIService {
     /**
      * Time Slot for a Order
      */
-    @GET("consumer/api/v1/order-slots")
+    @GET("/consumer/api/v1/order-slots")
     Call<TimeSlotResponse> getTimeSlotForOrder(@Query("order_id") int orderId);
+
+    /**
+     * Reschedule API
+     */
+    @GET("/consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getRescheduleTimeSlot(@Query("order_id") int orderId, @Query("type") String type);
 
 }
