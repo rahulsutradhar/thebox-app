@@ -29,13 +29,11 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
 import one.thebox.android.adapter.MergeOrderAdapter;
-import one.thebox.android.adapter.timeslot.DateSlotAdapter;
 import one.thebox.android.adapter.timeslot.TimeSlotAdapter;
 import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
 import one.thebox.android.api.Responses.RescheduleResponseBody;
 import one.thebox.android.api.Responses.TimeSlotResponse;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
@@ -48,7 +46,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
     private static final String IS_RESCHEDULING = "is_rescheduling";
     private static final String RESCHEDULE_ORDER_ID = "reschedule_order_id";
-    boolean isCart = true;
+    boolean isCart = false;
     private ArrayList<AddressAndOrder> addressAndOrders;
     private RealmList<Order> mergeOrders;
     private TextView proceedToPayment;
@@ -150,7 +148,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-       /* timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));*/
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
 
@@ -229,7 +226,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
-        /*timeSlotTextView.setText(AddressAndOrder.getDateStringWithoutSlot(currentSelectedDate));*/
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setText("Reschedule");
@@ -244,14 +240,14 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         });
 
         //fetch time slot data
-        fetchGeneralTimeSlot();
+        fetchRescheduleTimeSlot();
 
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedSlot != null) {
                     //api call for rescheduling
-                    reSchedule();
+                    rescheduleOrder();
                     /**
                      * save CleverTap Event; TimeSlotsRescheduleOrder
                      */
@@ -436,9 +432,40 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     }
 
     /**
+     * Fetch Reschedule Time Slot
+     */
+    public void fetchRescheduleTimeSlot() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService().getRescheduleTimeSlot(orderId, "reschedule")
+                .enqueue(new Callback<TimeSlotResponse>() {
+                    @Override
+                    public void onResponse(Call<TimeSlotResponse> call, Response<TimeSlotResponse> response) {
+                        try {
+                            dialog.dismiss();
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    //set the initial data for time slot
+                                    setInitialSlotData(response.body().getData());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TimeSlotResponse> call, Throwable t) {
+                        dialog.dismiss();
+
+                    }
+                });
+    }
+
+    /**
      * Reschedule API
      */
-    public void reSchedule() {
+    public void rescheduleOrder() {
         final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService().reschedulethisOrder(PrefUtils.getToken(this), new RescheduleRequestBody(selectedSlot.getTimestamp(), orderId))
                 .enqueue(new Callback<RescheduleResponseBody>() {
