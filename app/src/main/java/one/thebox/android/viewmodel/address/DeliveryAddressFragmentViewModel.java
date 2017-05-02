@@ -24,6 +24,7 @@ import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.FillUserInfoActivity;
@@ -83,8 +84,9 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
     public void onClickProceedToPayment() {
         try {
             User user = PrefUtils.getUser(TheBox.getInstance());
+            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
             if (user != null) {
-                if (user.getName() != null && user.getEmail() != null) {
+                if (setting.isUserDataAvailable()) {
                     //Proceed to Payment details
                     //save CleverTap Event; Display Address Proceed
                     saveCleverTapEventDisplayAddressProceed();

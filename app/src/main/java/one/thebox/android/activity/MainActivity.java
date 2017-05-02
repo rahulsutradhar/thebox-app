@@ -436,9 +436,9 @@ public class MainActivity extends BaseActivity implements
                     public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
                         if (response.isSuccessful()) {
                             if (response != null && response.body() != null) {
+                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
                                 checkAppUpdate(response.body());
                                 checkForCommonDialog(response.body().getData());
-                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
                             }
                         }
                     }
@@ -485,7 +485,7 @@ public class MainActivity extends BaseActivity implements
                             //show the popup or dialog
                             displayCommonDialog(setting.getCommonPopupDetails());
                         }
-                    }, 5000);
+                    }, 2000);
 
 
                 }
