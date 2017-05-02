@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;

@@ -1,7 +1,6 @@
 package one.thebox.android.viewmodel.address;
 
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.BindingAdapter;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -17,19 +16,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.FillUserInfoActivity;
-import one.thebox.android.activity.OtpVerificationActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;

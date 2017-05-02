@@ -7,17 +7,16 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,18 +27,20 @@ import com.gun0912.tedpermission.TedPermission;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.AddressAndOrder;
-import one.thebox.android.Models.Locality;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Locality;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.adapter.address.LocalitySpinnerAdapter;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
-import one.thebox.android.api.Responses.LocalitiesResponse;
+import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.CustomSnackBar;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -55,20 +56,21 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private ArrayList<AddressAndOrder> addressAndOrders;
     private boolean is_rescheduling = false;
 
+    private ArrayList<Locality> localities;
+    private int pincode = 0;
+    private LocalitySpinnerAdapter spinnerAdapter;
     private static final int REQ_CODE_GET_LOCATION = 101;
     String name, email, locality;
-    Call<LocalitiesResponse> call;
-    private TextView submitButton;
+    private TextView submitButton, errorMessageLocality;
     private EditText nameEditText, emailEditText;
+    private Spinner spinner;
     private AutoCompleteTextView localityAutoCompleteTextView;
     private GifImageView progressBar;
-    private boolean callHasBeenCompleted = true;
-    //    {"code":400072,"name":"Powai"}
-    private ArrayList<Locality> localities = new ArrayList<>();
-    private String[] localitiesSuggestions = new String[0];
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
+    private View parentView;
+    private int localityFetchCount = 0;
 
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
@@ -79,29 +81,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                 .putExtra(IS_RESCHEDULING, is_rescheduling);
     }
 
-
-    Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
-        @Override
-        public void onResponse(Call<LocalitiesResponse> call, Response<LocalitiesResponse> response) {
-            progressBar.setVisibility(View.GONE);
-            callHasBeenCompleted = true;
-            if (response.body() != null && response.body().getLocalities() != null && !response.body().getLocalities().isEmpty()) {
-                localities = new ArrayList<>(response.body().getLocalities());
-                localitiesSuggestions = new String[localities.size()];
-                for (int i = 0; i < localities.size(); i++) {
-                    localitiesSuggestions[i] = localities.get(i).getName();
-                }
-                setAutoCompleteAdapter();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<LocalitiesResponse> call, Throwable t) {
-            progressBar.setVisibility(View.GONE);
-            callHasBeenCompleted = true;
-        }
-    };
-    private int codeSelected;
     private boolean locationRefreshed;
     private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
 
@@ -109,6 +88,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
+
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         setSupportActionBar(getToolbar());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -118,72 +98,28 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         initViews();
         initVariable();
 
-        setupAutoCompleteTextView();
-        setStatusBarColor(getResources().getColor(R.color.black));
+        setUpSpinner();
+        //fetch from server
+        fetchAllLocality();
+
+        setStatusBarColor(getResources().getColor(R.color.primary_dark));
     }
 
-    private void setupAutoCompleteTextView() {
-        localityAutoCompleteTextView.setDropDownBackgroundDrawable(this.getResources().getDrawable(R.drawable.autocomplete_dropdown));
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.item_autocomplete, localitiesSuggestions);
-        localityAutoCompleteTextView.setAdapter(arrayAdapter);
-        localityAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0) {
-                    codeSelected = 0;
-                    progressBar.setVisibility(View.VISIBLE);
-                    if (callHasBeenCompleted) {
-                        callHasBeenCompleted = false;
-                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
-                        call.enqueue(localitiesResponseCallback);
-                    } else {
-                        call.cancel();
-                        call = TheBox.getAPIService().getAllLocalities(PrefUtils.getToken(FillUserInfoActivity.this), editable.toString());
-                        call.enqueue(localitiesResponseCallback);
-                    }
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-        localityAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                codeSelected = localities.get(position).getCode();
-            }
-        });
-    }
-
-    private void setAutoCompleteAdapter() {
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.item_autocomplete, localitiesSuggestions);
-        localityAutoCompleteTextView.setAdapter(arrayAdapter);
-    }
 
     private void initViews() {
+        parentView = (CoordinatorLayout) findViewById(R.id.parent_layout);
         submitButton = (TextView) findViewById(R.id.button_submit);
         submitButton.setOnClickListener(this);
+        errorMessageLocality = (TextView) findViewById(R.id.error_message_locality);
         nameEditText = (EditText) findViewById(R.id.edit_text_name);
         emailEditText = (EditText) findViewById(R.id.edit_text_email);
         textInputLayoutName = (TextInputLayout) findViewById(R.id.name_text_input);
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.email_text_input);
-        progressBar = (GifImageView) findViewById(R.id.progress_bar);
-        localityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.edit_text_locality);
-        progressBar.setVisibility(View.GONE);
-       // localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
-        //localityAutoCompleteTextView.setFocusable(false);
-        //localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
-        //localityAutoCompleteTextView.setClickable(false); //
-        codeSelected = Constants.POWAI_LOCALITY.getCode();
+        spinner = (Spinner) findViewById(R.id.spinnerLocality);
 
+        this.localities = new ArrayList<>();
+        Locality locality = Constants.Default_LOCALITY;
+        this.localities.add(locality);
         authenticationService = new AuthenticationService();
     }
 
@@ -208,6 +144,68 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             }
         }
     }
+
+    /**
+     * Fetch All Locality
+     */
+    public void fetchAllLocality() {
+        localityFetchCount++;
+        TheBox.getAPIService().getLocality()
+                .enqueue(new Callback<LocalityResponse>() {
+                    @Override
+                    public void onResponse(Call<LocalityResponse> call, Response<LocalityResponse> response) {
+
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                localities.clear();
+                                localities.addAll(response.body().getLocalities());
+
+                                setUpSpinner();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LocalityResponse> call, Throwable t) {
+                        Toast.makeText(TheBox.getInstance(), "No Internnet", Toast.LENGTH_SHORT).show();
+                        CustomSnackBar.showLongSnackBar(parentView, "Please check your Internet connection");
+                        if (localityFetchCount < 2) {
+                            fetchAllLocality();
+                        }
+                    }
+                });
+
+    }
+
+    public void setUpSpinner() {
+        try {
+            if (localities.size() > 0) {
+                spinnerAdapter = new LocalitySpinnerAdapter(this, localities);
+                spinner.setAdapter(spinnerAdapter);
+                spinner.setSelection(0);
+                pincode = localities.get(0).getPincode();
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        pincode = localities.get(position).getPincode();
+                        spinner.setSelection(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
+
 
     private void getUserLocation() {
         checkGPSenable();
@@ -308,7 +306,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         TheBox.getAPIService()
                 .storeUserInfo(PrefUtils.getToken(this)
                         , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
-                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(codeSelected), latitude, longitude)))
+                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(pincode), latitude, longitude)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
@@ -391,19 +389,17 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             textInputLayoutEmail.setError("");
         }
 
-
-        if (localityAutoCompleteTextView.getText().toString().isEmpty()) {
-            localityAutoCompleteTextView.setError("Locality could not be empty");
-            return false;
-        }
-        if (codeSelected == 0) {
-            localityAutoCompleteTextView.setError("Locality don't exist");
-            return false;
+        if (pincode == 0) {
+            errorMessageLocality.setVisibility(View.VISIBLE);
+            errorMessageLocality.setText("Please select your Locality");
+        } else {
+            errorMessageLocality.setText("");
+            errorMessageLocality.setVisibility(View.GONE);
         }
 
+        //check for locality
         name = nameEditText.getText().toString().trim();
         email = emailEditText.getText().toString().trim();
-        locality = localityAutoCompleteTextView.getText().toString().trim();
         return true;
     }
 }
