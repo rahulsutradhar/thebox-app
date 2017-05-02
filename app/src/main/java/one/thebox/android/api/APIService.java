@@ -76,16 +76,10 @@ public interface APIService {
                   @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
 
     @GET("/get_all_localities")
-    Call<LocalitiesResponse> getAllLocalities(
-            @Header("authtoken") String authToken,
-            @Query("query") String query
-    );
+    Call<LocalitiesResponse> getAllLocalities(@Header("authtoken") String authToken, @Query("query") String query);
 
     @GET("/users/setting")
-    Call<SettingsResponse> getSettings(
-            @Header("authtoken") String authToken,
-            @Query("app_version") String appVersion
-    );
+    Call<SettingsResponse> getSettings(@Header("authtoken") String authToken, @Query("app_version") String appVersion);
 
 
     @GET("/autocomplete")

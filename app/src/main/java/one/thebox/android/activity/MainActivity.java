@@ -113,6 +113,7 @@ public class MainActivity extends BaseActivity implements
     private GifImageView progressBar;
     private Menu menu;
     private int numberOfItemIncart = -1;
+    private TextView userNameTextView;
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -218,6 +219,7 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+
     @Subscribe
     public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
         runOnUiThread(new Runnable() {
@@ -301,7 +303,7 @@ public class MainActivity extends BaseActivity implements
         this.menu = navigationView.getMenu();
         addBoxesToMenu();
         View headerView = navigationView.getHeaderView(0);
-        TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
+        userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
         userNameTextView.setText(user.getName());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         setSupportActionBar(getToolbar());
@@ -670,13 +672,20 @@ public class MainActivity extends BaseActivity implements
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
-                                User user = PrefUtils.getUser(MainActivity.this);
-                                if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
-                                    response.body().getUserAddresses().get(0).setCurrentAddress(true);
+
+                                //check if users have saved address or not
+                                if (response.body().getUserAddresses() != null) {
+                                    if (response.body().getUserAddresses().size() > 0) {
+                                        PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
+
+                                        User user = PrefUtils.getUser(MainActivity.this);
+                                        if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
+                                            response.body().getUserAddresses().get(0).setCurrentAddress(true);
+                                        }
+                                        user.setAddresses(response.body().getUserAddresses());
+                                        PrefUtils.saveUser(MainActivity.this, user);
+                                    }
                                 }
-                                user.setAddresses(response.body().getUserAddresses());
-                                PrefUtils.saveUser(MainActivity.this, user);
                             } else {
                                 Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
@@ -693,6 +702,17 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            if (userNameTextView.getText().toString().isEmpty()) {
+                user = PrefUtils.getUser(this);
+                if (user.getName() != null && !user.getName().isEmpty()) {
+                    userNameTextView.setText(user.getName());
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
         startPeriodicTask();
     }
 
@@ -818,7 +838,7 @@ public class MainActivity extends BaseActivity implements
         String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
         int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName,clickedCategoryId);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName, clickedCategoryId);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();

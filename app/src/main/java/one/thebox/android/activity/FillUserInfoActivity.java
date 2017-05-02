@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,7 +27,9 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Locality;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
@@ -34,6 +39,7 @@ import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.Constants;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -43,10 +49,16 @@ import retrofit2.Response;
 
 public class FillUserInfoActivity extends BaseActivity implements View.OnClickListener {
 
+    public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
+    private static final String IS_RESCHEDULING = "is_rescheduling";
+
+    private ArrayList<AddressAndOrder> addressAndOrders;
+    private boolean is_rescheduling = false;
+
     private static final int REQ_CODE_GET_LOCATION = 101;
     String name, email, locality;
     Call<LocalitiesResponse> call;
-    private Button submitButton;
+    private TextView submitButton;
     private EditText nameEditText, emailEditText;
     private AutoCompleteTextView localityAutoCompleteTextView;
     private GifImageView progressBar;
@@ -57,6 +69,16 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
+
+    private TextInputLayout textInputLayoutName;
+    private TextInputLayout textInputLayoutEmail;
+
+    public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
+        return new Intent(context, FillUserInfoActivity.class)
+                .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
+                .putExtra(IS_RESCHEDULING, is_rescheduling);
+    }
+
 
     Callback<LocalitiesResponse> localitiesResponseCallback = new Callback<LocalitiesResponse>() {
         @Override
@@ -86,8 +108,16 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_user_info);
+        setToolbar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar(getToolbar());
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("User Information");
+
         initViews();
+        initVariable();
+
         setupAutoCompleteTextView();
         setStatusBarColor(getResources().getColor(R.color.black));
     }
@@ -139,20 +169,31 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initViews() {
-        submitButton = (Button) findViewById(R.id.button_submit);
+        submitButton = (TextView) findViewById(R.id.button_submit);
         submitButton.setOnClickListener(this);
         nameEditText = (EditText) findViewById(R.id.edit_text_name);
         emailEditText = (EditText) findViewById(R.id.edit_text_email);
+        textInputLayoutName = (TextInputLayout) findViewById(R.id.name_text_input);
+        textInputLayoutEmail = (TextInputLayout) findViewById(R.id.email_text_input);
         progressBar = (GifImageView) findViewById(R.id.progress_bar);
         localityAutoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.edit_text_locality);
         progressBar.setVisibility(View.GONE);
-        localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
-        localityAutoCompleteTextView.setFocusable(false);
-        localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
-        localityAutoCompleteTextView.setClickable(false); //
+       // localityAutoCompleteTextView.setText(Constants.POWAI_LOCALITY.getName());
+        //localityAutoCompleteTextView.setFocusable(false);
+        //localityAutoCompleteTextView.setFocusableInTouchMode(false); // user touches widget on phone with touch screen
+        //localityAutoCompleteTextView.setClickable(false); //
         codeSelected = Constants.POWAI_LOCALITY.getCode();
 
         authenticationService = new AuthenticationService();
+    }
+
+    private void initVariable() {
+        try {
+            addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
+            is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -276,6 +317,11 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                             if (response.body() != null) {
                                 if (response.body().isSuccess()) {
                                     if (response.body().getUser() != null) {
+                                        //restore address
+                                        User user = PrefUtils.getUser(FillUserInfoActivity.this);
+                                        if (user.getAddresses() != null) {
+                                            response.body().getUser().setAddresses(user.getAddresses());
+                                        }
                                         PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
                                         PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
 
@@ -284,7 +330,9 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                                         //update clevertap data when user fills details
                                         authenticationService.setCleverTapUserProfile();
 
-                                        startActivity(new Intent(FillUserInfoActivity.this, MainActivity.class));
+                                        //navigate to time slot Activity
+                                        startActivity(ConfirmTimeSlotActivity.newInstance(FillUserInfoActivity.this,
+                                                addressAndOrders, false));
                                         finish();
                                     }
                                 } else {
@@ -315,17 +363,35 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
     public boolean isValidInfo() {
         if (nameEditText.getText().toString().isEmpty()) {
-            nameEditText.setError("Name could not be empty!");
+            textInputLayoutName.setErrorEnabled(true);
+            textInputLayoutName.setError("Name could not be empty!");
             return false;
+        } else {
+            textInputLayoutName.setErrorEnabled(false);
+            textInputLayoutName.setError("");
         }
+
+
         if (emailEditText.getText().toString().isEmpty()) {
-            emailEditText.setError("Email could not be empty");
+            textInputLayoutEmail.setErrorEnabled(true);
+            textInputLayoutEmail.setError("Email could not be empty");
             return false;
+        } else {
+            textInputLayoutEmail.setErrorEnabled(false);
+            textInputLayoutEmail.setError("");
         }
+
+
         if (!isValidEmail(emailEditText.getText().toString())) {
-            emailEditText.setError("Invalid email address");
+            textInputLayoutEmail.setErrorEnabled(true);
+            textInputLayoutEmail.setError("Invalid email address");
             return false;
+        } else {
+            textInputLayoutEmail.setErrorEnabled(false);
+            textInputLayoutEmail.setError("");
         }
+
+
         if (localityAutoCompleteTextView.getText().toString().isEmpty()) {
             localityAutoCompleteTextView.setError("Locality could not be empty");
             return false;
@@ -334,6 +400,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             localityAutoCompleteTextView.setError("Locality don't exist");
             return false;
         }
+
         name = nameEditText.getText().toString().trim();
         email = emailEditText.getText().toString().trim();
         locality = localityAutoCompleteTextView.getText().toString().trim();
