@@ -178,23 +178,14 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     /*User Login Event*/
                                     setUserLoginEventCleverTap(response.body().getUser());
 
-                                    if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
 
-                                        Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                        finish();
-
-                                    } else {
-                                        Intent intent = new Intent(OtpVerificationActivity.this, FillUserInfoActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+                                    //Navigate to Home Activity
+                                    Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finish();
                                 }
                             } else {
                                 if (response != null && !response.isSuccessful() && response.errorBody() != null) {

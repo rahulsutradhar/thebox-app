@@ -218,17 +218,6 @@
 
                         </LinearLayout>
 
-                        <TextView
-                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
-                            android:gravity="center_horizontal"
-                            android:text="We deliver only in Powai"
-                            android:textColor="@color/md_pink_300"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
                     </LinearLayout>
                 </ScrollView>
 

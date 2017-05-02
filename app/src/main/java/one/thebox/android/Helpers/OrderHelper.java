@@ -1,7 +1,6 @@
 package one.thebox.android.Helpers;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -14,7 +13,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;

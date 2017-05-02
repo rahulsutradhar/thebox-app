@@ -1,4 +1,4 @@
-package one.thebox.android.Models;
+package one.thebox.android.Models.address;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -7,6 +7,7 @@ import java.io.Serializable;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import one.thebox.android.Models.address.Locality;
 
 public class Address extends RealmObject implements Serializable {
     @Ignore

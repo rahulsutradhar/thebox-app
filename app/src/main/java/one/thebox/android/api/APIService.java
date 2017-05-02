@@ -2,6 +2,7 @@ package one.thebox.android.api;
 
 
 import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.TimeSlotResponse;
@@ -76,16 +77,10 @@ public interface APIService {
                   @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
 
     @GET("/get_all_localities")
-    Call<LocalitiesResponse> getAllLocalities(
-            @Header("authtoken") String authToken,
-            @Query("query") String query
-    );
+    Call<LocalitiesResponse> getAllLocalities(@Header("authtoken") String authToken, @Query("query") String query);
 
     @GET("/users/setting")
-    Call<SettingsResponse> getSettings(
-            @Header("authtoken") String authToken,
-            @Query("app_version") String appVersion
-    );
+    Call<SettingsResponse> getSettings(@Header("authtoken") String authToken, @Query("app_version") String appVersion);
 
 
     @GET("/autocomplete")
@@ -225,5 +220,11 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/slots-available")
     Call<TimeSlotResponse> getRescheduleTimeSlot(@Query("order_id") int orderId, @Query("type") String type);
+
+    /**
+     * Get Localities
+     */
+    @GET("/public/localities")
+    Call<LocalityResponse> getLocality();
 
 }

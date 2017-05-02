@@ -79,11 +79,8 @@ public class SplashActivity extends Activity {
                      */
                     authenticationService.setUserDataToCrashlytics();
                     authenticationService.setCleverTapUserProfile();
-
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                } else {
-                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
                 }
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
 
             } else {
                 //From next version it should open OnBoardActivity
@@ -96,7 +93,7 @@ public class SplashActivity extends Activity {
                 if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
                     startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
                 } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, FillUserInfoActivity.class));
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
 
                     /**
