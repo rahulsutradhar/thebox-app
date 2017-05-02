@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,11 +22,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +54,8 @@ import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
+import one.thebox.android.Models.update.CommonPopupDetails;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
@@ -429,8 +434,12 @@ public class MainActivity extends BaseActivity implements
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
                     public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                        if (response != null && response.body() != null) {
-                            checkAppUpdate(response.body());
+                        if (response.isSuccessful()) {
+                            if (response != null && response.body() != null) {
+                                checkAppUpdate(response.body());
+                                checkForCommonDialog(response.body().getData());
+                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
+                            }
                         }
                     }
 
@@ -457,6 +466,61 @@ public class MainActivity extends BaseActivity implements
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Check for Common Dialog
+     */
+    private void checkForCommonDialog(final Setting setting) {
+        try {
+            if (setting.getCommonPopupDetails() != null) {
+                if (setting.getCommonPopupDetails().isShow()) {
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //show the popup or dialog
+                            displayCommonDialog(setting.getCommonPopupDetails());
+                        }
+                    }, 5000);
+
+
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
+
+    private void displayCommonDialog(CommonPopupDetails commonPopupDetails) {
+        try {
+            final Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setContentView(R.layout.dialog_common_details);
+            dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+            dialog.show();
+
+            TextView header = (TextView) dialog.findViewById(R.id.header_title);
+            TextView content = (TextView) dialog.findViewById(R.id.text_content);
+            TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
+            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+
+            header.setText(commonPopupDetails.getTitle());
+            content.setText(commonPopupDetails.getContent());
+            okayButtonText.setText(commonPopupDetails.getButtonText());
+
+            okayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
