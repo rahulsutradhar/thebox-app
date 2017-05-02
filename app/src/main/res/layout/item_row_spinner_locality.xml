@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/parent_layout"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingBottom="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="15dp">
+
+    <TextView
+        android:id="@+id/locality_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Powai - 400072"
+        android:textSize="@dimen/text_small3" />
+
+</LinearLayout>

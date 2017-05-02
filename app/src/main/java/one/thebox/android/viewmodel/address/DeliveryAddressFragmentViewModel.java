@@ -16,20 +16,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
+import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
+import one.thebox.android.util.PrefUtils;
 import one.thebox.android.viewmodel.base.BaseViewModel;
 
 /**
@@ -79,11 +82,32 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
      * Click Event
      */
     public void onClickProceedToPayment() {
+        try {
+            User user = PrefUtils.getUser(TheBox.getInstance());
+            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
+            if (user != null) {
+                if (setting.isUserDataAvailable()) {
+                    //Proceed to Payment details
+                    //save CleverTap Event; Display Address Proceed
+                    saveCleverTapEventDisplayAddressProceed();
+                    deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
+                            OrderHelper.getAddressAndOrder(orders), false));
+                } else {
+                    //proceed to user details Activity
+                    openUserDetailsActivity();
+                }
+            } else {
+                openUserDetailsActivity();
+            }
 
-        //save CleverTap Event; Display Address Proceed
-        saveCleverTapEventDisplayAddressProceed();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
 
-        deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
+    //User Details Activity
+    public void openUserDetailsActivity() {
+        deliveryAddressFragment.getActivity().startActivity(FillUserInfoActivity.newInstance(deliveryAddressFragment.getActivity(),
                 OrderHelper.getAddressAndOrder(orders), false));
     }
 

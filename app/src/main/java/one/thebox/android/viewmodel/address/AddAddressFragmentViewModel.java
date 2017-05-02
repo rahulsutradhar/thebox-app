@@ -9,20 +9,16 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Address;
-import one.thebox.android.Models.Locality;
+import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.address.Locality;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.MontserratEditText;
 import one.thebox.android.ViewHelper.SimpleTextWatcher;
-import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;

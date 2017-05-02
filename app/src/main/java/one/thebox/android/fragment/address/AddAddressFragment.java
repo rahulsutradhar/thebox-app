@@ -5,15 +5,12 @@ import android.annotation.SuppressLint;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.greenrobot.eventbus.Subscribe;
-
 import io.realm.RealmList;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;

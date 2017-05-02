@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,11 +22,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +54,8 @@ import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
+import one.thebox.android.Models.update.CommonPopupDetails;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
@@ -113,6 +118,7 @@ public class MainActivity extends BaseActivity implements
     private GifImageView progressBar;
     private Menu menu;
     private int numberOfItemIncart = -1;
+    private TextView userNameTextView;
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -218,6 +224,7 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+
     @Subscribe
     public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
         runOnUiThread(new Runnable() {
@@ -301,7 +308,7 @@ public class MainActivity extends BaseActivity implements
         this.menu = navigationView.getMenu();
         addBoxesToMenu();
         View headerView = navigationView.getHeaderView(0);
-        TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
+        userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
         userNameTextView.setText(user.getName());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         setSupportActionBar(getToolbar());
@@ -427,8 +434,12 @@ public class MainActivity extends BaseActivity implements
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
                     public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                        if (response != null && response.body() != null) {
-                            checkAppUpdate(response.body());
+                        if (response.isSuccessful()) {
+                            if (response != null && response.body() != null) {
+                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
+                                checkAppUpdate(response.body());
+                                checkForCommonDialog(response.body().getData());
+                            }
                         }
                     }
 
@@ -455,6 +466,61 @@ public class MainActivity extends BaseActivity implements
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Check for Common Dialog
+     */
+    private void checkForCommonDialog(final Setting setting) {
+        try {
+            if (setting.getCommonPopupDetails() != null) {
+                if (setting.getCommonPopupDetails().isShow()) {
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //show the popup or dialog
+                            displayCommonDialog(setting.getCommonPopupDetails());
+                        }
+                    }, 2000);
+
+
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
+
+    private void displayCommonDialog(CommonPopupDetails commonPopupDetails) {
+        try {
+            final Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setContentView(R.layout.dialog_common_details);
+            dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+            dialog.show();
+
+            TextView header = (TextView) dialog.findViewById(R.id.header_title);
+            TextView content = (TextView) dialog.findViewById(R.id.text_content);
+            TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
+            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+
+            header.setText(commonPopupDetails.getTitle());
+            content.setText(commonPopupDetails.getContent());
+            okayButtonText.setText(commonPopupDetails.getButtonText());
+
+            okayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -670,13 +736,20 @@ public class MainActivity extends BaseActivity implements
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
-                                User user = PrefUtils.getUser(MainActivity.this);
-                                if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
-                                    response.body().getUserAddresses().get(0).setCurrentAddress(true);
+
+                                //check if users have saved address or not
+                                if (response.body().getUserAddresses() != null) {
+                                    if (response.body().getUserAddresses().size() > 0) {
+                                        PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
+
+                                        User user = PrefUtils.getUser(MainActivity.this);
+                                        if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
+                                            response.body().getUserAddresses().get(0).setCurrentAddress(true);
+                                        }
+                                        user.setAddresses(response.body().getUserAddresses());
+                                        PrefUtils.saveUser(MainActivity.this, user);
+                                    }
                                 }
-                                user.setAddresses(response.body().getUserAddresses());
-                                PrefUtils.saveUser(MainActivity.this, user);
                             } else {
                                 Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }
@@ -693,6 +766,17 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            if (userNameTextView.getText().toString().isEmpty()) {
+                user = PrefUtils.getUser(this);
+                if (user.getName() != null && !user.getName().isEmpty()) {
+                    userNameTextView.setText(user.getName());
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
         startPeriodicTask();
     }
 
@@ -818,7 +902,7 @@ public class MainActivity extends BaseActivity implements
         String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
         int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName,clickedCategoryId);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName, clickedCategoryId);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();

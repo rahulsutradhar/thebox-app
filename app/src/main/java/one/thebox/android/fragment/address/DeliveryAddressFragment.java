@@ -1,7 +1,6 @@
 package one.thebox.android.fragment.address;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Address;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;

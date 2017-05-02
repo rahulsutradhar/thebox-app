@@ -8,6 +8,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import one.thebox.android.Models.address.Address;
 
 /**
  * Created by Ajeet Kumar Meena on 19-04-2016.
