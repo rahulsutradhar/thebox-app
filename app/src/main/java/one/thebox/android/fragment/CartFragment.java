@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -68,6 +69,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
 
+                    Toast.makeText(TheBox.getInstance(), "BroadCast", Toast.LENGTH_SHORT).show();
                     initVariables();
                 }
             });
@@ -122,7 +124,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             proceedToPayment.setVisibility(View.GONE);
             return false;
         } else {
-            // Toast.makeText(TheBox.getAppContext(), "Cart Has Item ELSEEE " + order.getTotalPrice(), Toast.LENGTH_SHORT).show();
+             Toast.makeText(TheBox.getAppContext(), "Cart Has Item ELSEEE " + order.getTotalPrice(), Toast.LENGTH_SHORT).show();
             emptyCartLayout.setVisibility(View.GONE);
             proceedToPayment.setVisibility(View.VISIBLE);
             proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + order.getTotalPrice() + "\n" + "Proceed to Payment");

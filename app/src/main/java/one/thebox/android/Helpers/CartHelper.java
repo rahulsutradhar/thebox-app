@@ -86,13 +86,15 @@ public class CartHelper {
                     public void onSuccess() {
                         if (cart != null) {
                             // OrderHelper.addAndNotify(cart);
+                            Toast.makeText(TheBox.getInstance(), "Locally updated", Toast.LENGTH_SHORT).show();
                             sendUpdateNoItemsInCartBroadcast(cart.getUserItems().size());
                         }
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-
+                        Log.e("LOCAL_DATABASE", error.getMessage());
+                        Toast.makeText(TheBox.getInstance(), "Locally Error " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -134,7 +136,8 @@ public class CartHelper {
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-
+                        Log.e("LOCAL_DATABASE", error.getMessage());
+                        Toast.makeText(TheBox.getInstance(), "Locally Error " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
 

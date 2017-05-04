@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -510,7 +511,7 @@ public class MainActivity extends BaseActivity implements
             RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
 
             header.setText(commonPopupDetails.getTitle());
-            content.setText(commonPopupDetails.getContent());
+            content.setText(Html.fromHtml(commonPopupDetails.getContent()));
             okayButtonText.setText(commonPopupDetails.getButtonText());
 
             okayButton.setOnClickListener(new View.OnClickListener() {

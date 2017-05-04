@@ -1,9 +1,12 @@
 package one.thebox.android.api.Responses;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
+import one.thebox.android.Models.timeslot.TimeSlotInformation;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -17,6 +20,9 @@ public class TimeSlotResponse extends ApiResponse {
     private String date;
 
     private ArrayList<Slot> slots;
+
+    @SerializedName("instructions")
+    private TimeSlotInformation timeSlotInformation;
 
     public TimeSlotResponse() {
 
@@ -44,5 +50,13 @@ public class TimeSlotResponse extends ApiResponse {
 
     public void setSlots(ArrayList<Slot> slots) {
         this.slots = slots;
+    }
+
+    public TimeSlotInformation getTimeSlotInformation() {
+        return timeSlotInformation;
+    }
+
+    public void setTimeSlotInformation(TimeSlotInformation timeSlotInformation) {
+        this.timeSlotInformation = timeSlotInformation;
     }
 }
