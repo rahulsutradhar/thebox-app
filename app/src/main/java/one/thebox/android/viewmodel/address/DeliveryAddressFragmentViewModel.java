@@ -87,14 +87,14 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
             Setting setting = PrefUtils.getSettings(TheBox.getInstance());
             if (user != null) {
                 if (setting.isUserDataAvailable()) {
-                    //Proceed to Payment details
-                    //save CleverTap Event; Display Address Proceed
-                    saveCleverTapEventDisplayAddressProceed();
-                    deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
-                            OrderHelper.getAddressAndOrder(orders), false));
+                    openSlotActivity();
                 } else {
-                    //proceed to user details Activity
-                    openUserDetailsActivity();
+                    if (user.getName() != null && user.getEmail() != null) {
+                        openSlotActivity();
+                    } else {
+                        //proceed to user details Activity
+                        openUserDetailsActivity();
+                    }
                 }
             } else {
                 openUserDetailsActivity();
@@ -103,6 +103,15 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         } catch (NullPointerException npe) {
             npe.printStackTrace();
         }
+    }
+
+    //Confrim SLot Activity
+    public void openSlotActivity() {
+        //Proceed to Payment details
+        //save CleverTap Event; Display Address Proceed
+        saveCleverTapEventDisplayAddressProceed();
+        deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
+                OrderHelper.getAddressAndOrder(orders), false));
     }
 
     //User Details Activity

@@ -212,6 +212,7 @@ public class MainActivity extends BaseActivity implements
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
+
     }
 
     @Override
