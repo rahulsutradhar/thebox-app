@@ -19,29 +19,34 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Delivery Zone"
-            android:textColor="@color/raspberry_red"
-            android:textSize="@dimen/text_medium1"
-            android:textStyle="bold" />
+            android:textColor="@color/davy_grey"
+            android:textSize="@dimen/text_medium2" />
 
-        <RelativeLayout
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:padding="8dp">
+            android:scrollbars="vertical">
 
-            <TextView
-                android:id="@+id/text_content"
-                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:lineSpacingExtra="2dp"
-                android:text="Item delivery will skip once, However  will continue your subscription"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_small3" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp">
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/text_content"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:lineSpacingExtra="2dp"
+                    android:textColor="@color/warm_grey"
+                    android:textSize="@dimen/text_small3" />
+
+            </RelativeLayout>
+        </ScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"

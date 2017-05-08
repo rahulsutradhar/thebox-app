@@ -72,12 +72,14 @@ public class CartHelper {
                         realm.copyToRealmOrUpdate(userItem);
 
                         //update cart
-                        if (cart.getUserItems() != null) {
-                            if (cart.getUserItems().size() > 0) {
-                                realm.copyToRealmOrUpdate(cart);
-                            } else {
-                                //delete the order row
-                                realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                        if (cart != null) {
+                            if (cart.getUserItems() != null) {
+                                if (cart.getUserItems().size() > 0) {
+                                    realm.copyToRealmOrUpdate(cart);
+                                } else {
+                                    //delete the order row
+                                    realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                                }
                             }
                         }
                     }
@@ -92,7 +94,6 @@ public class CartHelper {
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-
                     }
                 });
     }
@@ -107,12 +108,14 @@ public class CartHelper {
                         realm.where(UserItem.class).equalTo("id", userItemId).findFirst().deleteFromRealm();
 
                         //update cart
-                        if (cart.getUserItems() != null) {
-                            if (cart.getUserItems().size() > 0) {
-                                realm.copyToRealmOrUpdate(cart);
-                            } else {
-                                //delete the order row
-                                realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                        if (cart != null) {
+                            if (cart.getUserItems() != null) {
+                                if (cart.getUserItems().size() > 0) {
+                                    realm.copyToRealmOrUpdate(cart);
+                                } else {
+                                    //delete the order row
+                                    realm.where(Order.class).equalTo("id", cart.getId()).findFirst().deleteFromRealm();
+                                }
                             }
                         }
                     }
@@ -134,7 +137,6 @@ public class CartHelper {
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-
                     }
                 });
 
