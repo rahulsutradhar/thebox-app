@@ -1,13 +1,17 @@
 package one.thebox.android.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +29,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
+import one.thebox.android.Models.timeslot.TimeSlotInformation;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
@@ -51,8 +56,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private RealmList<Order> mergeOrders;
     private TextView proceedToPayment;
     private LinearLayout timeHolderLinearLayout;
+    private RelativeLayout layoutInformation;
     private Date currentSelectedDate;
-    private TextView timeSlotTextView, textViewSelectDate;
+    private TextView timeSlotTextView, textViewSelectDate, timeSlotInformationTitle;
     private Date nextSlotDate;
     private RecyclerView timeSlotRecyclerView;
     private Order currentSelectedOrder;
@@ -68,6 +74,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private int selectedSlotPosition = -1;
     private TimeSlotAdapter timeSlotAdapter;
     private int orderId = 0;
+    private TimeSlotInformation timeSlotInformation;
 
     public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
         return new Intent(context, ConfirmTimeSlotActivity.class)
@@ -144,11 +151,13 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * Order placing First time; Or Pay from cart
      */
     public void initViewCase2() {
+        layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        timeSlotInformationTitle = (TextView) findViewById(R.id.timeslotInformationText);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
 
         //Fetch Time slot data
@@ -182,17 +191,18 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             }
         });
 
-
     }
 
     /**
      * Case: Pay from Order
      */
     public void initViewsCase3() {
+        layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        timeSlotInformationTitle = (TextView) findViewById(R.id.timeslotInformationText);
 
         timeHolderLinearLayout.setOnClickListener(null);
         dropDownIcon.setVisibility(View.GONE);
@@ -220,12 +230,13 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * Case; Reschedule Order
      */
     public void initViewCase4() {
-
         orderId = getIntent().getIntExtra(RESCHEDULE_ORDER_ID, 0);
+        layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
         timeHolderLinearLayout = (LinearLayout) findViewById(R.id.holder_time);
         timeSlotTextView = (TextView) findViewById(R.id.time_slot_text_view);
+        timeSlotInformationTitle = (TextView) findViewById(R.id.timeslotInformationText);
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setText("Reschedule");
@@ -308,8 +319,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             dialog.dismiss();
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
+                                    timeSlotInformation = response.body().getTimeSlotInformation();
                                     //set the initial data for time slot
                                     setInitialSlotData(response.body().getData());
+                                    setTimeSlotInformation();
                                 }
                             }
                         } catch (Exception e) {
@@ -445,8 +458,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             dialog.dismiss();
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
+                                    timeSlotInformation = response.body().getTimeSlotInformation();
+
                                     //set the initial data for time slot
                                     setInitialSlotData(response.body().getData());
+                                    setTimeSlotInformation();
                                 }
                             }
                         } catch (Exception e) {
@@ -506,8 +522,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             dialog.dismiss();
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
+                                    timeSlotInformation = response.body().getTimeSlotInformation();
                                     //set Initial data for slots
                                     setInitialSlotDataForOrder(response.body().getDate(), response.body().getSlots());
+
+                                    setTimeSlotInformation();
                                 }
                             }
                         } catch (Exception e) {
@@ -552,6 +571,55 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void setTimeSlotInformation() {
+        if (timeSlotInformation != null) {
+            layoutInformation.setVisibility(View.VISIBLE);
+            timeSlotInformationTitle.setText(timeSlotInformation.getTitle());
+            layoutInformation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setUpInformationDialog();
+                }
+            });
+        } else {
+            layoutInformation.setOnClickListener(null);
+            layoutInformation.setVisibility(View.GONE);
+
+        }
+    }
+
+    public void setUpInformationDialog() {
+        try {
+            final Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(true);
+            dialog.setContentView(R.layout.dialog_common_details);
+            dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+            dialog.show();
+
+            TextView header = (TextView) dialog.findViewById(R.id.header_title);
+            TextView content = (TextView) dialog.findViewById(R.id.text_content);
+            TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
+            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+
+            header.setVisibility(View.GONE);
+            content.setText(Html.fromHtml(timeSlotInformation.getContent()));
+            okayButtonText.setText("Okay");
+
+            okayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public Date getNextSlotDate(Date date) {
