@@ -511,7 +511,7 @@ public class MainActivity extends BaseActivity implements
             TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
             RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
 
-            header.setText(commonPopupDetails.getTitle());
+            header.setText(Html.fromHtml(commonPopupDetails.getTitle()));
             content.setText(Html.fromHtml(commonPopupDetails.getContent()));
             okayButtonText.setText(commonPopupDetails.getButtonText());
 
