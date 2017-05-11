@@ -605,9 +605,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
             RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
 
-            header.setVisibility(View.GONE);
+            header.setText(Html.fromHtml(timeSlotInformation.getTitle()));
             content.setText(Html.fromHtml(timeSlotInformation.getContent()));
-            okayButtonText.setText("Okay");
+            okayButtonText.setText("OK");
 
             okayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
