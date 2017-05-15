@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
+import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -478,7 +479,8 @@ public class MainActivity extends BaseActivity implements
     private void checkForCommonDialog(final Setting setting) {
         try {
             if (setting.getCommonPopupDetails() != null) {
-                if (setting.getCommonPopupDetails().isShow()) {
+                //if false then display popup
+                if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
 
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -499,6 +501,7 @@ public class MainActivity extends BaseActivity implements
 
     private void displayCommonDialog(CommonPopupDetails commonPopupDetails) {
         try {
+
             final Dialog dialog = new Dialog(this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCanceledOnTouchOutside(false);
@@ -518,6 +521,10 @@ public class MainActivity extends BaseActivity implements
             okayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    //set in the prefferences, popup shown
+                    PrefUtils.putBoolean(MainActivity.this, Keys.COMMON_DIALOG_POPUP, true);
+
                     dialog.dismiss();
                 }
             });
