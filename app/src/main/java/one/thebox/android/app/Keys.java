@@ -26,4 +26,9 @@ public class Keys {
      */
     public static final String LOAD_CAROUSEL = "LOAD_CAROUSEL";
 
+    /**
+     * Keys for common dailog popup
+     */
+    public static final String COMMON_DIALOG_POPUP = "COMMON_DIALOG_POPUP";
+
 }
