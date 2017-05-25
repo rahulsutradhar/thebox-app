@@ -220,7 +220,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                     for (int i = 0; i < addressAndOrders.size(); i++) {
                         addressAndOrders.get(i).setSlot(selectedSlot);
                     }
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders, orderId,true));
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, orderId, true, addressAndOrders));
                 }
             }
         });

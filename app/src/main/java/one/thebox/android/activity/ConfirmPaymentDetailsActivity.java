@@ -79,9 +79,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         setTitle("Payment Details");
         initViews();
         initVariables();
-
-
-       /* setupRecyclerAdapter();*/
     }
 
     private void initVariables() {
