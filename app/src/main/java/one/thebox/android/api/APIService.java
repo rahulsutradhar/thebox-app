@@ -1,8 +1,11 @@
 package one.thebox.android.api;
 
 
+import java.util.Map;
+
 import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.api.Responses.LocalityResponse;
+import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.TimeSlotResponse;
@@ -49,6 +52,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface APIService {
 
@@ -226,5 +230,12 @@ public interface APIService {
      */
     @GET("/public/localities")
     Call<LocalityResponse> getLocality();
+
+    /**
+     * Get Payment Details
+     */
+    @GET("/consumer/api/v1/orders/summary")
+    Call<PaymentDetailsResponse> getPaymentDetailsData(@QueryMap Map<String, Integer> params);
+
 
 }
