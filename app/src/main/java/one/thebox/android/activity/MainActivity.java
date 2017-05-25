@@ -192,6 +192,7 @@ public class MainActivity extends BaseActivity implements
             ShowcaseHelper.removeAllTutorial();
         }
 
+        Log.d("CART", user.getCartId() + " ");
 
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override

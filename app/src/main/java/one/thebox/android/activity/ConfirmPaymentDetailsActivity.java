@@ -7,51 +7,59 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.Realm;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.checkout.PurchaseData;
 import one.thebox.android.R;
-import one.thebox.android.adapter.PaymentDetailAdapter;
+import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
+import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
     private static final String EXTRA_IS_MERGING = "is_merging_order";
-    public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
+    private static final String EXTRA_IS_CART = "is_from_cart";
+    private static final String EXTRA_ORDER_ID = "extra_order_id";
+    private static final String EXTRA_PAY_FROM_ORDER = "extra_pay_From_order";
 
 
-    private Order cart;
-    private Context context;
     private RecyclerView recyclerViewPaymentDetail;
-    private PaymentDetailAdapter paymentDetailAdapter;
-    private ArrayList<AddressAndOrder> addressAndOrders;
+    private PaymentDetailsAdapter adapter;
     private TextView payButton;
     private User user;
     private int mergeOrderId;
-    private float amount_to_pay;
-    private float totalAmountToPay;
-    private boolean isMerging;
+    private String amountToPay;
+    private boolean isMerging, isCart, payFromOrder;
+    private int orderId;
 
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
+
+    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean isCart) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        intent.putExtra(EXTRA_IS_CART, isCart);
         return intent;
     }
 
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId) {
+    public static Intent getInstance(Context context, int orderId, boolean payFromOrder, ArrayList<AddressAndOrder> addressAndOrders) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(EXTRA_ORDER_ID, orderId);
+        intent.putExtra(EXTRA_PAY_FROM_ORDER, payFromOrder);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
         return intent;
     }
 
@@ -71,44 +79,35 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         setTitle("Payment Details");
         initViews();
         initVariables();
-        setupRecyclerAdapter();
+
+
+       /* setupRecyclerAdapter();*/
     }
 
     private void initVariables() {
-        String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
-        addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
         mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
         isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
+        isCart = getIntent().getBooleanExtra(EXTRA_IS_CART, false);
+        orderId = getIntent().getIntExtra(EXTRA_ORDER_ID, 0);
+        payFromOrder = getIntent().getBooleanExtra(EXTRA_PAY_FROM_ORDER, false);
 
-        int cartId = PrefUtils.getUser(this).getCartId();
-        Realm realm = TheBox.getRealm();
-        Order cart = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, 0)
-                .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if (cart != null) {
-            this.cart = realm.copyFromRealm(cart);
+
+        int cartId = user.getCartId();
+
+        HashMap<String, Integer> param = new HashMap<>();
+
+        //condition for dynamic query in the API
+        if (isCart) {
+            param.put("cart_id", cartId);
+        } else if (isMerging) {
+            param.put("cart_id", cartId);
+            param.put("order_id", mergeOrderId);
+        } else if (payFromOrder) {
+            param.put("order_id", orderId);
         }
-    }
 
-    private void setupRecyclerAdapter() {
-
-        ArrayList<Order> orders = new ArrayList<>();
-        for (AddressAndOrder addressAndOrder : addressAndOrders) {
-            orders.add(addressAndOrder.getOrder());
-        }
-        paymentDetailAdapter = new PaymentDetailAdapter(this);
-        paymentDetailAdapter.setOrders(orders);
-        recyclerViewPaymentDetail.setItemViewCacheSize(paymentDetailAdapter.getItemsCount());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);
-        recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
-        paymentDetailAdapter.setViewType(RECYCLER_VIEW_TYPE_FOOTER);
-
-        //show the final price
-        amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
-        payButton.setText("Pay: " + Constants.RUPEE_SYMBOL + " " + amount_to_pay);
-
+        //call server to fetch data
+        fetchPaymentDetailsData(param);
     }
 
     private void initViews() {
@@ -124,7 +123,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 setCleverTapEventPaymentDetailActivity();
 
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, String.valueOf(amount_to_pay));
+                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, amountToPay);
                 intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
                 intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
                 intent.putExtra(EXTRA_IS_MERGING, isMerging);
@@ -133,14 +132,79 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             }
         });
 
-        recyclerViewPaymentDetail.setItemViewCacheSize(20);
+        recyclerViewPaymentDetail.setItemViewCacheSize(3);
         recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
         recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
     }
 
+
+    /**
+     * API call for payment Details When user proceed from Cart
+     */
+    public void fetchPaymentDetailsData(HashMap<String, Integer> params) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService().getPaymentDetailsData(params)
+                .enqueue(new Callback<PaymentDetailsResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentDetailsResponse> call, Response<PaymentDetailsResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    amountToPay = response.body().getAmountToPay();
+                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
+                                    setUpData(response.body().getPurchaseDatas());
+                                }
+                            }
+
+                        } catch (NullPointerException npe) {
+                            npe.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentDetailsResponse> call, Throwable t) {
+                        dialog.dismiss();
+                    }
+                });
+
+    }
+
+    /**
+     * Set the list by removing the null values
+     */
+    public void setUpData(ArrayList<PurchaseData> purchaseDatas) {
+        ArrayList<PurchaseData> updatePurchaseData = new ArrayList<>();
+
+        for (PurchaseData purchaseData : purchaseDatas) {
+            if (purchaseData.getProductDetails() != null) {
+                if (purchaseData.getProductDetails().size() > 0) {
+                    updatePurchaseData.add(purchaseData);
+                }
+            }
+        }
+
+        setUpRecyclerView(updatePurchaseData);
+    }
+
+    public void setUpRecyclerView(ArrayList<PurchaseData> purchaseDatas) {
+
+        if (recyclerViewPaymentDetail != null) {
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);
+            adapter = new PaymentDetailsAdapter(this, purchaseDatas);
+            recyclerViewPaymentDetail.setAdapter(adapter);
+        }
+
+
+    }
+
+
     public void setCleverTapEventPaymentDetailActivity() {
         HashMap<String, Object> objectHashMap = new HashMap<>();
-        objectHashMap.put("amount_to_pay", amount_to_pay);
+        objectHashMap.put("amount_to_pay", amountToPay);
 
         TheBox.getCleverTap().event.push("payment_details_activity", objectHashMap);
     }
