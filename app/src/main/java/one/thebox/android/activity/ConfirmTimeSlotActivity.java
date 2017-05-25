@@ -186,7 +186,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                      * Save Clever Tap Event; TimeSlotsFromCart
                      */
                     setCleverTapEventTimeSlotsFromCart();
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders, isCart));
                 }
             }
         });
@@ -220,7 +220,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                     for (int i = 0; i < addressAndOrders.size(); i++) {
                         addressAndOrders.get(i).setSlot(selectedSlot);
                     }
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders));
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders, orderId,true));
                 }
             }
         });

@@ -18,6 +18,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:text="Delivery Zone"
             android:textColor="@color/davy_grey"
             android:textSize="@dimen/text_medium2" />
