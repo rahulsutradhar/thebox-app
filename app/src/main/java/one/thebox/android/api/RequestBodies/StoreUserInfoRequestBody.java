@@ -38,11 +38,10 @@ public class StoreUserInfoRequestBody implements Serializable {
             this.lng = 0.0;
         }
 
-        public User(String phonenumber, String email, String name, String localitycode, double lat, double lng) {
+        public User(String phonenumber, String email, String name, double lat, double lng) {
             this.phonenumber = phonenumber;
             this.email = email;
             this.name = name;
-            this.localitycode = localitycode;
             this.lat = lat;
             this.lng = lng;
         }

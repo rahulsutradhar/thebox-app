@@ -59,19 +59,15 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
     private RealmList<Order> orders;
 
-    private ArrayList<Locality> localities;
-    private int pincode = 0;
-    private LocalitySpinnerAdapter spinnerAdapter;
     private static final int REQ_CODE_GET_LOCATION = 101;
-    String name, email, locality;
-    private TextView submitButton, errorMessageLocality;
+    String name, email;
+    private TextView submitButton;
     private EditText nameEditText, emailEditText;
     private Spinner spinner;
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
     private View parentView;
-    private int localityFetchCount = 0;
 
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
@@ -98,10 +94,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         initViews();
         initVariable();
 
-        setUpSpinner();
-        //fetch from server
-        fetchAllLocality();
-
         setStatusBarColor(getResources().getColor(R.color.primary_dark));
     }
 
@@ -110,16 +102,12 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         parentView = (CoordinatorLayout) findViewById(R.id.parent_layout);
         submitButton = (TextView) findViewById(R.id.button_submit);
         submitButton.setOnClickListener(this);
-        errorMessageLocality = (TextView) findViewById(R.id.error_message_locality);
         nameEditText = (EditText) findViewById(R.id.edit_text_name);
         emailEditText = (EditText) findViewById(R.id.edit_text_email);
         textInputLayoutName = (TextInputLayout) findViewById(R.id.name_text_input);
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.email_text_input);
         spinner = (Spinner) findViewById(R.id.spinnerLocality);
 
-        this.localities = new ArrayList<>();
-        Locality locality = Constants.Default_LOCALITY;
-        this.localities.add(locality);
         authenticationService = new AuthenticationService();
     }
 
@@ -143,68 +131,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             }
         }
     }
-
-    /**
-     * Fetch All Locality
-     */
-    public void fetchAllLocality() {
-        localityFetchCount++;
-        TheBox.getAPIService().getLocality()
-                .enqueue(new Callback<LocalityResponse>() {
-                    @Override
-                    public void onResponse(Call<LocalityResponse> call, Response<LocalityResponse> response) {
-
-                        if (response.isSuccessful()) {
-                            if (response.body() != null) {
-                                localities.clear();
-                                localities.addAll(response.body().getLocalities());
-
-                                setUpSpinner();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<LocalityResponse> call, Throwable t) {
-                        Toast.makeText(TheBox.getInstance(), "No Internnet", Toast.LENGTH_SHORT).show();
-                        CustomSnackBar.showLongSnackBar(parentView, "Please check your Internet connection");
-                        if (localityFetchCount < 2) {
-                            fetchAllLocality();
-                        }
-                    }
-                });
-
-    }
-
-    public void setUpSpinner() {
-        try {
-            if (localities.size() > 0) {
-                spinnerAdapter = new LocalitySpinnerAdapter(this, localities);
-                spinner.setAdapter(spinnerAdapter);
-                spinner.setSelection(0);
-                pincode = localities.get(0).getPincode();
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        pincode = localities.get(position).getPincode();
-                        spinner.setSelection(position);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-
-
-            }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } catch (NullPointerException npe) {
-            npe.printStackTrace();
-        }
-    }
-
 
     private void getUserLocation() {
         checkGPSenable();
@@ -305,7 +231,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         TheBox.getAPIService()
                 .storeUserInfo(PrefUtils.getToken(this)
                         , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
-                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, String.valueOf(pincode), latitude, longitude)))
+                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, latitude, longitude)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
                     public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
@@ -405,14 +331,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         } else {
             textInputLayoutEmail.setErrorEnabled(false);
             textInputLayoutEmail.setError("");
-        }
-
-        if (pincode == 0) {
-            errorMessageLocality.setVisibility(View.VISIBLE);
-            errorMessageLocality.setText("Please select your Locality");
-        } else {
-            errorMessageLocality.setText("");
-            errorMessageLocality.setVisibility(View.GONE);
         }
 
         //check for locality
