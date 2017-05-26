@@ -93,7 +93,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
      * Locality
      */
     private ArrayList<Locality> localities;
-    private int pincode = 0;
+    private int localityId = -1;
     private LocalitySpinnerAdapter spinnerAdapter;
     private Spinner spinner;
     private int localityFetchCount = 0;
@@ -111,8 +111,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.addressLabel = 0;
         this.address = new Address();
         this.localities = new ArrayList<>();
-        Locality locality = Constants.Default_LOCALITY;
-        this.localities.add(locality);
     }
 
     /**
@@ -127,12 +125,11 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.addressLabel = 0;
         this.address = new Address();
         this.localities = new ArrayList<>();
-        Locality locality = Constants.Default_LOCALITY;
-        this.localities.add(locality);
     }
 
     /**
      * Called when user edit addres
+     * type = 2
      */
     public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment, Address address, int calledFrom, int type, View view) {
         this.addAddressFragment = addAddressFragment;
@@ -143,8 +140,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
         setAddressLabel(address.getLabel());
         this.localities = new ArrayList<>();
-        Locality locality = Constants.Default_LOCALITY;
-        this.localities.add(locality);
         notifyChange();
     }
 
@@ -164,8 +159,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
         setAddressLabel(address.getLabel());
         this.localities = new ArrayList<>();
-        Locality locality = Constants.Default_LOCALITY;
-        this.localities.add(locality);
         notifyChange();
     }
 
@@ -199,8 +192,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         localityErrorMessage = (TextView) view.findViewById(R.id.error_message_locality);
         spinner = (Spinner) view.findViewById(R.id.spinnerLocality);
 
-        setUpSpinner();
-
         //fetch from server
         fetchAllLocality();
 
@@ -211,12 +202,22 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             if (localities.size() > 0) {
                 spinnerAdapter = new LocalitySpinnerAdapter(addAddressFragment.getActivity(), localities);
                 spinner.setAdapter(spinnerAdapter);
-                spinner.setSelection(0);
-                pincode = localities.get(0).getPincode();
+
+                //check if address is editting
+                if (type == 2 || type == 3) {
+                    for (int i = 0; i < localities.size(); i++) {
+                        Locality locality = localities.get(i);
+                        if (locality.getId() == address.getLocalityId()) {
+                            localityId = locality.getId();
+                            spinner.setSelection(i);
+                            break;
+                        }
+                    }
+                }
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        pincode = localities.get(position).getPincode();
+                        localityId = localities.get(position).getId();
                         spinner.setSelection(position);
                     }
 
@@ -279,7 +280,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 if (checkSocietyValidation()) {
                     //check street validation
                     if (checkStreetValidation()) {
-                        //check if user has entered pincode
+                        //check if user has entered localityId
                         if (checkPinCodeSelected()) {
                             //request server to save addres
                             //type == 2,3 edit address
@@ -313,7 +314,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     public boolean checkPinCodeSelected() {
         boolean flag = false;
-        if (pincode == 0) {
+        if (localityId == -1) {
             flag = false;
             localityErrorMessage.setVisibility(View.VISIBLE);
             localityErrorMessage.setText("Please select your Locality");
@@ -425,9 +426,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
                         if (response.isSuccessful()) {
                             if (response.body() != null) {
-                                localities.clear();
                                 localities.addAll(response.body().getLocalities());
-
                                 setUpSpinner();
                             }
                         }
@@ -444,7 +443,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     }
 
-
     /**
      * Add New address to server
      */
@@ -453,7 +451,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         TheBox.getAPIService().addAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
-                                pincode,
+                                localityId,
                                 address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
@@ -498,7 +496,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
                                 address.getId(),
-                                pincode,
+                                localityId,
                                 address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),

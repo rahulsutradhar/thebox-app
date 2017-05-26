@@ -16,8 +16,11 @@ public class Locality extends RealmObject implements Serializable {
     @Ignore
     public static final String FIELD_NAME = "name";
 
-    @PrimaryKey
+
     private int code;
+
+    @PrimaryKey
+    private int id;
     private String name;
     private int pincode;
 
@@ -32,6 +35,14 @@ public class Locality extends RealmObject implements Serializable {
     public Locality(String name, int pincode) {
         this.name = name;
         this.pincode = pincode;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCode() {
