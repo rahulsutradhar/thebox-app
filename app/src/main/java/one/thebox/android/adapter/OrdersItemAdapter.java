@@ -109,7 +109,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             @Override
             public void onClick(View v) {
                 try {
-                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId()));
+                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId(),orders.get(position).getOrderDate()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

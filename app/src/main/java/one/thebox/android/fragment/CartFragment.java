@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -32,8 +31,10 @@ import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
@@ -157,7 +158,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             @Override
             public void onClick(View v) {
 
-                checkAddressAndProceedPayment();
+                checkUserDetailsAndProceedPayment();
 
             }
         });
@@ -229,7 +230,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     /**
      * Logic to navigate users from cart
      */
-    public void checkAddressAndProceedPayment() {
+    public void checkUserDetailsAndProceedPayment() {
         try {
 
             /**
@@ -238,9 +239,31 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             setCleverTapEventProocedFromCart(order);
 
             User user = PrefUtils.getUser(getActivity());
+            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
             RealmList<Order> orders = new RealmList<>();
             orders.add(order);
 
+            if (user != null) {
+                //check for user details
+                if (setting.isUserDataAvailable()) {
+                    checkForAddress(user,orders);
+                }else {
+                    if (user.getName() != null && user.getEmail() != null) {
+                        checkForAddress(user,orders);
+                    } else {
+                        //proceed to user details Activity
+                        openUserDetailsActivity(orders);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void checkForAddress(User user, RealmList<Order> orders) {
+        try {
             if (user.getAddresses() != null) {
                 if (user.getAddresses().size() > 0) {
 
@@ -262,10 +285,14 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 //open Add Address Activity
                 addDeliverAddress(orders);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //User Details Activity
+    public void openUserDetailsActivity( RealmList<Order> orders) {
+        startActivity(FillUserInfoActivity.newInstance(getActivity(),orders));
     }
 
     /**
