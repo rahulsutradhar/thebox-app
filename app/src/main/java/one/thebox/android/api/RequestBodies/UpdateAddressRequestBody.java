@@ -18,8 +18,8 @@ public class UpdateAddressRequestBody implements Serializable {
     public static class Address {
         @SerializedName("id")
         private int id;
-        @SerializedName("code")
-        private int code;
+        @SerializedName("locality_id")
+        private int localityId;
         @SerializedName("label")
         private int label;
         @SerializedName("flatno")
@@ -29,9 +29,9 @@ public class UpdateAddressRequestBody implements Serializable {
         @SerializedName("street")
         private String street;
 
-        public Address(int id, int code, int label, String flatNo, String society, String street) {
+        public Address(int id, int localityId, int label, String flatNo, String society, String street) {
             this.id = id;
-            this.code = code;
+            this.localityId = localityId;
             this.label = label;
             this.flatNo = flatNo;
             this.society = society;
@@ -54,12 +54,12 @@ public class UpdateAddressRequestBody implements Serializable {
             return id;
         }
 
-        public int getCode() {
-            return code;
+        public int getLocalityId() {
+            return localityId;
         }
 
-        public void setCode(int code) {
-            this.code = code;
+        public void setLocalityId(int localityId) {
+            this.localityId = localityId;
         }
 
         public String getFlatNo() {

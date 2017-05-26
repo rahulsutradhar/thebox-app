@@ -61,6 +61,9 @@ public class Address extends RealmObject implements Serializable {
     @SerializedName("code")
     private int code;
 
+    @SerializedName("locality_id")
+    private int localityId;
+
     public Address() {
     }
 
@@ -158,5 +161,13 @@ public class Address extends RealmObject implements Serializable {
 
     public void setLabel(int label) {
         this.label = label;
+    }
+
+    public int getLocalityId() {
+        return localityId;
+    }
+
+    public void setLocalityId(int localityId) {
+        this.localityId = localityId;
     }
 }
