@@ -38,25 +38,33 @@ import one.thebox.android.util.DateTimeUtil;
 public class OrderItemsActivity extends BaseActivity {
 
     private static final String EXTRA_USER_ITEM_ARRAY_LIST = "user_item_array_list";
+    private static final String EXTRA_ORDER_DATE = "extra_order_date";
     private RecyclerView recyclerView;
     private SearchDetailAdapter userItemRecyclerAdapter;
     private RealmList<UserItem> userItems = new RealmList<>();
     private int orderId;
     private Order order;
+    private String orderDate;
     private TextView payTextView;
     /**
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
 
-    public static Intent newInstance(Context context, int orderId) {
-        return new Intent(context, OrderItemsActivity.class).putExtra(EXTRA_USER_ITEM_ARRAY_LIST, orderId);
+    public static Intent newInstance(Context context, int orderId, String orderDate) {
+        return new Intent(context, OrderItemsActivity.class)
+                .putExtra(EXTRA_USER_ITEM_ARRAY_LIST, orderId)
+                .putExtra(EXTRA_ORDER_DATE, orderDate);
     }
 
     private void initVariables() {
         if (getIntent().hasExtra(EXTRA_USER_ITEM_ARRAY_LIST)) {
             orderId = getIntent().getIntExtra(EXTRA_USER_ITEM_ARRAY_LIST, 0);
         }
+        if (getIntent().hasExtra(EXTRA_ORDER_DATE)) {
+            orderDate = getIntent().getStringExtra(EXTRA_ORDER_DATE);
+        }
+
         Realm realm = TheBox.getRealm();
         RealmQuery<Order> query = realm.where(Order.class)
                 .notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_ID, orderId);
@@ -70,9 +78,7 @@ public class OrderItemsActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            Date date = null;
-            date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-            toolbar.setSubtitle(AddressAndOrder.getDateString(date));
+            toolbar.setSubtitle(orderDate);
         }
     }
 
@@ -93,12 +99,6 @@ public class OrderItemsActivity extends BaseActivity {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         payTextView = (TextView) findViewById(R.id.button_pay);
-        payTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(OrderItemsActivity.newInstance(OrderItemsActivity.this, orderId));
-            }
-        });
         setPayButton();
     }
 
