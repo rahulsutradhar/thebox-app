@@ -58,7 +58,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Address Type"
-                                android:textColor="@color/show_case_color"
+                                android:textColor="@color/manatee"
                                 android:textSize="12sp" />
 
                             <LinearLayout
@@ -119,6 +119,51 @@
                                 </RadioGroup>
                             </LinearLayout>
                         </LinearLayout>
+
+                        <!-- Locality Spinner Pincodes -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Choose your Locality"
+                                android:textColor="@color/manatee"
+                                android:textSize="@dimen/text_small1" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:background="@drawable/light_grey_border"
+                                android:paddingLeft="5dp">
+
+                                <android.support.v7.widget.AppCompatSpinner
+                                    android:id="@+id/spinnerLocality"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="?attr/actionBarSize"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="5dp"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ThemeOverlay.AppCompat.Light" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/error_message_locality"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text=""
+                                android:textColor="@color/accent"
+                                android:textSize="@dimen/text_small1"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
 
                         <!-- Flat Number-->
                         <LinearLayout
@@ -215,47 +260,6 @@
                                     android:theme="@style/EditTextStyle"
                                     app:addTextChangedListener="@{viewModel.addressLineStreetWatcher}" />
                             </android.support.design.widget.TextInputLayout>
-
-                        </LinearLayout>
-
-
-                        <!-- Locality Spinner Pincodes -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Choose your Locality"
-                                android:textColor="@color/manatee"
-                                android:textSize="@dimen/text_small1" />
-
-                            <android.support.v7.widget.AppCompatSpinner
-                                android:id="@+id/spinnerLocality"
-                                android:layout_width="match_parent"
-                                android:layout_height="?attr/actionBarSize"
-                                android:layout_gravity="center"
-                                android:spinnerMode="dropdown"
-                                android:theme="@style/ThemeOverlay.AppCompat.Light" />
-
-                            <View
-                                android:id="@+id/expiryMonthView"
-                                android:layout_width="match_parent"
-                                android:layout_height="0.5dp"
-                                android:background="@color/divide_color" />
-
-                            <TextView
-                                android:id="@+id/error_message_locality"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text=""
-                                android:textColor="@color/accent"
-                                android:textSize="@dimen/text_small1"
-                                android:visibility="gone" />
 
                         </LinearLayout>
 
