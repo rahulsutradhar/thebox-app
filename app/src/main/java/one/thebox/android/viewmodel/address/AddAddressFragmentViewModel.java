@@ -140,7 +140,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.type = type;
         this.view = view;
         this.address = address;
-        
+
         setAddressLabel(address.getLabel());
         this.localities = new ArrayList<>();
         Locality locality = Constants.Default_LOCALITY;
@@ -435,7 +435,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
                     @Override
                     public void onFailure(Call<LocalityResponse> call, Throwable t) {
-                        Toast.makeText(TheBox.getInstance(), "No Internnet", Toast.LENGTH_SHORT).show();
                         CustomSnackBar.showLongSnackBar(view, "Please check your Internet connection");
                         if (localityFetchCount < 2) {
                             fetchAllLocality();
@@ -473,18 +472,18 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                                     } else {
                                         Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
                                     }
-
                                 }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
                         dialog.dismiss();
-                        Toast.makeText(addAddressFragment.getActivity(), "Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -523,6 +522,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                         }
 
                     }
@@ -530,6 +530,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                     @Override
                     public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
                         dialog.dismiss();
+                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

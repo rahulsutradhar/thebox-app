@@ -246,10 +246,10 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             if (user != null) {
                 //check for user details
                 if (setting.isUserDataAvailable()) {
-                    checkForAddress(user,orders);
-                }else {
+                    checkForAddress(user, orders);
+                } else {
                     if (user.getName() != null && user.getEmail() != null) {
-                        checkForAddress(user,orders);
+                        checkForAddress(user, orders);
                     } else {
                         //proceed to user details Activity
                         openUserDetailsActivity(orders);
@@ -261,7 +261,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         }
     }
 
-
+    /**
+     * User Data is Available now check Address
+     */
     public void checkForAddress(User user, RealmList<Order> orders) {
         try {
             if (user.getAddresses() != null) {
@@ -291,8 +293,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     //User Details Activity
-    public void openUserDetailsActivity( RealmList<Order> orders) {
-        startActivity(FillUserInfoActivity.newInstance(getActivity(),orders));
+    public void openUserDetailsActivity(RealmList<Order> orders) {
+        startActivity(FillUserInfoActivity.newInstance(getActivity(), orders));
     }
 
     /**
