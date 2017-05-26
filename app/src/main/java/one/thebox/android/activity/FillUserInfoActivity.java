@@ -26,11 +26,15 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
+import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Locality;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.adapter.address.LocalitySpinnerAdapter;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.LocalityResponse;
@@ -48,13 +52,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static one.thebox.android.app.Constants.EXTRA_ADDRESS_TYPE;
+import static one.thebox.android.app.Constants.EXTRA_LIST_ORDER;
+
 public class FillUserInfoActivity extends BaseActivity implements View.OnClickListener {
 
-    public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
-    private static final String IS_RESCHEDULING = "is_rescheduling";
-
-    private ArrayList<AddressAndOrder> addressAndOrders;
-    private boolean is_rescheduling = false;
+    private RealmList<Order> orders;
 
     private ArrayList<Locality> localities;
     private int pincode = 0;
@@ -64,8 +67,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private TextView submitButton, errorMessageLocality;
     private EditText nameEditText, emailEditText;
     private Spinner spinner;
-    private AutoCompleteTextView localityAutoCompleteTextView;
-    private GifImageView progressBar;
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
@@ -75,10 +76,9 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
 
-    public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
+    public static Intent newInstance(Context context, RealmList<Order> orders) {
         return new Intent(context, FillUserInfoActivity.class)
-                .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
-                .putExtra(IS_RESCHEDULING, is_rescheduling);
+                .putExtra(EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
     }
 
     private boolean locationRefreshed;
@@ -125,8 +125,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
     private void initVariable() {
         try {
-            addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
-            is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
+            orders = CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(EXTRA_LIST_ORDER), Order.class);
         } catch (Exception e) {
 
         }
@@ -328,10 +327,8 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                                         //update clevertap data when user fills details
                                         authenticationService.setCleverTapUserProfile();
 
-                                        //navigate to time slot Activity
-                                        startActivity(ConfirmTimeSlotActivity.newInstance(FillUserInfoActivity.this,
-                                                addressAndOrders, false));
-                                        finish();
+                                        //when user fills form move to Address Activity
+                                        addDeliverAddress();
                                     }
                                 } else {
                                     Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -348,6 +345,27 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                         dialog.dismiss();
                     }
                 });
+    }
+
+    /**
+     * Open Add Address Form
+     */
+    public void addDeliverAddress() {
+        //open add address fragment blank
+        Intent intent = new Intent(this, AddressActivity.class);
+        /**
+         * 1- My Account Fragment
+         * 2- Cart Fragment
+         */
+        intent.putExtra("called_from", 2);
+        /**
+         * 1- add address
+         * 2- edit address
+         */
+        intent.putExtra(EXTRA_ADDRESS_TYPE, 1);
+        intent.putExtra(EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        startActivity(intent);
+        finish();
     }
 
     public boolean isValidEmail(CharSequence target) {

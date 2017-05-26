@@ -82,27 +82,9 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
      * Click Event
      */
     public void onClickProceedToPayment() {
-        try {
-            User user = PrefUtils.getUser(TheBox.getInstance());
-            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
-            if (user != null) {
-                if (setting.isUserDataAvailable()) {
-                    openSlotActivity();
-                } else {
-                    if (user.getName() != null && user.getEmail() != null) {
-                        openSlotActivity();
-                    } else {
-                        //proceed to user details Activity
-                        openUserDetailsActivity();
-                    }
-                }
-            } else {
-                openUserDetailsActivity();
-            }
 
-        } catch (NullPointerException npe) {
-            npe.printStackTrace();
-        }
+        openSlotActivity();
+
     }
 
     //Confrim SLot Activity
@@ -114,11 +96,6 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
                 OrderHelper.getAddressAndOrder(orders), false));
     }
 
-    //User Details Activity
-    public void openUserDetailsActivity() {
-        deliveryAddressFragment.getActivity().startActivity(FillUserInfoActivity.newInstance(deliveryAddressFragment.getActivity(),
-                OrderHelper.getAddressAndOrder(orders), false));
-    }
 
     public void onClickOverflowMenu(View view) {
 
