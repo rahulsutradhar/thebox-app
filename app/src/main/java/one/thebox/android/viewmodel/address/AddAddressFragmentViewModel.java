@@ -6,9 +6,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.realm.RealmList;
@@ -21,14 +25,17 @@ import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.SimpleTextWatcher;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.address.AddressActivity;
+import one.thebox.android.adapter.address.LocalitySpinnerAdapter;
 import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
 import one.thebox.android.api.Responses.AddressesApiResponse;
+import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.CustomSnackBar;
 import one.thebox.android.util.PrefUtils;
 import one.thebox.android.viewmodel.base.BaseViewModel;
 import retrofit2.Call;
@@ -75,11 +82,22 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
     private TextInputLayout textInputLayoutFlat;
     private TextInputLayout textInputLayoutSociety;
     private TextInputLayout textInputLayoutStreet;
+    private TextView localityErrorMessage;
 
     /**
      * Radio Group
      */
     private RadioGroup radioGroup;
+
+    /**
+     * Locality
+     */
+    private ArrayList<Locality> localities;
+    private int pincode = 0;
+    private LocalitySpinnerAdapter spinnerAdapter;
+    private Spinner spinner;
+    private int localityFetchCount = 0;
+
 
     /**
      * Constructor
@@ -92,8 +110,9 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.view = view;
         this.addressLabel = 0;
         this.address = new Address();
-        Locality locality = Constants.POWAI_LOCALITY;
-        this.address.setLocality(locality);
+        this.localities = new ArrayList<>();
+        Locality locality = Constants.Default_LOCALITY;
+        this.localities.add(locality);
     }
 
     /**
@@ -107,8 +126,9 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.view = view;
         this.addressLabel = 0;
         this.address = new Address();
-        Locality locality = Constants.POWAI_LOCALITY;
-        this.address.setLocality(locality);
+        this.localities = new ArrayList<>();
+        Locality locality = Constants.Default_LOCALITY;
+        this.localities.add(locality);
     }
 
     /**
@@ -120,7 +140,11 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.type = type;
         this.view = view;
         this.address = address;
+        
         setAddressLabel(address.getLabel());
+        this.localities = new ArrayList<>();
+        Locality locality = Constants.Default_LOCALITY;
+        this.localities.add(locality);
         notifyChange();
     }
 
@@ -139,6 +163,9 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.view = view;
 
         setAddressLabel(address.getLabel());
+        this.localities = new ArrayList<>();
+        Locality locality = Constants.Default_LOCALITY;
+        this.localities.add(locality);
         notifyChange();
     }
 
@@ -169,8 +196,43 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
             }
         });
+        localityErrorMessage = (TextView) view.findViewById(R.id.error_message_locality);
+        spinner = (Spinner) view.findViewById(R.id.spinnerLocality);
+
+        setUpSpinner();
+
+        //fetch from server
+        fetchAllLocality();
+
+    }
+
+    public void setUpSpinner() {
+        try {
+            if (localities.size() > 0) {
+                spinnerAdapter = new LocalitySpinnerAdapter(addAddressFragment.getActivity(), localities);
+                spinner.setAdapter(spinnerAdapter);
+                spinner.setSelection(0);
+                pincode = localities.get(0).getPincode();
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        pincode = localities.get(position).getPincode();
+                        spinner.setSelection(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
 
 
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     public TextWatcher getAddressLineFlatWatcher() {
@@ -217,16 +279,18 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 if (checkSocietyValidation()) {
                     //check street validation
                     if (checkStreetValidation()) {
-                        //request server to save addres
-                        //type == 2,3 edit address
-                        if (type == 2 || type == 3) {
-                            updateAddress(address);
+                        //check if user has entered pincode
+                        if (checkPinCodeSelected()) {
+                            //request server to save addres
+                            //type == 2,3 edit address
+                            if (type == 2 || type == 3) {
+                                updateAddress(address);
+                            }
+                            //type == 1 save address
+                            else if (type == 1) {
+                                addAddress(address);
+                            }
                         }
-                        //type == 1 save address
-                        else if (type == 1) {
-                            addAddress(address);
-                        }
-
                     }
 
                 }
@@ -243,6 +307,20 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         } else {
             //invalide input
             flag = false;
+        }
+        return flag;
+    }
+
+    public boolean checkPinCodeSelected() {
+        boolean flag = false;
+        if (pincode == 0) {
+            flag = false;
+            localityErrorMessage.setVisibility(View.VISIBLE);
+            localityErrorMessage.setText("Please select your Locality");
+        } else {
+            localityErrorMessage.setText("");
+            localityErrorMessage.setVisibility(View.GONE);
+            flag = true;
         }
         return flag;
     }
@@ -335,6 +413,38 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         return address.getStreet();
     }
 
+    /**
+     * Fetch All Locality
+     */
+    public void fetchAllLocality() {
+        localityFetchCount++;
+        TheBox.getAPIService().getLocality()
+                .enqueue(new Callback<LocalityResponse>() {
+                    @Override
+                    public void onResponse(Call<LocalityResponse> call, Response<LocalityResponse> response) {
+
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                localities.clear();
+                                localities.addAll(response.body().getLocalities());
+
+                                setUpSpinner();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<LocalityResponse> call, Throwable t) {
+                        Toast.makeText(TheBox.getInstance(), "No Internnet", Toast.LENGTH_SHORT).show();
+                        CustomSnackBar.showLongSnackBar(view, "Please check your Internet connection");
+                        if (localityFetchCount < 2) {
+                            fetchAllLocality();
+                        }
+                    }
+                });
+
+    }
+
 
     /**
      * Add New address to server
@@ -344,7 +454,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         TheBox.getAPIService().addAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
                 new AddAddressRequestBody(
                         new AddAddressRequestBody.Address(
-                                address.getLocality().getCode(),
+                                pincode,
                                 address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
@@ -389,7 +499,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 new UpdateAddressRequestBody(
                         new UpdateAddressRequestBody.Address(
                                 address.getId(),
-                                address.getLocality().getCode(),
+                                pincode,
                                 address.getLabel(),
                                 address.getFlat(),
                                 address.getSociety(),
