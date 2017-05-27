@@ -107,7 +107,7 @@ public class UserItem extends RealmObject implements Serializable {
           UserItem userItem = (UserItem) o;
           return userItem != null && this.id == userItem.getId()
                   && userCategoryId == userItem.getUserCategoryId()
-                  && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getUserId()
+                  && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getId()
                   && quantity == userItem.getQuantity()
                   && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
                   && stillSubscribed == userItem.getStillSubscribed()

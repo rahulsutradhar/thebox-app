@@ -66,7 +66,7 @@ public class Box extends RealmObject implements Serializable {
          if (box.getId() != this.getId()) {
              return false;
          }
-         if (box.getUserId() != this.getUserId()) {
+         if (box.getId() != this.getId()) {
              return false;
          }
          if (!box.getRemainingCategories().equals(this.getRemainingCategories())) {

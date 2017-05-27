@@ -17,11 +17,10 @@ import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
-import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,7 +84,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                     if (response.body().getUser() != null) {
                                         //save user locally
                                         saveUserProfileToLocal(response.body().getUser());
-                                        PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
+                                        PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
                                         CartHelper.saveOrdersToRealm(response.body().getCart());
 
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
@@ -139,7 +138,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
                                             if (response.body().getUser() != null) {
-                                                PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
+                                                PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
                                                 CartHelper.saveOrdersToRealm(response.body().getCart());
 
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {

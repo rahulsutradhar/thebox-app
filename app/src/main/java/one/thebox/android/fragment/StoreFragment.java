@@ -329,11 +329,11 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 //save locally
                                 storeToRealm(boxes);
                             }
-                        } else if (response.raw().code() == 401) {
+                        } /*else if (response.raw().code() == 401) {
                             (new AccountManager(getActivity()))
                                     .delete_account_data();
                             getActivity().finish();
-                        }
+                        }*/
                     }
 
                     @Override
