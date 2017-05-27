@@ -13,6 +13,8 @@ public class ApiResponse implements Serializable {
 
     int responsecode;
 
+    boolean status;
+
     String message;
 
     /**
@@ -28,5 +30,13 @@ public class ApiResponse implements Serializable {
      */
     public String getMessage() {
         return message;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

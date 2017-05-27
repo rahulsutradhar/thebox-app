@@ -19,14 +19,13 @@ import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import one.thebox.android.Events.SmsEvent;
-import one.thebox.android.Helpers.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
-import one.thebox.android.api.RequestBodies.OtpRequestBody;
-import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
+import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
+import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
@@ -42,25 +41,27 @@ import retrofit2.Converter;
 public class OtpVerificationActivity extends BaseActivity implements View.OnClickListener {
 
     private final static String EXTRA_PHONE_NUMBER = "extra_phone_number";
-    private final static String EXTRA_IS_SIGN_UP_ACTIVITY = "extra_is_sign_up_activity";
+    private final static String EXTRA_USER_UUID = "extra_user_uuid";
+
     private EditText otpVerificationEditText;
-    private TextView resendButton, noCodeButton, doneButton, toPhoneNumberTextView;
+    private TextView resendButton, doneButton, toPhoneNumberTextView;
     private String phoneNumber;
+    private String uuid;
     private String otp;
-    private boolean isSignUpActivity;
     private AuthenticationService authenticationService;
 
-    public static Intent getInstance(Context context, String phoneNumber, boolean isSignUpActivity) {
+    public static Intent getInstance(Context context, String phoneNumber, String uuid) {
         return new Intent(context, OtpVerificationActivity.class)
                 .putExtra(EXTRA_PHONE_NUMBER, "+91" + phoneNumber)
-                .putExtra(EXTRA_IS_SIGN_UP_ACTIVITY, isSignUpActivity);
+                .putExtra(EXTRA_USER_UUID, uuid);
+
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otp);
+        setContentView(R.layout.activity_verify_otp);
         initVariables();
         initViews();
         setStatusBarColor(getResources().getColor(R.color.black));
@@ -68,14 +69,13 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     private void initVariables() {
         phoneNumber = getIntent().getStringExtra(EXTRA_PHONE_NUMBER);
-        isSignUpActivity = getIntent().getBooleanExtra(EXTRA_IS_SIGN_UP_ACTIVITY, false);
+        uuid = getIntent().getStringExtra(EXTRA_USER_UUID);
         authenticationService = new AuthenticationService();
     }
 
     private void initViews() {
         otpVerificationEditText = (EditText) findViewById(R.id.edit_text_mobile_number);
         resendButton = (TextView) findViewById(R.id.button_resend);
-        noCodeButton = (TextView) findViewById(R.id.button_no_code);
         doneButton = (TextView) findViewById(R.id.done_button);
         toPhoneNumberTextView = (TextView) findViewById(R.id.text_view_to_phone_number);
         resendButton.setOnClickListener(this);
@@ -94,8 +94,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
 
-                        //request server
-                        verifyOtpFromServer(phoneNumber, otp);
+                        //verfiy otp authentication
+                        verifyOtpAuthtentication();
                     }
                     return true;
                 }
@@ -110,8 +110,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         if (otpString != null || !otpString.isEmpty()) {
             otpVerificationEditText.setText(otpString);
         }
-        //request server with otp
-        verifyOtpFromServer(phoneNumber, otpString);
+        //verfiy otp authentication
+        verifyOtpAuthtentication();
     }
 
     @Override
@@ -132,18 +132,14 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         switch (id) {
             case R.id.done_button: {
                 if (isValidOtp()) {
-                    //request server with otp
-                    verifyOtpFromServer(phoneNumber, otp);
+                    //verfiy otp authentication
+                    verifyOtpAuthtentication();
                 }
                 break;
             }
 
             case R.id.button_resend: {
-                if (isSignUpActivity) {
-                    requestResentOtp(phoneNumber);
-                } else {
-                    requestResentOtp(phoneNumber);
-                }
+                requestResentOtp();
             }
         }
     }
@@ -152,7 +148,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     /**
      * Verify otp from server
      */
-    public void verifyOtpFromServer(String phoneNumber, String otp) {
+   /* public void verifyOtpFromServer(String phoneNumber, String otp) {
 
         final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService()
@@ -165,7 +161,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                             if (response.isSuccessful()) {
                                 if (response.body().getUser() != null) {
                                     PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
-                                    PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAuthToken());
+                                    PrefUtils.saveToken(OtpVerificationActivity.this, response.body().getUser().getAccessToken());
                                     CartHelper.saveOrdersToRealm(response.body().getCart());
                                     OrderHelper.addAndNotify(response.body().getOrders());
                                     PrefUtils.putBoolean(OtpVerificationActivity.this, Keys.IS_AUTHENTICATED, true);
@@ -175,7 +171,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     //set user information to CleverTap upon Login
                                     authenticationService.setCleverTapOnLogin();
 
-                                    /*User Login Event*/
+                                    *//*User Login Event*//*
                                     setUserLoginEventCleverTap(response.body().getUser());
 
 
@@ -217,6 +213,76 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                 });
 
     }
+*/
+
+    /**
+     * Verify Otp fro Authentication
+     */
+    public void verifyOtpAuthtentication() {
+
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        //unique id and otp number
+        TheBox.getAPIService()
+                .verifyOtpAuth(new VerifyOtpRequestBody(uuid, otp))
+                .enqueue(new Callback<VerifyOtpResponse>() {
+                    @Override
+                    public void onResponse(Call<VerifyOtpResponse> call, Response<VerifyOtpResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+
+                                    //save data in preferance
+                                    PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
+
+                                    String accessToken = "Token token=\"" + response.body().getUser().getAccessToken() + "\"";
+                                    PrefUtils.saveToken(OtpVerificationActivity.this, accessToken);
+
+                                    PrefUtils.putBoolean(OtpVerificationActivity.this, Keys.IS_AUTHENTICATED, true);
+
+                                    //set user information to crashlytics
+                                    authenticationService.setUserDataToCrashlytics();
+                                    //set user information to CleverTap upon Login
+                                    authenticationService.setCleverTapOnLogin();
+
+                                    /*User Login Event*/
+                                    setUserLoginEventCleverTap(response.body().getUser());
+
+                                    //Setting Api Call then move to Home
+
+                                    //navigate to Home
+                                    navigateToHome();
+                                } else {
+                                    otpVerificationEditText.setError(response.body().getMessage());
+                                }
+
+                            } else {
+                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                    //parse error send by the server and show message
+                                    Converter<ResponseBody, VerifyOtpResponse> errorConverter =
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.authentication.RequestOtpResponse.class,
+                                                    new Annotation[0]);
+                                    one.thebox.android.api.Responses.authentication.VerifyOtpResponse error = errorConverter.convert(
+                                            response.errorBody());
+
+                                    //display error message
+                                    otpVerificationEditText.setError(error.getMessage());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<VerifyOtpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
 
     private boolean isValidOtp() {
@@ -228,6 +294,15 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         return true;
     }
 
+    public void navigateToHome() {
+        Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     /**
      * ClverTap Event
      */
@@ -235,8 +310,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         try {
             HashMap<String, Object> userLogin = new HashMap<>();
             userLogin.put("Phone", user.getPhoneNumber());
-            userLogin.put("Unique Id", user.getUserUniqueId());
-            userLogin.put("User_id", user.getUserId());
+            userLogin.put("Unique Id", user.getUuid());
+            userLogin.put("User_id", user.getId());
             if (user.getEmail() != null) {
                 if (!user.getEmail().isEmpty()) {
                     userLogin.put("Email", user.getEmail());
@@ -257,20 +332,47 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     /**
      * Resend Otp to user Phone
      */
-    public void requestResentOtp(String phoneNumber) {
+    public void requestResentOtp() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(phoneNumber)))
-                .enqueue(new Callback<UserSignInSignUpResponse>() {
+        TheBox.getAPIService()
+                .resendOtpAuth(new ResendOtpRequestBody(uuid))
+                .enqueue(new Callback<ResendOtpResponse>() {
                     @Override
-                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
+                    public void onResponse(Call<ResendOtpResponse> call, Response<ResendOtpResponse> response) {
                         dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                //if status is false parse error message
+                                if (!response.body().isStatus()) {
+                                    if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                        //parse error send by the server and show message
+                                        Converter<ResponseBody, ResendOtpResponse> errorConverter =
+                                                TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.authentication.RequestOtpResponse.class,
+                                                        new Annotation[0]);
+                                        one.thebox.android.api.Responses.authentication.ResendOtpResponse error = errorConverter.convert(
+                                                response.errorBody());
+
+                                        //display error message
+                                        Toast.makeText(OtpVerificationActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+
+                                }
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
+                    public void onFailure(Call<ResendOtpResponse> call, Throwable t) {
                         dialog.dismiss();
-                        Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
+
 }

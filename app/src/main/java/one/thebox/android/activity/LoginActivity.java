@@ -54,7 +54,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         int id = v.getId();
         switch (id) {
             case R.id.sign_in: {
-                startActivity(new Intent(this, SignInActivity.class));
+                startActivity(new Intent(this, RequestOtpActivity.class));
                 break;
             }
             case R.id.create_account: {

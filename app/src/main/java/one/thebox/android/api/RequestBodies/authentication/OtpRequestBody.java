@@ -1,4 +1,4 @@
-package one.thebox.android.api.RequestBodies;
+package one.thebox.android.api.RequestBodies.authentication;
 
 import com.google.gson.annotations.SerializedName;
 

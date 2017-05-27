@@ -7,8 +7,9 @@
     android:orientation="vertical">
 
 
-    <one.thebox.android.ViewHelper.MontserratEditText
+    <EditText
         android:id="@+id/edit_text_mobile_number"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/textView6"
@@ -27,10 +28,11 @@
         android:maxLength="10"
         android:padding="16dp"
         android:textColor="@color/primary_text_color"
-        android:textColorHint="@color/light_white" />
+        android:textColorHint="@color/manatee" />
 
-    <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/button_sign_in"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/edit_text_mobile_number"
@@ -38,7 +40,10 @@
         android:layout_marginTop="25dp"
         android:background="@drawable/green_borders"
         android:maxLength="10"
-        android:padding="16dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
         android:text="Sign In"
         android:textColor="@color/primary_text_color"
         android:textSize="16sp" />
@@ -52,8 +57,9 @@
         android:layout_marginTop="62dp"
         android:src="@drawable/thebox_identitycolor" />
 
-    <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/textView6"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageView3"

@@ -270,8 +270,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("Phone", user.getPhoneNumber());
-            hashMap.put("User_id", user.getUserId());
-            hashMap.put("Unique_id", user.getUserUniqueId());
+            hashMap.put("User_id", user.getId());
+            hashMap.put("Unique_id", user.getUuid());
             hashMap.put("Email", user.getEmail());
             hashMap.put("Name", user.getName());
 
