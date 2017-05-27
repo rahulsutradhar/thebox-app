@@ -17,10 +17,11 @@ import android.widget.Toast;
 import java.lang.annotation.Annotation;
 
 import okhttp3.ResponseBody;
+import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
-import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
+import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.app.TheBox;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -32,7 +33,7 @@ import retrofit2.Converter;
 import retrofit2.Response;
 
 @RuntimePermissions
-public class SignInActivity extends BaseActivity implements View.OnClickListener {
+public class RequestOtpActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView signInButton;
     private EditText mobileNumberEditText;
@@ -42,7 +43,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_request_otp);
         initViews();
         setStatusBarColor(getResources().getColor(R.color.black));
     }
@@ -84,8 +85,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
 
-                        //request server
-                        requestSignin();
+                        //request server for otp
+                        requestOTP();
                     }
                     return true;
                 }
@@ -101,7 +102,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         switch (id) {
             case R.id.button_sign_in: {
                 if (isValidMobileNumber()) {
-                    SignInActivityPermissionsDispatcher.singInWithCheck(this);
+
+                    RequestOtpActivityPermissionsDispatcher.singInWithCheck(this);
                     break;
                 }
             }
@@ -110,13 +112,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void singIn() {
-        requestSignin();
+        requestOTP();
     }
 
-    /**
-     * Request Signin
-     */
-    public void requestSignin() {
+   /* public void requestSignin() {
         final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService()
                 .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(countryCode + phoneNumber)))
@@ -128,7 +127,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                             if (response.isSuccessful()) {
                                 if (response.body().isSuccess()) {
                                     //request successful
-                                    startActivity(OtpVerificationActivity.getInstance(SignInActivity.this, phoneNumber, false));
+                                    startActivity(OtpVerificationActivity.getInstance(RequestOtpActivity.this, phoneNumber, false));
                                 } else {
                                     mobileNumberEditText.setError(response.body().getInfo());
                                 }
@@ -146,18 +145,72 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(SignInActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
                         dialog.dismiss();
-                        Toast.makeText(SignInActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
                     }
                 });
 
     }
+
+*/
+
+    /**
+     * Request Otp for the Phone Number
+     */
+    public void requestOTP() {
+
+        final BoxLoader dialog = new BoxLoader(this).show();
+        //pass country code and phone number
+        TheBox.getAPIService()
+                .requestOtpAuth(new SmsOtpRequestBody(countryCode + phoneNumber))
+                .enqueue(new Callback<RequestOtpResponse>() {
+                    @Override
+                    public void onResponse(Call<RequestOtpResponse> call, Response<RequestOtpResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //get user unique id in the response
+                                    User user = response.body().getUser();
+                                    //request successful
+                                    startActivity(OtpVerificationActivity.getInstance(RequestOtpActivity.this, phoneNumber, user.getUuid()));
+                                } else {
+                                    mobileNumberEditText.setError(response.body().getMessage());
+                                }
+                            } else {
+                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                    //parse error send by the server and show message
+                                    Converter<ResponseBody, RequestOtpResponse> errorConverter =
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.authentication.RequestOtpResponse.class,
+                                                    new Annotation[0]);
+                                    one.thebox.android.api.Responses.authentication.RequestOtpResponse error = errorConverter.convert(
+                                            response.errorBody());
+
+                                    //display error message
+                                    mobileNumberEditText.setError(error.getMessage());
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RequestOtpResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     public boolean isValidMobileNumber() {
         phoneNumber = mobileNumberEditText.getText().toString();
@@ -186,7 +239,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        SignInActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+
+        RequestOtpActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override

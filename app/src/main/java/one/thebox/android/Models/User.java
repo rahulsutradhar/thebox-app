@@ -15,28 +15,36 @@ import one.thebox.android.Models.address.Address;
  */
 public class User extends RealmObject implements Serializable {
     @Ignore
-    public static final String FIELD_USER_ID = "userId";
+    public static final String FIELD_USER_ID = "id";
     @Ignore
-    public static final String FIELD_EMAIL = "userId";
+    public static final String FIELD_EMAIL = "id";
     @Ignore
-    public static final String FIELD_PHONE_NUMBER = "userId";
+    public static final String FIELD_PHONE_NUMBER = "id";
     @Ignore
-    public static final String FIELD_IS_OTP_CONFIRMED = "userId";
+    public static final String FIELD_IS_OTP_CONFIRMED = "id";
     @Ignore
-    public static final String FIELD_NAME = "userId";
+    public static final String FIELD_NAME = "id";
     @Ignore
-    public static final String FIELD_LOCALITY_CODE = "userId";
+    public static final String FIELD_LOCALITY_CODE = "id";
     @Ignore
-    public static final String FIELD_AUTH_TOKEN = "userId";
+    public static final String FIELD_AUTH_TOKEN = "id";
     @Ignore
     public static final String FIELD_ADDRESSES = "addresses";
 
     @PrimaryKey
     @SerializedName("id")
-    private int userId;
+    private int id;
 
-    @SerializedName("uuid")
-    private String userUniqueId;
+    /**
+     * User Unique Id
+     */
+    private String uuid;
+
+    @SerializedName("access_token")
+    private String accessToken;
+
+    @SerializedName("name")
+    private String name;
 
     @SerializedName("email")
     private String email;
@@ -44,17 +52,16 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("phonenumber")
     private String phoneNumber;
 
+
+    
+
     @SerializedName("otp_secret_key_confirmed")
     private boolean isOtpConfirmed;
 
-    @SerializedName("name")
-    private String name;
 
     @SerializedName("localitycode")
     private String localityCode;
 
-    @SerializedName("auth_token")
-    private String authToken;
 
     @SerializedName("cart_id")
     private int cartId;
@@ -65,27 +72,27 @@ public class User extends RealmObject implements Serializable {
     }
 
     public User(User user) {
-        this.userId = user.getUserId();
+        this.id = user.getId();
         this.email = user.getEmail();
         this.phoneNumber = user.getPhoneNumber();
         this.isOtpConfirmed = user.isOtpConfirmed();
         this.name = user.getName();
         this.localityCode = user.getLocalityCode();
-        this.authToken = user.getAuthToken();
+        this.accessToken = user.getAccessToken();
         this.addresses = new RealmList<>();
         if (user.getAddresses() != null) {
             this.addresses.addAll(user.getAddresses());
         }
     }
 
-    public User(int userId, String email, String phoneNumber, boolean isOtpConfirmed, String name, String localityCode, String authToken) {
-        this.userId = userId;
+    public User(int id, String email, String phoneNumber, boolean isOtpConfirmed, String name, String localityCode, String accessToken) {
+        this.id = id;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.isOtpConfirmed = isOtpConfirmed;
         this.name = name;
         this.localityCode = localityCode;
-        this.authToken = authToken;
+        this.accessToken = accessToken;
     }
 
     public int getCartId() {
@@ -96,12 +103,12 @@ public class User extends RealmObject implements Serializable {
         this.cartId = cartId;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getId() {
+        return id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -147,12 +154,12 @@ public class User extends RealmObject implements Serializable {
         this.localityCode = localityCode;
     }
 
-    public String getAuthToken() {
-        return authToken;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public RealmList<Address> getAddresses() {
@@ -163,11 +170,11 @@ public class User extends RealmObject implements Serializable {
         this.addresses = addresses;
     }
 
-    public String getUserUniqueId() {
-        return userUniqueId;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUserUniqueId(String userUniqueId) {
-        this.userUniqueId = userUniqueId;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

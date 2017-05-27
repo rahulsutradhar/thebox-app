@@ -4,6 +4,9 @@ package one.thebox.android.api;
 import java.util.Map;
 
 import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
@@ -17,7 +20,7 @@ import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
-import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
 import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
@@ -46,6 +49,9 @@ import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
+import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
+import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -55,6 +61,35 @@ import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
 public interface APIService {
+
+
+    /**
+     * Refactoring API
+     */
+
+    /**
+     * Request OTP; SMS Authentication with Phone number
+     */
+    @POST("/consumer/api/v1/user-sms-auth")
+    Call<RequestOtpResponse> requestOtpAuth(@Body SmsOtpRequestBody smsOtpRequestBody);
+
+    /**
+     * Verify Otp Authentication
+     */
+    @POST("/consumer/api/v1/verf-session")
+    Call<VerifyOtpResponse> verifyOtpAuth(@Body VerifyOtpRequestBody verifyOtpRequestBody);
+
+    /**
+     * Request Resend Otp
+     */
+    @POST("/consumer/api/v1/resend-verf")
+    Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
+
+
+    /**
+     * Refator
+     */
+
 
     @POST("/users")
     Call<UserSignInSignUpResponse> createNewUser(

@@ -8,15 +8,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RestClient {
 
-    private static final String LOCAL_URL = "http://3cb3f615.ngrok.io";
-    private static final String STAGING_URL_HEROKU = "https://tranquil-springs-65978.herokuapp.com/";
     private static final String STAGING_URL_AWS = "http://staging.thebox.one/";
     private static final String PROD_URL_AWS = "http://api.thebox.one/";
-    private static final String PROD_URL_HEROKU = "https://theboxprod.herokuapp.com/";
 
     public static final boolean is_in_development = true;
     private APIService apiService;
-    private  Retrofit retrofit;
+    private Retrofit retrofit;
 
     public RestClient() {
 
@@ -32,7 +29,9 @@ public class RestClient {
         return apiService;
     }
 
-    public boolean Is_in_Development() {return is_in_development;}
+    public boolean Is_in_Development() {
+        return is_in_development;
+    }
 
     public Retrofit getRetrofit() {
         return retrofit;

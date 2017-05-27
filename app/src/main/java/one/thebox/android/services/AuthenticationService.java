@@ -6,12 +6,10 @@ import android.content.pm.PackageManager;
 import com.crashlytics.android.Crashlytics;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 import io.fabric.sdk.android.Fabric;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.User;
-import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
@@ -48,11 +46,11 @@ public class AuthenticationService {
 
                 if (Fabric.isInitialized() && user != null) {
                     // set user info to crashlytics
-                    Crashlytics.setUserIdentifier(user.getUserUniqueId());
+                    Crashlytics.setUserIdentifier(user.getUuid());
                     Crashlytics.setUserName(user.getName());
                     Crashlytics.setUserEmail(user.getEmail());
                     Crashlytics.setString("phone_number", user.getPhoneNumber());
-                    Crashlytics.setInt("user_id", user.getUserId());
+                    Crashlytics.setInt("user_id", user.getId());
                     Crashlytics.setString("Platform", "Android");
 
                     PackageInfo pInfo = null;
@@ -112,9 +110,9 @@ public class AuthenticationService {
                     profileUpdate.put("Email", user.getPhoneNumber());
                 }
             }
-            profileUpdate.put("Unique-Id", user.getUserUniqueId());
+            profileUpdate.put("Unique-Id", user.getUuid());
             profileUpdate.put("Identity", user.getPhoneNumber());
-            profileUpdate.put("User Id", user.getUserId());
+            profileUpdate.put("User Id", user.getId());
             profileUpdate.put("Platform", "Android");
 
             PackageInfo pInfo = null;
@@ -140,11 +138,11 @@ public class AuthenticationService {
 
                 if (Fabric.isInitialized() && user != null) {
                     // set user info to crashlytics
-                    Crashlytics.setUserIdentifier(user.getUserUniqueId());
+                    Crashlytics.setUserIdentifier(user.getUuid());
                     Crashlytics.setUserName(user.getName());
                     Crashlytics.setUserEmail(user.getEmail());
                     Crashlytics.setString("phone_number", user.getPhoneNumber());
-                    Crashlytics.setInt("user_id", user.getUserId());
+                    Crashlytics.setInt("user_id", user.getId());
                     Crashlytics.setString("Platform", "Android");
 
                     PackageInfo pInfo = null;

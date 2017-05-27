@@ -1,12 +1,7 @@
 package one.thebox.android.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -56,7 +51,7 @@ public class HotLineActivity extends BaseActivity {
 
         hlUser.setName(user.getName());
         hlUser.setEmail(user.getEmail());
-        hlUser.setExternalId(String.valueOf(user.getUserId()));
+        hlUser.setExternalId(String.valueOf(user.getId()));
         hlUser.setPhone("+91", user.getPhoneNumber());
 
         Hotline.getInstance(getApplicationContext()).updateUser(hlUser);

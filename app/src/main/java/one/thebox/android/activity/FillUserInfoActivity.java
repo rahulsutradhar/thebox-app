@@ -8,13 +8,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,28 +23,20 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
-import one.thebox.android.Models.address.Locality;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
-import one.thebox.android.adapter.address.LocalitySpinnerAdapter;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
-import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.AppUtil;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.CustomSnackBar;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -246,7 +235,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                                             response.body().getUser().setAddresses(user.getAddresses());
                                         }
                                         PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
-                                        PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAuthToken());
+                                        PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAccessToken());
 
                                         //update crashlytics data when user fills details
                                         authenticationService.setUserDataToCrashlytics();
