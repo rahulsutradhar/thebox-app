@@ -67,7 +67,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         ItemFrequencyViewHolder itemFrequencyViewHolder = (ItemFrequencyViewHolder) holder;
         itemFrequencyViewHolder.setView(itemConfigs.get(position));
 
-        if (itemConfigs.get(position).is_in_stock()) {
+        if (itemConfigs.get(position).isInStock()) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

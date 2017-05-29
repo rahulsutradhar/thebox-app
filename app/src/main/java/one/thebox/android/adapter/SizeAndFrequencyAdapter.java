@@ -83,7 +83,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (itemConfigs.get(position).is_in_stock()) {
+                if (itemConfigs.get(position).isInStock()) {
                     prevItemSelected = currentItemSelected;
                     currentItemSelected = position;
                     notifyItemChanged(prevItemSelected);
@@ -187,7 +187,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                 mrpTextView.setVisibility(View.GONE);
             }
 
-            if (itemConfig.is_in_stock()) {
+            if (itemConfig.isInStock()) {
                 if (getAdapterPosition() == currentItemSelected) {
                     sizeTextView.setTextColor(colorRose);
                     costTextView.setTextColor(colorRose);

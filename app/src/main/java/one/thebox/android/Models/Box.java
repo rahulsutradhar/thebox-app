@@ -3,7 +3,6 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -162,7 +161,10 @@ public class Box extends RealmObject implements Serializable {
 
     private int priority;
 
-    private ArrayList<Category> categories;
+    @SerializedName("saving_title")
+    private String savingTitle;
+
+    private RealmList<Category> categories;
 
 
     /************************************************
@@ -193,11 +195,11 @@ public class Box extends RealmObject implements Serializable {
         this.boxImage = boxImage;
     }
 
-    public ArrayList<Category> getCategories() {
+    public RealmList<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(ArrayList<Category> categories) {
+    public void setCategories(RealmList<Category> categories) {
         this.categories = categories;
     }
 
@@ -207,5 +209,13 @@ public class Box extends RealmObject implements Serializable {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getSavingTitle() {
+        return savingTitle;
+    }
+
+    public void setSavingTitle(String savingTitle) {
+        this.savingTitle = savingTitle;
     }
 }

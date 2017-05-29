@@ -33,8 +33,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("title")
-    private String title;
 
     @SerializedName("brand")
     private String brand;
@@ -42,8 +40,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("savings")
     private int savings;
 
-    @SerializedName("in_stock")
-    private boolean in_stock;
 
     @SerializedName("no_of_sku")
     private int no_of_sku;
@@ -54,8 +50,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("category_id")
     private int categoryId;
 
-    @SerializedName("itemconfigs")
-    private RealmList<ItemConfig> itemConfigs;
 
     @SerializedName("photo_url")
     private String photoUrl;
@@ -126,13 +120,6 @@ public class BoxItem extends RealmObject implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getBrand() {
         return brand;
@@ -166,14 +153,6 @@ public class BoxItem extends RealmObject implements Serializable {
         isSmartItems = smartItems;
     }
 
-    public boolean is_in_stock() {
-        return in_stock;
-    }
-
-    public void set_in_stock(boolean it_is_in_stock) {
-        in_stock = it_is_in_stock;
-    }
-
     public int getCategoryId() {
         return categoryId;
     }
@@ -190,14 +169,6 @@ public class BoxItem extends RealmObject implements Serializable {
         this.savingsTitle = savingsTitle;
     }
 
-    public RealmList<ItemConfig> getItemConfigs() {
-        return itemConfigs;
-    }
-
-    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
-        this.itemConfigs = itemConfigs;
-    }
-
     public ItemConfig getItemConfigById(int id) {
         for (ItemConfig itemConfig : itemConfigs) {
             if (itemConfig.getId() == id) {
@@ -211,7 +182,7 @@ public class BoxItem extends RealmObject implements Serializable {
         TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
         for (int i = 0; i < itemConfigs.size(); i++) {
             String subscriptionText = itemConfigs.get(i).getSubscriptionText();
-            int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
+            int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionType();
             IntStringObject key = new IntStringObject(subscriptionTypeUnit, subscriptionText);
 
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
@@ -254,17 +225,6 @@ public class BoxItem extends RealmObject implements Serializable {
         }
     }
 
-    public ItemConfig getItemConfigByFrequencyAndItemConfig(ItemConfig itemConfig, String frequency) {
-        for (ItemConfig tempItemConfig : itemConfigs) {
-            if (tempItemConfig.getSubscriptionType().equals(frequency)
-                    && itemConfig.getSize() == tempItemConfig.getSize()
-                    && itemConfig.getSizeUnit().equals(tempItemConfig.getSizeUnit())
-                    && itemConfig.getPrice() == itemConfig.getPrice()) {
-                return tempItemConfig;
-            }
-        }
-        return null;
-    }
 
     public int getSelectedConfigPosition() {
         for (int i = 0; i < itemConfigs.size(); i++) {
@@ -281,11 +241,11 @@ public class BoxItem extends RealmObject implements Serializable {
         try {
 
             for (ItemConfig itemConfig : itemConfigs) {
-                if (itemConfig.is_in_stock()) {
+               /* if (itemConfig.is_in_stock()) {
                     smallestItemConfig = itemConfig;
                     isInStockExist = true;
                     break;
-                }
+                }*/
             }
 
             if (isInStockExist == false) {
@@ -293,11 +253,11 @@ public class BoxItem extends RealmObject implements Serializable {
             }
 
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
+                if (itemConfigs.get(i).getSubscriptionType() < smallestItemConfig.getSubscriptionType()) {
                     //check if item config is in stock
-                    if (itemConfigs.get(i).is_in_stock()) {
+                    /*if (itemConfigs.get(i).is_in_stock()) {
                         smallestItemConfig = itemConfigs.get(i);
-                    }
+                    }*/
                 }
             }
         } catch (NullPointerException n) {
@@ -306,26 +266,56 @@ public class BoxItem extends RealmObject implements Serializable {
         return smallestItemConfig;
     }
 
-    public boolean isIn_stock() {
-        return in_stock;
+
+    /**
+     * Refactor
+     */
+
+    private String uuid;
+
+    @SerializedName("title")
+    private String title;
+
+    @SerializedName("itemconfigs")
+    RealmList<ItemConfig> itemConfigs;
+
+    @SerializedName("in_stock")
+    private boolean inStock;
+
+
+    /************************************************
+     * Getter Setter
+     ************************************************/
+
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setIn_stock(boolean in_stock) {
-        this.in_stock = in_stock;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
+    public RealmList<ItemConfig> getItemConfigs() {
+        return itemConfigs;
+    }
 
-    /* @Override
-    public boolean equals(Object o) {
-        BoxItem boxItem = (BoxItem) o;
-        return boxItem != null
-                && userItemId == boxItem.getUserItemId()
-                && id == boxItem.getId()
-                && title.equals(boxItem.getTitle())
-                && brand.equals(boxItem.getBrand())
-                && savings == boxItem.getSavings()
-                && isSmartItems == boxItem.isSmartItems()
-                && categoryId == boxItem.getCategoryId()
-                && itemConfigs.equals(boxItem.getItemConfigs());
-    }*/
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public boolean isInStock() {
+        return inStock;
+    }
+
+    public void setInStock(boolean inStock) {
+        this.inStock = inStock;
+    }
 }

@@ -53,6 +53,7 @@ import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
+import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -95,7 +96,13 @@ public interface APIService {
      * Get all Boxes
      */
     @GET("/consumer/api/v1/boxes")
-    Call<BoxResponse> getBoxes(@Header("Authentication") String accessToken);
+    Call<BoxResponse> getBoxes(@Header("Authorization") String accessToken);
+
+    /**
+     * Get all items for the category
+     */
+    @GET("/consumer/api/v1/categories")
+    Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
 
 
     /**

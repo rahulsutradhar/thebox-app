@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +55,7 @@ import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -87,7 +87,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private LinearLayout linearLayoutHolder;
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
-    private ArrayList<Category> categories = new ArrayList<>();
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private ArrayList<UserItem> userItems = new ArrayList<>();
@@ -95,6 +94,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ExploreItem exploreItem;
     private ArrayList<Integer> catIds = new ArrayList<>();
     private ArrayList<Integer> user_catIds = new ArrayList<>();
+
+    private ArrayList<Category> categories = new ArrayList<>();
+    private String categoryUid;
+
 
     private int clickPosition, clickedCategoryId;
     private TextView noResultFound, itemsInCart, savings;
@@ -125,6 +128,25 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     public SearchDetailFragment() {
         // Required empty public constructor
+    }
+
+    /**
+     * Called from Box Category
+     *
+     * @param categories
+     * @param categoryUid
+     * @param clickPosition
+     * @param boxName
+     */
+    public static SearchDetailFragment getInstance(ArrayList<Category> categories, String categoryUid, int clickPosition, String boxName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories));
+        bundle.putString(Constants.EXTRA_CLICKED_CATEGORY_UID, categoryUid);
+        bundle.putInt(Constants.EXTRA_CLICK_POSITION, clickPosition);
+        bundle.putString(Constants.EXTRA_BOX_NAME, boxName);
+        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
+        searchDetailFragment.setArguments(bundle);
+        return searchDetailFragment;
     }
 
     public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName, int clickedCategoryId) {
@@ -170,17 +192,26 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     private void initVariables() {
         try {
+
+            categories = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(Constants.EXTRA_BOX_CATEGORY), Category.class);
+            clickPosition = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
+            categoryUid = getArguments().getString(Constants.EXTRA_CLICKED_CATEGORY_UID);
+            boxName = getArguments().getString(Constants.EXTRA_BOX_NAME);
+
+
+            //old
             query = getArguments().getString(EXTRA_QUERY);
             catId = getArguments().getInt(EXTRA_CAT_ID);
-            title = getArguments().getString(BOX_NAME);
             exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
             catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
             user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
-            clickPosition = getArguments().getInt(EXTRA_CLICK_POSITION);
+
             clickedCategoryId = getArguments().getInt(EXTRA_CLICKED_CATEGORY_ID);
             if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-                setCategories();
+                //setCategories();
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,12 +271,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private void initViews() {
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
-//        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
-//        floatingActionButton.setOnClickListener(fabClickListener);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-//        numberOfItemsInCart = (TextView) rootView.findViewById(R.id.no_of_items_in_cart);
-//        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
@@ -285,13 +312,17 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         // Inflate the layout for this fragment
         initVariables();
 
+        if (!boxName.isEmpty()) {
+            setToolbarTitle();
+        }
+
         if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-            ((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
+            //((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
         } else {
             if (exploreItem != null) {
-                ((MainActivity) getActivity()).getToolbar().setTitle(exploreItem.getTitle());
+                //   ((MainActivity) getActivity()).getToolbar().setTitle(exploreItem.getTitle());
             } else {
-                ((MainActivity) getActivity()).getToolbar().setTitle(query);
+                // ((MainActivity) getActivity()).getToolbar().setTitle(query);
             }
         }
 
@@ -300,8 +331,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             initViews();
             setupAppBarObserver();
 
+            if (!categories.isEmpty()) {
+                setupViewPagerAndTabsForBoxCategory();
+            }
+
+
             if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-                setupViewPagerAndTabsMyBox();
+                //setupViewPagerAndTabsForBoxCategory();
             } else {
                 if (exploreItem == null) {
                     if (catId == 0) {
@@ -322,7 +358,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         return rootView;
     }
 
-    private void setupViewPagerAndTabsMyBox() {
+    /**
+     * Set The Tabs When clicked category from Box
+     */
+    private void setupViewPagerAndTabsForBoxCategory() {
         try {
             if (getActivity() == null) {
                 return;
@@ -330,7 +369,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             progressBar.setVisibility(View.GONE);
             final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
             for (int i = 0; i < categories.size(); i++) {
-                adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
+                Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), i);
+                adapter.addFragment(fragment, categories.get(i));
+                //adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
             }
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
@@ -669,7 +710,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
+        //((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
@@ -698,6 +739,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
 
+
+    public void setToolbarTitle() {
+        ((MainActivity) getActivity()).getToolbar().setTitle(boxName);
+    }
 
     @Override
     public void onPause() {

@@ -94,7 +94,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private int order_id;
     private OnUserItemChange onUserItemChange;
     private Order order;
-    private List<Category> suggestedCategories = new ArrayList<>();
+    private RealmList<Category> suggestedCategories = new RealmList<>();
     private int boxId;
     private boolean isCalledFromSearchDetailItem;
 
@@ -398,7 +398,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
 
                 //image loading
-                glideRequestManager.load(itemConfig.getPhotoUrl())
+                glideRequestManager.load(itemConfig.getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImageView);
@@ -492,7 +492,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private RecyclerView recyclerViewSavings;
         private RecyclerView recyclerViewFrequency;
-        private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
+        private RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
         private TextView noOfItemSelected, repeat_every, out_of_stock;
         private LinearLayout savingHolder;
@@ -612,9 +612,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
                 @Override
                 public int compare(ItemConfig lhs, ItemConfig rhs) {
-                    if (lhs.getSubscriptionTypeUnit() > rhs.getSubscriptionTypeUnit()) {
+                    if (lhs.getSubscriptionType() > rhs.getSubscriptionType()) {
                         return 1;
-                    } else if (lhs.getSubscriptionTypeUnit() < rhs.getSubscriptionTypeUnit()) {
+                    } else if (lhs.getSubscriptionType() < rhs.getSubscriptionType()) {
                         return -1;
                     } else {
                         return 0;
@@ -671,9 +671,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
+        private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
 
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(
+            remainingCategoryAdapter = new RemainingCategoryAdapter(
                     TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(),
@@ -711,7 +711,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 }
 
-                glideRequestManager.load(boxItem.getSelectedItemConfig().getPhotoUrl())
+                glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImage);
@@ -780,7 +780,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 productImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String url = boxItem.getSelectedItemConfig().getPhotoUrl();
+                        String url = boxItem.getSelectedItemConfig().getItemImage();
                         FullImageActivity.showImage(url, mContext);
                     }
                 });
@@ -810,7 +810,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
                 // Checking if item is in stock
-                if (boxItem.is_in_stock()) {
+                if (boxItem.isInStock()) {
                     setViewsBasedOnStock(false, boxItem, position);
 
                     addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
@@ -1325,7 +1325,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     savingtextView.setText("");
                 }
 
-                glideRequestManager.load(itemConfig.getPhotoUrl())
+                glideRequestManager.load(itemConfig.getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImageView);

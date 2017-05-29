@@ -52,6 +52,7 @@ import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
@@ -890,6 +891,9 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+    /**
+     * Display Category Tab with Products
+     */
     private void attachCategoriesFragment(Intent intent) {
         getToolbar().setSubtitle(null);
 
@@ -905,21 +909,23 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
-        ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
 
-        int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
-        String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
-        int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
+        if (intent.getExtras() != null) {
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName, clickedCategoryId);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
-        fragmentTransaction.commit();
+            ArrayList<Category> categories = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(Constants.EXTRA_BOX_CATEGORY), Category.class);
+            int clickedPosition = intent.getIntExtra(Constants.EXTRA_CLICK_POSITION, 0);
+            String boxName = intent.getStringExtra(Constants.EXTRA_BOX_NAME);
+            String clickedCategoryUid = intent.getStringExtra(Constants.EXTRA_CLICKED_CATEGORY_UID);
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        appBarLayout.setExpanded(true, true);
+            SearchDetailFragment fragment = SearchDetailFragment.getInstance(categories, clickedCategoryUid, clickedPosition, boxName);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
+            fragmentTransaction.commit();
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+            appBarLayout.setExpanded(true, true);
+        }
     }
 
     /**

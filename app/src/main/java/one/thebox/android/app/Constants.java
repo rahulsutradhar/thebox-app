@@ -59,4 +59,26 @@ public class Constants {
     public static final int CART = 3;
 
     public static final int BROADCAST_SUBSCRIPTION_AND_DELIVERIES = 4;
+
+    /**
+     * Extra Category; to display category tabs
+     */
+    public static final String EXTRA_BOX_CATEGORY = "extra_box_category";
+
+    /**
+     * Clicked Category
+     */
+    public static final String EXTRA_CLICKED_CATEGORY_UID = "extra_clicked_category_uid";
+    public static final String EXTRA_CLICK_POSITION = "extra_click_position";
+
+    /**
+     * EXTRA BOX NAME
+     */
+    public static final String EXTRA_BOX_NAME = "extra_box_name";
+
+    /**
+     * EXTRA CATEGORY
+     */
+    public static final String EXTRA_CATEGORY = "extra_category";
+
 }

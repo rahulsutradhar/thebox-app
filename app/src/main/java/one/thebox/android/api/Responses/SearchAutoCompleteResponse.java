@@ -23,11 +23,11 @@ public class SearchAutoCompleteResponse extends ApiResponse implements Serializa
         try {
             if (this.items == null || this.items.size() == 0) {
                 items = new ArrayList<>();
-                for (Category cat : categories) {
+                /*for (Category cat : categories) {
                     if (cat.getItems() != null) {
                         items.addAll(cat.getItems());
                     }
-                }
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();

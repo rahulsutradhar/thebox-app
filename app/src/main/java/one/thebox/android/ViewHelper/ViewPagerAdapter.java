@@ -78,13 +78,14 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         TextView savings = (TextView) view.findViewById(R.id.savings_title);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
+
         title.setText(mFragmentCategoryList.get(position).getTitle());
 
 
-        if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Item");
+        if (mFragmentCategoryList.get(position).getNumberOfItem() == 1) {
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNumberOfItem() + " Item");
         } else {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Items");
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNumberOfItem() + " Items");
         }
 
         if (mFragmentCategoryList.get(position).getAverageSavings() != null) {
@@ -107,7 +108,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         } else {
 
             Glide.with(context)
-                    .load(mFragmentCategoryList.get(position).getIconUrl())
+                    .load(mFragmentCategoryList.get(position).getCategoryImage())
                     .centerCrop()
                     .crossFade()
                     .into(icon);

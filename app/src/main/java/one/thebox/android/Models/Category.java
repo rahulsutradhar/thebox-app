@@ -36,26 +36,10 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("box_id")
     private int boxId;
 
-    @SerializedName("no_of_items")
     private int noOfItems;
 
-    @SerializedName("icon_url")
     private String iconUrl;
 
-    @Ignore
-    @SerializedName("items")
-    private List<String> items;
-
-    @SerializedName("avg_savings")
-    private String averageSavings;
-
-    public List<String> getItems() {
-        return items;
-    }
-
-    public void setItems(List<String> items) {
-        this.items = items;
-    }
 
     public Category() {
     }
@@ -114,21 +98,6 @@ public class Category extends RealmObject implements Serializable {
         this.minititle = minititle;
     }
 
-    public String getAverageSavings() {
-        return averageSavings;
-    }
-
-    public void setAverageSavings(String averageSavings) {
-        this.averageSavings = averageSavings;
-    }
-
- /*   @Override
-    public boolean equals(Object o) {
-        Category category = (Category) o;
-        return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
-                && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
-    }*/
-
 
     /**
      * Refactor
@@ -144,6 +113,13 @@ public class Category extends RealmObject implements Serializable {
     private int numberOfItem;
 
     private int priority;
+
+    @SerializedName("avg_savings")
+    private String averageSavings;
+
+    @SerializedName("items")
+    private RealmList<BoxItem> boxItems;
+
 
     /************************************************
      * Getter Setter
@@ -187,5 +163,21 @@ public class Category extends RealmObject implements Serializable {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getAverageSavings() {
+        return averageSavings;
+    }
+
+    public void setAverageSavings(String averageSavings) {
+        this.averageSavings = averageSavings;
+    }
+
+    public RealmList<BoxItem> getBoxItems() {
+        return boxItems;
+    }
+
+    public void setBoxItems(RealmList<BoxItem> boxItems) {
+        this.boxItems = boxItems;
     }
 }

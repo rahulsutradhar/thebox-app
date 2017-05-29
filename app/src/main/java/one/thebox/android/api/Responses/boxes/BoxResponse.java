@@ -1,7 +1,11 @@
 package one.thebox.android.api.Responses.boxes;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
+import io.realm.RealmList;
+import one.thebox.android.Models.Box;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -10,5 +14,16 @@ import one.thebox.android.api.ApiResponse;
 
 public class BoxResponse extends ApiResponse implements Serializable {
 
+    private RealmList<Box> boxes;
 
+    public BoxResponse() {
+    }
+
+    public RealmList<Box> getBoxes() {
+        return boxes;
+    }
+
+    public void setBoxes(RealmList<Box> boxes) {
+        this.boxes = boxes;
+    }
 }

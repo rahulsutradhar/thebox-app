@@ -40,6 +40,8 @@ import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
+import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -58,7 +60,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private static final String EXTRA_BOX_ITEM_ARRAY_LIST = "extra_box_item_array_list";
     private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
     private static final int SOURCE_NON_CATEGORY = 0;
-    private static final int SOURCE_CATEGORY = 1;
+    private static final int SOURCE_BOX_CATEGORY = 1;
     private static final int SOURCE_SEARCH = 2;
     private static final int PER_PAGE_ITEMS = 10;
     private int pageNumber = 1;
@@ -74,10 +76,13 @@ public class SearchDetailItemsFragment extends Fragment {
     private List<BoxItem> boxItems = new ArrayList<>();
     private int source;
     private TextView emptyText;
-    private int positionInViewPager;
+
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int totalItems;
     private int maxPageNumber;
+
+    private Category category;
+    private int positionInViewPager;
 
     /**
      * GLide Request Manager
@@ -87,6 +92,24 @@ public class SearchDetailItemsFragment extends Fragment {
     public SearchDetailItemsFragment() {
     }
 
+
+    /**
+     * Called from Box Category; Source Category
+     *
+     * @param category
+     * @return
+     */
+    public static SearchDetailItemsFragment getInstance(Category category, int positionInViewPager) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_CATEGORY, CoreGsonUtils.toJson(category));
+        bundle.putInt(Constants.EXTRA_CLICK_POSITION, positionInViewPager);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
+        SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
+        searchDetailItemsFragment.setArguments(bundle);
+        return searchDetailItemsFragment;
+    }
+
+
     public static SearchDetailItemsFragment getInstance(SearchResult searchResult, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_QUERY, searchResult.getResult());
@@ -94,10 +117,10 @@ public class SearchDetailItemsFragment extends Fragment {
         if (searchResult.getId() == 0) {
             bundle.putInt(EXTRA_SOURCE, SOURCE_NON_CATEGORY);
         } else {
-            bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+            bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         }
         bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
@@ -105,7 +128,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
     public static SearchDetailItemsFragment getInstance(Context activity, ArrayList<UserItem> userItems, ArrayList<BoxItem> boxItems, int positionInViewPager) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         bundle.putInt(EXTRA_SOURCE, SOURCE_SEARCH);
         bundle.putString(EXTRA_USER_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(userItems));
         bundle.putString(EXTRA_BOX_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(boxItems));
@@ -171,8 +194,11 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void getDataBasedOnSource() {
         switch (source) {
-            case SOURCE_CATEGORY: {
-                getCategoryDetail();
+            case SOURCE_BOX_CATEGORY: {
+                //request server to get Box Category items
+                getBoxCategoryItems();
+
+                // getCategoryDetail();
                 break;
             }
             case SOURCE_NON_CATEGORY: {
@@ -204,12 +230,24 @@ public class SearchDetailItemsFragment extends Fragment {
     };
 
     private void initVariables() {
-        source = getArguments().getInt(EXTRA_SOURCE);
-        query = getArguments().getString(EXTRA_QUERY);
-        catId = getArguments().getInt(EXTRA_CAT_ID);
-        userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
-        boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
-        positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
+        try {
+            category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
+            positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
+            source = getArguments().getInt(EXTRA_SOURCE);
+
+            //old
+
+            query = getArguments().getString(EXTRA_QUERY);
+            catId = getArguments().getInt(EXTRA_CAT_ID);
+            userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
+            boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
+
+
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
+
     }
 
     private void initViews() {
@@ -225,8 +263,8 @@ public class SearchDetailItemsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 switch (source) {
-                    case SOURCE_CATEGORY: {
-                        getCategoryDetail();
+                    case SOURCE_BOX_CATEGORY: {
+                        getBoxCategoryItems();
                         break;
                     }
                     case SOURCE_NON_CATEGORY: {
@@ -314,6 +352,57 @@ public class SearchDetailItemsFragment extends Fragment {
         boxItems.clear();
         categories.clear();
     }
+
+
+    /**
+     * Request Server to get Box Category Items
+     */
+    private void getBoxCategoryItems() {
+        isLoading = true;
+        linearLayoutHolder.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
+        Toast.makeText(TheBox.getAppContext(), "Category Item Fetching", Toast.LENGTH_SHORT).show();
+        TheBox.getAPIService()
+                .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid())
+                .enqueue(new Callback<BoxCategoryItemResponse>() {
+                    @Override
+                    public void onResponse(Call<BoxCategoryItemResponse> call, Response<BoxCategoryItemResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
+                        progressBar.setVisibility(View.GONE);
+                        isLoading = false;
+                        linearLayoutHolder.setVisibility(View.VISIBLE);
+                        try {
+                            Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- SUCCESSFUL", Toast.LENGTH_SHORT).show();
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+
+                                    if (response.body().getCategory() != null) {
+                                        boxItems = response.body().getCategory().getBoxItems();
+                                        setupRecyclerView();
+                                    }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- Exception", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BoxCategoryItemResponse> call, Throwable t) {
+                        isLoading = false;
+                        linearLayoutHolder.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
+                        Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- Failure = " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d("CATEGORY", t.getMessage());
+                    }
+                });
+
+    }
+
 
     private void getCategoryDetail() {
         isLoading = true;
