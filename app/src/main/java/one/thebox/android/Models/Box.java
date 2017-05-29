@@ -33,7 +33,6 @@ public class Box extends RealmObject implements Serializable {
     @SerializedName("box_id")
     private int boxId;
 
-    private int priority;
 
     @SerializedName("remaining_categories")
     private RealmList<Category> remainingCategories;
@@ -147,6 +146,59 @@ public class Box extends RealmObject implements Serializable {
 
     public void setBox(BoxDetail box) {
         this.box = box;
+    }
+
+
+    /**
+     * Refactor
+     */
+
+    private String uuid;
+
+    private String title;
+
+    @SerializedName("photo_url")
+    private String boxImage;
+
+    private int priority;
+
+    private ArrayList<Category> categories;
+
+
+    /************************************************
+     * Getter Setter
+     ************************************************/
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBoxImage() {
+        return boxImage;
+    }
+
+    public void setBoxImage(String boxImage) {
+        this.boxImage = boxImage;
+    }
+
+    public ArrayList<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(ArrayList<Category> categories) {
+        this.categories = categories;
     }
 
     public int getPriority() {

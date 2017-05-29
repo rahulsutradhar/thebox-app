@@ -29,8 +29,6 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("title")
-    private String title;
 
     @SerializedName("minititle")
     private String minititle;
@@ -107,13 +105,6 @@ public class Category extends RealmObject implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getMinititle() {
         return minititle;
@@ -137,4 +128,64 @@ public class Category extends RealmObject implements Serializable {
         return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
                 && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
     }*/
+
+
+    /**
+     * Refactor
+     */
+    private String uuid;
+
+    private String title;
+
+    @SerializedName("icon_url")
+    private String categoryImage;
+
+    @SerializedName("no_of_items")
+    private int numberOfItem;
+
+    private int priority;
+
+    /************************************************
+     * Getter Setter
+     ************************************************/
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getCategoryImage() {
+        return categoryImage;
+    }
+
+    public void setCategoryImage(String categoryImage) {
+        this.categoryImage = categoryImage;
+    }
+
+    public int getNumberOfItem() {
+        return numberOfItem;
+    }
+
+    public void setNumberOfItem(int numberOfItem) {
+        this.numberOfItem = numberOfItem;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 }

@@ -52,6 +52,7 @@ import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
+import one.thebox.android.api.Responses.boxes.BoxResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -68,6 +69,8 @@ public interface APIService {
      */
 
     /**
+     * AUTHENTICATION
+     * <p>
      * Request OTP; SMS Authentication with Phone number
      */
     @POST("/consumer/api/v1/user-sms-auth")
@@ -84,6 +87,15 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/resend-verf")
     Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
+
+
+    /**
+     * BOX
+     * <p>
+     * Get all Boxes
+     */
+    @GET("/consumer/api/v1/boxes")
+    Call<BoxResponse> getBoxes(@Header("Authentication") String accessToken);
 
 
     /**
