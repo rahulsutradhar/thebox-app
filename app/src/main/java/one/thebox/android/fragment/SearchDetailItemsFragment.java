@@ -362,7 +362,6 @@ public class SearchDetailItemsFragment extends Fragment {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
-        Toast.makeText(TheBox.getAppContext(), "Category Item Fetching", Toast.LENGTH_SHORT).show();
         TheBox.getAPIService()
                 .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid())
                 .enqueue(new Callback<BoxCategoryItemResponse>() {
@@ -373,7 +372,6 @@ public class SearchDetailItemsFragment extends Fragment {
                         isLoading = false;
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         try {
-                            Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- SUCCESSFUL", Toast.LENGTH_SHORT).show();
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
 
@@ -386,7 +384,6 @@ public class SearchDetailItemsFragment extends Fragment {
 
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- Exception", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -396,8 +393,6 @@ public class SearchDetailItemsFragment extends Fragment {
                         linearLayoutHolder.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(true);
-                        Toast.makeText(TheBox.getAppContext(), "Category Item Fetching- Failure = " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.d("CATEGORY", t.getMessage());
                     }
                 });
 

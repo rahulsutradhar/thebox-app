@@ -138,7 +138,7 @@
                         android:layout_weight="1"
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"
-                        android:text="55ml * 100 meter packet need"
+                        android:text=""
                         android:textColor="@color/primary_text_color"
                         android:textSize="13sp" />
 
