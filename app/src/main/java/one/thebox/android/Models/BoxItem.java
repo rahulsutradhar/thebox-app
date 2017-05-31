@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -346,4 +347,5 @@ public class BoxItem extends RealmObject implements Serializable {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
 }

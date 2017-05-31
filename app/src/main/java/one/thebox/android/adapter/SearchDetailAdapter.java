@@ -85,6 +85,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<BoxItem> boxItems = new ArrayList<>();
     private List<UserItem> userItems = new ArrayList<>();
     private List<Invoice> useritems_quantities = new ArrayList<>();
+
     private Context mContext;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
     private boolean hasUneditableUserItem;
@@ -97,6 +98,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private RealmList<Category> suggestedCategories = new RealmList<>();
     private int boxId;
     private boolean isCalledFromSearchDetailItem;
+
 
     /**
      * GLide Request Manager
@@ -252,13 +254,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-        //check if adapter holds correct position
-        if (position != RecyclerView.NO_POSITION) {
-            if (boxItems.get(position).getSelectedItemConfig() == null) {
-                boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
-            }
-            searchedItemViewHolder.setViews(boxItems.get(position), position, false);
+
+        if (boxItems.get(position).getSelectedItemConfig() == null) {
+            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
         }
+        searchedItemViewHolder.setViews(boxItems.get(position), position);
+
     }
 
     @Override
@@ -604,7 +605,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
+        private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             if (userItems == null || userItems.isEmpty()) {
                 getAdapterPosition();
@@ -672,7 +673,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
+        public void setViews(final BoxItem boxItem, int arrayListPosition) {
 
             try {
                 this.position = arrayListPosition;
@@ -759,26 +760,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View v) {
 
-                        final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
-                        dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                        dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                            @Override
-                            public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                dialogFragment.dismiss();
+                        Toast.makeText(TheBox.getAppContext(), "Called on Option Click " + boxItem.getItemConfigs().size(), Toast.LENGTH_SHORT).show();
+                        displayNumberOfOption(boxItem, position);
 
-                                if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
-                                    updateItemConfigInCart(boxItem, selectedItemConfig, position);
-                                } else {
-                                    //changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                                    //  boxItem.setSelectedItemConfig(selectedItemConfig);
-                                    Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called - 2 ", Toast.LENGTH_SHORT).show();
-                                    boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-                                    notifyItemChanged(position);
-                                    // setViews(boxItem, getAdapterPosition(), true);
-                                }
-                            }
-                        });
                     }
                 });
 
@@ -823,7 +807,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                     });
 
-                    setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
+                    setupRecyclerViewFrequency(boxItem, position);
                 }
                 // If Item is not in stock
                 else {
@@ -832,6 +816,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        private void displayNumberOfOption(final BoxItem boxItem, final int position) {
+            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                @Override
+                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                    dialogFragment.dismiss();
+
+                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                    } else {
+                        //changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+                        //  boxItem.setSelectedItemConfig(selectedItemConfig);
+                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called - 2 ", Toast.LENGTH_SHORT).show();
+                        boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                        notifyItemChanged(position);
+                        // setViews(boxItem, getAdapterPosition(), true);
+                    }
+                }
+            });
         }
 
         /**
@@ -874,10 +881,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
             notifyItemChanged(position);
         }
-
-
-
-
 
 
         private void addItemToBox(final int position) {

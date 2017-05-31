@@ -147,9 +147,6 @@ public class CartHelper {
     }
 
 
-
-
-
     public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
         Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
         // add data
@@ -282,6 +279,17 @@ public class CartHelper {
             size = getCart().size();
         }
         return size;
+    }
+
+    /**
+     * Is cart is Empty
+     */
+    public static boolean isCartEmpty() {
+        boolean flag = true;
+        if (getCart().size() > 0) {
+            flag = false;
+        }
+        return flag;
     }
 
     /**

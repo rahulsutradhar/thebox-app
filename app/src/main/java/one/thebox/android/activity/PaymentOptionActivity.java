@@ -241,7 +241,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 OrderHelper.addAndNotify(orders);
 
                                 //clear cart items
-                                CartHelper.clearCart();
+                                CartHelper.clearCart(true);
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -294,7 +294,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 OrderHelper.addAndNotify(orders);
 
                                 //clear cart items
-                                CartHelper.clearCart();
+                                CartHelper.clearCart(true);
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -352,7 +352,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 OrderHelper.addAndNotify(orders);
 
                                 //clear cart items
-                                CartHelper.clearCart();
+                                CartHelper.clearCart(true);
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
@@ -418,7 +418,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
                                 //clear cart items
-                                CartHelper.clearCart();
+                                CartHelper.clearCart(true);
 
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 

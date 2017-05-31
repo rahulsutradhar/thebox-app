@@ -29,9 +29,11 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -83,6 +85,8 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private Category category;
     private int positionInViewPager;
+
+    private List<BoxItem> cartItems;
 
     /**
      * GLide Request Manager
@@ -234,6 +238,7 @@ public class SearchDetailItemsFragment extends Fragment {
             category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
             positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
             source = getArguments().getInt(EXTRA_SOURCE);
+            cartItems = CartHelper.getCartItems();
 
             //old
 
@@ -302,18 +307,70 @@ public class SearchDetailItemsFragment extends Fragment {
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            setData();
             LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
             listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
             recyclerView.addOnScrollListener(listener);
             searchDetailAdapter.setCalledFromSearchDetailItem(true);
+        }
+    }
+
+    public void setData() {
+        if (cartItems.size() > 0) {
+            for (int i = 0; i < boxItems.size(); i++) {
+                BoxItem boxItem = boxItems.get(i);
+                int pos = isBoxItemInCart(boxItem);
+                if (pos != -1) {
+                    BoxItem cartItem = cartItems.get(pos);
+                    boxItem.setQuantity(cartItem.getQuantity());
+                    boxItem.setSelectedItemConfig(cartItem.getSelectedItemConfig());
+                    boxItems.set(i, boxItem);
+                }
+            }
+            searchDetailAdapter.setBoxItems(boxItems, userItems);
         } else {
             searchDetailAdapter.setBoxItems(boxItems, userItems);
-            searchDetailAdapter.notifyDataSetChanged();
-            searchDetailAdapter.setCalledFromSearchDetailItem(true);
         }
+    }
+
+    /**
+     *
+     */
+    public int isBoxItemInCart(BoxItem boxItem) {
+        int pos = -1;
+        for (int i = 0; i < cartItems.size(); i++) {
+            if (boxItem.getUuid().equalsIgnoreCase(cartItems.get(i).getUuid())) {
+                if (!boxItem.isInStock()) {
+                    CartHelper.removeItemFromCart(boxItem);
+                } else {
+                    if (ifItemConfigInStock(boxItem, cartItems.get(i).getSelectedItemConfig())) {
+                        pos = i;
+                    } else {
+                        CartHelper.removeItemFromCart(boxItem);
+                    }
+                }
+                break;
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * Check if Item Config is in Stock
+     */
+    public boolean ifItemConfigInStock(BoxItem boxItem, ItemConfig selectedItemConfig) {
+        boolean flag = false;
+        for (ItemConfig itemConfig : boxItem.getItemConfigs()) {
+            if (selectedItemConfig.getUuid().equalsIgnoreCase(itemConfig.getUuid())) {
+                if (itemConfig.isInStock()) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
     }
 
 
