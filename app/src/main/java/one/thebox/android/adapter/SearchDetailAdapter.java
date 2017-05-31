@@ -500,7 +500,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
         private LinearLayout updateQuantityViewHolder;
-        private RelativeLayout addButtonViewHolder;
+        private RelativeLayout holderSubscribeButton;
         private int position;
         private TextView savingsTitle, savingsItemConfig, mrp;
 
@@ -526,7 +526,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             size = (TextView) itemView.findViewById(R.id.text_view_size);
             no_of_options_holder = (TextView) itemView.findViewById(R.id.no_of_options);
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
-            addButtonViewHolder = (RelativeLayout) itemView.findViewById(R.id.holder_add_button);
+
+            holderSubscribeButton = (RelativeLayout) itemView.findViewById(R.id.holder_subscribe_button);
             updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
             savingsTitle = (TextView) itemView.findViewById(R.id.savings_title);
             savingsItemConfig = (TextView) itemView.findViewById(R.id.savings_item_confid);
@@ -538,7 +539,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem, int position) {
             //true
             if (isOutOfStock) {
-                addButtonViewHolder.setVisibility(View.GONE);
+                holderSubscribeButton.setVisibility(View.GONE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
 
@@ -557,11 +558,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 //check the quantitiy and show ui
                 if (boxItem.getQuantity() > 0) {
-                    addButtonViewHolder.setVisibility(View.GONE);
+                    holderSubscribeButton.setVisibility(View.GONE);
                     updateQuantityViewHolder.setVisibility(View.VISIBLE);
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
                 } else {
-                    addButtonViewHolder.setVisibility(View.VISIBLE);
+                    holderSubscribeButton.setVisibility(View.VISIBLE);
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     noOfItemSelected.setText(String.valueOf(0));
 
@@ -578,7 +579,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
                                                 PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
                                                 new ShowcaseHelper((Activity) mContext, 2)
-                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                        .show("Add Item", "Add your favourite item to cart", holderSubscribeButton)
                                                         .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                                             @Override
                                                             public void onComplete() {
@@ -625,7 +626,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             int selectedPosition = 0;
 
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if (boxItem.getSelectedItemConfig().getUuid() == itemConfigs.get(i).getUuid()) {
+                if (boxItem.getSelectedItemConfig().getUuid().equalsIgnoreCase(itemConfigs.get(i).getUuid())) {
                     selectedPosition = i;
                 }
 
@@ -633,19 +634,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
 
-            if (!shouldScrollToPosition) {
-                //  linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
-            }
+            //ItemConfig with similar size to selected ItemConfig frequency
 
-          /*  SnapHelper snapHelper = new LinearSnapHelper();
-            snapHelper.attachToRecyclerView(recyclerViewFrequency);*/
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
                 public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
-                    if (boxItems.get(position).getUserItemId() != 0) {
-                        changeConfig(position, selectedItemConfig.getId());
+                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                        //changeConfig(position, selectedItemConfig.getId());
                     } else {
+                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called -1 ", Toast.LENGTH_SHORT).show();
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
                         notifyItemChanged(getAdapterPosition());
                     }
@@ -656,19 +655,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
             recyclerViewFrequency.setHasFixedSize(true);
             frequencyAndPriceAdapter.notifyDataSetChanged();
-            /*recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    int temp = boxItems.get(position).getHorizontalOffsetOfRecyclerView();
-                    temp = temp + dx;
-                    boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
-                }
-            });*/
             linearLayoutManager.scrollToPosition(selectedPosition);
-            if (shouldScrollToPosition) {
-                // linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
-            }
+            SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerViewFrequency);
 
         }
 
@@ -707,7 +696,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 //Size of the ItemConfig selected
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                    size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                    size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
                             + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
 
@@ -715,7 +704,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .centerCrop()
                         .crossFade()
                         .into(productImage);
-
 
                 //Monthly Savings Item Config
                 if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
@@ -767,12 +755,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 });
 
-
                 no_of_options_holder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        Toast.makeText(TheBox.getAppContext(), "No of Option clicked", Toast.LENGTH_SHORT).show();
 
                         final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
                         dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
@@ -782,42 +767,59 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                 dialogFragment.dismiss();
 
-                                /*if (boxItem.getUserItemId() == 0) {
-                                    boxItem.setSelectedItemConfig(selectedItemConfig);
-                                    setViews(boxItem, getAdapterPosition(), true);
+                                if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                                    updateItemConfigInCart(boxItem, selectedItemConfig, position);
                                 } else {
-                                    changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                                }*/
+                                    //changeConfig(getAdapterPosition(), selectedItemConfig.getId());
+                                    //  boxItem.setSelectedItemConfig(selectedItemConfig);
+                                    Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called - 2 ", Toast.LENGTH_SHORT).show();
+                                    boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                                    notifyItemChanged(position);
+                                    // setViews(boxItem, getAdapterPosition(), true);
+                                }
                             }
                         });
                     }
                 });
 
-
                 // Checking if item is in stock
                 if (boxItem.isInStock()) {
                     setViewsBasedOnStock(false, boxItem, position);
 
-                    addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
+                    holderSubscribeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            addItemToBox(position);
+
+                            addItemToCart(boxItem, position);
+
+                            //addItemToBox(position);
                         }
                     });
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(position, boxItem.getQuantity() + 1);
+
+                            updateQuantityInCart(boxItem, boxItem.getQuantity() + 1, position);
+                            //updateQuantity(position, boxItem.getQuantity() + 1);
                         }
                     });
+
                     subtractButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (boxItem.getQuantity() > 0) {
+
+                            if (boxItem.getQuantity() > 0 && boxItem.getQuantity() == 1) {
+                                removeItemFromCart(boxItem, position);
+                            } else {
+                                updateQuantityInCart(boxItem, boxItem.getQuantity() - 1, position);
+                            }
+
+
+                           /* if (boxItem.getQuantity() > 0) {
                                 updateQuantity(position, boxItem.getQuantity() - 1);
                             } else {
                                 Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                            }
+                            }*/
                         }
                     });
 
@@ -831,6 +833,52 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 e.printStackTrace();
             }
         }
+
+        /**
+         * Add BoxItem to Cart
+         */
+        private void addItemToCart(BoxItem boxItem, int position) {
+            boxItem.setQuantity(1);
+            CartHelper.addBoxItemToCart(boxItem);
+            boxItems.get(position).setQuantity(1);
+            notifyItemChanged(position);
+        }
+
+        /**
+         * Remove BoxItem from Cart
+         */
+        private void removeItemFromCart(BoxItem boxItem, int position) {
+            boxItem.setQuantity(0);
+            CartHelper.removeItemFromCart(boxItem);
+            boxItems.get(position).setQuantity(0);
+            notifyItemChanged(position);
+        }
+
+        /**
+         * Update Quantity of BoxItem in Cart
+         */
+        private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
+            boxItem.setQuantity(quantity);
+            CartHelper.updateQuantityInCart(boxItem, quantity);
+            boxItems.get(position).setQuantity(quantity);
+            notifyItemChanged(position);
+        }
+
+        /**
+         * Update ItemConfig in Cart
+         */
+        private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
+            Toast.makeText(TheBox.getAppContext(), "Update ItemConfig CALLED", Toast.LENGTH_SHORT).show();
+            boxItem.setSelectedItemConfig(selectedItemConfig);
+            CartHelper.updateItemConfigInCart(boxItem);
+            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+            notifyItemChanged(position);
+        }
+
+
+
+
+
 
         private void addItemToBox(final int position) {
             final BoxLoader dialog = new BoxLoader(mContext).show();

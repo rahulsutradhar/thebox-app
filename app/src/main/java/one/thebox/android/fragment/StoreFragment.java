@@ -341,7 +341,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
      */
     public void getBoxesFromServer() {
 
-        Toast.makeText(TheBox.getAppContext(), "Fetch Boxes", Toast.LENGTH_SHORT).show();
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
         Log.d("TOKEN", PrefUtils.getToken(getActivity()));
@@ -355,20 +354,17 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-                                    Toast.makeText(TheBox.getAppContext(), "Boxes Success", Toast.LENGTH_SHORT).show();
                                     boxes = response.body().getBoxes();
                                     setupRecyclerView();
                                 }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(TheBox.getAppContext(), "Boxes Exception", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<BoxResponse> call, Throwable t) {
-                        Toast.makeText(TheBox.getAppContext(), "Boxes Failure", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(true);

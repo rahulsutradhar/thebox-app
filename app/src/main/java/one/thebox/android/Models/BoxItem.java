@@ -27,7 +27,7 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("savings_title")
     private String savingsTitle;
 
-    @PrimaryKey
+
     @SerializedName("id")
     private int id;
 
@@ -163,6 +163,7 @@ public class BoxItem extends RealmObject implements Serializable {
      * Refactor
      */
 
+    @PrimaryKey
     private String uuid;
 
     @SerializedName("title")
@@ -186,7 +187,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("quantity")
     private int quantity;
 
-    @Ignore
     private ItemConfig selectedItemConfig;
 
     /************************************************
@@ -228,7 +228,7 @@ public class BoxItem extends RealmObject implements Serializable {
     }
 
     /**
-     * Select all item config which matches the inital selected Item Congif
+     * Select all item config which matches the initial selected Item Config
      */
     public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {
         if (selectedItemConfig == null) {
@@ -237,8 +237,8 @@ public class BoxItem extends RealmObject implements Serializable {
         RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
-                    && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())
-                    && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())) {
+                    && itemConfigs.get(i).getSizeUnit().equalsIgnoreCase(selectedItemConfig.getSizeUnit())
+                    && itemConfigs.get(i).getItemType().equalsIgnoreCase(selectedItemConfig.getItemType())) {
                 tempItemConfigs.add(itemConfigs.get(i));
             }
         }

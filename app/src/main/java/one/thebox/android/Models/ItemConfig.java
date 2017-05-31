@@ -60,6 +60,7 @@ public class ItemConfig extends RealmObject implements Serializable {
     /**
      * Refactor
      */
+    @PrimaryKey
     private String uuid;
 
     @SerializedName("photo_url")
