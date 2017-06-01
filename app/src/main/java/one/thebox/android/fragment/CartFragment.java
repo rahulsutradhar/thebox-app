@@ -59,22 +59,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
      */
     private RequestManager glideRequestManager;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //initVariables();
-                }
-            });
-
-        }
-    };
-
     public CartFragment() {
     }
 
@@ -171,18 +155,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
 
-    @Subscribe
-    public void onUpdateCart(UpdateCartEvent UpdateCartEvent) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //initVariables(false);
-                }
-            });
-        }
-    }
-
     private void setupAppBarObserver() {
         AppBarObserver appBarObserver;
         Activity activity = getActivity();
@@ -213,11 +185,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
-
-       /* LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                new IntentFilter(BROADCAST_EVENT_TAB));
-*/
-        // onUpdateCart(new UpdateCartEvent(3));
+        
 
         /**
          * Save CleverTap Event; OpenCart
