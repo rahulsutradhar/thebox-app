@@ -1,4 +1,4 @@
-package one.thebox.android.Helpers;
+package one.thebox.android.Helpers.cart;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -12,6 +12,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.Cart;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
@@ -22,6 +23,8 @@ import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 19-05-2016.
+ * <p>
+ * Updated by Developers on 31-05-2017.
  */
 public class CartHelper {
     private static final String EXTRA_HAS_SAVED_ORDER = "extra_has_saved_order";
@@ -149,15 +152,6 @@ public class CartHelper {
     }
 
 
-    public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
-        Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
-        // add data
-        intent.putExtra(Constants.EXTRA_ITEMS_IN_CART, numberOfItem);
-        intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
-        LocalBroadcastManager.getInstance(TheBox.getInstance()).sendBroadcast(intent);
-    }
-
-
     /**
      * Refactor
      */
@@ -167,30 +161,22 @@ public class CartHelper {
      */
     public static void addBoxItemToCart(final BoxItem boxItem) {
         Realm realm = TheBox.getRealm();
-        realm.executeTransactionAsync
-                (new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.copyToRealmOrUpdate(boxItem);
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        sendUpdateNoItemsInCartBroadcast(getCartSize());
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(boxItem);
+        realm.commitTransaction();
 
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });
+        sendUpdateNoItemsInCartBroadcast(getCartSize());
+        //storing in memory
+        ProductQuantity.addNewProduct(boxItem);
     }
 
     /**
      * Remove Box Item from Cart
      */
     public static void removeItemFromCart(final BoxItem boxItem) {
+        //removing from memory
+        ProductQuantity.removeProduct(boxItem);
+
         Realm realm = TheBox.getRealm();
         realm.beginTransaction();
         realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst().deleteFromRealm();
@@ -209,6 +195,9 @@ public class CartHelper {
             boxItem1.setQuantity(quantity);
         }
         realm.commitTransaction();
+
+        //updating Quantity from memory
+        ProductQuantity.updateQuantity(boxItem, quantity);
     }
 
     /**
@@ -221,6 +210,9 @@ public class CartHelper {
         updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
         updatedBoxItem.setQuantity(quantity);
         realm.commitTransaction();
+
+        //updating Quantity from memory
+        ProductQuantity.updateQuantity(boxItem, quantity);
         return updatedBoxItem;
     }
 
@@ -241,6 +233,8 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
+                        //updating itemconfig in memory
+                        ProductQuantity.updateItemConfig(boxItem, itemConfig);
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
@@ -261,14 +255,11 @@ public class CartHelper {
             updatedBoxItem.setSelectedItemConfig(itemConfig);
         }
         realm.commitTransaction();
-        return updatedBoxItem;
-    }
 
-    /**
-     * Get Cart Items
-     */
-    public static ArrayList<BoxItem> getCartItems() {
-        return getCart();
+        //updating itemconfig in memory
+        ProductQuantity.updateItemConfig(boxItem, itemConfig);
+
+        return updatedBoxItem;
     }
 
     /**
@@ -276,9 +267,9 @@ public class CartHelper {
      */
     public static int getCartSize() {
         int size = 0;
-        if (getCart() != null) {
-            size = getCart().size();
-        }
+
+        size = TheBox.getRealm().where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll().size();
+
         return size;
     }
 
@@ -287,7 +278,7 @@ public class CartHelper {
      */
     public static boolean isCartEmpty() {
         boolean flag = true;
-        if (getCart().size() > 0) {
+        if (getCartSize() > 0) {
             flag = false;
         }
         return flag;
@@ -301,7 +292,6 @@ public class CartHelper {
         RealmResults<BoxItem> realmResults = TheBox.getRealm().where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll();
         if (realmResults.isLoaded()) {
             if (realmResults.size() > 0)
-
                 cart.addAll(realmResults);
         }
         return cart;
@@ -363,9 +353,20 @@ public class CartHelper {
     public static float getCartPrice() {
         float price = 0;
         for (BoxItem boxItem : getCart()) {
-            price = price + (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getPrice());
+            price += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getPrice());
         }
         return price;
+    }
+
+    /**
+     * Send Broadcast to show number of item in Cart status
+     */
+    public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
+        Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);
+        // add data
+        intent.putExtra(Constants.EXTRA_ITEMS_IN_CART, numberOfItem);
+        intent.putExtra(SearchDetailFragment.EXTRA_NUMBER_OF_TABS, numberOfItem);
+        LocalBroadcastManager.getInstance(TheBox.getInstance()).sendBroadcast(intent);
     }
 
 }

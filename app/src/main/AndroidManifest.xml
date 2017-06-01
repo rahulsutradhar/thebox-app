@@ -302,6 +302,12 @@
             android:name=".services.SyncService"
             android:exported="false" />
 
+        <service
+            android:name=".services.cart.SyncCartService"
+            android:exported="false">
+
+        </service>
+
         <activity android:name=".activity.FullImageActivity"></activity>
     </application>
 

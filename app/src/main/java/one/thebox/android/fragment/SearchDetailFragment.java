@@ -39,7 +39,7 @@ import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.TabEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;

@@ -9,13 +9,11 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -24,11 +22,10 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.address.Address;
@@ -41,7 +38,6 @@ import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.adapter.cart.CartAdapter;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
@@ -88,7 +84,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     public void initVariables(boolean isUpdateRecyclerview) {
-        boxItems = CartHelper.getCartItems();
+        boxItems = CartHelper.getCart();
         if (boxItems != null) {
             if (boxItems.size() > 0) {
                 if (isUpdateRecyclerview) {
@@ -131,20 +127,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     public void setCartPrice(float price) {
         proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
-    }
-
-    public boolean doCartHasItems() {
-
-        if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
-            emptyCartLayout.setVisibility(View.VISIBLE);
-            proceedToPayment.setVisibility(View.GONE);
-            return false;
-        } else {
-            emptyCartLayout.setVisibility(View.GONE);
-            proceedToPayment.setVisibility(View.VISIBLE);
-            proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + order.getTotalPrice() + "\n" + "Proceed to Payment");
-            return true;
-        }
     }
 
     private void setupRecyclerView() {

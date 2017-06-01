@@ -11,22 +11,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
-import com.google.gson.annotations.Expose;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Events.UpdateCartEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
@@ -38,6 +31,7 @@ import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
+import one.thebox.android.services.cart.CartHelperService;
 
 /**
  * Created by developers on 31/05/17.
@@ -270,7 +264,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
                 no_of_options_holder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        
+
                         displayNumberOfOption(boxItem, position);
 
                     }
@@ -401,6 +395,9 @@ public class CartAdapter extends BaseRecyclerAdapter {
             boxItems.remove(position);
             notifyDataSetChanged();
             sendBroadcastToCartFragment();
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenRemoved(mContext);
         }
 
         /**

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -29,7 +28,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -238,7 +237,7 @@ public class SearchDetailItemsFragment extends Fragment {
             category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
             positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
             source = getArguments().getInt(EXTRA_SOURCE);
-            cartItems = CartHelper.getCartItems();
+            cartItems = CartHelper.getCart();
 
             //old
 

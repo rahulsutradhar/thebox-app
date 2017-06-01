@@ -81,4 +81,9 @@ public class Constants {
      */
     public static final String EXTRA_CATEGORY = "extra_category";
 
+    /**
+     * Update Cart Polling Time
+     */
+    public static final long UPDATE_CART_POLLING_TIME = 5000;
+
 }

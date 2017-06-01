@@ -7,6 +7,7 @@ import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
+import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
@@ -53,6 +54,7 @@ import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
+import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -103,6 +105,13 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/categories")
     Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
+
+
+    /**
+     * Sync Cart with Server
+     */
+    @POST("/consumer/api/v1/carts")
+    Call<CartItemResponse> syncCart(@Header("Authorization") String accessToken, @Body CartItemRequest cartItemRequest);
 
 
     /**

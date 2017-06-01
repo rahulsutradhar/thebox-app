@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmList;
 import one.thebox.android.BuildConfig;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;

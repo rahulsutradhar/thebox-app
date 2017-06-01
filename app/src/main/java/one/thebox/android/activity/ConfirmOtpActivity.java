@@ -12,7 +12,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;

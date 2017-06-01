@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -72,6 +71,7 @@ import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
+import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -827,9 +827,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
-            CartHelper.addBoxItemToCart(boxItem);
             boxItems.get(position).setQuantity(1);
             notifyItemChanged(position);
+            CartHelper.addBoxItemToCart(boxItem);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
         }
 
         /**
@@ -837,9 +840,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(0);
-            CartHelper.removeItemFromCart(boxItem);
             boxItems.get(position).setQuantity(0);
             notifyItemChanged(position);
+            CartHelper.removeItemFromCart(boxItem);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenRemoved(mContext);
         }
 
         /**
@@ -847,9 +853,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             boxItem.setQuantity(quantity);
-            CartHelper.updateQuantityInCart(boxItem, quantity);
             boxItems.get(position).setQuantity(quantity);
             notifyItemChanged(position);
+            CartHelper.updateQuantityInCart(boxItem, quantity);
         }
 
         /**

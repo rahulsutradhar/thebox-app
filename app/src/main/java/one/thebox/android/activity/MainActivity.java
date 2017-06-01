@@ -36,7 +36,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
-import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,7 +49,8 @@ import io.realm.RealmResults;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
@@ -169,6 +169,9 @@ public class MainActivity extends BaseActivity implements
         shouldHandleDrawer();
         initViews();
         setupNavigationDrawer();
+
+        //synced memory with cart
+        ProductQuantity.syncedWithCart(CartHelper.getCart(),this);
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
