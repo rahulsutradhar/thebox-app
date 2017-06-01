@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -174,7 +176,6 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Added To Cart", Toast.LENGTH_SHORT).show();
                         sendUpdateNoItemsInCartBroadcast(getCartSize());
 
                     }
@@ -191,24 +192,10 @@ public class CartHelper {
      */
     public static void removeItemFromCart(final BoxItem boxItem) {
         Realm realm = TheBox.getRealm();
-        realm.executeTransactionAsync
-                (new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst().deleteFromRealm();
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Remove from Cart", Toast.LENGTH_SHORT).show();
-                        sendUpdateNoItemsInCartBroadcast(getCartSize());
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });
+        realm.beginTransaction();
+        realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst().deleteFromRealm();
+        realm.commitTransaction();
+        sendUpdateNoItemsInCartBroadcast(getCartSize());
     }
 
     /**
@@ -222,60 +209,65 @@ public class CartHelper {
             boxItem1.setQuantity(quantity);
         }
         realm.commitTransaction();
-        Toast.makeText(TheBox.getAppContext(), "Update Quantity", Toast.LENGTH_SHORT).show();
-        /*realm.executeTransactionAsync
-                (new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
+    }
 
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Update Quantity", Toast.LENGTH_SHORT).show();
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });*/
+    /**
+     * Update Quantity inside cart
+     */
+    public static BoxItem updateQuantityInsideCart(final BoxItem boxItem, final int quantity) {
+        BoxItem updatedBoxItem;
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+        updatedBoxItem.setQuantity(quantity);
+        realm.commitTransaction();
+        return updatedBoxItem;
     }
 
     /**
      * Update ItemConfig in Cart
      */
-    public static void updateItemConfigInCart(final BoxItem boxItem) {
+    public static void updateItemConfigInCart(final BoxItem boxItem, final ItemConfig itemConfig) {
         Realm realm = TheBox.getRealm();
         realm.executeTransactionAsync
                 (new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        if (boxItem.getSelectedItemConfig() != null) {
+                        if (itemConfig != null) {
                             BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
-                            if (boxItem1 != null) {
-                                realm.copyToRealmOrUpdate(boxItem);
-                            }
+                            boxItem1.setSelectedItemConfig(itemConfig);
                         }
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig", Toast.LENGTH_SHORT).show();
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig Failed " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    /**
+     * Update ItemConfig inside Cart
+     */
+    public static BoxItem updateItemConfigInsideCart(final BoxItem boxItem, ItemConfig itemConfig) {
+        BoxItem updatedBoxItem = null;
+        Realm realm = TheBox.getRealm();
+        realm.beginTransaction();
+        if (itemConfig != null) {
+            updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+            updatedBoxItem.setSelectedItemConfig(itemConfig);
+        }
+        realm.commitTransaction();
+        return updatedBoxItem;
+    }
 
     /**
      * Get Cart Items
      */
-    public static RealmList<BoxItem> getCartItems() {
+    public static ArrayList<BoxItem> getCartItems() {
         return getCart();
     }
 
@@ -304,12 +296,13 @@ public class CartHelper {
     /**
      * Get Cart
      */
-    public static RealmList<BoxItem> getCart() {
-        RealmList<BoxItem> cart = new RealmList<>();
+    public static ArrayList<BoxItem> getCart() {
+        ArrayList<BoxItem> cart = new ArrayList<>();
         RealmResults<BoxItem> realmResults = TheBox.getRealm().where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll();
         if (realmResults.isLoaded()) {
             if (realmResults.size() > 0)
-                cart.addAll(realmResults.subList(0, realmResults.size()));
+
+                cart.addAll(realmResults);
         }
         return cart;
     }
@@ -328,12 +321,10 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Updated Cart", Toast.LENGTH_SHORT).show();
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
-                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig Failed " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -353,7 +344,6 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(TheBox.getAppContext(), "Cleared Cart", Toast.LENGTH_SHORT).show();
                         //cart is empty
                         if (shallBroadCast) {
                             sendUpdateNoItemsInCartBroadcast(0);

@@ -254,7 +254,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-        
+
         if (boxItems.get(position).getSelectedItemConfig() == null) {
             boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
         }
@@ -643,9 +643,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
                     if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
                         updateItemConfigInCart(boxItem, selectedItemConfig, position);
-                        //changeConfig(position, selectedItemConfig.getId());
                     } else {
-                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called -1 ", Toast.LENGTH_SHORT).show();
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
                         notifyItemChanged(getAdapterPosition());
                     }
@@ -760,7 +758,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     @Override
                     public void onClick(View v) {
 
-                        Toast.makeText(TheBox.getAppContext(), "Called on Option Click " + boxItem.getItemConfigs().size(), Toast.LENGTH_SHORT).show();
                         displayNumberOfOption(boxItem, position);
 
                     }
@@ -773,10 +770,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     holderSubscribeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             addItemToCart(boxItem, position);
-
-                            //addItemToBox(position);
                         }
                     });
                     addButton.setOnClickListener(new View.OnClickListener() {
@@ -784,26 +778,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         public void onClick(View v) {
 
                             updateQuantityInCart(boxItem, boxItem.getQuantity() + 1, position);
-                            //updateQuantity(position, boxItem.getQuantity() + 1);
                         }
                     });
 
                     subtractButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             if (boxItem.getQuantity() > 0 && boxItem.getQuantity() == 1) {
                                 removeItemFromCart(boxItem, position);
                             } else {
                                 updateQuantityInCart(boxItem, boxItem.getQuantity() - 1, position);
                             }
-
-
-                           /* if (boxItem.getQuantity() > 0) {
-                                updateQuantity(position, boxItem.getQuantity() - 1);
-                            } else {
-                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                            }*/
                         }
                     });
 
@@ -830,12 +815,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
                         updateItemConfigInCart(boxItem, selectedItemConfig, position);
                     } else {
-                        //changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                        //  boxItem.setSelectedItemConfig(selectedItemConfig);
-                        Toast.makeText(TheBox.getAppContext(), "Update ItemConfig ELSE Called - 2 ", Toast.LENGTH_SHORT).show();
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
                         notifyItemChanged(position);
-                        // setViews(boxItem, getAdapterPosition(), true);
                     }
                 }
             });
@@ -875,9 +856,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * Update ItemConfig in Cart
          */
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
-            Toast.makeText(TheBox.getAppContext(), "Update ItemConfig CALLED", Toast.LENGTH_SHORT).show();
-            boxItem.setSelectedItemConfig(selectedItemConfig);
-            CartHelper.updateItemConfigInCart(boxItem);
+            CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
             boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
             notifyItemChanged(position);
         }
@@ -1047,7 +1026,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         /**
          * CleverTap Event;
          * <p>
-         * Item Added to Car; Subscribed
+         * Item Added to Cart; Subscribed
          */
         public void setCleverTapEventItemAddedToCart(BoxItem boxItem) {
             TheBox.getCleverTap().event.push("item_added_to_cart", getParam(boxItem));

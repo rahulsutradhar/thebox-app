@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
+import com.google.gson.annotations.Expose;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Helpers.CartHelper;
@@ -34,6 +36,7 @@ import one.thebox.android.adapter.FrequencyAndPriceAdapter;
 import one.thebox.android.adapter.RemainingCategoryAdapter;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
 /**
@@ -43,25 +46,35 @@ import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 public class CartAdapter extends BaseRecyclerAdapter {
 
     private Context context;
-    private List<BoxItem> boxItems = new ArrayList<>();
+    private ArrayList<BoxItem> boxItems = new ArrayList<>();
+    private CartFragment cartFragment;
     /**
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
 
 
-    public CartAdapter(Context context, RequestManager glideRequestManager) {
+    public CartAdapter(Context context, RequestManager glideRequestManager, CartFragment cartFragment) {
         super(context);
         this.context = context;
         this.glideRequestManager = glideRequestManager;
+        this.cartFragment = cartFragment;
     }
 
-    public List<BoxItem> getBoxItems() {
+    public ArrayList<BoxItem> getBoxItems() {
         return boxItems;
     }
 
-    public void setBoxItems(List<BoxItem> boxItems) {
+    public void setBoxItems(ArrayList<BoxItem> boxItems) {
         this.boxItems = boxItems;
+    }
+
+    public CartFragment getCartFragment() {
+        return cartFragment;
+    }
+
+    public void setCartFragment(CartFragment cartFragment) {
+        this.cartFragment = cartFragment;
     }
 
     @Override
@@ -257,8 +270,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
                 no_of_options_holder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        Toast.makeText(TheBox.getAppContext(), "Called on Option Click " + boxItem.getItemConfigs().size(), Toast.LENGTH_SHORT).show();
+                        
                         displayNumberOfOption(boxItem, position);
 
                     }
@@ -335,7 +347,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
                 @Override
                 public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
                     if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
-                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position, true);
 
                     }
                 }
@@ -361,7 +373,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
                     dialogFragment.dismiss();
 
                     if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
-                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position, false);
                     }
                 }
             });
@@ -371,38 +383,47 @@ public class CartAdapter extends BaseRecyclerAdapter {
          * Update Quantity of BoxItem in Cart
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
-            Toast.makeText(TheBox.getAppContext(), "Update Initiated", Toast.LENGTH_SHORT).show();
-            boxItem.setQuantity(quantity);
-            boxItems.get(position).setQuantity(quantity);
-            notifyItemChanged(position);
-            CartHelper.updateQuantityInCart(boxItem, quantity);
-
+            try {
+                BoxItem updatedBoxItem = CartHelper.updateQuantityInsideCart(boxItem, quantity);
+                boxItems.set(position, updatedBoxItem);
+                notifyItemChanged(position);
+                sendBroadcastToCartFragment();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         /**
          * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
-            boxItem.setQuantity(0);
             CartHelper.removeItemFromCart(boxItem);
             boxItems.remove(position);
-            notifyItemRemoved(position);
+            notifyDataSetChanged();
             sendBroadcastToCartFragment();
         }
 
         /**
          * Update ItemConfig in Cart
          */
-        private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
-            Toast.makeText(TheBox.getAppContext(), "Update ItemConfig CALLED", Toast.LENGTH_SHORT).show();
-            boxItem.setSelectedItemConfig(selectedItemConfig);
-            CartHelper.updateItemConfigInCart(boxItem);
-            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-            notifyItemChanged(position);
+        private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position, boolean isFrequency) {
+            try {
+                BoxItem updatedBoxItem;
+                updatedBoxItem = CartHelper.updateItemConfigInsideCart(boxItem, selectedItemConfig);
+                boxItems.set(position, updatedBoxItem);
+                notifyItemChanged(position);
+                if (!isFrequency) {
+                    sendBroadcastToCartFragment();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public void sendBroadcastToCartFragment() {
-            EventBus.getDefault().post(new UpdateCartEvent());
+            if (cartFragment != null) {
+                cartFragment.initVariables(false);
+            }
         }
 
     }

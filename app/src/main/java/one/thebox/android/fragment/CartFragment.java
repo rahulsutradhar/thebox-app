@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -55,7 +56,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
-    private List<BoxItem> boxItems = new ArrayList<>();
+    private ArrayList<BoxItem> boxItems = new ArrayList<>();
 
     /**
      * GLide Request Manager
@@ -71,7 +72,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     //initVariables();
                 }
             });
@@ -87,7 +87,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         return fragment;
     }
 
-    private void initVariables(boolean isUpdateRecyclerview) {
+    public void initVariables(boolean isUpdateRecyclerview) {
         boxItems = CartHelper.getCartItems();
         if (boxItems != null) {
             if (boxItems.size() > 0) {
@@ -152,8 +152,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         proceedToPayment.setVisibility(View.VISIBLE);
 
         if (adapter == null) {
-            adapter = new CartAdapter(getActivity(), glideRequestManager);
+            adapter = new CartAdapter(getActivity(), glideRequestManager, this);
             adapter.setBoxItems(boxItems);
+
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
         } else {
@@ -194,7 +195,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initVariables(false);
+                    //initVariables(false);
                 }
             });
         }
