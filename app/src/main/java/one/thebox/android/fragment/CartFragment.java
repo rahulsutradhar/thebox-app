@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,15 @@ import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.UpdateCartEvent;
+import one.thebox.android.Helpers.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
@@ -39,21 +41,21 @@ import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchDetailAdapter;
+import one.thebox.android.adapter.cart.CartAdapter;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
-    private SearchDetailAdapter userItemRecyclerAdapter;
+    private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
+    private List<BoxItem> boxItems = new ArrayList<>();
 
     /**
      * GLide Request Manager
@@ -70,7 +72,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 @Override
                 public void run() {
 
-                    initVariables();
+                    //initVariables();
                 }
             });
 
@@ -85,19 +87,24 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         return fragment;
     }
 
-    private void initVariables() {
-        int cartId = PrefUtils.getUser(getActivity()).getCartId();
-        Realm realm = TheBox.getRealm();
-        Order order = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, 0)
-                .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if (order != null) {
-            this.order = realm.copyFromRealm(order);
+    private void initVariables(boolean isUpdateRecyclerview) {
+        boxItems = CartHelper.getCartItems();
+        if (boxItems != null) {
+            if (boxItems.size() > 0) {
+                if (isUpdateRecyclerview) {
+                    setupRecyclerView();
+                }
+                setCartPrice(CartHelper.getCartPrice());
+
+            } else {
+                //cart is Empty
+                setCartEmpty();
+            }
         } else {
-            this.order = null;
+            //cart is Empty
+            setCartEmpty();
         }
 
-        doCartHasItems();
     }
 
     @Override
@@ -111,10 +118,19 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         initViews();
-        initVariables();
+        initVariables(true);
         setupAppBarObserver();
-        setupRecyclerView();
         return rootView;
+    }
+
+    public void setCartEmpty() {
+        emptyCartLayout.setVisibility(View.VISIBLE);
+        proceedToPayment.setText("");
+        proceedToPayment.setVisibility(View.GONE);
+    }
+
+    public void setCartPrice(float price) {
+        proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
     }
 
     public boolean doCartHasItems() {
@@ -132,17 +148,17 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     }
 
     private void setupRecyclerView() {
-        if (doCartHasItems()) {
-            if (userItemRecyclerAdapter == null) {
-                userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
-                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-                userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                recyclerView.setAdapter(userItemRecyclerAdapter);
-            } else {
-                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-                userItemRecyclerAdapter.notifyDataSetChanged();
-            }
+        emptyCartLayout.setVisibility(View.GONE);
+        proceedToPayment.setVisibility(View.VISIBLE);
+
+        if (adapter == null) {
+            adapter = new CartAdapter(getActivity(), glideRequestManager);
+            adapter.setBoxItems(boxItems);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.setBoxItems(boxItems);
+            adapter.notifyDataSetChanged();
         }
 
     }
@@ -158,7 +174,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             @Override
             public void onClick(View v) {
 
-                checkUserDetailsAndProceedPayment();
+                // checkUserDetailsAndProceedPayment();
 
             }
         });
@@ -178,8 +194,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    initVariables();
+                    initVariables(false);
                 }
             });
         }
@@ -216,15 +231,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             }
         });
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
+       /* LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
-
-        onUpdateCart(new UpdateCartEvent(3));
+*/
+        // onUpdateCart(new UpdateCartEvent(3));
 
         /**
          * Save CleverTap Event; OpenCart
          */
-        setCleverTapEventOpenCart();
+        //setCleverTapEventOpenCart();
     }
 
     /**

@@ -317,6 +317,9 @@ public class SearchDetailItemsFragment extends Fragment {
         }
     }
 
+    /**
+     * Set the refined list after matching with cart data
+     */
     public void setData() {
         if (cartItems.size() > 0) {
             for (int i = 0; i < boxItems.size(); i++) {
@@ -336,7 +339,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     /**
-     *
+     * Check if item is in Cart
      */
     public int isBoxItemInCart(BoxItem boxItem) {
         int pos = -1;

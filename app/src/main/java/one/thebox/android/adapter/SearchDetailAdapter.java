@@ -254,7 +254,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-
+        
         if (boxItems.get(position).getSelectedItemConfig() == null) {
             boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
         }

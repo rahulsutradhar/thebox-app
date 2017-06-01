@@ -185,7 +185,6 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("no_of_options")
     private String noOfOptions;
 
-    @SerializedName("quantity")
     private int quantity;
 
     private ItemConfig selectedItemConfig;

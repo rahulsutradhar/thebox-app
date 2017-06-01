@@ -175,6 +175,7 @@ public class CartHelper {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(TheBox.getAppContext(), "Added To Cart", Toast.LENGTH_SHORT).show();
+                        sendUpdateNoItemsInCartBroadcast(getCartSize());
 
                     }
                 }, new Realm.Transaction.OnError() {
@@ -200,6 +201,7 @@ public class CartHelper {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(TheBox.getAppContext(), "Remove from Cart", Toast.LENGTH_SHORT).show();
+                        sendUpdateNoItemsInCartBroadcast(getCartSize());
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override
@@ -214,11 +216,18 @@ public class CartHelper {
      */
     public static void updateQuantityInCart(final BoxItem boxItem, final int quantity) {
         Realm realm = TheBox.getRealm();
-        realm.executeTransactionAsync
+        realm.beginTransaction();
+        BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+        if (boxItem1 != null) {
+            boxItem1.setQuantity(quantity);
+        }
+        realm.commitTransaction();
+        Toast.makeText(TheBox.getAppContext(), "Update Quantity", Toast.LENGTH_SHORT).show();
+        /*realm.executeTransactionAsync
                 (new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst().setQuantity(quantity);
+
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
@@ -230,7 +239,7 @@ public class CartHelper {
                     public void onError(Throwable error) {
 
                     }
-                });
+                });*/
     }
 
     /**
@@ -356,6 +365,17 @@ public class CartHelper {
 
                     }
                 });
+    }
+
+    /**
+     * Calculate Total Price of Cart
+     */
+    public static float getCartPrice() {
+        float price = 0;
+        for (BoxItem boxItem : getCart()) {
+            price = price + (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getPrice());
+        }
+        return price;
     }
 
 }

@@ -193,8 +193,6 @@ public class MainActivity extends BaseActivity implements
             ShowcaseHelper.removeAllTutorial();
         }
 
-        Log.d("CART", user.getCartId() + " ");
-
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,7 +265,7 @@ public class MainActivity extends BaseActivity implements
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems;
         if (numberOfItemIncart == -1) {
-            numberOfItems = CartHelper.getNumberOfItemsInCart();
+            numberOfItems = CartHelper.getCartSize();
         } else {
             numberOfItems = numberOfItemIncart;
         }
