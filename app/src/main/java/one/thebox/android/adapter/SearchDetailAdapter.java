@@ -845,7 +845,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             CartHelper.removeItemFromCart(boxItem);
 
             //check for background service
-            CartHelperService.checkServiceRunningWhenRemoved(mContext);
+            CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
         }
 
         /**
@@ -856,6 +856,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             boxItems.get(position).setQuantity(quantity);
             notifyItemChanged(position);
             CartHelper.updateQuantityInCart(boxItem, quantity);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
         }
 
         /**
@@ -865,6 +868,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
             boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
             notifyItemChanged(position);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
         }
 
 

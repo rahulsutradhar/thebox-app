@@ -376,6 +376,13 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
 
+
+
+
+
+
+
+
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);

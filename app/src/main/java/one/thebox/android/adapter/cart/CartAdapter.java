@@ -381,7 +381,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
                 BoxItem updatedBoxItem = CartHelper.updateQuantityInsideCart(boxItem, quantity);
                 boxItems.set(position, updatedBoxItem);
                 notifyItemChanged(position);
+                //send broadcast
                 sendBroadcastToCartFragment();
+
+                //check for background service
+                CartHelperService.checkServiceRunningWhenAdded(mContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -397,7 +401,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
             sendBroadcastToCartFragment();
 
             //check for background service
-            CartHelperService.checkServiceRunningWhenRemoved(mContext);
+            CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
         }
 
         /**
@@ -412,6 +416,9 @@ public class CartAdapter extends BaseRecyclerAdapter {
                 if (!isFrequency) {
                     sendBroadcastToCartFragment();
                 }
+
+                //check for background service
+                CartHelperService.checkServiceRunningWhenAdded(mContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }

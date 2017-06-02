@@ -67,7 +67,7 @@ public class SyncCartService extends Service {
                 while (true) {
                     try {
                         sleep(INTERVAL);
-                        CartHelperService.updateCartToServer(context);
+                        CartHelperService.updateCartToServer(context,null);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 

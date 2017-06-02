@@ -1,8 +1,6 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -12,21 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.UpdateCartEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.Order;
@@ -41,8 +39,10 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.cart.CartAdapter;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
@@ -53,6 +53,8 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private View rootView;
     private RelativeLayout emptyCartLayout;
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
+    private int requestCounter = 0;
+    private GifImageView progressBar;
 
     /**
      * GLide Request Manager
@@ -107,6 +109,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         emptyCartLayout.setVisibility(View.VISIBLE);
         proceedToPayment.setText("");
         proceedToPayment.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
     }
 
     public void setCartPrice(float price) {
@@ -116,6 +119,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private void setupRecyclerView() {
         emptyCartLayout.setVisibility(View.GONE);
         proceedToPayment.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
 
         if (adapter == null) {
             adapter = new CartAdapter(getActivity(), glideRequestManager, this);
@@ -136,16 +140,21 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        this.progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
         proceedToPayment = (TextView) rootView.findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // checkUserDetailsAndProceedPayment();
-
+                //request server to set cart
+                if (ProductQuantity.getCartSize() > 0) {
+                    requestServerConfirmCart();
+                } else {
+                    Toast.makeText(getActivity(), "Ypur cart seems empty, please add items", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
+
     }
 
 
@@ -185,13 +194,46 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
-        
+
 
         /**
          * Save CleverTap Event; OpenCart
          */
         //setCleverTapEventOpenCart();
     }
+
+
+    /**
+     * Request Server for Network Call
+     */
+    public void requestServerConfirmCart() {
+        CartHelperService.stopCartService(getActivity(), false);
+        requestCounter++;
+        progressBar.setVisibility(View.VISIBLE);
+        CartHelperService.updateCartToServer(getActivity(), this);
+    }
+
+    public void setCartUpdateServerResponse(boolean isSuccess, boolean merge) {
+
+        if (isSuccess) {
+            progressBar.setVisibility(View.GONE);
+            //Proceed
+            Toast.makeText(getActivity(), "Success Call", Toast.LENGTH_SHORT).show();
+
+        } else {
+            if (requestCounter > 1) {
+                requestServerConfirmCart();
+            } else {
+                //if the call fails start service again; if cart size is greater then 0
+                CartHelperService.checkServiceRunningWhenAdded(getActivity());
+                progressBar.setVisibility(View.GONE);
+                requestCounter = 0;
+                //show a error message about failed called
+                Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     /**
      * Logic to navigate users from cart

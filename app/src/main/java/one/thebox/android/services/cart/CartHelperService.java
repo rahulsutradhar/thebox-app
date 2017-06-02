@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,7 +31,7 @@ public class CartHelperService implements ServiceConnection {
 
     }
 
-    public static void updateCartToServer(Context context) {
+    public static void updateCartToServer(Context context, final Fragment fragment) {
         TheBox.getAPIService()
                 .syncCart(PrefUtils.getToken(context), new CartItemRequest(ProductQuantity.getProductQuantities()))
                 .enqueue(new Callback<CartItemResponse>() {
@@ -39,17 +41,22 @@ public class CartHelperService implements ServiceConnection {
                         try {
                             if (response.isSuccessful()) {
                                 Log.d("CART_UPDATED", " Successfull " + response.message());
+                                if (fragment != null) {
+                                    ((CartFragment) fragment).setCartUpdateServerResponse(response.body().isStatus(), response.body().isMerge());
+                                }
                             }
 
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.d("CART_UPDATED", " Exception");
+                            ((CartFragment) fragment).setCartUpdateServerResponse(false, false);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CartItemResponse> call, Throwable t) {
                         Log.d("CART_UPDATED", " Failed");
+                        ((CartFragment) fragment).setCartUpdateServerResponse(false, false);
                     }
                 });
     }
@@ -73,13 +80,15 @@ public class CartHelperService implements ServiceConnection {
         setCartSyncRunning(true);
     }
 
-    public static void stopCartService(Context context) {
+    public static void stopCartService(Context context, boolean shallMakelastCall) {
         Intent intent = new Intent(context, SyncCartService.class);
         context.stopService(intent);
         setCartSyncRunning(false);
 
-        //last final call for the cart sync
-        updateCartToServer(context);
+        if (shallMakelastCall) {
+            //last final call for the cart sync
+            updateCartToServer(context, null);
+        }
     }
 
 
@@ -109,10 +118,17 @@ public class CartHelperService implements ServiceConnection {
     /**
      * Check if Service is running ot not when remove
      */
-    public static void checkServiceRunningWhenRemoved(Context context) {
+    public static void checkServiceRunningWhenRemoved(Context context, boolean shallMakelastCall) {
         if (isCartSyncRunning()) {
             if (ProductQuantity.getCartSize() == 0) {
-                stopCartService(context);
+                stopCartService(context, shallMakelastCall);
+            }
+        } else {
+            if (ProductQuantity.getCartSize() > 0) {
+                startCartService(context);
+            } else {
+                //make a last call to sync the empty cart
+                updateCartToServer(context, null);
             }
         }
     }
