@@ -26,13 +26,18 @@ import java.util.ArrayList;
 import io.realm.RealmList;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
+import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
@@ -58,9 +63,23 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private int locationPermisionCounter = 0;
     private View parentView;
 
+    private boolean isMerge;
+
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
 
+    /**
+     * Refactor
+     */
+    public static Intent newInstance(Context context, boolean isMerge) {
+        return new Intent(context, FillUserInfoActivity.class)
+                .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+    }
+
+
+    /**
+     * OLD
+     */
     public static Intent newInstance(Context context, RealmList<Order> orders) {
         return new Intent(context, FillUserInfoActivity.class)
                 .putExtra(EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
@@ -95,13 +114,14 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         emailEditText = (EditText) findViewById(R.id.edit_text_email);
         textInputLayoutName = (TextInputLayout) findViewById(R.id.name_text_input);
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.email_text_input);
-        spinner = (Spinner) findViewById(R.id.spinnerLocality);
 
         authenticationService = new AuthenticationService();
     }
 
     private void initVariable() {
         try {
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+
             orders = CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(EXTRA_LIST_ORDER), Order.class);
         } catch (Exception e) {
 
@@ -142,7 +162,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             getLocationPermission();
         } else {
             if (locationPermisionCounter > 1) {
-                fillUserInfo();
+                updateUserInfoToServer();
             } else {
                 buildAlertMessageNoGps();
             }
@@ -162,7 +182,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
                         dialog.cancel();
-                        fillUserInfo();
+                        updateUserInfoToServer();
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -184,7 +204,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
                     @Override
                     public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-                        fillUserInfo();
+                        updateUserInfoToServer();
                     }
                 }).check();
     }
@@ -202,7 +222,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                     latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
                     latitude = latLng.getLatitude();
                     longitude = latLng.getLongitude();
-                    fillUserInfo();
+                    updateUserInfoToServer();
                 }
             }
 
@@ -210,10 +230,45 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             protected void onFailed(ConnectionResult connectionResult) {
                 latLng = new MyLocation("0.0", "0.0");
                 locationRefreshed = false;
-                fillUserInfo();
+                updateUserInfoToServer();
             }
         };
     }
+
+
+    /**
+     * Update UserInfo To Server
+     */
+    private void updateUserInfoToServer() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        UpdateUserInforRequest updateUserInforRequest = new UpdateUserInforRequest(name, email, String.valueOf(latLng), String.valueOf(longitude));
+        TheBox.getAPIService()
+                .updateUserInfo(PrefUtils.getToken(this), updateUserInforRequest)
+                .enqueue(new Callback<UpdateUserInfoResponse>() {
+                    @Override
+                    public void onResponse(Call<UpdateUserInfoResponse> call, Response<UpdateUserInfoResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    updateUserDetailsLocally(response.body().getUser());
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(FillUserInfoActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UpdateUserInfoResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(FillUserInfoActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
     private void fillUserInfo() {
         final BoxLoader dialog = new BoxLoader(this).show();
@@ -261,6 +316,36 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                     }
                 });
     }
+
+    /**
+     * Update User Details Locally
+     */
+    public void updateUserDetailsLocally(User userResponse) {
+        User user = PrefUtils.getUser(this);
+        if (userResponse.getName() != null) {
+            user.setName(userResponse.getName());
+        }
+        if (userResponse.getEmail() != null) {
+            user.setEmail(userResponse.getEmail());
+        }
+
+        SettingService settingService = new SettingService();
+        Setting setting = settingService.getSettings(this);
+        setting.setUserDataAvailable(true);
+        settingService.setSettings(this, setting);
+
+        PrefUtils.saveUser(this, user);
+
+        //update crashlytics data when user fills details
+        authenticationService.setUserDataToCrashlytics();
+        //update clevertap data when user fills details
+        authenticationService.setCleverTapUserProfile();
+
+        //when user fills form move to Address Activity
+        addDeliverAddress();
+
+    }
+
 
     /**
      * Open Add Address Form

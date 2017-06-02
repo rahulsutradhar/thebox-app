@@ -70,19 +70,6 @@ public class AuthenticationService {
     }
 
     /**
-     * Check if User Info exist or not
-     */
-    public boolean isUserInfoExist() {
-        User user = PrefUtils.getUser(TheBox.getAppContext());
-
-        if ((user == null || user.getName() == null || user.getName().isEmpty())) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Post user information to clever tab
      */
     public void setCleverTapOnLogin() {

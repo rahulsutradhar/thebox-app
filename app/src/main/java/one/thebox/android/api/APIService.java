@@ -8,6 +8,7 @@ import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
+import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
@@ -58,6 +59,7 @@ import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
+import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -98,6 +100,12 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/settings")
     Call<SettingsResponse> getSettings(@Header("Authorization") String accessToken, @Query("app_version") int appVersionCode);
+
+    /**
+     * Users Update; Get User Information
+     */
+    @POST("/consumer/api/v1/users/update")
+    Call<UpdateUserInfoResponse> updateUserInfo(@Header("Authorization") String accessToken, @Body UpdateUserInforRequest updateUserInforRequest);
 
 
     /**

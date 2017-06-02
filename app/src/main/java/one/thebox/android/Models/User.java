@@ -31,13 +31,14 @@ public class User extends RealmObject implements Serializable {
     @Ignore
     public static final String FIELD_ADDRESSES = "addresses";
 
-    @PrimaryKey
+
     @SerializedName("id")
     private int id;
 
     /**
      * User Unique Id
      */
+    @PrimaryKey
     private String uuid;
 
     @SerializedName("access_token")
@@ -53,8 +54,9 @@ public class User extends RealmObject implements Serializable {
     private String phoneNumber;
 
 
-    
-
+    /**
+     * Old
+     */
     @SerializedName("otp_secret_key_confirmed")
     private boolean isOtpConfirmed;
 

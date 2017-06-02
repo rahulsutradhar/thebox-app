@@ -40,6 +40,7 @@ import one.thebox.android.adapter.cart.CartAdapter;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -219,8 +220,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         if (isSuccess) {
             progressBar.setVisibility(View.GONE);
             //Proceed
-            Toast.makeText(getActivity(), "Success Call", Toast.LENGTH_SHORT).show();
-            proceedToSlots(response.isMerge());
+            doesUserExist(response.isMerge());
 
         } else {
             if (requestCounter > 1) {
@@ -234,6 +234,29 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * Does User Detials Exist
+     */
+    public void doesUserExist(boolean isMerge) {
+        Setting setting = new SettingService().getSettings(getActivity());
+        if (setting != null) {
+            if (setting.isUserDataAvailable()) {
+                //available check for Address
+            } else {
+                //open Fill User Info Activity
+                openUserInfoActivity(isMerge);
+            }
+        }
+
+    }
+
+    /**
+     * Fill User Info Activity
+     */
+    public void openUserInfoActivity(boolean isMerge) {
+         startActivity(FillUserInfoActivity.newInstance(getActivity(), isMerge));
     }
 
 
@@ -271,7 +294,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                         checkForAddress(user, orders);
                     } else {
                         //proceed to user details Activity
-                        openUserDetailsActivity(orders);
+                        // openUserDetailsActivity(orders);
                     }
                 }
             }
@@ -311,10 +334,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         }
     }
 
-    //User Details Activity
-    public void openUserDetailsActivity(RealmList<Order> orders) {
-        startActivity(FillUserInfoActivity.newInstance(getActivity(), orders));
-    }
 
     /**
      * Open Add Address Form
