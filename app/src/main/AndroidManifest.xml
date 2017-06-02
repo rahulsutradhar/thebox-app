@@ -63,21 +63,21 @@
         </receiver>
 
         <service
-            android:name="one.thebox.android.services.MyGcmListenerService"
+            android:name="one.thebox.android.services.notification.MyGcmListenerService"
             android:exported="true">
             <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name="one.thebox.android.services.MyInstanceIDListenerService"
+            android:name="one.thebox.android.services.notification.MyInstanceIDListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name="one.thebox.android.services.RegistrationIntentService"
+            android:name="one.thebox.android.services.notification.RegistrationIntentService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -85,7 +85,7 @@
         </service>
         <!--HeartBeat -->
         <service
-            android:name="one.thebox.android.services.MyTaskService"
+            android:name="one.thebox.android.services.notification.MyTaskService"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>

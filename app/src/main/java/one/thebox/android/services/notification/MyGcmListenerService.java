@@ -1,4 +1,4 @@
-package one.thebox.android.services;
+package one.thebox.android.services.notification;
 
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;

@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 /**
  * Created by nbansal2211 on 03/01/17.
+ * <p>
+ * Modified by Developers on 02/06/17.
  */
 
 public class Setting implements Serializable {
@@ -22,6 +24,9 @@ public class Setting implements Serializable {
 
     @SerializedName("user_data_available")
     private boolean userDataAvailable;
+
+    @SerializedName("address_available")
+    private boolean addressAvailable;
 
 
     /***************************************
@@ -66,5 +71,13 @@ public class Setting implements Serializable {
 
     public void setCommonPopupDetails(CommonPopupDetails commonPopupDetails) {
         this.commonPopupDetails = commonPopupDetails;
+    }
+
+    public boolean isAddressAvailable() {
+        return addressAvailable;
+    }
+
+    public void setAddressAvailable(boolean addressAvailable) {
+        this.addressAvailable = addressAvailable;
     }
 }

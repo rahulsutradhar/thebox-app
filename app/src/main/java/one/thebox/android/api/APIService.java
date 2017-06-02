@@ -3,7 +3,6 @@ package one.thebox.android.api;
 
 import java.util.Map;
 
-import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
@@ -58,6 +57,7 @@ import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.setting.SettingsResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -92,6 +92,12 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/resend-verf")
     Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
+
+    /**
+     * User Setting API
+     */
+    @GET("/consumer/api/v1/settings")
+    Call<SettingsResponse> getSettings(@Header("Authorization") String accessToken, @Query("app_version") int appVersionCode);
 
 
     /**
@@ -132,7 +138,7 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/orders/summary")
     Call<PaymentSummaryResponse> getPaymentSummaryForCart(@Header("Authorization") String accessToken,
-                                                          @Query("cart") boolean isCart,@Body PaymentSummaryRequest paymentSummaryRequest);
+                                                          @Query("cart") boolean isCart, @Body PaymentSummaryRequest paymentSummaryRequest);
 
     /**
      * Refator
@@ -166,9 +172,9 @@ public interface APIService {
     @GET("/get_all_localities")
     Call<LocalitiesResponse> getAllLocalities(@Header("authtoken") String authToken, @Query("query") String query);
 
-    @GET("/users/setting")
+   /* @GET("/users/setting")
     Call<SettingsResponse> getSettings(@Header("authtoken") String authToken, @Query("app_version") String appVersion);
-
+*/
 
     @GET("/autocomplete")
     Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("authtoken") String authToken,

@@ -20,6 +20,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MutedVideoView;
 import one.thebox.android.app.Constants;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -30,6 +31,7 @@ public class SplashActivity extends Activity {
     private static final int DELAY = 0;
     private MutedVideoView vidHolder;
     private AuthenticationService authenticationService;
+    private int requestCounter = 0;
 
 
     @Override
@@ -68,49 +70,53 @@ public class SplashActivity extends Activity {
 
     private void jump() {
         try {
-            String token = PrefUtils.getToken(SplashActivity.this);
-            User user = PrefUtils.getUser(SplashActivity.this);
-
             if (authenticationService.isAuthenticated()) {
-
-                if (authenticationService.isUserInfoExist()) {
-                    /**
-                     * Update user information to clevertap and crashlytics everytime users opens the app
-                     */
-                    authenticationService.setUserDataToCrashlytics();
-                    authenticationService.setCleverTapUserProfile();
-                }
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-
+                fetchSettingFromServer();
             } else {
-                //From next version it should open OnBoardActivity
-                //startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-
                 /**
-                 * if the key returns false means the key don't exist
-                 * so repeat old methord of navigation
+                 * Not Authenticated Move to OnBoard Activity
                  */
-                if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-                } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-
-                    /**
-                     * Already user loggedin need to push data to crashlytics and clever tap
-                     *
-                     * Temporarry functions
-                     */
-                    authenticationService.setUserDataToCrashlyticsTemp();
-                    authenticationService.setCleverTapUserProfile();
-
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                }
+                startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+                finish();
             }
-            finish();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Fetch setting from server
+     */
+    public void fetchSettingFromServer() {
+        requestCounter++;
+        new SettingService().fetchSettingsFromServer(this, this, 2);
+    }
+
+    /**
+     * Get Settings Call response From Server
+     */
+    public void setServerResponseForSettingsCall(boolean isSuccess) {
+        if (isSuccess) {
+            navigateToHome();
+        } else {
+            if (requestCounter > 1) {
+                Toast.makeText(this, "Something went Wrong", Toast.LENGTH_SHORT).show();
+            } else {
+                fetchSettingFromServer();
+            }
+        }
+    }
+
+    /**
+     * Authenticated navigate to Home
+     */
+    public void navigateToHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 
