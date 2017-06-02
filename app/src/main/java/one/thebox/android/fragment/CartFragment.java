@@ -37,6 +37,7 @@ import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.cart.CartAdapter;
+import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.cart.CartHelperService;
@@ -213,18 +214,19 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         CartHelperService.updateCartToServer(getActivity(), this);
     }
 
-    public void setCartUpdateServerResponse(boolean isSuccess, boolean merge) {
+    public void setCartUpdateServerResponse(boolean isSuccess, CartItemResponse response) {
 
         if (isSuccess) {
             progressBar.setVisibility(View.GONE);
             //Proceed
             Toast.makeText(getActivity(), "Success Call", Toast.LENGTH_SHORT).show();
+            proceedToSlots(response.isMerge());
 
         } else {
             if (requestCounter > 1) {
                 requestServerConfirmCart();
             } else {
-                //if the call fails start service again; if cart size is greater then 0
+                //if the call fails start background service again; if cart size is greater then 0
                 CartHelperService.checkServiceRunningWhenAdded(getActivity());
                 progressBar.setVisibility(View.GONE);
                 requestCounter = 0;
@@ -232,6 +234,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+    /**
+     * Proceed To Slot Activity
+     * When you have User Details and Address
+     */
+    public void proceedToSlots(boolean isMerge) {
+        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(), isMerge));
     }
 
 

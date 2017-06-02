@@ -13,14 +13,14 @@ public class Cart implements Serializable {
     @SerializedName("item_uuid")
     private String itemUuid;
 
-    private int quanity;
+    private int quantity;
 
     @SerializedName("itemconfig_uuid")
     private String itemConfigUuid;
 
-    public Cart(String itemUuid, int quanity, String itemConfigUuid) {
+    public Cart(String itemUuid, int quantity, String itemConfigUuid) {
         this.itemUuid = itemUuid;
-        this.quanity = quanity;
+        this.quantity = quantity;
         this.itemConfigUuid = itemConfigUuid;
     }
 
@@ -32,12 +32,12 @@ public class Cart implements Serializable {
         this.itemUuid = itemUuid;
     }
 
-    public int getQuanity() {
-        return quanity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuanity(int quanity) {
-        this.quanity = quanity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public String getItemConfigUuid() {

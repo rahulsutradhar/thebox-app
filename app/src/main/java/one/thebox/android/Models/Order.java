@@ -21,7 +21,6 @@ public class Order extends RealmObject implements Serializable {
     @Ignore
     public static final String FIELD_IS_CART = "cart";
 
-    @PrimaryKey
     @SerializedName("id")
     private int id;
 
@@ -314,5 +313,44 @@ public class Order extends RealmObject implements Serializable {
 
     public void setDeliverySlot(String deliverySlot) {
         this.deliverySlot = deliverySlot;
+    }
+
+
+    /**
+     * Refactor
+     */
+    @PrimaryKey
+    private String uuid;
+
+    private String date;
+
+    @SerializedName("time_slot")
+    private String timeSlot;
+
+    /****************************************
+     * Getter Setter
+     ****************************************/
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(String timeSlot) {
+        this.timeSlot = timeSlot;
     }
 }

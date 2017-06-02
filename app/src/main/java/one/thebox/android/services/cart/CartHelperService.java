@@ -40,23 +40,24 @@ public class CartHelperService implements ServiceConnection {
 
                         try {
                             if (response.isSuccessful()) {
-                                Log.d("CART_UPDATED", " Successfull " + response.message());
                                 if (fragment != null) {
-                                    ((CartFragment) fragment).setCartUpdateServerResponse(response.body().isStatus(), response.body().isMerge());
+                                    ((CartFragment) fragment).setCartUpdateServerResponse(true, response.body());
                                 }
                             }
 
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.d("CART_UPDATED", " Exception");
-                            ((CartFragment) fragment).setCartUpdateServerResponse(false, false);
+                            if (fragment != null) {
+                                ((CartFragment) fragment).setCartUpdateServerResponse(false, null);
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CartItemResponse> call, Throwable t) {
-                        Log.d("CART_UPDATED", " Failed");
-                        ((CartFragment) fragment).setCartUpdateServerResponse(false, false);
+                        if (fragment != null) {
+                            ((CartFragment) fragment).setCartUpdateServerResponse(false, null);
+                        }
                     }
                 });
     }

@@ -8,6 +8,7 @@ import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
+import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
@@ -55,6 +56,7 @@ import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
+import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -113,6 +115,24 @@ public interface APIService {
     @POST("/consumer/api/v1/carts")
     Call<CartItemResponse> syncCart(@Header("Authorization") String accessToken, @Body CartItemRequest cartItemRequest);
 
+
+    /**
+     * Time Slot
+     * <p>
+     * Available Time Slot General
+     */
+    @GET("/consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getTimeSlots(@Header("Authorization") String accessToken);
+
+
+    /**
+     * Payment Details or Summary
+     * <p>
+     * First Order APi
+     */
+    @POST("/consumer/api/v1/orders/summary")
+    Call<PaymentSummaryResponse> getPaymentSummaryForCart(@Header("Authorization") String accessToken,
+                                                          @Query("cart") boolean isCart,@Body PaymentSummaryRequest paymentSummaryRequest);
 
     /**
      * Refator
@@ -270,11 +290,6 @@ public interface APIService {
     @GET("/public/app-offers")
     Call<CarouselApiResponse> getCarousel();
 
-    /**
-     * Available Time Slot General
-     */
-    @GET("/consumer/api/v1/slots-available")
-    Call<TimeSlotResponse> getTimeSlots();
 
     /**
      * Time Slot for a Order

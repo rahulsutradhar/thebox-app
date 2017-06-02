@@ -78,7 +78,7 @@ public class ProductQuantity {
         int index = 0;
         for (Cart cart : productQuantities) {
             if (cart.getItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
-                productQuantities.get(index).setQuanity(quantity);
+                productQuantities.get(index).setQuantity(quantity);
                 break;
             }
             index++;

@@ -86,4 +86,9 @@ public class Constants {
      */
     public static final long UPDATE_CART_POLLING_TIME = 5000;
 
+    /**
+     * Extra Cart Is Merging
+     */
+    public static final String EXTRA_IS_CART_MERGING = "extra_is_cart_merging";
+
 }
