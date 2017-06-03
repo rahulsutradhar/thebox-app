@@ -42,6 +42,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.R;
 import one.thebox.android.R2;
@@ -51,17 +52,18 @@ import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
 import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
 import one.thebox.android.util.AppUtil;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * Created by Ruchit on 9/26/2016.
@@ -100,6 +102,10 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private String razorpayPaymentID;
     private int cleverTapOrderId;
 
+    private boolean isMerge;
+    private Address address;
+    private long timeSlotTimeStamp;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,10 +130,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
     }
 
     private void initVariables() {
-        String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
-        addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
-        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
-        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
+        address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+        isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+        timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
+        totalPayment = getIntent().getStringExtra(Constants.EXTRA_AMOUNT_TO_PAY);
+
     }
 
 
@@ -228,13 +235,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                  */
                                 setCleverTapEventPaymentModeSuccess();
 
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -281,13 +281,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                  */
                                 setCleverTapEventPaymentModeSuccess();
 
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -339,13 +332,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 setCleverTapEventPaymentModeSuccess();
 
 
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -405,14 +391,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                  */
                                 setCleverTapEventPaymentModeSuccess();
 
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
-
+                               
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());

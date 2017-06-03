@@ -91,4 +91,20 @@ public class Constants {
      */
     public static final String EXTRA_IS_CART_MERGING = "extra_is_cart_merging";
 
+    /**
+     * Extra Address Selected
+     */
+    public static final String EXTRA_SELECTED_ADDRESS = "extra_selected_address";
+
+    /**
+     * EXTRA TIMESLOT SELECTED
+     */
+    public static final String EXTRA_TIMESLOT_SELECTED = "extra_timeslot_selected";
+
+    /**
+     * Extra Amount to pay
+     */
+    public static final String EXTRA_AMOUNT_TO_PAY = "extra_amount_to_pay";
+
+
 }

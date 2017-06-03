@@ -27,6 +27,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.Models.timeslot.TimeSlotInformation;
@@ -78,6 +79,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private TimeSlotInformation timeSlotInformation;
 
     private boolean isMerge;
+    private Address address;
 
 
     /**
@@ -87,6 +89,13 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         return new Intent(context, ConfirmTimeSlotActivity.class)
                 .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
     }
+
+    public static Intent newInstance(Context context, boolean isMerge, Address address) {
+        return new Intent(context, ConfirmTimeSlotActivity.class)
+                .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge)
+                .putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+    }
+
 
     /**
      * Old
@@ -189,7 +198,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
                     Toast.makeText(ConfirmTimeSlotActivity.this, "Slot Selected", Toast.LENGTH_SHORT).show();
 
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, true));
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,isMerge, address, selectedSlot.getTimestamp()));
 
                 } else {
                     Toast.makeText(ConfirmTimeSlotActivity.this, "Slot NOT Selected", Toast.LENGTH_SHORT).show();
@@ -585,6 +594,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         try {
 
             isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
 
             /*
             addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);

@@ -17,6 +17,7 @@ import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -52,12 +53,19 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private boolean isMerging, isCart, payFromOrder;
     private int orderId;
 
+
+    private Address address;
+    private long timeSlotTimeStamp;
+    private boolean isMerge;
+
     /**
      * Refactor
      */
-    public static Intent getInstance(Context context, boolean isCart) {
+    public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_IS_CART, isCart);
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+        intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+        intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
         return intent;
     }
 
@@ -121,10 +129,12 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         //call server to fetch data
         fetchPaymentDetailsData(param);*/
         try {
-            isCart = getIntent().getBooleanExtra(EXTRA_IS_CART, false);
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+            timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
 
 
-            if (isCart) {
+            if (!isMerge) {
                 //API Request for 1st order; When there is no previous order
                 fetchPaymentSummaryForCart(true);
             } else {
@@ -151,10 +161,10 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 setCleverTapEventPaymentDetailActivity();
 
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, amountToPay);
-                intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
-                intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
-                intent.putExtra(EXTRA_IS_MERGING, isMerging);
+                intent.putExtra(Constants.EXTRA_AMOUNT_TO_PAY, amountToPay);
+                intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+                intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+                intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
                 startActivity(intent);
 
             }

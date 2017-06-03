@@ -95,7 +95,7 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         //save CleverTap Event; Display Address Proceed
         saveCleverTapEventDisplayAddressProceed();
         deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
-                OrderHelper.getAddressAndOrder(orders), false));
+                isMerge, address));
     }
 
 

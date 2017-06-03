@@ -19,6 +19,13 @@ public class PaymentResponse extends ApiResponse implements Serializable {
     @SerializedName("orders_to_pay_for")
     private Order orders;
 
+
+
+
+
+
+
+
     public boolean isSuccess() {
         return success;
     }

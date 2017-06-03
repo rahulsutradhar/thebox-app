@@ -9,6 +9,7 @@ import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
@@ -60,6 +61,7 @@ import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
@@ -171,6 +173,14 @@ public interface APIService {
     @POST("/consumer/api/v1/orders/summary")
     Call<PaymentSummaryResponse> getPaymentSummaryForCart(@Header("Authorization") String accessToken,
                                                           @Query("cart") boolean isCart, @Body PaymentSummaryRequest paymentSummaryRequest);
+
+
+    /**
+     * Payments
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePayment(@Header("Authorization") String accessToken, @Body MakePaymentRequest makePaymentRequest);
+
 
     /**
      * Refator
