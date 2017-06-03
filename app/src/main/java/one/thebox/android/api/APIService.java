@@ -3,6 +3,7 @@ package one.thebox.android.api;
 
 import java.util.Map;
 
+import one.thebox.android.api.RequestBodies.address.AddressRequest;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
@@ -51,6 +52,7 @@ import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.Responses.address.AddressResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
@@ -65,6 +67,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -106,6 +109,27 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/users/update")
     Call<UpdateUserInfoResponse> updateUserInfo(@Header("Authorization") String accessToken, @Body UpdateUserInforRequest updateUserInforRequest);
+
+    /**
+     * User Address
+     * <p>
+     * Locality
+     */
+    @GET("/public/localities")
+    Call<LocalityResponse> getLocality(@Header("Authorization") String accessToken);
+
+    /**
+     * Create New Address
+     */
+    @POST("/consumer/api/v1/addresses/create")
+    Call<AddressResponse> createAddress(@Header("Authorization") String accessToken, @Body AddressRequest addressRequest);
+
+    /**
+     * Update Address
+     */
+    @POST("/consumer/api/v1/addresses/{uuid}/update")
+    Call<AddressResponse> updateAddress(@Header("Authorization") String accessToken,
+                                        @Path("uuid") String addressUuid, @Body AddressRequest addressRequest);
 
 
     /**
@@ -317,11 +341,6 @@ public interface APIService {
     @GET("/consumer/api/v1/slots-available")
     Call<TimeSlotResponse> getRescheduleTimeSlot(@Query("order_id") int orderId, @Query("type") String type);
 
-    /**
-     * Get Localities
-     */
-    @GET("/public/localities")
-    Call<LocalityResponse> getLocality();
 
     /**
      * Get Payment Details

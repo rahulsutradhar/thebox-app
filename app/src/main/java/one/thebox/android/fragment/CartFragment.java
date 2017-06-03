@@ -244,6 +244,19 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         if (setting != null) {
             if (setting.isUserDataAvailable()) {
                 //available check for Address
+                if (setting.isAddressAvailable()) {
+                    //check if it is first order or not
+                    if (!isMerge) {
+                        //first order; navigate to display Address
+                        displayDeliveryAddress(isMerge);
+                    } else {
+                        //navigate to Time Slot
+                    }
+                    Toast.makeText(getActivity(), "Navigate to Timeslot", Toast.LENGTH_SHORT).show();
+                } else {
+                    //open Add address activity
+                    openAddressActivty(isMerge);
+                }
             } else {
                 //open Fill User Info Activity
                 openUserInfoActivity(isMerge);
@@ -256,9 +269,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
      * Fill User Info Activity
      */
     public void openUserInfoActivity(boolean isMerge) {
-         startActivity(FillUserInfoActivity.newInstance(getActivity(), isMerge));
+        startActivity(FillUserInfoActivity.newInstance(getActivity(), isMerge));
     }
 
+    /**
+     * Add Address Activity
+     */
+    public void openAddressActivty(boolean isMerge) {
+        addDeliverAddress(isMerge);
+    }
 
     /**
      * Proceed To Slot Activity
@@ -318,16 +337,16 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                                 OrderHelper.getAddressAndOrder(orders), false));
                     } else {
                         //open Delivery Address Fragment
-                        displayDeliveryAddress(user, orders);
+                       // displayDeliveryAddress(user, orders);
                     }
 
                 } else {
                     //open Add Address Activity
-                    addDeliverAddress(orders);
+                    //addDeliverAddress(orders);
                 }
             } else {
                 //open Add Address Activity
-                addDeliverAddress(orders);
+                // addDeliverAddress(orders);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -338,7 +357,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     /**
      * Open Add Address Form
      */
-    public void addDeliverAddress(RealmList<Order> orders) {
+    public void addDeliverAddress(boolean isMerge) {
         //open add address fragment blank
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         /**
@@ -351,18 +370,24 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
          * 2- edit address
          */
         intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
-        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         startActivity(intent);
     }
 
     /**
      * Show Delivery Address
      */
-    public void displayDeliveryAddress(User user, RealmList<Order> orders) {
-        Address address = user.getAddresses().first();
+    public void displayDeliveryAddress(boolean isMerge) {
+        User user = PrefUtils.getUser(getActivity());
+        Address address = null;
+        if (user.getAddresses() != null) {
+            if (user.getAddresses().size() > 0) {
+                address = user.getAddresses().first();
+            }
+        }
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         intent.putExtra("called_from", 2);
-        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
         startActivity(intent);
     }

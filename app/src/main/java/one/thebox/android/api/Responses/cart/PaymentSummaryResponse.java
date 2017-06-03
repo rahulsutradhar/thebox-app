@@ -6,12 +6,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.checkout.PurchaseData;
+import one.thebox.android.api.ApiResponse;
 
 /**
  * Created by developers on 02/06/17.
  */
 
-public class PaymentSummaryResponse implements Serializable {
+public class PaymentSummaryResponse extends ApiResponse implements Serializable {
 
     @SerializedName("data")
     private ArrayList<PurchaseData> purchaseDatas;

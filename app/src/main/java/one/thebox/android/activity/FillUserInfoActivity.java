@@ -57,7 +57,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     String name, email;
     private TextView submitButton;
     private EditText nameEditText, emailEditText;
-    private Spinner spinner;
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
@@ -321,6 +320,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
      * Update User Details Locally
      */
     public void updateUserDetailsLocally(User userResponse) {
+        //updating user data locally
         User user = PrefUtils.getUser(this);
         if (userResponse.getName() != null) {
             user.setName(userResponse.getName());
@@ -329,6 +329,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
             user.setEmail(userResponse.getEmail());
         }
 
+        //updating setting data locally
         SettingService settingService = new SettingService();
         Setting setting = settingService.getSettings(this);
         setting.setUserDataAvailable(true);
@@ -363,7 +364,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
          * 2- edit address
          */
         intent.putExtra(EXTRA_ADDRESS_TYPE, 1);
-        intent.putExtra(EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         startActivity(intent);
         finish();
     }
