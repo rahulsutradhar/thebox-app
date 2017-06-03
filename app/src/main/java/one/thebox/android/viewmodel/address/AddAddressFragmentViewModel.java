@@ -20,6 +20,7 @@ import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.address.Locality;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.SimpleTextWatcher;
@@ -35,6 +36,7 @@ import one.thebox.android.api.Responses.address.AddressResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.CustomSnackBar;
 import one.thebox.android.util.PrefUtils;
@@ -617,6 +619,14 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             addresses.add(address);
             user.setAddresses(addresses);
             PrefUtils.saveUser(addAddressFragment.getActivity(), user);
+
+            //update locally
+            //updating setting data locally
+            SettingService settingService = new SettingService();
+            Setting setting = settingService.getSettings(addAddressFragment.getActivity());
+            setting.setAddressAvailable(true);
+            settingService.setSettings(addAddressFragment.getActivity(), setting);
+
 
             //MyAccountFragment
             if (calledFrom == 1) {
