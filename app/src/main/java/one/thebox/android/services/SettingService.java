@@ -44,7 +44,12 @@ public class SettingService {
                     public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
                         try {
                             if (response.isSuccessful()) {
-                                setSettings(context, response.body().getSetting());
+                                //update setting data locally
+                                if (response.body().getSetting() != null) {
+                                    setSettings(context, response.body().getSetting());
+                                    PrefUtils.saveUser(context, response.body().getSetting().getUser());
+                                }
+
                                 if (activity != null) {
                                     sendResponse(activity, true, calledFrom);
                                 }

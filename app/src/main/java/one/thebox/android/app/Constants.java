@@ -106,5 +106,10 @@ public class Constants {
      */
     public static final String EXTRA_AMOUNT_TO_PAY = "extra_amount_to_pay";
 
+    /**
+     * EXTRA SELECTED UUID
+     */
+    public static final String EXTRA_SELECTED_ORDER_UUID = "extra_selected_order_uuid";
+
 
 }

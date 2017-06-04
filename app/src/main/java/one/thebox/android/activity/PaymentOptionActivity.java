@@ -51,7 +51,10 @@ import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
 import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.app.Constants;
@@ -100,6 +103,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     int POSITION_OF_VIEW_PAGER;
     String totalPayment = "";
     private User user;
+
     private int mergeOrderId;
     private boolean locationRefreshed;
     private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
@@ -109,6 +113,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private boolean isMerge;
     private Address address;
     private long timeSlotTimeStamp;
+    private String orderUuid;
 
 
     @Override
@@ -116,8 +121,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_options);
         ButterKnife.bind(this);
-        if (getIntent().hasExtra(EXTRA_TOTAL_CART_AMOUNT)) {
-            totalPayment = getIntent().getStringExtra(EXTRA_TOTAL_CART_AMOUNT);
+        if (getIntent().hasExtra(Constants.EXTRA_AMOUNT_TO_PAY)) {
+            totalPayment = getIntent().getStringExtra(Constants.EXTRA_AMOUNT_TO_PAY);
             txtTotalAmount.setText(fmt(Double.parseDouble(totalPayment)));
         }
         initVariables();
@@ -129,16 +134,14 @@ public class PaymentOptionActivity extends AppCompatActivity {
             }
         });
 
-        user = PrefUtils.getUser(this);
-
-
     }
 
     private void initVariables() {
+        user = PrefUtils.getUser(this);
         address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
         isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
         timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
-        totalPayment = getIntent().getStringExtra(Constants.EXTRA_AMOUNT_TO_PAY);
+        orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
 
     }
 
@@ -211,7 +214,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
             startPayment(String.valueOf(Double.parseDouble(totalPayment) * 100), "Subscribe and Forget", user.getEmail(), user.getPhoneNumber(), user.getName());
 
         } else if (POSITION_OF_VIEW_PAGER == 1) {
-            getUserLocation();
+            /**
+             * Set Payment request Body
+             *
+             * COD: Make payments
+             */
+
+            if (isMerge) {
+                makePaymentCodMerge();
+            } else {
+                makePaymentCodCart();
+            }
         }
     }
 
@@ -316,15 +329,14 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     /**
-     * Make Payment Offline
+     * Make Payment COD: Cart
      */
-    private void makePaymentOffline() {
+    private void makePaymentCodCart() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        //set Request Body; COD = true
-        MakePaymentRequest makePaymentRequest = new MakePaymentRequest(true, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
+        MakePaymentCodCartRequest makePaymentCodCartRequest = new MakePaymentCodCartRequest(true, isMerge, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
 
         TheBox.getAPIService()
-                .makePayment(PrefUtils.getToken(this), makePaymentRequest)
+                .makePaymentCodCart(PrefUtils.getToken(this), makePaymentCodCartRequest)
                 .enqueue(new Callback<MakePaymentResponse>() {
                     @Override
                     public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
@@ -348,12 +360,111 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
     }
 
 
+    /**
+     * Make Payment COD: Merge
+     */
+    private void makePaymentCodMerge() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MakePaymentCodMergeRequest makePaymentCodMergeRequest = new MakePaymentCodMergeRequest(true, isMerge, address.getUuid(), orderUuid, ProductQuantity.getProductQuantities());
+        TheBox.getAPIService()
+                .makePaymentCodMerge(PrefUtils.getToken(this), makePaymentCodMergeRequest)
+                .enqueue(new Callback<MakePaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //payment Successfull
+                                    paymentCompleteClearCartAndMoveToHome();
+                                } else {
+                                    Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
+                        Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     * Make Payment Online: Cart
+     */
+    private void makePaymentOnlineCart(String razorpayId) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MakePaymentOnlineCartRequest makePaymentOnlineCartRequest = new MakePaymentOnlineCartRequest(false, isMerge, razorpayId, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
+        TheBox.getAPIService()
+                .makePaymentOnlineCart(PrefUtils.getToken(this), makePaymentOnlineCartRequest)
+                .enqueue(new Callback<MakePaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //payment Successfull
+                                    paymentCompleteClearCartAndMoveToHome();
+                                } else {
+                                    Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
+                        Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+    /**
+     * Make Payment Online: Cart
+     */
+    private void makePaymentOnlineMerge(String razorpayId) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        MakePaymentOnlineMergeRequest makePaymentOnlineMergeRequest = new MakePaymentOnlineMergeRequest(false, isMerge, razorpayId, address.getUuid(), orderUuid, ProductQuantity.getProductQuantities());
+        TheBox.getAPIService()
+                .makePaymentOnlineMerge(PrefUtils.getToken(this), makePaymentOnlineMergeRequest)
+                .enqueue(new Callback<MakePaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //payment Successfull
+                                    paymentCompleteClearCartAndMoveToHome();
+                                } else {
+                                    Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
+                        Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     //0ld
+
     private void makeOffline() {
         final BoxLoader dialog = new BoxLoader(this).show();
         cleverTapOrderId = addressAndOrders.get(0).getOrderId();
@@ -525,14 +636,29 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     public void onPaymentSuccess(String razorpayPaymentID) {
         this.razorpayPaymentID = razorpayPaymentID;
-        getUserLocation();
+
+        /**
+         * Online payment
+         *
+         * Set Payment Request Body
+         */
+        if (isMerge) {
+            makePaymentOnlineMerge(razorpayPaymentID);
+        } else {
+            makePaymentOnlineCart(razorpayPaymentID);
+        }
     }
 
     private void payOnLine(String razorpayPaymentID) {
-        if (mergeOrderId == 0) {
-            pay_online(razorpayPaymentID);
+        /**
+         * Online payment
+         *
+         * Set Payment Request Body
+         */
+        if (isMerge) {
+            makePaymentOnlineMerge(razorpayPaymentID);
         } else {
-            merge_cart_to_order_and_pay_online(razorpayPaymentID);
+            makePaymentOnlineCart(razorpayPaymentID);
         }
     }
 
@@ -655,7 +781,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private void fillUserInfo() {
         if (!isMerge) {
             //pay first time for cart
-            makePaymentOffline();
+            //makePaymentOffline();
         } else {
             //pay for merge order
             merge_cart_to_order_and_pay_offline();

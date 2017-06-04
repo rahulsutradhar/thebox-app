@@ -251,6 +251,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                         displayDeliveryAddress(isMerge);
                     } else {
                         //navigate to Time Slot
+                        proceedToSlots(isMerge);
                     }
                 } else {
                     //open Add address activity
@@ -336,7 +337,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                                 OrderHelper.getAddressAndOrder(orders), false));
                     } else {
                         //open Delivery Address Fragment
-                       // displayDeliveryAddress(user, orders);
+                        // displayDeliveryAddress(user, orders);
                     }
 
                 } else {

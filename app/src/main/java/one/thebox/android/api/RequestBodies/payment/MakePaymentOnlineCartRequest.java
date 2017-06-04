@@ -11,8 +11,7 @@ import one.thebox.android.Models.Cart;
  * Created by developers on 04/06/17.
  */
 
-public class MakePaymentRequest implements Serializable {
-
+public class MakePaymentOnlineCartRequest implements Serializable {
     private boolean cod;
 
     @SerializedName("address_uuid")
@@ -23,8 +22,26 @@ public class MakePaymentRequest implements Serializable {
 
     private ArrayList<Cart> carts;
 
-    public MakePaymentRequest(boolean cod, String addressUuid, long timeSlotTimeStamp, ArrayList<Cart> carts) {
+    @SerializedName("merge")
+    private boolean isMerge;
+
+    @SerializedName("razorpay_payment_id")
+    private String razorpayId;
+
+    /**
+     * ONLINE : Cart
+     *
+     * @param cod
+     * @param isMerge
+     * @param razorpayId
+     * @param addressUuid
+     * @param timeSlotTimeStamp
+     * @param carts
+     */
+    public MakePaymentOnlineCartRequest(boolean cod, boolean isMerge, String razorpayId, String addressUuid, long timeSlotTimeStamp, ArrayList<Cart> carts) {
         this.cod = cod;
+        this.isMerge = isMerge;
+        this.razorpayId = razorpayId;
         this.addressUuid = addressUuid;
         this.timeSlotTimeStamp = timeSlotTimeStamp;
         this.carts = carts;
@@ -60,5 +77,21 @@ public class MakePaymentRequest implements Serializable {
 
     public void setCarts(ArrayList<Cart> carts) {
         this.carts = carts;
+    }
+
+    public boolean isMerge() {
+        return isMerge;
+    }
+
+    public void setMerge(boolean merge) {
+        isMerge = merge;
+    }
+
+    public String getRazorpayId() {
+        return razorpayId;
+    }
+
+    public void setRazorpayId(String razorpayId) {
+        this.razorpayId = razorpayId;
     }
 }

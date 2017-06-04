@@ -27,6 +27,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
@@ -80,6 +81,8 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
     private boolean isMerge;
     private Address address;
+    private Order selectedMergeOrder;
+    private ArrayList<Order> orders;
 
 
     /**
@@ -122,7 +125,9 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
         if (isMerge) {
             //merge cart
-            Toast.makeText(ConfirmTimeSlotActivity.this, "Is Merge True", Toast.LENGTH_SHORT).show();
+            setContentView(R.layout.confirm_time_slot_when_user_have_orders);
+            setTitle("Merge with future deliveries");
+            initViewsCaseMergeDeliveries();
         } else {
             //Case First Order
             setContentView(R.layout.activity_confirm_time_slot);
@@ -138,7 +143,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             if (hasPreviousOrder() && isCart()) {
                 setContentView(R.layout.confirm_time_slot_when_user_have_orders);
                 setTitle("Merge with future deliveries");
-                initViewsCase1();
+                initViewsCaseMergeDeliveries();
                 setupMergeDeliveryRecyclerView();
 
             } else if (!hasPreviousOrder() && isCart()) {
@@ -186,22 +191,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             public void onClick(View v) {
 
                 if (selectedSlot != null) {
-                    /*for (int i = 0; i < addressAndOrders.size(); i++) {
-                        addressAndOrders.get(i).setSlot(selectedSlot);
-                    }*/
-
                     /**
                      * Save Clever Tap Event; TimeSlotsFromCart
                      */
-                    /*setCleverTapEventTimeSlotsFromCart();
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders, isCart));*/
-
-                    Toast.makeText(ConfirmTimeSlotActivity.this, "Slot Selected", Toast.LENGTH_SHORT).show();
-
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,isMerge, address, selectedSlot.getTimestamp()));
-
-                } else {
-                    Toast.makeText(ConfirmTimeSlotActivity.this, "Slot NOT Selected", Toast.LENGTH_SHORT).show();
+                    /*setCleverTapEventTimeSlotsFromCart();*/
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, isMerge, address, selectedSlot.getTimestamp()));
                 }
             }
         });
@@ -212,28 +206,80 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     /**
      * Case: Merge with Deliveries
      */
-    private void initViewsCase1() {
+    private void initViewsCaseMergeDeliveries() {
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (addressAndOrders.size() == 2) {
-                    addressAndOrders.set(1, new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
-                } else {
-                    addressAndOrders.add(new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
+
+                try {
+                    if (selectedMergeOrder == null) {
+                        selectedMergeOrder = orders.get(0);
+                    }
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, isMerge,address, selectedMergeOrder.getUuid()));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 /**
                  * Save CleverTapEvent; TimeSlotMergeWithDeliveries
                  */
-                setCleverTapEventTimeSlotsMergeWithDeliveries(mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId());
+                /*setCleverTapEventTimeSlotsMergeWithDeliveries(mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId());
 
                 startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
                         addressAndOrders,
-                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));
+                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));*/
             }
         });
+
+        //fetch time slots when you have orders
+        fetchTimeSlotForMergeDeliveries();
+    }
+
+    /**
+     * API request for Merge Timeslot
+     */
+    public void fetchTimeSlotForMergeDeliveries() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService()
+                .getMergeTimeSlot(PrefUtils.getToken(this))
+                .enqueue(new Callback<TimeSlotResponse>() {
+                    @Override
+                    public void onResponse(Call<TimeSlotResponse> call, Response<TimeSlotResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    orders = response.body().getOrders();
+                                    if (orders != null) {
+                                        setupMergeDeliveryRecyclerView(orders);
+                                    }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TimeSlotResponse> call, Throwable t) {
+
+                    }
+                });
+
+    }
+
+    /**
+     * Setup Merge with deliveries Recyclerview
+     */
+    public void setupMergeDeliveryRecyclerView(ArrayList<Order> orders) {
+        mergeOrderAdapter = new MergeOrderAdapter(this, this, orders);
+        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
     }
 
 
@@ -312,11 +358,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         });
     }
 
-    public void setupMergeDeliveryRecyclerView() {
-        mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
-        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
-    }
 
     private void initMergeOrders() {
         mergeOrders = new RealmList<>();
@@ -615,6 +656,14 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                     isCart = true;
                 }
             }*/
+
+            if (isMerge) {
+                //get the selected Address
+                User user = PrefUtils.getUser(this);
+                if (user.getAddresses() != null) {
+                    address = user.getAddresses().first();
+                }
+            }
         } catch (NullPointerException npe) {
             npe.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
@@ -726,4 +775,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
     }
 
+    public Order getSelectedMergeOrder() {
+        return selectedMergeOrder;
+    }
+
+    public void setSelectedMergeOrder(Order selectedMergeOrder) {
+        this.selectedMergeOrder = selectedMergeOrder;
+    }
 }

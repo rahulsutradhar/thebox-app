@@ -9,7 +9,10 @@ import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
@@ -164,6 +167,12 @@ public interface APIService {
     @GET("/consumer/api/v1/slots-available")
     Call<TimeSlotResponse> getTimeSlots(@Header("Authorization") String accessToken);
 
+    /**
+     * Merge Time Slot
+     */
+    @GET("/consumer/api/v1/orders/merged")
+    Call<TimeSlotResponse> getMergeTimeSlot(@Header("Authorization") String accessToken);
+
 
     /**
      * Payment Details or Summary
@@ -174,13 +183,49 @@ public interface APIService {
     Call<PaymentSummaryResponse> getPaymentSummaryForCart(@Header("Authorization") String accessToken,
                                                           @Query("cart") boolean isCart, @Body PaymentSummaryRequest paymentSummaryRequest);
 
+    /**
+     * Payment Summary for Merge Deliverires
+     */
+    @POST("/consumer/api/v1/orders/{order_uuid}/summary")
+    Call<PaymentSummaryResponse> getPaymentSummaryForMergeDeliveries(@Header("Authorization") String accessToken,
+                                                                     @Path("order_uuid") String orderUuid, @Body PaymentSummaryRequest paymentSummaryRequest);
+
 
     /**
-     * Payments
+     * Make Payment
+     * <p>
+     * COD - Cart
      */
     @POST("/consumer/api/v1/orders/payment")
-    Call<MakePaymentResponse> makePayment(@Header("Authorization") String accessToken, @Body MakePaymentRequest makePaymentRequest);
+    Call<MakePaymentResponse> makePaymentCodCart(@Header("Authorization") String accessToken,
+                                                 @Body MakePaymentCodCartRequest makePaymentCodCartRequest);
 
+    /**
+     * Make Payment
+     * <p>
+     * COD - Merge
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentCodMerge(@Header("Authorization") String accessToken,
+                                                  @Body MakePaymentCodMergeRequest makePaymentCodMergeRequest);
+
+    /**
+     * Make Payment
+     * <p>
+     * Online - Cart
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentOnlineCart(@Header("Authorization") String accessToken,
+                                                    @Body MakePaymentOnlineCartRequest makePaymentOnlineCartRequest);
+
+    /**
+     * Make Payment
+     * <p>
+     * Online - Merge
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentOnlineMerge(@Header("Authorization") String accessToken,
+                                                     @Body MakePaymentOnlineMergeRequest makePaymentOnlineMergeRequest);
 
     /**
      * Refator
