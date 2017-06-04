@@ -252,7 +252,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                     } else {
                         //navigate to Time Slot
                     }
-                    Toast.makeText(getActivity(), "Navigate to Timeslot", Toast.LENGTH_SHORT).show();
                 } else {
                     //open Add address activity
                     openAddressActivty(isMerge);

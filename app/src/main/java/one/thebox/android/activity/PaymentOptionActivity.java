@@ -28,7 +28,6 @@ import com.razorpay.Checkout;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -38,6 +37,7 @@ import io.realm.RealmList;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Order;
@@ -51,7 +51,9 @@ import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
 import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
 import one.thebox.android.api.RequestBodies.PaymentRequestBody;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
 import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
@@ -67,6 +69,8 @@ import retrofit2.Response;
 
 /**
  * Created by Ruchit on 9/26/2016.
+ * <p>
+ * Modified by Developers on 06/04/2017.
  */
 public class PaymentOptionActivity extends AppCompatActivity {
 
@@ -116,7 +120,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
             totalPayment = getIntent().getStringExtra(EXTRA_TOTAL_CART_AMOUNT);
             txtTotalAmount.setText(fmt(Double.parseDouble(totalPayment)));
         }
-        user = PrefUtils.getUser(this);
         initVariables();
         setupViewPagerAndTabsMyBox();
         imgPaymentBack.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +128,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        user = PrefUtils.getUser(this);
 
 
     }
@@ -246,7 +251,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
                                 //payment complete move to home
-                                paymentCompleteMoveToHome();
+                                // paymentCompleteMoveToHome();
 
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -292,7 +297,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
                                 //payment complete move to home
-                                paymentCompleteMoveToHome();
+                                //paymentCompleteMoveToHome();
 
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -309,7 +314,47 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 });
     }
 
-    private void pay_offline() {
+
+    /**
+     * Make Payment Offline
+     */
+    private void makePaymentOffline() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        //set Request Body; COD = true
+        MakePaymentRequest makePaymentRequest = new MakePaymentRequest(true, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
+
+        TheBox.getAPIService()
+                .makePayment(PrefUtils.getToken(this), makePaymentRequest)
+                .enqueue(new Callback<MakePaymentResponse>() {
+                    @Override
+                    public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //payment Successfull
+                                    paymentCompleteClearCartAndMoveToHome();
+                                } else {
+                                    Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
+                        Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+    }
+
+
+    //0ld
+    private void makeOffline() {
         final BoxLoader dialog = new BoxLoader(this).show();
         cleverTapOrderId = addressAndOrders.get(0).getOrderId();
         Slot slot = addressAndOrders.get(0).getSlot();
@@ -332,7 +377,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 setCleverTapEventPaymentModeSuccess();
 
 
-
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
                                 OrderHelper.addAndNotify(orders);
@@ -343,7 +387,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
                                 //payment complete move to home
-                                paymentCompleteMoveToHome();
+                                //paymentCompleteMoveToHome();
 
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -391,7 +435,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                  */
                                 setCleverTapEventPaymentModeSuccess();
 
-                               
 
                                 RealmList<Order> orders = new RealmList<>();
                                 orders.add(response.body().getOrders());
@@ -402,7 +445,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
 
                                 //payment complete move to home
-                                paymentCompleteMoveToHome();
+                                paymentCompleteClearCartAndMoveToHome();
 
                             } else {
                                 Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
@@ -419,7 +462,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
                 });
     }
 
-    public void paymentCompleteMoveToHome() {
+    public void paymentCompleteClearCartAndMoveToHome() {
+        //clear Cart
+        CartHelper.clearCart(true);
+        ProductQuantity.trash();
+
+        //set the flags
         PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
         PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
@@ -605,9 +653,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
     }
 
     private void fillUserInfo() {
-        if (mergeOrderId == 0) {
-            pay_offline();
+        if (!isMerge) {
+            //pay first time for cart
+            makePaymentOffline();
         } else {
+            //pay for merge order
             merge_cart_to_order_and_pay_offline();
         }
 
