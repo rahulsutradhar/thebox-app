@@ -29,8 +29,6 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("title")
-    private String title;
 
     @SerializedName("minititle")
     private String minititle;
@@ -38,26 +36,10 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("box_id")
     private int boxId;
 
-    @SerializedName("no_of_items")
     private int noOfItems;
 
-    @SerializedName("icon_url")
     private String iconUrl;
 
-    @Ignore
-    @SerializedName("items")
-    private List<String> items;
-
-    @SerializedName("avg_savings")
-    private String averageSavings;
-
-    public List<String> getItems() {
-        return items;
-    }
-
-    public void setItems(List<String> items) {
-        this.items = items;
-    }
 
     public Category() {
     }
@@ -107,6 +89,42 @@ public class Category extends RealmObject implements Serializable {
         this.id = id;
     }
 
+
+    public String getMinititle() {
+        return minititle;
+    }
+
+    public void setMinititle(String minititle) {
+        this.minititle = minititle;
+    }
+
+
+    /**
+     * Refactor
+     */
+    private String uuid;
+
+    private String title;
+
+    @SerializedName("icon_url")
+    private String categoryImage;
+
+    @SerializedName("no_of_items")
+    private int numberOfItem;
+
+    private int priority;
+
+    @SerializedName("avg_savings")
+    private String averageSavings;
+
+    @SerializedName("items")
+    private RealmList<BoxItem> boxItems;
+
+
+    /************************************************
+     * Getter Setter
+     ************************************************/
+
     public String getTitle() {
         return title;
     }
@@ -115,12 +133,36 @@ public class Category extends RealmObject implements Serializable {
         this.title = title;
     }
 
-    public String getMinititle() {
-        return minititle;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setMinititle(String minititle) {
-        this.minititle = minititle;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getCategoryImage() {
+        return categoryImage;
+    }
+
+    public void setCategoryImage(String categoryImage) {
+        this.categoryImage = categoryImage;
+    }
+
+    public int getNumberOfItem() {
+        return numberOfItem;
+    }
+
+    public void setNumberOfItem(int numberOfItem) {
+        this.numberOfItem = numberOfItem;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public String getAverageSavings() {
@@ -131,10 +173,11 @@ public class Category extends RealmObject implements Serializable {
         this.averageSavings = averageSavings;
     }
 
- /*   @Override
-    public boolean equals(Object o) {
-        Category category = (Category) o;
-        return this.id == category.getId() && this.noOfItems == category.getNoOfItems()
-                && this.title.equals(category.getTitle()) && this.iconUrl.equals(category.getIconUrl());
-    }*/
+    public RealmList<BoxItem> getBoxItems() {
+        return boxItems;
+    }
+
+    public void setBoxItems(RealmList<BoxItem> boxItems) {
+        this.boxItems = boxItems;
+    }
 }

@@ -8,15 +8,76 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class ItemConfig extends RealmObject implements Serializable {
-    @PrimaryKey
+
     @SerializedName("id")
     private int id;
 
-    @SerializedName("size_or_quantity")
+    @SerializedName("correct_quantity")
+    private String correctQuantity;
+
+
+    @SerializedName("savings_title")
+    private String savingsTitle;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public String getCorrectQuantity() {
+        return correctQuantity;
+    }
+
+    public void setCorrectQuantity(String correctQuantity) {
+        this.correctQuantity = correctQuantity;
+    }
+
+    public String getSubscriptionText() {
+        return subscriptionText;
+    }
+
+    public void setSubscriptionText(String subscriptionText) {
+        this.subscriptionText = subscriptionText;
+    }
+
+
+    public String getSavingsTitle() {
+        return savingsTitle;
+    }
+
+    public void setSavingsTitle(String savingsTitle) {
+        this.savingsTitle = savingsTitle;
+    }
+
+
+    public ItemConfig() {
+    }
+
+    /**
+     * Refactor
+     */
+    @PrimaryKey
+    private String uuid;
+
+    @SerializedName("photo_url")
+    private String itemImage;
+
+    private int quantity;
+
     private int size;
 
     @SerializedName("size_unit")
     private String sizeUnit;
+
+    @SerializedName("subscriptiontype")
+    private int subscriptionType;
+
+    @SerializedName("subscription_text")
+    private String subscriptionText;
 
     @SerializedName("item_type")
     private String itemType;
@@ -24,26 +85,9 @@ public class ItemConfig extends RealmObject implements Serializable {
     @SerializedName("price")
     private int price;
 
-    @SerializedName("subscription_type")
-    private String subscriptionType;
+    private int priority;
 
-    @SerializedName("subscription_text")
-    private String subscriptionText;
-
-    @SerializedName("photo_url")
-    private String photoUrl;
-
-    @SerializedName("subscriptiontype")
-    private int subscriptionTypeUnit;
-
-    @SerializedName("correct_quantity")
-    private String correctQuantity;
-
-    @SerializedName("in_stock")
-    private boolean in_stock;
-
-    @SerializedName("savings_title")
-    private String savingsTitle;
+    private int savings;
 
     @SerializedName("savings_text")
     private String savingsText;
@@ -54,24 +98,14 @@ public class ItemConfig extends RealmObject implements Serializable {
     @SerializedName("monthly_savings_text")
     private String monthlySavingsText;
 
-    public ItemConfig() {
-    }
+    @SerializedName("in_stock")
+    private boolean inStock;
 
-    public int getSubscriptionTypeUnit() {
-        return subscriptionTypeUnit;
-    }
 
-    public void setSubscriptionTypeUnit(int subscriptionTypeUnit) {
-        this.subscriptionTypeUnit = subscriptionTypeUnit;
-    }
+    /************************************************
+     * Getter Setter
+     ************************************************/
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getSize() {
         return size;
@@ -105,68 +139,6 @@ public class ItemConfig extends RealmObject implements Serializable {
         this.price = price;
     }
 
-    public String getSubscriptionType() {
-        return subscriptionType;
-    }
-
-    public boolean is_in_stock() {
-        return in_stock;
-    }
-
-    public void set_in_stock(boolean it_is_in_stock) {
-        in_stock = it_is_in_stock;
-    }
-
-    public void setSubscriptionType(String subscriptionType) {
-        this.subscriptionType = subscriptionType;
-    }
-
-    /* @Override
-     public boolean equals(Object object) {
-         ItemConfig itemConfig = (ItemConfig) object;
-         return this.id == itemConfig.getId();
-     }
- */
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public String getCorrectQuantity() {
-        return correctQuantity;
-    }
-
-    public void setCorrectQuantity(String correctQuantity) {
-        this.correctQuantity = correctQuantity;
-    }
-
-    public String getSubscriptionText() {
-        return subscriptionText;
-    }
-
-    public void setSubscriptionText(String subscriptionText) {
-        this.subscriptionText = subscriptionText;
-    }
-
-    public boolean isIn_stock() {
-        return in_stock;
-    }
-
-    public void setIn_stock(boolean in_stock) {
-        this.in_stock = in_stock;
-    }
-
-    public String getSavingsTitle() {
-        return savingsTitle;
-    }
-
-    public void setSavingsTitle(String savingsTitle) {
-        this.savingsTitle = savingsTitle;
-    }
-
     public String getSavingsText() {
         return savingsText;
     }
@@ -189,5 +161,61 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setMonthlySavingsText(String monthlySavingsText) {
         this.monthlySavingsText = monthlySavingsText;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getItemImage() {
+        return itemImage;
+    }
+
+    public void setItemImage(String itemImage) {
+        this.itemImage = itemImage;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(int subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public int getSavings() {
+        return savings;
+    }
+
+    public void setSavings(int savings) {
+        this.savings = savings;
+    }
+
+    public boolean isInStock() {
+        return inStock;
+    }
+
+    public void setInStock(boolean inStock) {
+        this.inStock = inStock;
     }
 }

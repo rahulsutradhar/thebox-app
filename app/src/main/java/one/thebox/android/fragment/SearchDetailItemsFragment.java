@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -29,9 +28,11 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
@@ -40,6 +41,8 @@ import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
+import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -58,7 +61,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private static final String EXTRA_BOX_ITEM_ARRAY_LIST = "extra_box_item_array_list";
     private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
     private static final int SOURCE_NON_CATEGORY = 0;
-    private static final int SOURCE_CATEGORY = 1;
+    private static final int SOURCE_BOX_CATEGORY = 1;
     private static final int SOURCE_SEARCH = 2;
     private static final int PER_PAGE_ITEMS = 10;
     private int pageNumber = 1;
@@ -74,10 +77,15 @@ public class SearchDetailItemsFragment extends Fragment {
     private List<BoxItem> boxItems = new ArrayList<>();
     private int source;
     private TextView emptyText;
-    private int positionInViewPager;
+
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int totalItems;
     private int maxPageNumber;
+
+    private Category category;
+    private int positionInViewPager;
+
+    private List<BoxItem> cartItems;
 
     /**
      * GLide Request Manager
@@ -87,6 +95,24 @@ public class SearchDetailItemsFragment extends Fragment {
     public SearchDetailItemsFragment() {
     }
 
+
+    /**
+     * Called from Box Category; Source Category
+     *
+     * @param category
+     * @return
+     */
+    public static SearchDetailItemsFragment getInstance(Category category, int positionInViewPager) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_CATEGORY, CoreGsonUtils.toJson(category));
+        bundle.putInt(Constants.EXTRA_CLICK_POSITION, positionInViewPager);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
+        SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
+        searchDetailItemsFragment.setArguments(bundle);
+        return searchDetailItemsFragment;
+    }
+
+
     public static SearchDetailItemsFragment getInstance(SearchResult searchResult, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_QUERY, searchResult.getResult());
@@ -94,10 +120,10 @@ public class SearchDetailItemsFragment extends Fragment {
         if (searchResult.getId() == 0) {
             bundle.putInt(EXTRA_SOURCE, SOURCE_NON_CATEGORY);
         } else {
-            bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+            bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         }
         bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
@@ -105,7 +131,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
     public static SearchDetailItemsFragment getInstance(Context activity, ArrayList<UserItem> userItems, ArrayList<BoxItem> boxItems, int positionInViewPager) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+        bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         bundle.putInt(EXTRA_SOURCE, SOURCE_SEARCH);
         bundle.putString(EXTRA_USER_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(userItems));
         bundle.putString(EXTRA_BOX_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(boxItems));
@@ -171,8 +197,11 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private void getDataBasedOnSource() {
         switch (source) {
-            case SOURCE_CATEGORY: {
-                getCategoryDetail();
+            case SOURCE_BOX_CATEGORY: {
+                //request server to get Box Category items
+                getBoxCategoryItems();
+
+                // getCategoryDetail();
                 break;
             }
             case SOURCE_NON_CATEGORY: {
@@ -204,12 +233,25 @@ public class SearchDetailItemsFragment extends Fragment {
     };
 
     private void initVariables() {
-        source = getArguments().getInt(EXTRA_SOURCE);
-        query = getArguments().getString(EXTRA_QUERY);
-        catId = getArguments().getInt(EXTRA_CAT_ID);
-        userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
-        boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
-        positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
+        try {
+            category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
+            positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
+            source = getArguments().getInt(EXTRA_SOURCE);
+            cartItems = CartHelper.getCart();
+
+            //old
+
+            query = getArguments().getString(EXTRA_QUERY);
+            catId = getArguments().getInt(EXTRA_CAT_ID);
+            userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
+            boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
+
+
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
+
     }
 
     private void initViews() {
@@ -225,8 +267,8 @@ public class SearchDetailItemsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 switch (source) {
-                    case SOURCE_CATEGORY: {
-                        getCategoryDetail();
+                    case SOURCE_BOX_CATEGORY: {
+                        getBoxCategoryItems();
                         break;
                     }
                     case SOURCE_NON_CATEGORY: {
@@ -264,19 +306,81 @@ public class SearchDetailItemsFragment extends Fragment {
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            setData();
             LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
             listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
             recyclerView.addOnScrollListener(listener);
             searchDetailAdapter.setCalledFromSearchDetailItem(true);
-        } else {
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
-            searchDetailAdapter.notifyDataSetChanged();
-            searchDetailAdapter.setCalledFromSearchDetailItem(true);
         }
     }
+
+    /**
+     * Set the refined list after matching with cart data
+     */
+    public void setData() {
+        if (cartItems.size() > 0) {
+            for (int i = 0; i < boxItems.size(); i++) {
+                BoxItem boxItem = boxItems.get(i);
+                int pos = isBoxItemInCart(boxItem);
+                if (pos != -1) {
+                    BoxItem cartItem = cartItems.get(pos);
+                    boxItem.setQuantity(cartItem.getQuantity());
+                    boxItem.setSelectedItemConfig(cartItem.getSelectedItemConfig());
+                    boxItems.set(i, boxItem);
+                }
+            }
+            searchDetailAdapter.setBoxItems(boxItems, userItems);
+        } else {
+            searchDetailAdapter.setBoxItems(boxItems, userItems);
+        }
+    }
+
+    /**
+     * Check if item is in Cart
+     */
+    public int isBoxItemInCart(BoxItem boxItem) {
+        int pos = -1;
+        for (int i = 0; i < cartItems.size(); i++) {
+            if (boxItem.getUuid().equalsIgnoreCase(cartItems.get(i).getUuid())) {
+                if (!boxItem.isInStock()) {
+                    CartHelper.removeItemFromCart(boxItem);
+                } else {
+                    if (ifItemConfigInStock(boxItem, cartItems.get(i).getSelectedItemConfig())) {
+                        pos = i;
+                    } else {
+                        CartHelper.removeItemFromCart(boxItem);
+                    }
+                }
+                break;
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * Check if Item Config is in Stock
+     */
+    public boolean ifItemConfigInStock(BoxItem boxItem, ItemConfig selectedItemConfig) {
+        boolean flag = false;
+        for (ItemConfig itemConfig : boxItem.getItemConfigs()) {
+            if (selectedItemConfig.getUuid().equalsIgnoreCase(itemConfig.getUuid())) {
+                if (itemConfig.isInStock()) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
+    }
+
+
+
+
+
+
+
 
 
     private void getSearchDetails() {
@@ -314,6 +418,52 @@ public class SearchDetailItemsFragment extends Fragment {
         boxItems.clear();
         categories.clear();
     }
+
+
+    /**
+     * Request Server to get Box Category Items
+     */
+    private void getBoxCategoryItems() {
+        isLoading = true;
+        linearLayoutHolder.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
+        TheBox.getAPIService()
+                .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid())
+                .enqueue(new Callback<BoxCategoryItemResponse>() {
+                    @Override
+                    public void onResponse(Call<BoxCategoryItemResponse> call, Response<BoxCategoryItemResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
+                        progressBar.setVisibility(View.GONE);
+                        isLoading = false;
+                        linearLayoutHolder.setVisibility(View.VISIBLE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+
+                                    if (response.body().getCategory() != null) {
+                                        boxItems = response.body().getCategory().getBoxItems();
+                                        setupRecyclerView();
+                                    }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BoxCategoryItemResponse> call, Throwable t) {
+                        isLoading = false;
+                        linearLayoutHolder.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
+                    }
+                });
+
+    }
+
 
     private void getCategoryDetail() {
         isLoading = true;

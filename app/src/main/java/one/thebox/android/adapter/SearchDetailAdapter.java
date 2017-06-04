@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.BoxItem;
 import one.thebox.android.Models.Category;
@@ -72,6 +71,7 @@ import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
+import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -85,6 +85,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<BoxItem> boxItems = new ArrayList<>();
     private List<UserItem> userItems = new ArrayList<>();
     private List<Invoice> useritems_quantities = new ArrayList<>();
+
     private Context mContext;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
     private boolean hasUneditableUserItem;
@@ -94,9 +95,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private int order_id;
     private OnUserItemChange onUserItemChange;
     private Order order;
-    private List<Category> suggestedCategories = new ArrayList<>();
+    private RealmList<Category> suggestedCategories = new RealmList<>();
     private int boxId;
     private boolean isCalledFromSearchDetailItem;
+
 
     /**
      * GLide Request Manager
@@ -252,13 +254,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
-        //check if adapter holds correct position
-        if (position != RecyclerView.NO_POSITION) {
-            if (boxItems.get(position).getSelectedItemConfig() == null) {
-                boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
-            }
-            searchedItemViewHolder.setViews(boxItems.get(position), position, false);
+
+        if (boxItems.get(position).getSelectedItemConfig() == null) {
+            boxItems.get(position).setSelectedItemConfig(boxItems.get(position).getSmallestInStockItemConfig());
         }
+        searchedItemViewHolder.setViews(boxItems.get(position), position);
+
     }
 
     @Override
@@ -398,7 +399,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
 
                 //image loading
-                glideRequestManager.load(itemConfig.getPhotoUrl())
+                glideRequestManager.load(itemConfig.getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImageView);
@@ -492,7 +493,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private RecyclerView recyclerViewSavings;
         private RecyclerView recyclerViewFrequency;
-        private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
+        private RemainingCategoryAdapter remainingCategoryAdapter;
         private TextView addButton, subtractButton;
         private TextView noOfItemSelected, repeat_every, out_of_stock;
         private LinearLayout savingHolder;
@@ -500,7 +501,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private ImageView productImage;
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
         private LinearLayout updateQuantityViewHolder;
-        private RelativeLayout addButtonViewHolder;
+        private RelativeLayout holderSubscribeButton;
         private int position;
         private TextView savingsTitle, savingsItemConfig, mrp;
 
@@ -510,6 +511,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewSavings.setItemViewCacheSize(20);
             recyclerViewSavings.setDrawingCacheEnabled(true);
             recyclerViewSavings.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
@@ -525,7 +527,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             size = (TextView) itemView.findViewById(R.id.text_view_size);
             no_of_options_holder = (TextView) itemView.findViewById(R.id.no_of_options);
             productImage = (ImageView) itemView.findViewById(R.id.product_image);
-            addButtonViewHolder = (RelativeLayout) itemView.findViewById(R.id.holder_add_button);
+
+            holderSubscribeButton = (RelativeLayout) itemView.findViewById(R.id.holder_subscribe_button);
             updateQuantityViewHolder = (LinearLayout) itemView.findViewById(R.id.holder_adjust_quantity);
             savingsTitle = (TextView) itemView.findViewById(R.id.savings_title);
             savingsItemConfig = (TextView) itemView.findViewById(R.id.savings_item_confid);
@@ -537,7 +540,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void setViewsBasedOnStock(boolean isOutOfStock, BoxItem boxItem, int position) {
             //true
             if (isOutOfStock) {
-                addButtonViewHolder.setVisibility(View.GONE);
+                holderSubscribeButton.setVisibility(View.GONE);
                 updateQuantityViewHolder.setVisibility(View.GONE);
                 out_of_stock.setVisibility(View.VISIBLE);
 
@@ -556,11 +559,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 //check the quantitiy and show ui
                 if (boxItem.getQuantity() > 0) {
-                    addButtonViewHolder.setVisibility(View.GONE);
+                    holderSubscribeButton.setVisibility(View.GONE);
                     updateQuantityViewHolder.setVisibility(View.VISIBLE);
                     noOfItemSelected.setText(String.valueOf(boxItem.getQuantity()));
                 } else {
-                    addButtonViewHolder.setVisibility(View.VISIBLE);
+                    holderSubscribeButton.setVisibility(View.VISIBLE);
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     noOfItemSelected.setText(String.valueOf(0));
 
@@ -577,7 +580,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
                                                 PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
                                                 new ShowcaseHelper((Activity) mContext, 2)
-                                                        .show("Add Item", "Add your favourite item to cart", addButtonViewHolder)
+                                                        .show("Add Item", "Add your favourite item to cart", holderSubscribeButton)
                                                         .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
                                                             @Override
                                                             public void onComplete() {
@@ -602,7 +605,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
-        private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position, boolean shouldScrollToPosition) {
+        private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
             if (userItems == null || userItems.isEmpty()) {
                 getAdapterPosition();
@@ -612,9 +615,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
                 @Override
                 public int compare(ItemConfig lhs, ItemConfig rhs) {
-                    if (lhs.getSubscriptionTypeUnit() > rhs.getSubscriptionTypeUnit()) {
+                    if (lhs.getSubscriptionType() > rhs.getSubscriptionType()) {
                         return 1;
-                    } else if (lhs.getSubscriptionTypeUnit() < rhs.getSubscriptionTypeUnit()) {
+                    } else if (lhs.getSubscriptionType() < rhs.getSubscriptionType()) {
                         return -1;
                     } else {
                         return 0;
@@ -624,7 +627,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             int selectedPosition = 0;
 
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if (boxItem.getSelectedItemConfig().getId() == itemConfigs.get(i).getId()) {
+                if (boxItem.getSelectedItemConfig().getUuid().equalsIgnoreCase(itemConfigs.get(i).getUuid())) {
                     selectedPosition = i;
                 }
 
@@ -632,18 +635,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
 
-            if (!shouldScrollToPosition) {
-                //  linearLayoutManager.scrollToPositionWithOffset(0, -boxItems.get(position).getHorizontalOffsetOfRecyclerView());
-            }
+            //ItemConfig with similar size to selected ItemConfig frequency
 
-          /*  SnapHelper snapHelper = new LinearSnapHelper();
-            snapHelper.attachToRecyclerView(recyclerViewFrequency);*/
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
                 public void onItemConfigItemChange(ItemConfig selectedItemConfig) {
-                    if (boxItems.get(position).getUserItemId() != 0) {
-                        changeConfig(position, selectedItemConfig.getId());
+                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
                     } else {
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
                         notifyItemChanged(getAdapterPosition());
@@ -655,25 +654,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewFrequency.setAdapter(frequencyAndPriceAdapter);
             recyclerViewFrequency.setHasFixedSize(true);
             frequencyAndPriceAdapter.notifyDataSetChanged();
-            /*recyclerViewFrequency.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    int temp = boxItems.get(position).getHorizontalOffsetOfRecyclerView();
-                    temp = temp + dx;
-                    boxItems.get(position).setHorizontalOffsetOfRecyclerView(temp);
-                }
-            });*/
             linearLayoutManager.scrollToPosition(selectedPosition);
-            if (shouldScrollToPosition) {
-                // linearLayoutManager.scrollToPositionWithOffset(selectedPosition, 0);
-            }
+            SnapHelper snapHelper = new LinearSnapHelper();
+            snapHelper.attachToRecyclerView(recyclerViewFrequency);
 
         }
 
-        private void setupRecyclerViewSuggestedCategories(List<Category> suggestedCategories) {
+        private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
 
-            remainingCategoryAdapter = new StoreRecyclerAdapter.RemainingCategoryAdapter(
+            remainingCategoryAdapter = new RemainingCategoryAdapter(
                     TheBox.getInstance(), suggestedCategories, glideRequestManager);
             remainingCategoryAdapter.setSearchDetailItemFragment(true);
             recyclerViewSavings.setLayoutManager(new LinearLayoutManager(TheBox.getInstance(),
@@ -682,11 +671,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition, final boolean shouldScrollToPosition) {
+        public void setViews(final BoxItem boxItem, int arrayListPosition) {
 
             try {
                 this.position = arrayListPosition;
                 productName.setText(boxItem.getTitle());
+
                 if (!boxItem.getBrand().isEmpty()) {
                     productBrand.setVisibility(View.VISIBLE);
                     productBrand.setText(boxItem.getBrand());
@@ -696,56 +686,36 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
 
                 //Updating no. of SKU's
-                if (boxItem.getNo_of_sku() < 2) {
+                if (boxItem.getNoOfSku() < 2) {
                     no_of_options_holder.setVisibility(View.GONE);
                 } else {
                     no_of_options_holder.setVisibility(View.VISIBLE);
-                    no_of_options_holder.setText(" + " + (boxItem.getNo_of_sku() - 1) + " More Options");
+                    no_of_options_holder.setText(boxItem.getNoOfOptions());
                 }
 
+                //Size of the ItemConfig selected
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                    if (boxItem.getSelectedItemConfig().getCorrectQuantity().equals("NA")) {
-                        size.setText(boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
-                    } else {
-                        size.setText(boxItem.getSelectedItemConfig().getCorrectQuantity() + " x " + boxItem.getSelectedItemConfig().getSize() + " " + boxItem.getSelectedItemConfig().getSizeUnit() + " " + boxItem.getSelectedItemConfig().getItemType());
-                    }
+                    size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                            + " " + boxItem.getSelectedItemConfig().getItemType());
                 }
 
-                glideRequestManager.load(boxItem.getSelectedItemConfig().getPhotoUrl())
+                glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImage);
 
-                //Monthly Savings Text
-                if (boxItem.getQuantity() > 0) {
-                    //when item is subscribed to cart
-                    if (boxItem.getSavingsTitle() != null) {
-                        if (!boxItem.getSavingsTitle().isEmpty()) {
-                            savingsTitle.setText(boxItem.getSavingsTitle());
-                            savingsTitle.setVisibility(View.VISIBLE);
-                        } else {
-                            savingsTitle.setText("");
-                            savingsTitle.setVisibility(View.GONE);
-                        }
+                //Monthly Savings Item Config
+                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                        savingsTitle.setVisibility(View.VISIBLE);
+                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
                     } else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }
-
                 } else {
-                    //when item is not subscribed to cart
-                    if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
-                        if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
-                            savingsTitle.setVisibility(View.VISIBLE);
-                            savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
-                        } else {
-                            savingsTitle.setText("");
-                            savingsTitle.setVisibility(View.GONE);
-                        }
-                    } else {
-                        savingsTitle.setText("");
-                        savingsTitle.setVisibility(View.GONE);
-                    }
+                    savingsTitle.setText("");
+                    savingsTitle.setVisibility(View.GONE);
                 }
 
                 //savings ItemConfig
@@ -761,7 +731,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     savingsItemConfig.setText("");
                     savingsItemConfig.setVisibility(View.GONE);
                 }
-
 
                 //mrp
                 if (boxItem.getSelectedItemConfig().getMrpText() != null) {
@@ -780,63 +749,50 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 productImage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String url = boxItem.getSelectedItemConfig().getPhotoUrl();
+                        String url = boxItem.getSelectedItemConfig().getItemImage();
                         FullImageActivity.showImage(url, mContext);
                     }
                 });
 
-
                 no_of_options_holder.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
-                        dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                        dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                            @Override
-                            public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                dialogFragment.dismiss();
 
-                                if (boxItem.getUserItemId() == 0) {
-                                    boxItem.setSelectedItemConfig(selectedItemConfig);
-                                    setViews(boxItem, getAdapterPosition(), true);
-                                } else {
-                                    changeConfig(getAdapterPosition(), selectedItemConfig.getId());
-                                }
-                            }
-                        });
+                        displayNumberOfOption(boxItem, position);
+
                     }
                 });
 
-
                 // Checking if item is in stock
-                if (boxItem.is_in_stock()) {
+                if (boxItem.isInStock()) {
                     setViewsBasedOnStock(false, boxItem, position);
 
-                    addButtonViewHolder.setOnClickListener(new View.OnClickListener() {
+                    holderSubscribeButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            addItemToBox(position);
+                            addItemToCart(boxItem, position);
                         }
                     });
                     addButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            updateQuantity(position, boxItem.getQuantity() + 1);
+
+                            updateQuantityInCart(boxItem, boxItem.getQuantity() + 1, position);
                         }
                     });
+
                     subtractButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (boxItem.getQuantity() > 0) {
-                                updateQuantity(position, boxItem.getQuantity() - 1);
+                            if (boxItem.getQuantity() > 0 && boxItem.getQuantity() == 1) {
+                                removeItemFromCart(boxItem, position);
                             } else {
-                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
+                                updateQuantityInCart(boxItem, boxItem.getQuantity() - 1, position);
                             }
                         }
                     });
 
-                    setupRecyclerViewFrequency(boxItem, position, shouldScrollToPosition);
+                    setupRecyclerViewFrequency(boxItem, position);
                 }
                 // If Item is not in stock
                 else {
@@ -846,6 +802,77 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 e.printStackTrace();
             }
         }
+
+        private void displayNumberOfOption(final BoxItem boxItem, final int position) {
+            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                @Override
+                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                    dialogFragment.dismiss();
+
+                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                    } else {
+                        boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                        notifyItemChanged(position);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Add BoxItem to Cart
+         */
+        private void addItemToCart(BoxItem boxItem, int position) {
+            boxItem.setQuantity(1);
+            boxItems.get(position).setQuantity(1);
+            notifyItemChanged(position);
+            CartHelper.addBoxItemToCart(boxItem);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
+        }
+
+        /**
+         * Remove BoxItem from Cart
+         */
+        private void removeItemFromCart(BoxItem boxItem, int position) {
+            boxItem.setQuantity(0);
+            boxItems.get(position).setQuantity(0);
+            notifyItemChanged(position);
+            CartHelper.removeItemFromCart(boxItem);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
+        }
+
+        /**
+         * Update Quantity of BoxItem in Cart
+         */
+        private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
+            boxItem.setQuantity(quantity);
+            boxItems.get(position).setQuantity(quantity);
+            notifyItemChanged(position);
+            CartHelper.updateQuantityInCart(boxItem, quantity);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
+        }
+
+        /**
+         * Update ItemConfig in Cart
+         */
+        private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
+            CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
+            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+            notifyItemChanged(position);
+
+            //check for background service
+            CartHelperService.checkServiceRunningWhenAdded(mContext);
+        }
+
 
         private void addItemToBox(final int position) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
@@ -1011,7 +1038,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         /**
          * CleverTap Event;
          * <p>
-         * Item Added to Car; Subscribed
+         * Item Added to Cart; Subscribed
          */
         public void setCleverTapEventItemAddedToCart(BoxItem boxItem) {
             TheBox.getCleverTap().event.push("item_added_to_cart", getParam(boxItem));
@@ -1325,7 +1352,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     savingtextView.setText("");
                 }
 
-                glideRequestManager.load(itemConfig.getPhotoUrl())
+                glideRequestManager.load(itemConfig.getItemImage())
                         .centerCrop()
                         .crossFade()
                         .into(productImageView);

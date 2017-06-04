@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -20,8 +21,6 @@ import one.thebox.android.util.IntStringComparator;
  */
 public class BoxItem extends RealmObject implements Serializable {
 
-    @SerializedName("quantity")
-    private int quantity;
 
     @Ignore
     private int userItemId;
@@ -29,24 +28,13 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("savings_title")
     private String savingsTitle;
 
-    @PrimaryKey
+
     @SerializedName("id")
     private int id;
-
-    @SerializedName("title")
-    private String title;
-
-    @SerializedName("brand")
-    private String brand;
 
     @SerializedName("savings")
     private int savings;
 
-    @SerializedName("in_stock")
-    private boolean in_stock;
-
-    @SerializedName("no_of_sku")
-    private int no_of_sku;
 
     @SerializedName("smart_item")
     private boolean isSmartItems;
@@ -54,14 +42,11 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("category_id")
     private int categoryId;
 
-    @SerializedName("itemconfigs")
-    private RealmList<ItemConfig> itemConfigs;
 
     @SerializedName("photo_url")
     private String photoUrl;
 
-    @Ignore
-    private ItemConfig selectedItemConfig;
+
     private RealmList<Category> suggestedCategory = new RealmList<>();
 
     @Ignore
@@ -70,13 +55,6 @@ public class BoxItem extends RealmObject implements Serializable {
     public BoxItem() {
     }
 
-    public ItemConfig getSelectedItemConfig() {
-        return this.selectedItemConfig;
-    }
-
-    public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
-        this.selectedItemConfig = selectedItemConfig;
-    }
 
     public int getHorizontalOffsetOfRecyclerView() {
         return horizontalOffsetOfRecyclerView;
@@ -110,36 +88,12 @@ public class BoxItem extends RealmObject implements Serializable {
         this.photoUrl = photoUrl;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
     }
 
     public int getSavings() {
@@ -150,28 +104,12 @@ public class BoxItem extends RealmObject implements Serializable {
         this.savings = savings;
     }
 
-    public int getNo_of_sku() {
-        return no_of_sku;
-    }
-
-    public void setNo_of_sku(int no_of_sku) {
-        this.no_of_sku = no_of_sku;
-    }
-
     public boolean isSmartItems() {
         return isSmartItems;
     }
 
     public void setSmartItems(boolean smartItems) {
         isSmartItems = smartItems;
-    }
-
-    public boolean is_in_stock() {
-        return in_stock;
-    }
-
-    public void set_in_stock(boolean it_is_in_stock) {
-        in_stock = it_is_in_stock;
     }
 
     public int getCategoryId() {
@@ -190,14 +128,6 @@ public class BoxItem extends RealmObject implements Serializable {
         this.savingsTitle = savingsTitle;
     }
 
-    public RealmList<ItemConfig> getItemConfigs() {
-        return itemConfigs;
-    }
-
-    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
-        this.itemConfigs = itemConfigs;
-    }
-
     public ItemConfig getItemConfigById(int id) {
         for (ItemConfig itemConfig : itemConfigs) {
             if (itemConfig.getId() == id) {
@@ -207,12 +137,125 @@ public class BoxItem extends RealmObject implements Serializable {
         return null;
     }
 
+
+    private void checkAndPrintIfNull(ItemConfig itemConfig) {
+        if (itemConfig == null) {
+            Toast.makeText(TheBox.getInstance(), "Item config is null for id " + this.getId(), Toast.LENGTH_SHORT).show();
+        } else {
+            if (itemConfig.getSizeUnit() == null ||
+                    itemConfig.getItemType() == null) {
+                Toast.makeText(TheBox.getInstance(), "Item fields are null for " + this.getId(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    public int getSelectedConfigPosition() {
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            if (getSelectedItemConfig() == itemConfigs.get(i)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+
+    /**
+     * Refactor
+     */
+
+    @PrimaryKey
+    private String uuid;
+
+    @SerializedName("title")
+    private String title;
+
+    @SerializedName("brand")
+    private String brand;
+
+    @SerializedName("itemconfigs")
+    RealmList<ItemConfig> itemConfigs;
+
+    @SerializedName("in_stock")
+    private boolean inStock;
+
+    @SerializedName("no_of_sku")
+    private int noOfSku;
+
+    @SerializedName("no_of_options")
+    private String noOfOptions;
+
+    private int quantity;
+
+    private ItemConfig selectedItemConfig;
+
+    /************************************************
+     * Helper Methods
+     ************************************************/
+
+    /**
+     * Find the Smallest ItemConfig which is in stock
+     */
+    public ItemConfig getSmallestInStockItemConfig() {
+        ItemConfig smallestItemConfig = null;
+        boolean isInStockExist = false;
+
+        try {
+            for (ItemConfig itemConfig : itemConfigs) {
+                if (itemConfig.isInStock()) {
+                    smallestItemConfig = itemConfig;
+                    isInStockExist = true;
+                    break;
+                }
+            }
+
+            if (isInStockExist == false) {
+                smallestItemConfig = itemConfigs.first();
+            }
+
+            for (int i = 0; i < itemConfigs.size(); i++) {
+                if (itemConfigs.get(i).getSubscriptionType() < smallestItemConfig.getSubscriptionType()) {
+                    //check if item config is in stock
+                    if (itemConfigs.get(i).isInStock()) {
+                        smallestItemConfig = itemConfigs.get(i);
+                    }
+                }
+            }
+        } catch (NullPointerException n) {
+            n.printStackTrace();
+        }
+        return smallestItemConfig;
+    }
+
+    /**
+     * Select all item config which matches the initial selected Item Config
+     */
+    public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {
+        if (selectedItemConfig == null) {
+            selectedItemConfig = itemConfigs.first();
+        }
+        RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
+                    && itemConfigs.get(i).getSizeUnit().equalsIgnoreCase(selectedItemConfig.getSizeUnit())
+                    && itemConfigs.get(i).getItemType().equalsIgnoreCase(selectedItemConfig.getItemType())) {
+                tempItemConfigs.add(itemConfigs.get(i));
+            }
+        }
+        return tempItemConfigs;
+    }
+
+    /**
+     * Group Item Configs
+     */
     public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
+
         TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
+
         for (int i = 0; i < itemConfigs.size(); i++) {
             String subscriptionText = itemConfigs.get(i).getSubscriptionText();
-            int subscriptionTypeUnit = itemConfigs.get(i).getSubscriptionTypeUnit();
-            IntStringObject key = new IntStringObject(subscriptionTypeUnit, subscriptionText);
+            int subscriptionType = itemConfigs.get(i).getSubscriptionType();
+            IntStringObject key = new IntStringObject(subscriptionType, subscriptionText);
 
             if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
                 RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
@@ -227,105 +270,81 @@ public class BoxItem extends RealmObject implements Serializable {
         return frequencyItemConfigHashMap;
     }
 
-    public RealmList<ItemConfig> getItemConfigsBySelectedItemConfig() {
-        if (selectedItemConfig == null) {
-            selectedItemConfig = itemConfigs.first();
-        }
-        RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
-        for (int i = 0; i < itemConfigs.size(); i++) {
-            if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
-                    && itemConfigs.get(i).getSizeUnit().equals(selectedItemConfig.getSizeUnit())
-                    && itemConfigs.get(i).getItemType().equals(selectedItemConfig.getItemType())
-                    && itemConfigs.get(i).getCorrectQuantity().equals(selectedItemConfig.getCorrectQuantity())) {
-                tempItemConfigs.add(itemConfigs.get(i));
-            }
-        }
-        return tempItemConfigs;
+
+    /************************************************
+     * Getter Setter
+     ************************************************/
+
+    public String getUuid() {
+        return uuid;
     }
 
-    private void checkAndPrintIfNull(ItemConfig itemConfig) {
-        if (itemConfig == null) {
-            Toast.makeText(TheBox.getInstance(), "Item config is null for id " + this.getId(), Toast.LENGTH_SHORT).show();
-        } else {
-            if (itemConfig.getSizeUnit() == null ||
-                    itemConfig.getItemType() == null) {
-                Toast.makeText(TheBox.getInstance(), "Item fields are null for " + this.getId(), Toast.LENGTH_SHORT).show();
-            }
-        }
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public ItemConfig getItemConfigByFrequencyAndItemConfig(ItemConfig itemConfig, String frequency) {
-        for (ItemConfig tempItemConfig : itemConfigs) {
-            if (tempItemConfig.getSubscriptionType().equals(frequency)
-                    && itemConfig.getSize() == tempItemConfig.getSize()
-                    && itemConfig.getSizeUnit().equals(tempItemConfig.getSizeUnit())
-                    && itemConfig.getPrice() == itemConfig.getPrice()) {
-                return tempItemConfig;
-            }
-        }
-        return null;
+    public RealmList<ItemConfig> getItemConfigs() {
+        return itemConfigs;
     }
 
-    public int getSelectedConfigPosition() {
-        for (int i = 0; i < itemConfigs.size(); i++) {
-            if (getSelectedItemConfig() == itemConfigs.get(i)) {
-                return i;
-            }
-        }
-        return 0;
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
     }
 
-    public ItemConfig getSmallestInStockItemConfig() {
-        ItemConfig smallestItemConfig = null;
-        boolean isInStockExist = false;
-        try {
-
-            for (ItemConfig itemConfig : itemConfigs) {
-                if (itemConfig.is_in_stock()) {
-                    smallestItemConfig = itemConfig;
-                    isInStockExist = true;
-                    break;
-                }
-            }
-
-            if (isInStockExist == false) {
-                smallestItemConfig = itemConfigs.first();
-            }
-
-            for (int i = 0; i < itemConfigs.size(); i++) {
-                if (itemConfigs.get(i).getSubscriptionTypeUnit() < smallestItemConfig.getSubscriptionTypeUnit()) {
-                    //check if item config is in stock
-                    if (itemConfigs.get(i).is_in_stock()) {
-                        smallestItemConfig = itemConfigs.get(i);
-                    }
-                }
-            }
-        } catch (NullPointerException n) {
-            n.printStackTrace();
-        }
-        return smallestItemConfig;
+    public String getTitle() {
+        return title;
     }
 
-    public boolean isIn_stock() {
-        return in_stock;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setIn_stock(boolean in_stock) {
-        this.in_stock = in_stock;
+    public boolean isInStock() {
+        return inStock;
     }
 
+    public void setInStock(boolean inStock) {
+        this.inStock = inStock;
+    }
 
-    /* @Override
-    public boolean equals(Object o) {
-        BoxItem boxItem = (BoxItem) o;
-        return boxItem != null
-                && userItemId == boxItem.getUserItemId()
-                && id == boxItem.getId()
-                && title.equals(boxItem.getTitle())
-                && brand.equals(boxItem.getBrand())
-                && savings == boxItem.getSavings()
-                && isSmartItems == boxItem.isSmartItems()
-                && categoryId == boxItem.getCategoryId()
-                && itemConfigs.equals(boxItem.getItemConfigs());
-    }*/
+    public ItemConfig getSelectedItemConfig() {
+        return this.selectedItemConfig;
+    }
+
+    public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
+        this.selectedItemConfig = selectedItemConfig;
+    }
+
+    public int getNoOfSku() {
+        return noOfSku;
+    }
+
+    public void setNoOfSku(int noOfSku) {
+        this.noOfSku = noOfSku;
+    }
+
+    public String getNoOfOptions() {
+        return noOfOptions;
+    }
+
+    public void setNoOfOptions(String noOfOptions) {
+        this.noOfOptions = noOfOptions;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
 }

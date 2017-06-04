@@ -1,4 +1,4 @@
-package one.thebox.android.services;
+package one.thebox.android.services.notification;
 
 /**
  * Created by saurabhjain on 30/11/15.

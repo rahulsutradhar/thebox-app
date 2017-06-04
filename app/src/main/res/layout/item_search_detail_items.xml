@@ -138,7 +138,7 @@
                         android:layout_weight="1"
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"
-                        android:text="55ml * 100 meter packet need"
+                        android:text=""
                         android:textColor="@color/primary_text_color"
                         android:textSize="13sp" />
 
@@ -205,7 +205,7 @@
                         android:layout_height="wrap_content">
 
                         <RelativeLayout
-                            android:id="@+id/holder_add_button"
+                            android:id="@+id/holder_subscribe_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/green_background"

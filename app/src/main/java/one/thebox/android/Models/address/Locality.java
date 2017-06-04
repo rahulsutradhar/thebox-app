@@ -20,10 +20,15 @@ public class Locality extends RealmObject implements Serializable {
     private int code;
 
     @PrimaryKey
-    private int id;
+    private String uuid;
+
     private String name;
+
     private int pincode;
 
+    /**
+     * Constructor
+     */
     public Locality() {
     }
 
@@ -37,12 +42,12 @@ public class Locality extends RealmObject implements Serializable {
         this.pincode = pincode;
     }
 
-    public int getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public int getCode() {

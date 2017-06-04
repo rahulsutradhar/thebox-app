@@ -34,15 +34,12 @@ import java.util.TimeZone;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import io.realm.Sort;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Box;
-import one.thebox.android.Models.Size;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
@@ -51,11 +48,10 @@ import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.StoreRecyclerAdapter;
 import one.thebox.android.api.Responses.CarouselApiResponse;
-import one.thebox.android.api.Responses.MyBoxResponse;
+import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
@@ -76,10 +72,12 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private View rootLayout;
     private GifImageView progressBar;
     private FloatingActionButton floatingActionButton;
-    private RealmList<Box> boxes = new RealmList<>();
+    private RealmList<Box> boxRealmList = new RealmList<>();
     private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
+
+    private RealmList<Box> boxes = new RealmList<>();
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -90,13 +88,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
-//                    if (noOfTabs > 0) {
-//                        noOfItemsInCart.setVisibility(View.VISIBLE);
-//                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
-//                    } else {
-//                        noOfItemsInCart.setVisibility(View.GONE);
-//                    }
                 }
             });
 
@@ -118,7 +109,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             initVariables();
 
             //fetch box from server
-            getMyBoxes();
+            getBoxesFromServer();
 
             if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_CAROUSEL)) {
                 //fetch carousel from server
@@ -135,8 +126,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void setUpBoxes() {
-        // Add to boxes list only if there are items in box
-        Iterator<Box> iterator = this.boxes.iterator();
+        // Add to boxRealmList list only if there are items in box
+        Iterator<Box> iterator = this.boxRealmList.iterator();
         while (iterator.hasNext()) {
             Box box = iterator.next();
             if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
@@ -157,16 +148,16 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     private void initVariables() {
-        Realm realm = TheBox.getRealm();
+       /* Realm realm = TheBox.getRealm();
         RealmQuery<Box> query = realm.where(Box.class);
         RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
         realmResults = realmResults.sort("priority", Sort.DESCENDING);
 
         RealmList<Box> boxes = new RealmList<>();
         boxes.addAll(realmResults.subList(0, realmResults.size()));
-        this.boxes.clear();
-        this.boxes.addAll(boxes);
-
+        this.boxRealmList.clear();
+        this.boxRealmList.addAll(boxes);
+*/
         /**
          * Fetch Carousel from Preferances
          */
@@ -178,6 +169,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         }
     }
 
+    /**
+     * Check Carousel Banner validity
+     */
     public void getValidOffer(ArrayList<Offer> carousel) {
         try {
 
@@ -265,18 +259,10 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-//        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
-//        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
-//            }
-//        });
-//        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getMyBoxes();
+                getBoxesFromServer();
             }
         });
     }
@@ -310,7 +296,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         super.onDetach();
     }
 
-    public void getMyBoxes() {
+   /* public void getMyBoxes() {
         Log.d("From Store", "Calling gogetmybox");
         progressBar.setVisibility(View.VISIBLE);
         connectionErrorViewHelper.isVisible(false);
@@ -322,18 +308,18 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         progressBar.setVisibility(View.GONE);
 
                         if (response.body() != null) {
-                            if (!(boxes.equals(response.body().getBoxes()))) {
-                                boxes.clear();
-                                boxes.addAll(response.body().getBoxes());
+                            if (!(boxRealmList.equals(response.body().getBoxes()))) {
+                                boxRealmList.clear();
+                                boxRealmList.addAll(response.body().getBoxes());
 
                                 //save locally
-                                storeToRealm(boxes);
+                                storeToRealm(boxRealmList);
                             }
-                        } /*else if (response.raw().code() == 401) {
+                        } *//*else if (response.raw().code() == 401) {
                             (new AccountManager(getActivity()))
                                     .delete_account_data();
                             getActivity().finish();
-                        }*/
+                        }*//*
                     }
 
                     @Override
@@ -343,7 +329,46 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         connectionErrorViewHelper.isVisible(true);
                     }
                 });
+    }*/
+
+
+    /**
+     * Fetch Boxes from Server
+     */
+    public void getBoxesFromServer() {
+
+        progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
+        Log.d("TOKEN", PrefUtils.getToken(getActivity()));
+        TheBox.getAPIService()
+                .getBoxes(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<BoxResponse>() {
+                    @Override
+                    public void onResponse(Call<BoxResponse> call, Response<BoxResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
+                        progressBar.setVisibility(View.GONE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    boxes = response.body().getBoxes();
+                                    setupRecyclerView();
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BoxResponse> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
+                    }
+                });
+
     }
+
 
     public void getCarousel() {
         TheBox.getAPIService().getCarousel()
@@ -351,16 +376,15 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                     @Override
                     public void onResponse(Call<CarouselApiResponse> call, Response<CarouselApiResponse> response) {
                         try {
-                            if (response.body() != null) {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    if (response.body().getOffers() != null) {
+                                        //save in the Preferances
+                                        PrefUtils.putString(getActivity(), Constants.CAROUSEL_BANNER, CoreGsonUtils.toJson(response.body().getOffers()));
 
-                                if (response.body().getOffers() != null) {
-
-                                    //save in the Preferances
-                                    PrefUtils.putString(getActivity(), Constants.CAROUSEL_BANNER, CoreGsonUtils.toJson(response.body().getOffers()));
-
-                                    initVariables();
+                                        initVariables();
+                                    }
                                 }
-
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

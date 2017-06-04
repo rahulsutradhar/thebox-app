@@ -46,6 +46,8 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
      */
     private Address address;
 
+    private boolean isMerge;
+
     /**
      * List Orders
      */
@@ -68,12 +70,12 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
     private int addressTypeIcon;
 
     /**
-     * Constrcutor
+     * Constructor
      */
-    public DeliveryAddressFragmentViewModel(DeliveryAddressFragment deliveryAddressFragment, Address address, RealmList<Order> orders) {
+    public DeliveryAddressFragmentViewModel(DeliveryAddressFragment deliveryAddressFragment, Address address, boolean isMerge) {
         this.deliveryAddressFragment = deliveryAddressFragment;
         this.address = address;
-        this.orders = orders;
+        this.isMerge = isMerge;
         checkAddressType();
         notifyChange();
     }
@@ -93,7 +95,7 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         //save CleverTap Event; Display Address Proceed
         saveCleverTapEventDisplayAddressProceed();
         deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
-                OrderHelper.getAddressAndOrder(orders), false));
+                isMerge, address));
     }
 
 
@@ -185,7 +187,7 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         /**
          * calledFrom = 3; Type = 3
          */
-        AddAddressFragment addAddressFragment = new AddAddressFragment(3, 3, orders, address);
+        AddAddressFragment addAddressFragment = new AddAddressFragment(3, 3, isMerge, address);
 
         FragmentManager fragmentManager = deliveryAddressFragment.getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

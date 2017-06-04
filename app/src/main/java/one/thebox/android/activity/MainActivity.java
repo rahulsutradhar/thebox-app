@@ -36,7 +36,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
-import com.squareup.haha.perflib.Main;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,23 +46,23 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.Box;
+import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
-import one.thebox.android.Models.update.SettingsResponse;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
-import one.thebox.android.services.MyInstanceIDListenerService;
-import one.thebox.android.services.MyTaskService;
-import one.thebox.android.services.RegistrationIntentService;
+import one.thebox.android.services.notification.MyInstanceIDListenerService;
+import one.thebox.android.services.notification.MyTaskService;
+import one.thebox.android.services.notification.RegistrationIntentService;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.api.Responses.GetAllAddressResponse;
@@ -76,7 +75,6 @@ import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
@@ -169,6 +167,9 @@ public class MainActivity extends BaseActivity implements
         initViews();
         setupNavigationDrawer();
 
+        //synced memory with cart
+        ProductQuantity.syncedWithCart(CartHelper.getCart(), this);
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
@@ -192,8 +193,6 @@ public class MainActivity extends BaseActivity implements
             ShowcaseHelper.removeAllTutorial();
         }
 
-        Log.d("CART", user.getCartId() + " ");
-
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,7 +200,7 @@ public class MainActivity extends BaseActivity implements
                 startActivityForResult(intent, 1);
             }
         });
-        getSettingsData();
+        //getSettingsData();
 
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
@@ -266,7 +265,7 @@ public class MainActivity extends BaseActivity implements
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems;
         if (numberOfItemIncart == -1) {
-            numberOfItems = CartHelper.getNumberOfItemsInCart();
+            numberOfItems = CartHelper.getCartSize();
         } else {
             numberOfItems = numberOfItemIncart;
         }
@@ -433,7 +432,7 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-    private void getSettingsData() {
+   /* private void getSettingsData() {
         TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
                 .enqueue(new Callback<SettingsResponse>() {
                     @Override
@@ -451,9 +450,9 @@ public class MainActivity extends BaseActivity implements
                     public void onFailure(Call<SettingsResponse> call, Throwable t) {
                     }
                 });
-    }
+    }*/
 
-    private void checkAppUpdate(SettingsResponse response) {
+   /* private void checkAppUpdate(SettingsResponse response) {
         try {
             if (null != response.getData() && response.getData().isNew_version_available()) {
                 if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
@@ -472,7 +471,7 @@ public class MainActivity extends BaseActivity implements
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * Check for Common Dialog
@@ -890,6 +889,9 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+    /**
+     * Display Category Tab with Products
+     */
     private void attachCategoriesFragment(Intent intent) {
         getToolbar().setSubtitle(null);
 
@@ -905,21 +907,23 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
-        ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
 
-        int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
-        String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
-        int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
+        if (intent.getExtras() != null) {
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName, clickedCategoryId);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
-        fragmentTransaction.commit();
+            ArrayList<Category> categories = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(Constants.EXTRA_BOX_CATEGORY), Category.class);
+            int clickedPosition = intent.getIntExtra(Constants.EXTRA_CLICK_POSITION, 0);
+            String boxName = intent.getStringExtra(Constants.EXTRA_BOX_NAME);
+            String clickedCategoryUid = intent.getStringExtra(Constants.EXTRA_CLICKED_CATEGORY_UID);
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        appBarLayout.setExpanded(true, true);
+            SearchDetailFragment fragment = SearchDetailFragment.getInstance(categories, clickedCategoryUid, clickedPosition, boxName);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
+            fragmentTransaction.commit();
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+            appBarLayout.setExpanded(true, true);
+        }
     }
 
     /**

@@ -28,6 +28,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     public static final String TAG = "Choose size and frequency";
     private static final String EXTRA_BOX_ITEM = "extra_box_item";
     TreeMap<IntStringObject, RealmList<ItemConfig>> hashMap = new TreeMap<>();
+
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private View rootView;
@@ -61,6 +62,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
         int defaultSelectedPosition = 0;
         String keySelectedPosition = boxItem.getSelectedItemConfig().getSubscriptionText();
         Set<IntStringObject> keySet = hashMap.keySet();
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity());
         int i = 0;
         for (IntStringObject key : keySet) {

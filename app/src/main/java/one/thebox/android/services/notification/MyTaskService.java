@@ -1,4 +1,4 @@
-package one.thebox.android.services;
+package one.thebox.android.services.notification;
 
 import android.content.Intent;
 

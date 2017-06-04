@@ -3,6 +3,7 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -31,13 +32,11 @@ public class User extends RealmObject implements Serializable {
     @Ignore
     public static final String FIELD_ADDRESSES = "addresses";
 
-    @PrimaryKey
-    @SerializedName("id")
-    private int id;
 
     /**
      * User Unique Id
      */
+    @PrimaryKey
     private String uuid;
 
     @SerializedName("access_token")
@@ -52,8 +51,14 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("phonenumber")
     private String phoneNumber;
 
+    private RealmList<Address> addresses;
 
-    
+
+    /**
+     * Old
+     */
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("otp_secret_key_confirmed")
     private boolean isOtpConfirmed;
@@ -66,8 +71,6 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("cart_id")
     private int cartId;
 
-    private RealmList<Address> addresses;
-
     public User() {
     }
 
@@ -79,10 +82,6 @@ public class User extends RealmObject implements Serializable {
         this.name = user.getName();
         this.localityCode = user.getLocalityCode();
         this.accessToken = user.getAccessToken();
-        this.addresses = new RealmList<>();
-        if (user.getAddresses() != null) {
-            this.addresses.addAll(user.getAddresses());
-        }
     }
 
     public User(int id, String email, String phoneNumber, boolean isOtpConfirmed, String name, String localityCode, String accessToken) {
@@ -111,13 +110,27 @@ public class User extends RealmObject implements Serializable {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public boolean isOtpConfirmed() {
+        return isOtpConfirmed;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setOtpConfirmed(boolean otpConfirmed) {
+        isOtpConfirmed = otpConfirmed;
     }
+
+
+    public String getLocalityCode() {
+        return localityCode;
+    }
+
+    public void setLocalityCode(String localityCode) {
+        this.localityCode = localityCode;
+    }
+
+    /**
+     * New
+     */
+
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -127,13 +140,6 @@ public class User extends RealmObject implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public boolean isOtpConfirmed() {
-        return isOtpConfirmed;
-    }
-
-    public void setOtpConfirmed(boolean otpConfirmed) {
-        isOtpConfirmed = otpConfirmed;
-    }
 
     public String getName() {
         if (name != null) {
@@ -146,12 +152,21 @@ public class User extends RealmObject implements Serializable {
         this.name = name;
     }
 
-    public String getLocalityCode() {
-        return localityCode;
+
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setLocalityCode(String localityCode) {
-        this.localityCode = localityCode;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getAccessToken() {
@@ -168,13 +183,5 @@ public class User extends RealmObject implements Serializable {
 
     public void setAddresses(RealmList<Address> addresses) {
         this.addresses = addresses;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 }

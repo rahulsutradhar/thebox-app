@@ -245,7 +245,7 @@ public class UserItemHolder extends BaseHolder {
         noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
         ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
         price.setText("Rs " + itemConfig.getPrice() * userItem.getQuantity());
-        frequency.setText("Repeat every " + itemConfig.getSubscriptionType().toLowerCase());
+        frequency.setText("Repeat every " + itemConfig.getSubscriptionText().toLowerCase());
 
         productName.setText(userItem.getBoxItem().getTitle());
 
@@ -273,7 +273,7 @@ public class UserItemHolder extends BaseHolder {
             }
         }
         Glide.with(mContext)
-                .load(itemConfig.getPhotoUrl())
+                .load(itemConfig.getItemImage())
                 .centerCrop()
                 .crossFade()
                 .into(productImageView);
