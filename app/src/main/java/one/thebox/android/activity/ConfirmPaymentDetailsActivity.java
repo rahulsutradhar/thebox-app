@@ -7,19 +7,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.AddressAndOrder;
-import one.thebox.android.Models.Order;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
+import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
+import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
@@ -33,10 +35,11 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
     private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
     private static final String EXTRA_IS_MERGING = "is_merging_order";
-    private static final String EXTRA_IS_CART = "is_from_cart";
     private static final String EXTRA_ORDER_ID = "extra_order_id";
     private static final String EXTRA_PAY_FROM_ORDER = "extra_pay_From_order";
 
+
+    private static final String EXTRA_IS_CART = "is_from_cart";
 
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailsAdapter adapter;
@@ -48,13 +51,40 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private int orderId;
 
 
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean isCart) {
+    private Address address;
+    private long timeSlotTimeStamp;
+    private boolean isMerge;
+    private String orderUuid;
+
+    /**
+     * Refactor
+     */
+    public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
+        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+        intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+        intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
+        return intent;
+    }
+
+    public static Intent getInstance(Context context, boolean isMerge, Address address, String orderUuid) {
+        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+        intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+        intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
+        return intent;
+    }
+
+    /**
+     * Old
+     */
+    /*public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean isCart) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
         intent.putExtra(EXTRA_IS_CART, isCart);
         return intent;
     }
-
+*/
     public static Intent getInstance(Context context, int orderId, boolean payFromOrder, ArrayList<AddressAndOrder> addressAndOrders) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(EXTRA_ORDER_ID, orderId);
@@ -75,36 +105,31 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_details);
-        user = PrefUtils.getUser(this);
-        setTitle("Payment Details");
+        setTitle("Payment Summary");
         initViews();
         initVariables();
     }
 
     private void initVariables() {
-        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
-        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
-        isCart = getIntent().getBooleanExtra(EXTRA_IS_CART, false);
-        orderId = getIntent().getIntExtra(EXTRA_ORDER_ID, 0);
-        payFromOrder = getIntent().getBooleanExtra(EXTRA_PAY_FROM_ORDER, false);
+        try {
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+            timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
+            orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
+
+            if (!isMerge) {
+                //API Request for 1st order; When there is no previous order
+                fetchPaymentSummaryForCart(true);
+            } else {
+                fetchPaymentForMergeDeliveries();
+
+            }
 
 
-        int cartId = user.getCartId();
-
-        HashMap<String, Integer> param = new HashMap<>();
-
-        //condition for dynamic query in the API
-        if (isCart) {
-            param.put("cart_id", cartId);
-        } else if (isMerging) {
-            param.put("cart_id", cartId);
-            param.put("order_id", mergeOrderId);
-        } else if (payFromOrder) {
-            param.put("order_id", orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        //call server to fetch data
-        fetchPaymentDetailsData(param);
     }
 
     private void initViews() {
@@ -120,10 +145,11 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 setCleverTapEventPaymentDetailActivity();
 
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, amountToPay);
-                intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
-                intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
-                intent.putExtra(EXTRA_IS_MERGING, isMerging);
+                intent.putExtra(Constants.EXTRA_AMOUNT_TO_PAY, amountToPay);
+                intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+                intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+                intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
+                intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID,orderUuid);
                 startActivity(intent);
 
             }
@@ -132,6 +158,75 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         recyclerViewPaymentDetail.setItemViewCacheSize(3);
         recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
         recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
+    }
+
+
+    /**
+     * API call for Payment Summary For 1st order; if previous order doesnot exist
+     */
+    public void fetchPaymentSummaryForCart(boolean isCart) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        TheBox.getAPIService()
+                .getPaymentSummaryForCart(PrefUtils.getToken(this), isCart,
+                        new PaymentSummaryRequest(ProductQuantity.getProductQuantities()))
+                .enqueue(new Callback<PaymentSummaryResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentSummaryResponse> call, Response<PaymentSummaryResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+
+                                    amountToPay = response.body().getAmountToPay();
+                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
+                                    setUpData(response.body().getPurchaseDatas());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentSummaryResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+
+    /**
+     * Api Call for Payment Summary For Merge Orders
+     */
+    public void fetchPaymentForMergeDeliveries() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService()
+                .getPaymentSummaryForMergeDeliveries(PrefUtils.getToken(this), orderUuid,
+                        new PaymentSummaryRequest(ProductQuantity.getProductQuantities()))
+                .enqueue(new Callback<PaymentSummaryResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentSummaryResponse> call, Response<PaymentSummaryResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    amountToPay = response.body().getAmountToPay();
+                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
+                                    setUpData(response.body().getPurchaseDatas());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentSummaryResponse> call, Throwable t) {
+
+                    }
+                });
+
     }
 
 

@@ -113,7 +113,7 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private RecyclerView recyclerView;
-        private StoreRecyclerAdapter.RemainingCategoryAdapter remainingCategoryAdapter;
+        private RemainingCategoryAdapter remainingCategoryAdapter;
         private ArrayList<Category> categories = new ArrayList<>();
 
         public ItemViewHolder(View itemView) {

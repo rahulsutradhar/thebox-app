@@ -3,10 +3,17 @@ package one.thebox.android.api;
 
 import java.util.Map;
 
-import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.api.RequestBodies.address.AddressRequest;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
+import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
+import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
+import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
@@ -49,14 +56,23 @@ import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
+import one.thebox.android.api.Responses.address.AddressResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
+import one.thebox.android.api.Responses.boxes.BoxResponse;
+import one.thebox.android.api.Responses.cart.CartItemResponse;
+import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
+import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.payment.MakePaymentResponse;
+import one.thebox.android.api.Responses.setting.SettingsResponse;
+import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -68,6 +84,8 @@ public interface APIService {
      */
 
     /**
+     * AUTHENTICATION
+     * <p>
      * Request OTP; SMS Authentication with Phone number
      */
     @POST("/consumer/api/v1/user-sms-auth")
@@ -85,6 +103,129 @@ public interface APIService {
     @POST("/consumer/api/v1/resend-verf")
     Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
 
+    /**
+     * User Setting API
+     */
+    @GET("/consumer/api/v1/settings")
+    Call<SettingsResponse> getSettings(@Header("Authorization") String accessToken, @Query("app_version") int appVersionCode);
+
+    /**
+     * Users Update; Get User Information
+     */
+    @POST("/consumer/api/v1/users/update")
+    Call<UpdateUserInfoResponse> updateUserInfo(@Header("Authorization") String accessToken, @Body UpdateUserInforRequest updateUserInforRequest);
+
+    /**
+     * User Address
+     * <p>
+     * Locality
+     */
+    @GET("/public/localities")
+    Call<LocalityResponse> getLocality(@Header("Authorization") String accessToken);
+
+    /**
+     * Create New Address
+     */
+    @POST("/consumer/api/v1/addresses/create")
+    Call<AddressResponse> createAddress(@Header("Authorization") String accessToken, @Body AddressRequest addressRequest);
+
+    /**
+     * Update Address
+     */
+    @POST("/consumer/api/v1/addresses/{uuid}/update")
+    Call<AddressResponse> updateAddress(@Header("Authorization") String accessToken,
+                                        @Path("uuid") String addressUuid, @Body AddressRequest addressRequest);
+
+
+    /**
+     * BOX
+     * <p>
+     * Get all Boxes
+     */
+    @GET("/consumer/api/v1/boxes")
+    Call<BoxResponse> getBoxes(@Header("Authorization") String accessToken);
+
+    /**
+     * Get all items for the category
+     */
+    @GET("/consumer/api/v1/categories")
+    Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
+
+
+    /**
+     * Sync Cart with Server
+     */
+    @POST("/consumer/api/v1/carts")
+    Call<CartItemResponse> syncCart(@Header("Authorization") String accessToken, @Body CartItemRequest cartItemRequest);
+
+
+    /**
+     * Time Slot
+     * <p>
+     * Available Time Slot General
+     */
+    @GET("/consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getTimeSlots(@Header("Authorization") String accessToken);
+
+    /**
+     * Merge Time Slot
+     */
+    @GET("/consumer/api/v1/orders/merged")
+    Call<TimeSlotResponse> getMergeTimeSlot(@Header("Authorization") String accessToken);
+
+
+    /**
+     * Payment Details or Summary
+     * <p>
+     * First Order APi
+     */
+    @POST("/consumer/api/v1/orders/summary")
+    Call<PaymentSummaryResponse> getPaymentSummaryForCart(@Header("Authorization") String accessToken,
+                                                          @Query("cart") boolean isCart, @Body PaymentSummaryRequest paymentSummaryRequest);
+
+    /**
+     * Payment Summary for Merge Deliverires
+     */
+    @POST("/consumer/api/v1/orders/{order_uuid}/summary")
+    Call<PaymentSummaryResponse> getPaymentSummaryForMergeDeliveries(@Header("Authorization") String accessToken,
+                                                                     @Path("order_uuid") String orderUuid, @Body PaymentSummaryRequest paymentSummaryRequest);
+
+
+    /**
+     * Make Payment
+     * <p>
+     * COD - Cart
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentCodCart(@Header("Authorization") String accessToken,
+                                                 @Body MakePaymentCodCartRequest makePaymentCodCartRequest);
+
+    /**
+     * Make Payment
+     * <p>
+     * COD - Merge
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentCodMerge(@Header("Authorization") String accessToken,
+                                                  @Body MakePaymentCodMergeRequest makePaymentCodMergeRequest);
+
+    /**
+     * Make Payment
+     * <p>
+     * Online - Cart
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentOnlineCart(@Header("Authorization") String accessToken,
+                                                    @Body MakePaymentOnlineCartRequest makePaymentOnlineCartRequest);
+
+    /**
+     * Make Payment
+     * <p>
+     * Online - Merge
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePaymentOnlineMerge(@Header("Authorization") String accessToken,
+                                                     @Body MakePaymentOnlineMergeRequest makePaymentOnlineMergeRequest);
 
     /**
      * Refator
@@ -118,9 +259,9 @@ public interface APIService {
     @GET("/get_all_localities")
     Call<LocalitiesResponse> getAllLocalities(@Header("authtoken") String authToken, @Query("query") String query);
 
-    @GET("/users/setting")
+   /* @GET("/users/setting")
     Call<SettingsResponse> getSettings(@Header("authtoken") String authToken, @Query("app_version") String appVersion);
-
+*/
 
     @GET("/autocomplete")
     Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("authtoken") String authToken,
@@ -242,11 +383,6 @@ public interface APIService {
     @GET("/public/app-offers")
     Call<CarouselApiResponse> getCarousel();
 
-    /**
-     * Available Time Slot General
-     */
-    @GET("/consumer/api/v1/slots-available")
-    Call<TimeSlotResponse> getTimeSlots();
 
     /**
      * Time Slot for a Order
@@ -260,11 +396,6 @@ public interface APIService {
     @GET("/consumer/api/v1/slots-available")
     Call<TimeSlotResponse> getRescheduleTimeSlot(@Query("order_id") int orderId, @Query("type") String type);
 
-    /**
-     * Get Localities
-     */
-    @GET("/public/localities")
-    Call<LocalityResponse> getLocality();
 
     /**
      * Get Payment Details

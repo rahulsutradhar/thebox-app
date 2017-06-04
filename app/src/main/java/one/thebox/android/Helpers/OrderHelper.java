@@ -221,7 +221,7 @@ public class OrderHelper {
 
     private static void sendUpdateOrderItemBroadcast() {
         EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
-        EventBus.getDefault().post(new UpdateCartEvent(1));
+        EventBus.getDefault().post(new UpdateCartEvent());
         EventBus.getDefault().post(new UpdateOrderItemEvent());
     }
 
@@ -230,7 +230,7 @@ public class OrderHelper {
     }
 
     private static void sendBroadCastToCart() {
-        EventBus.getDefault().post(new UpdateCartEvent(1));
+        EventBus.getDefault().post(new UpdateCartEvent());
     }
 
     private static void sendBroadCastToSubscription() {

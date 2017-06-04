@@ -3,9 +3,15 @@ package one.thebox.android.Models.update;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import one.thebox.android.Models.Cart;
+import one.thebox.android.Models.User;
 
 /**
  * Created by nbansal2211 on 03/01/17.
+ * <p>
+ * Modified by Developers on 02/06/17.
  */
 
 public class Setting implements Serializable {
@@ -22,6 +28,11 @@ public class Setting implements Serializable {
 
     @SerializedName("user_data_available")
     private boolean userDataAvailable;
+
+    @SerializedName("address_available")
+    private boolean addressAvailable;
+
+    private User user;
 
 
     /***************************************
@@ -66,5 +77,21 @@ public class Setting implements Serializable {
 
     public void setCommonPopupDetails(CommonPopupDetails commonPopupDetails) {
         this.commonPopupDetails = commonPopupDetails;
+    }
+
+    public boolean isAddressAvailable() {
+        return addressAvailable;
+    }
+
+    public void setAddressAvailable(boolean addressAvailable) {
+        this.addressAvailable = addressAvailable;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -27,6 +27,8 @@ import io.realm.RealmResults;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
+import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.Models.timeslot.TimeSlotInformation;
@@ -38,6 +40,7 @@ import one.thebox.android.adapter.timeslot.TimeSlotAdapter;
 import one.thebox.android.api.RequestBodies.RescheduleRequestBody;
 import one.thebox.android.api.Responses.RescheduleResponseBody;
 import one.thebox.android.api.Responses.TimeSlotResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
@@ -76,6 +79,30 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private int orderId = 0;
     private TimeSlotInformation timeSlotInformation;
 
+    private boolean isMerge;
+    private Address address;
+    private Order selectedMergeOrder;
+    private ArrayList<Order> orders;
+
+
+    /**
+     * Refactor
+     */
+    public static Intent newInstance(Context context, boolean isMerge) {
+        return new Intent(context, ConfirmTimeSlotActivity.class)
+                .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+    }
+
+    public static Intent newInstance(Context context, boolean isMerge, Address address) {
+        return new Intent(context, ConfirmTimeSlotActivity.class)
+                .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge)
+                .putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+    }
+
+
+    /**
+     * Old
+     */
     public static Intent newInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean is_rescheduling) {
         return new Intent(context, ConfirmTimeSlotActivity.class)
                 .putExtra(EXTRA_ADDRESS_AND_ORDERS, CoreGsonUtils.toJson(addressAndOrders))
@@ -92,10 +119,23 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initMergeOrders();
+        //initMergeOrders();
         initVariable();
 
-        if (is_rescheduling == true) {
+
+        if (isMerge) {
+            //merge cart
+            setContentView(R.layout.confirm_time_slot_when_user_have_orders);
+            setTitle("Merge with future deliveries");
+            initViewsCaseMergeDeliveries();
+        } else {
+            //Case First Order
+            setContentView(R.layout.activity_confirm_time_slot);
+            setTitle("Select Time Slot");
+            initViewCaseFirstOrder();
+        }
+
+        /*if (is_rescheduling == true) {
             setContentView(R.layout.activity_confirm_time_slot);
             setTitle("Reschedule Order");
             initViewCase4();
@@ -103,7 +143,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             if (hasPreviousOrder() && isCart()) {
                 setContentView(R.layout.confirm_time_slot_when_user_have_orders);
                 setTitle("Merge with future deliveries");
-                initViewsCase1();
+                initViewsCaseMergeDeliveries();
                 setupMergeDeliveryRecyclerView();
 
             } else if (!hasPreviousOrder() && isCart()) {
@@ -116,41 +156,14 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 setTitle("Select Time Slot");
                 initViewsCase3();
             }
-        }
+        }*/
     }
 
-
-    /**
-     * Case: Merge with Deliveries
-     */
-    private void initViewsCase1() {
-        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
-        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
-        proceedToPayment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (addressAndOrders.size() == 2) {
-                    addressAndOrders.set(1, new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
-                } else {
-                    addressAndOrders.add(new AddressAndOrder(addressAndOrders.get(0).getAddressId(), mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId()));
-                }
-
-                /**
-                 * Save CleverTapEvent; TimeSlotMergeWithDeliveries
-                 */
-                setCleverTapEventTimeSlotsMergeWithDeliveries(mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId());
-
-                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
-                        addressAndOrders,
-                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));
-            }
-        });
-    }
 
     /**
      * Order placing First time; Or Pay from cart
      */
-    public void initViewCase2() {
+    public void initViewCaseFirstOrder() {
         layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
@@ -178,20 +191,97 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             public void onClick(View v) {
 
                 if (selectedSlot != null) {
-                    for (int i = 0; i < addressAndOrders.size(); i++) {
-                        addressAndOrders.get(i).setSlot(selectedSlot);
-                    }
-
                     /**
                      * Save Clever Tap Event; TimeSlotsFromCart
                      */
-                    setCleverTapEventTimeSlotsFromCart();
-                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, addressAndOrders, isCart));
+                    /*setCleverTapEventTimeSlotsFromCart();*/
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, isMerge, address, selectedSlot.getTimestamp()));
                 }
             }
         });
 
     }
+
+
+    /**
+     * Case: Merge with Deliveries
+     */
+    private void initViewsCaseMergeDeliveries() {
+        timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
+        proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    if (selectedMergeOrder == null) {
+                        selectedMergeOrder = orders.get(0);
+                    }
+                    startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, isMerge,address, selectedMergeOrder.getUuid()));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                /**
+                 * Save CleverTapEvent; TimeSlotMergeWithDeliveries
+                 */
+                /*setCleverTapEventTimeSlotsMergeWithDeliveries(mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId());
+
+                startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this,
+                        addressAndOrders,
+                        mergeOrderAdapter.getOrders().get(mergeOrderAdapter.getCurrentSelection()).getId(), true));*/
+            }
+        });
+
+        //fetch time slots when you have orders
+        fetchTimeSlotForMergeDeliveries();
+    }
+
+    /**
+     * API request for Merge Timeslot
+     */
+    public void fetchTimeSlotForMergeDeliveries() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService()
+                .getMergeTimeSlot(PrefUtils.getToken(this))
+                .enqueue(new Callback<TimeSlotResponse>() {
+                    @Override
+                    public void onResponse(Call<TimeSlotResponse> call, Response<TimeSlotResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    orders = response.body().getOrders();
+                                    if (orders != null) {
+                                        setupMergeDeliveryRecyclerView(orders);
+                                    }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TimeSlotResponse> call, Throwable t) {
+
+                    }
+                });
+
+    }
+
+    /**
+     * Setup Merge with deliveries Recyclerview
+     */
+    public void setupMergeDeliveryRecyclerView(ArrayList<Order> orders) {
+        mergeOrderAdapter = new MergeOrderAdapter(this, this, orders);
+        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
+    }
+
 
     /**
      * Case: Pay from Order
@@ -268,11 +358,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         });
     }
 
-    public void setupMergeDeliveryRecyclerView() {
-        mergeOrderAdapter = new MergeOrderAdapter(this, mergeOrders);
-        timeSlotRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        timeSlotRecyclerView.setAdapter(mergeOrderAdapter);
-    }
 
     private void initMergeOrders() {
         mergeOrders = new RealmList<>();
@@ -311,7 +396,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void fetchGeneralTimeSlot() {
         final BoxLoader dialog = new BoxLoader(this).show();
 
-        TheBox.getAPIService().getTimeSlots()
+        TheBox.getAPIService().getTimeSlots(PrefUtils.getToken(this))
                 .enqueue(new Callback<TimeSlotResponse>() {
                     @Override
                     public void onResponse(Call<TimeSlotResponse> call, Response<TimeSlotResponse> response) {
@@ -548,6 +633,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      */
     private void initVariable() {
         try {
+
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+
+            /*
             addressAndOrders = CoreGsonUtils.fromJsontoArrayList(getIntent().getStringExtra(EXTRA_ADDRESS_AND_ORDERS), AddressAndOrder.class);
             is_rescheduling = getIntent().getBooleanExtra(IS_RESCHEDULING, false);
 
@@ -564,6 +654,14 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 orderId = addressAndOrders.get(i).getOrderId();
                 if (addressAndOrders.get(i).getOrder().isCart()) {
                     isCart = true;
+                }
+            }*/
+
+            if (isMerge) {
+                //get the selected Address
+                User user = PrefUtils.getUser(this);
+                if (user.getAddresses() != null) {
+                    address = user.getAddresses().first();
                 }
             }
         } catch (NullPointerException npe) {
@@ -677,4 +775,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
     }
 
+    public Order getSelectedMergeOrder() {
+        return selectedMergeOrder;
+    }
+
+    public void setSelectedMergeOrder(Order selectedMergeOrder) {
+        this.selectedMergeOrder = selectedMergeOrder;
+    }
 }

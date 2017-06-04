@@ -35,9 +35,13 @@ public class Address extends RealmObject implements Serializable {
     @Ignore
     public static final String[] ADDRESS_TYPES = {ADDRESS_TYPE_HOME, ADDRESS_TYPE_OFFICE, ADDRESS_TYPE_OTHER};
 
+
+    /**
+     * Refactor
+     */
+
     @PrimaryKey
-    @SerializedName("id")
-    private int id;
+    private String uuid;
 
     @SerializedName("society")
     private String society;
@@ -48,15 +52,28 @@ public class Address extends RealmObject implements Serializable {
     @SerializedName("street")
     private String street;
 
+    private int label;
+
+    @SerializedName("locality_uuid")
+    private String localityUuid;
+
+    private boolean isCurrentAddress;
+
+    /**
+     * Old
+     */
+
+
+    private int id;
+
     @SerializedName("locality")
     private Locality locality;
 
-    private boolean isCurrentAddress;
+
 
     @SerializedName("get_label")
     private String labelText;
 
-    private int label;
 
     @SerializedName("code")
     private int code;
@@ -131,6 +148,36 @@ public class Address extends RealmObject implements Serializable {
         this.street = street;
     }
 
+    public int getLabel() {
+        return label;
+    }
+
+    public void setLabel(int label) {
+        this.label = label;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getLocalityUuid() {
+        return localityUuid;
+    }
+
+    public void setLocalityUuid(String localityUuid) {
+        this.localityUuid = localityUuid;
+    }
+
+
+    /**
+     * OLd
+     *
+     * @return
+     */
     public Locality getLocality() {
         return locality;
     }
@@ -155,13 +202,6 @@ public class Address extends RealmObject implements Serializable {
         this.labelText = labelText;
     }
 
-    public int getLabel() {
-        return label;
-    }
-
-    public void setLabel(int label) {
-        this.label = label;
-    }
 
     public int getLocalityId() {
         return localityId;
@@ -170,4 +210,6 @@ public class Address extends RealmObject implements Serializable {
     public void setLocalityId(int localityId) {
         this.localityId = localityId;
     }
+
+
 }

@@ -6,12 +6,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.DateTimeUtil;
 
@@ -21,13 +23,15 @@ import one.thebox.android.util.DateTimeUtil;
  */
 public class MergeOrderAdapter extends BaseRecyclerAdapter {
 
-    private RealmList<Order> orders = new RealmList<>();
+    private ArrayList<Order> orders;
     private boolean isTimeSlotOrderAdapter;
-    private int currentSelection;
+    private int currentSelection = 0;
+    private ConfirmTimeSlotActivity activity;
 
-    public MergeOrderAdapter(Context context, RealmList<Order> orders) {
+    public MergeOrderAdapter(Context context, ConfirmTimeSlotActivity activity, ArrayList<Order> orders) {
         super(context);
         this.orders = orders;
+        this.activity = activity;
       /*  if (shouldHaveOrders()) {
             mViewType = RECYCLER_VIEW_TYPE_HEADER;
         } else {*/
@@ -64,11 +68,11 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
         orders.add(order);
     }
 
-    public RealmList<Order> getOrders() {
+    public ArrayList<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(RealmList<Order> orders) {
+    public void setOrders(ArrayList<Order> orders) {
         this.orders = orders;
     }
 
@@ -103,14 +107,16 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
                 currentSelection = position;
                 notifyItemChanged(currentSelection);
                 notifyItemChanged(temp);
+
+                if (activity != null) {
+                    ((ConfirmTimeSlotActivity) activity).setSelectedMergeOrder(orders.get(currentSelection));
+                }
             }
         });
     }
 
     @Override
     public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-        // HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-        //  headerViewHolder.setViews(!isAnyItemSelected);
     }
 
     @Override
@@ -120,7 +126,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orders.size()>=4?4:orders.size();
+        return orders.size();
     }
 
     @Override
@@ -156,15 +162,14 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(final Order order) {
-                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                dateTextView.setText(AddressAndOrder.getDateStringWithoutSlot(date));
-                timeSlot.setText(AddressAndOrder.getSlotString(new SimpleDateFormat("hh").format(date)));
-                radioButton.setClickable(false);
-                if (getAdapterPosition() == currentSelection) {
-                    radioButton.setChecked(true);
-                } else {
-                    radioButton.setChecked(false);
-                }
+            dateTextView.setText(order.getDate());
+            timeSlot.setText(order.getTimeSlot());
+            radioButton.setClickable(false);
+            if (getAdapterPosition() == currentSelection) {
+                radioButton.setChecked(true);
+            } else {
+                radioButton.setChecked(false);
+            }
         }
     }
 }

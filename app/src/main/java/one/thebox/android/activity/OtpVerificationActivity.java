@@ -29,6 +29,7 @@ import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +50,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     private String uuid;
     private String otp;
     private AuthenticationService authenticationService;
+    private int requestCounter = 0;
+    BoxLoader dialog;
 
     public static Intent getInstance(Context context, String phoneNumber, String uuid) {
         return new Intent(context, OtpVerificationActivity.class)
@@ -220,7 +223,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
      */
     public void verifyOtpAuthtentication() {
 
-        final BoxLoader dialog = new BoxLoader(this).show();
+        dialog = new BoxLoader(this).show();
 
         //unique id and otp number
         TheBox.getAPIService()
@@ -228,7 +231,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                 .enqueue(new Callback<VerifyOtpResponse>() {
                     @Override
                     public void onResponse(Call<VerifyOtpResponse> call, Response<VerifyOtpResponse> response) {
-                        dialog.dismiss();
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body().isStatus()) {
@@ -236,8 +238,10 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     //save data in preferance
                                     PrefUtils.saveUser(OtpVerificationActivity.this, response.body().getUser());
 
-                                    String accessToken = "Token token=\"" + response.body().getUser().getAccessToken() + "\"";
-                                    PrefUtils.saveToken(OtpVerificationActivity.this, accessToken);
+                                    if (response.body().getUser().getAccessToken() != null) {
+                                        String accessToken = "Token token=\"" + response.body().getUser().getAccessToken() + "\"";
+                                        PrefUtils.saveToken(OtpVerificationActivity.this, accessToken);
+                                    }
 
                                     PrefUtils.putBoolean(OtpVerificationActivity.this, Keys.IS_AUTHENTICATED, true);
 
@@ -250,14 +254,15 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     setUserLoginEventCleverTap(response.body().getUser());
 
                                     //Setting Api Call then move to Home
+                                    fetchSettingsfromServer();
 
-                                    //navigate to Home
-                                    navigateToHome();
                                 } else {
+                                    dialog.dismiss();
                                     otpVerificationEditText.setError(response.body().getMessage());
                                 }
 
                             } else {
+                                dialog.dismiss();
                                 if (response != null && !response.isSuccessful() && response.errorBody() != null) {
                                     //parse error send by the server and show message
                                     Converter<ResponseBody, VerifyOtpResponse> errorConverter =
@@ -271,6 +276,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                 }
                             }
                         } catch (Exception e) {
+                            dialog.dismiss();
                             e.printStackTrace();
                             Toast.makeText(OtpVerificationActivity.this, "Something went wrong. Please try again. ", Toast.LENGTH_SHORT).show();
                         }
@@ -285,6 +291,9 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     }
 
 
+    /**
+     * Check if otp is not null
+     */
     private boolean isValidOtp() {
         if (otpVerificationEditText.getText().toString().isEmpty()) {
             otpVerificationEditText.setError("Otp could not be empty");
@@ -292,6 +301,33 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         }
         otp = otpVerificationEditText.getText().toString();
         return true;
+    }
+
+    /**
+     * Request Server to send Setting data
+     */
+    public void fetchSettingsfromServer() {
+        requestCounter++;
+        new SettingService().fetchSettingsFromServer(this, this, 1);
+    }
+
+    /**
+     * Check if Setting call is Successful
+     */
+    public void setServerResponseForSettingsCall(boolean isSuccess) {
+        if (isSuccess) {
+            dialog.dismiss();
+            navigateToHome();
+        } else {
+            if (requestCounter > 1) {
+                dialog.dismiss();
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                requestCounter = 0;
+                navigateToHome();
+            } else {
+                fetchSettingsfromServer();
+            }
+        }
     }
 
     public void navigateToHome() {
