@@ -131,7 +131,7 @@ public class OrderItemsActivity extends BaseActivity {
 
     private void setupRecyclerView() {
         userItemRecyclerAdapter = new SearchDetailAdapter(this, glideRequestManager);
-        userItemRecyclerAdapter.setBoxItems(null, userItems);
+       // userItemRecyclerAdapter.setBoxItems(null, userItems);
         userItemRecyclerAdapter.setUserItemQuantities(order.getId(), order.getUserItemQuantities());
         if (order.isPaid()) {
             userItemRecyclerAdapter.setHide_quantity_selector_in_this_order_item_view(true);

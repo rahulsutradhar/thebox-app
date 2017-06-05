@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.ApiResponse;

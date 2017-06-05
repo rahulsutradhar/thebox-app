@@ -3,13 +3,12 @@ package one.thebox.android.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import one.thebox.android.Models.items.BoxItem;
 
 /**
  * Created by Ajeet Kumar Meena on 25-04-2016.

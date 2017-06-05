@@ -111,5 +111,9 @@ public class Constants {
      */
     public static final String EXTRA_SELECTED_ORDER_UUID = "extra_selected_order_uuid";
 
+    /**
+     * EXTRA SUBSCRIBE ITEM
+     */
+    public static final String EXTRA_SUBSCRIBE_ITEM = "extra_subscribe_item";
 
 }

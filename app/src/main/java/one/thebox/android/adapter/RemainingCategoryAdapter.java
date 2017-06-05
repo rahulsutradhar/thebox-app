@@ -12,20 +12,15 @@ import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.realm.Realm;
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.UserCategory;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;
-import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**

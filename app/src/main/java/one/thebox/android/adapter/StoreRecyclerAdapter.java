@@ -8,25 +8,16 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Events.OnCategorySelectEvent;
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
@@ -35,7 +26,6 @@ import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.carousel.AdapterCarousel;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 

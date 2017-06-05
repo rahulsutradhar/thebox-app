@@ -30,11 +30,12 @@ import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
@@ -73,7 +74,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private String query;
     private int catId = -1;
     private RealmList<Category> categories = new RealmList<>();
-    private List<UserItem> userItems = new ArrayList<>();
+    private List<SubscribeItem> subscribeItems = new ArrayList<>();
     private List<BoxItem> boxItems = new ArrayList<>();
     private int source;
     private TextView emptyText;
@@ -243,7 +244,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
             query = getArguments().getString(EXTRA_QUERY);
             catId = getArguments().getInt(EXTRA_CAT_ID);
-            userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
+            //userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
             boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
 
 
@@ -297,7 +298,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private void setupRecyclerView() {
         linearLayoutHolder.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-        if (boxItems.isEmpty() && userItems.isEmpty()) {
+        if (boxItems.isEmpty() && subscribeItems.isEmpty()) {
             emptyText.setVisibility(View.VISIBLE);
         } else {
             emptyText.setVisibility(View.GONE);
@@ -331,9 +332,9 @@ public class SearchDetailItemsFragment extends Fragment {
                     boxItems.set(i, boxItem);
                 }
             }
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            searchDetailAdapter.setBoxItems(boxItems, subscribeItems);
         } else {
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
+            searchDetailAdapter.setBoxItems(boxItems, subscribeItems);
         }
     }
 
@@ -376,13 +377,6 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
 
-
-
-
-
-
-
-
     private void getSearchDetails() {
         linearLayoutHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
@@ -394,8 +388,8 @@ public class SearchDetailItemsFragment extends Fragment {
                         connectionErrorViewHelper.isVisible(false);
                         if (response.body() != null) {
                             clearData();
-                            userItems.add(response.body().getMySearchItem());
-                            userItems.addAll(response.body().getMyNonSearchedItems());
+                            //userItems.add(response.body().getMySearchItem());
+                            //userItems.addAll(response.body().getMyNonSearchedItems());
                             boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
                             categories.add(response.body().getSearchedCategory());
@@ -414,7 +408,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     private void clearData() {
-        userItems.clear();
+        //  userItems.clear();
         boxItems.clear();
         categories.clear();
     }
@@ -529,12 +523,12 @@ public class SearchDetailItemsFragment extends Fragment {
             for (BoxItem item : bItems) {
                 map.put(item.getId(), item);
             }
-            userItems.clear();
+            //  userItems.clear();
             for (UserItem item : items) {
 
                 //Item subscribed and has devilvery scheduled
                 if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
-                    userItems.add(item);
+                    // userItems.add(item);
                 }// item not subscribed but is in cart; no delivery scheduled
                 else if (item.getStillSubscribed()) {
 

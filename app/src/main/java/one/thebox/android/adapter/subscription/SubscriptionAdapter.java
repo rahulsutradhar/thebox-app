@@ -1,4 +1,4 @@
-package one.thebox.android.adapter;
+package one.thebox.android.adapter.subscription;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,11 +18,13 @@ import java.util.List;
 
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.OrderedUserItem;
+import one.thebox.android.Models.user.Subscription;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
@@ -31,8 +33,10 @@ import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.
+ * <p>
+ * Updated by Developers on 05-06-2017.
  */
-public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
+public class SubscriptionAdapter extends BaseRecyclerAdapter {
 
     private Saving saving;
     private int stickyHeaderHeight = 0;
@@ -44,18 +48,18 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     private RequestManager glideRequestManager;
 
     /**
-     * User Ordered Item
+     * User Subscription
      */
-    private List<OrderedUserItem> orderedUserItems = new ArrayList<>();
+    private ArrayList<Subscription> subscriptions = new ArrayList<>();
 
-    public MyBoxRecyclerAdapter(Context context, RequestManager glideRequestManager) {
+    public SubscriptionAdapter(Context context, RequestManager glideRequestManager) {
         super(context);
         this.context = context;
         this.glideRequestManager = glideRequestManager;
     }
 
-    public List<OrderedUserItem> getOrderedUserItems() {
-        return orderedUserItems;
+    public ArrayList<Subscription> getSubscriptions() {
+        return subscriptions;
     }
 
     public Context getContext() {
@@ -66,9 +70,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         this.context = context;
     }
 
-    public void setOrderedUserItems(List<OrderedUserItem> orderedUserItems) {
-        this.orderedUserItems.clear();
-        this.orderedUserItems.addAll(orderedUserItems);
+    public void setSubscriptions(ArrayList<Subscription> subscriptions) {
+        this.subscriptions.clear();
+        this.subscriptions.addAll(subscriptions);
         notifyDataSetChanged();
     }
 
@@ -114,9 +118,9 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
 
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(orderedUserItems.get(position), position);
+        itemViewHolder.setViews(subscriptions.get(position), position);
 
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
+       /* if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
             new ShowcaseHelper((Activity) mContext, 3)
                     .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
                     .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
@@ -128,7 +132,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
                         }
                     });
-        }
+        }*/
     }
 
     @Override
@@ -143,7 +147,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return orderedUserItems.size();
+        return subscriptions.size();
     }
 
     @Override
@@ -167,7 +171,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
     }
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
-        private SearchDetailAdapter userItemRecyclerAdapter;
+        private SearchDetailAdapter subscribeItemAdapter;
         private RecyclerView recyclerViewUserItems;
         private TextView title;
 
@@ -175,8 +179,8 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(orderedUserItems.get(getAdapterPosition()).getBoxId(),
-                        orderedUserItems.get(getAdapterPosition()).getTitle()));
+                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(subscriptions.get(getAdapterPosition()).getBoxId(),
+                        subscriptions.get(getAdapterPosition()).getTitle()));
 
                 mContext.startActivity(new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
@@ -193,7 +197,7 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.useritem_list_recycler_view);
+            this.recyclerViewUserItems = (RecyclerView) itemView.findViewById(R.id.subscription_list_recycler_view);
             this.title = (TextView) itemView.findViewById(R.id.title);
 
             recyclerViewUserItems.setNestedScrollingEnabled(false);
@@ -205,10 +209,10 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
 
         }
 
-        public void setViews(final OrderedUserItem orderedUserItem, final int position) {
+        public void setViews(final Subscription subscription, final int position) {
 
             try {
-                if (orderedUserItem.getUserItems() == null || orderedUserItem.getUserItems().isEmpty()) {
+                if (subscription.getSubscribeItems() == null || subscription.getSubscribeItems().isEmpty()) {
                     this.recyclerViewUserItems.setVisibility(View.GONE);
                     this.title.setVisibility(View.GONE);
                 } else {
@@ -217,21 +221,23 @@ public class MyBoxRecyclerAdapter extends BaseRecyclerAdapter {
                     this.title.setVisibility(View.VISIBLE);
 
                     //set title the box category
-                    this.title.setText(orderedUserItem.getTitle());
+                    this.title.setText(subscription.getTitle());
 
-                    this.userItemRecyclerAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
-                    this.userItemRecyclerAdapter.setBoxItems(null, orderedUserItem.getUserItems());
-                    this.userItemRecyclerAdapter.addOnUserItemChangeListener(new SearchDetailAdapter.OnUserItemChange() {
+                    this.subscribeItemAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
+                    this.subscribeItemAdapter.setSubscribeItems(subscription.getSubscribeItems());
+
+                    this.subscribeItemAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
+                    this.subscribeItemAdapter.setBoxItems(null, subscription.getSubscribeItems());
+                    this.subscribeItemAdapter.addOnSubscribeItemChangeListener(new SearchDetailAdapter.OnSubscribeItemChange() {
                         @Override
-                        public void onUserItemChange(List<UserItem> userItems) {
-
-                            orderedUserItems.get(position).setAllUserItems(userItems);
-                            setViews(orderedUserItems.get(position), position);
-
+                        public void onSubscribeItem(List<SubscribeItem> subscribeItems) {
+                            subscriptions.get(position).setAllSubscribeItem(subscribeItems);
+                            setViews(subscriptions.get(position), position);
                         }
                     });
-                    this.userItemRecyclerAdapter.setCalledFromSearchDetailItem(false);
-                    this.recyclerViewUserItems.setAdapter(userItemRecyclerAdapter);
+
+                    this.subscribeItemAdapter.setCalledFromSearchDetailItem(false);
+                    this.recyclerViewUserItems.setAdapter(subscribeItemAdapter);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

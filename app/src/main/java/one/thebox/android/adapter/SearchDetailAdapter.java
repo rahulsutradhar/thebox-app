@@ -42,12 +42,13 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.Models.Order;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -93,11 +94,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
     private int order_id;
-    private OnUserItemChange onUserItemChange;
     private Order order;
     private RealmList<Category> suggestedCategories = new RealmList<>();
     private int boxId;
     private boolean isCalledFromSearchDetailItem;
+
+    /**
+     * User Subscribed Item
+     */
+    private List<SubscribeItem> subscribeItems = new ArrayList<>();
+
+    /**
+     * Interface
+     */
+    private OnSubscribeItemChange onSubscribeItemChange;
 
 
     /**
@@ -120,6 +130,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void setUserItemQuantities(int order_id, RealmList<Invoice> useritems_quantities) {
         this.useritems_quantities = useritems_quantities;
         this.order_id = order_id;
+    }
+
+    public List<SubscribeItem> getSubscribeItems() {
+        return subscribeItems;
+    }
+
+    public void setSubscribeItems(List<SubscribeItem> subscribeItems) {
+        this.subscribeItems = subscribeItems;
     }
 
     private void setSuggestedCategoriesAndBoxId(int boxId, List<Category> suggestedCategories) {
@@ -173,8 +191,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.hasUneditableUserItem = hasUneditableUserItem;
     }
 
-    public void addOnUserItemChangeListener(OnUserItemChange onUserItemChange) {
-        this.onUserItemChange = onUserItemChange;
+    /**
+     * Interface Called from SubscriptionAdapter
+     *
+     * @param onSubscribeItemChange
+     */
+    public void addOnSubscribeItemChangeListener(OnSubscribeItemChange onSubscribeItemChange) {
+        this.onSubscribeItemChange = onSubscribeItemChange;
     }
 
     public int getPositionInViewPager() {
@@ -189,12 +212,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
     }
 
-    public void setBoxItems(List<BoxItem> boxItems, List<UserItem> userItems) {
+    public void setBoxItems(List<BoxItem> boxItems, List<SubscribeItem> subscribeItems) {
         if (boxItems != null) {
             this.boxItems = boxItems;
         }
-        if (userItems != null) {
-            this.userItems = userItems;
+        if (subscribeItems != null) {
+            this.subscribeItems = subscribeItems;
         }
         notifyDataSetChanged();
     }
@@ -204,10 +227,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewType) {
             case VIEW_TYPE_USER_ITEM: {
+                //subscribe item
                 View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_user_item, parent, false);
                 return new UserItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
+                //product item
                 View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_search_detail_items, parent, false);
                 return new SearchedItemViewHolder(itemView);
             }
@@ -241,14 +266,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+    /**
+     * User Subscribe Item
+     */
     private void bindMyItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
         UserItemViewHolder itemViewHolder = (UserItemViewHolder) holder;
         //check if adapter holds correct position
         if (position != RecyclerView.NO_POSITION) {
-            userItems.get(position).getBoxItem().setSelectedItemConfig(
-                    userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
-                    ));
-            itemViewHolder.setViews(userItems.get(position), position);
+            itemViewHolder.setViews(subscribeItems.get(position), position);
         }
     }
 
@@ -264,14 +289,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return (boxItems == null ? 0 : boxItems.size()) + (userItems == null ? 0 : userItems.size());
+        return (boxItems == null ? 0 : boxItems.size()) + (subscribeItems == null ? 0 : subscribeItems.size());
     }
 
     @Override
     public int getItemViewType(int position) {
         int index;
         if (useritems_quantities.isEmpty()) {
-            index = position < (userItems == null ? 0 : userItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
+            index = position < (subscribeItems == null ? 0 : subscribeItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
         } else {
             index = VIEW_TYPE_ORDER_ITEM;
         }
@@ -1067,10 +1092,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
+
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, edit, savingtextView;
+                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
         private ImageView productImageView;
         private RelativeLayout quantityHolder;
 
@@ -1086,111 +1112,58 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             quantityHolder = (RelativeLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
-            edit = (TextView) itemView.findViewById(R.id.user_item_edit_button);
+            editSubscription = (TextView) itemView.findViewById(R.id.user_item_edit_button);
             savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
-        private void setViews(final UserItem userItem, final int arrayListPosition) {
+        private void setViews(final SubscribeItem subscribeItem, final int arrayListPosition) {
 
-            quantityHolder.setVisibility(View.VISIBLE);
+            try {
+                quantityHolder.setVisibility(View.VISIBLE);
+                noOfItemSelected.setText(String.valueOf(subscribeItem.getQuantity()));
+                ItemConfig selectedItemConfig = subscribeItem.getSelectedItemConfig();
+                price.setText(Constants.RUPEE_SYMBOL + " " + selectedItemConfig.getPrice() * selectedItemConfig.getQuantity());
+                frequency.setText("Repeat " + selectedItemConfig.getSubscriptionText().toLowerCase());
+
+                productName.setText(subscribeItem.getBoxItem().getTitle());
+
+                config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                arrivingTime.setText(subscribeItem.getArrivingAt());
+
+
+                //saving for selected item config
+                if (subscribeItem.getSubscribedSavingText() != null) {
+                    if (!subscribeItem.getSubscribedSavingText().isEmpty()) {
+                        savingtextView.setVisibility(View.VISIBLE);
+                        savingtextView.setText(subscribeItem.getSubscribedSavingText());
+                    } else {
+                        savingtextView.setVisibility(View.GONE);
+                        savingtextView.setText("");
+                    }
+                } else {
+                    savingtextView.setVisibility(View.GONE);
+                    savingtextView.setText("");
+                }
+
+                glideRequestManager.load(selectedItemConfig.getItemImage())
+                        .centerCrop()
+                        .crossFade()
+                        .into(productImageView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             /**
              *  Edit Subscription Botton Dialog upon clicking Edit Subscription
              */
 
-            edit.setOnClickListener(new View.OnClickListener() {
+            editSubscription.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final EditItemFragment dialogFragment = EditItemFragment.newInstance();
+                    //edit subscription
+                    doEditSubscription(subscribeItem, arrayListPosition);
 
-                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                            , EditItemFragment.TAG);
-                    dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
-                        @Override
-                        public void onEditItemoptionSelected(int actionUserItemSubscription) {
-
-                            dialogFragment.dismiss();
-
-                            // true if change_size was clicked
-                            // false otherwise
-                            switch (actionUserItemSubscription) {
-                                case 1:
-                                    //Change Item Config
-                                    final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                        @Override
-                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                            dialogFragment.dismiss();
-
-                                            changeConfig(arrayListPosition, selectedItemConfig.getId());
-                                        }
-                                    });
-                                    break;
-                                case 2:
-                                    //Reschedule
-                                    final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(userItem);
-                                    deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
-                                    deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
-                                        @Override
-                                        public void onDelayActionCompleted(UserItem userItem) {
-
-                                            if (userItem != null) {
-                                                userItems.set(arrayListPosition, userItem);
-                                            }
-                                            if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
-                                            }
-                                            notifyItemChanged(getAdapterPosition());
-
-                                            //refetch orders and update, which also updates locally
-                                            UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
-                                            /*
-                                            *when called from SearchDeatilItemFragment update Subscription and Deliveries
-                                            *
-                                            * Else only Update only Deleivery
-                                            * */
-                                            if (isCalledFromSearchDetailItem) {
-                                                updateDeliveriesAfterReschedule.setNotifyTo(Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
-                                            } else {
-                                                updateDeliveriesAfterReschedule.setNotifyTo(Constants.DELIVERIES);
-                                            }
-                                            updateDeliveriesAfterReschedule.setShallNotifyAll(false);
-                                            EventBus.getDefault().post(updateDeliveriesAfterReschedule);
-
-                                            if (deliveryBottomSheet != null) {
-                                                deliveryBottomSheet.dismiss();
-                                            }
-
-                                        }
-                                    });
-                                    break;
-                                case 3:
-                                    //cancel subscription
-                                    if (userItem.getQuantity() > 0) {
-                                        MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                                title("Unsubscribe " + userItem.getBoxItem().getTitle()).
-                                                positiveText("Cancel")
-                                                .negativeText("Unsubscribe").
-                                                        onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                            @Override
-                                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                                    openCancelDialog(userItem, getAdapterPosition());
-                                                                }
-                                                            }
-                                                        }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
-                                        dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                                        dialog.show();
-                                    } else {
-                                        //error handling
-                                    }
-
-                                    break;
-                            }
-                        }
-                    });
                 }
             });
 
@@ -1207,10 +1180,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
                                         PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
-                                        if (userItem.getQuantity() == 0) {
+                                        if (subscribeItem.getQuantity() == 0) {
                                             addItemToBox(getAdapterPosition());
                                         } else {
-                                            updateQuantity(getAdapterPosition(), userItem.getQuantity() + 1);
+                                            updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() + 1);
                                         }
                                     }
                                 })
@@ -1226,10 +1199,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 .show();
 
                     } else {
-                        if (userItem.getQuantity() == 0) {
+                        if (subscribeItem.getQuantity() == 0) {
                             addItemToBox(getAdapterPosition());
                         } else {
-                            updateQuantity(getAdapterPosition(), userItem.getQuantity() + 1);
+                            updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() + 1);
                         }
                     }
                 }
@@ -1249,23 +1222,23 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                         PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
 
-                                        if (userItem.getQuantity() > 1) {
+                                        if (subscribeItem.getQuantity() > 1) {
                                             if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                                                updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() - 1);
                                             }
-                                        } else if (userItem.getQuantity() == 1) {
+                                        } else if (subscribeItem.getQuantity() == 1) {
                                             MaterialDialog dialog_unsubscribe = new MaterialDialog.Builder(mContext).
-                                                    title("Unsubscribe " + userItem.getBoxItem().getTitle()).
+                                                    title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
                                                     positiveText("Cancel")
                                                     .negativeText("Unsubscribe").
                                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                                 @Override
                                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                                        openCancelDialog(userItem, getAdapterPosition());
+                                                                        // openCancelDialog(userItem, getAdapterPosition());
                                                                     }
                                                                 }
-                                                            }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                                            }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                                             dialog_unsubscribe.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                                             dialog_unsubscribe.show();
                                         } else {
@@ -1286,23 +1259,23 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 .show();
 
                     } else {
-                        if (userItem.getQuantity() > 1) {
+                        if (subscribeItem.getQuantity() > 1) {
                             if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                updateQuantity(getAdapterPosition(), userItem.getQuantity() - 1);
+                                updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() - 1);
                             }
-                        } else if (userItem.getQuantity() == 1) {
+                        } else if (subscribeItem.getQuantity() == 1) {
                             MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                    title("Unsubscribe " + userItem.getBoxItem().getTitle()).
+                                    title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
                                     positiveText("Cancel")
                                     .negativeText("Unsubscribe").
                                             onNegative(new MaterialDialog.SingleButtonCallback() {
                                                 @Override
                                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                     if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                        openCancelDialog(userItem, getAdapterPosition());
+                                                        // openCancelDialog(userItem, getAdapterPosition());
                                                     }
                                                 }
-                                            }).content("Unsubscribing " + userItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                            }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                             dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
                             dialog.show();
                         } else {
@@ -1313,52 +1286,107 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             });
 
-            try {
+        }
 
-                noOfItemSelected.setText(String.valueOf(userItem.getQuantity()));
-                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * userItem.getQuantity());
-                frequency.setText("Repeat " + itemConfig.getSubscriptionText().toLowerCase());
+        /**
+         * Edit Subscription
+         */
+        private void doEditSubscription(final SubscribeItem subscribeItem, final int position) {
+            final EditItemFragment dialogFragment = EditItemFragment.newInstance();
 
-                productName.setText(userItem.getBoxItem().getTitle());
+            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                    , EditItemFragment.TAG);
+            dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
+                @Override
+                public void onEditItemoptionSelected(int actionUserItemSubscription) {
 
-                if (itemConfig.getCorrectQuantity().equals("NA")) {
-                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-                } else {
-                    config.setText(itemConfig.getCorrectQuantity() + " x " +
-                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-                }
+                    dialogFragment.dismiss();
 
-                if (isHasUneditableUserItem()) {
-                    arrivingTime.setVisibility(View.GONE);
-                }
-                if (userItem.getNextDeliveryScheduledAt() == null || userItem.getNextDeliveryScheduledAt().isEmpty()) {
-                    arrivingTime.setText("Item is added to your cart");
-                } else {
-                    arrivingTime.setText(userItem.getArrivingAt());
-                }
+                    // true if change_size was clicked
+                    // false otherwise
+                    switch (actionUserItemSubscription) {
+                        case 1:
+                            //Change Item Config
+                                    /*final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                        @Override
+                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                            dialogFragment.dismiss();
 
-                //saving for selected item config
-                if (userItem.getSelectedItemConfigSavingsTitle() != null) {
-                    if (!userItem.getSelectedItemConfigSavingsTitle().isEmpty()) {
-                        savingtextView.setVisibility(View.VISIBLE);
-                        savingtextView.setText(userItem.getSelectedItemConfigSavingsTitle());
-                    } else {
-                        savingtextView.setVisibility(View.GONE);
-                        savingtextView.setText("");
+                                            //changeConfig(arrayListPosition, selectedItemConfig.getId());
+                                        }
+                                    });*/
+                            break;
+                        case 2:
+                            //Reschedule
+                            final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(subscribeItem);
+                            deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
+                            deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
+                                @Override
+                                public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
+
+                                    /*if (userItem != null) {
+                                        userItems.set(arrayListPosition, userItem);
+                                    }*/
+
+                                    if (onSubscribeItemChange != null) {
+                                        onSubscribeItemChange.onSubscribeItem(subscribeItems);
+                                    }
+                                   /* if (onUserItemChange != null) {
+                                        onUserItemChange.onUserItemChange(userItems);
+                                    }*/
+                                    notifyItemChanged(getAdapterPosition());
+
+                                    //refetch orders and update, which also updates locally
+                                    UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
+                                    /**
+                                     * when called from SearchDeatilItemFragment update Subscription and Deliveries
+                                     *  Else only Update only Deleivery
+                                     */
+
+                                    if (isCalledFromSearchDetailItem) {
+                                        updateDeliveriesAfterReschedule.setNotifyTo(Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
+                                    } else {
+                                        updateDeliveriesAfterReschedule.setNotifyTo(Constants.DELIVERIES);
+                                    }
+                                    updateDeliveriesAfterReschedule.setShallNotifyAll(false);
+                                    EventBus.getDefault().post(updateDeliveriesAfterReschedule);
+
+                                    if (deliveryBottomSheet != null) {
+                                        deliveryBottomSheet.dismiss();
+                                    }
+
+                                }
+                            });
+                            break;
+                        case 3:
+                            //cancel subscription
+                            if (subscribeItem.getQuantity() > 0) {
+                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                        title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
+                                        positiveText("Cancel")
+                                        .negativeText("Unsubscribe").
+                                                onNegative(new MaterialDialog.SingleButtonCallback() {
+                                                    @Override
+                                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
+                                                            // openCancelDialog(userItem, getAdapterPosition());
+                                                        }
+                                                    }
+                                                }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                dialog.show();
+                            } else {
+                                //error handling
+                            }
+
+                            break;
                     }
-                } else {
-                    savingtextView.setVisibility(View.GONE);
-                    savingtextView.setText("");
                 }
+            });
 
-                glideRequestManager.load(itemConfig.getItemImage())
-                        .centerCrop()
-                        .crossFade()
-                        .into(productImageView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
         }
 
@@ -1423,10 +1451,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 userItems.remove(position);
                                                 notifyItemRemoved(getAdapterPosition());
                                             }
-                                            if (onUserItemChange != null) {
+                                          /*  if (onUserItemChange != null) {
                                                 onUserItemChange.onUserItemChange(userItems);
                                             }
-
+*/
                                             //update Savings Card in Subscription tab
                                             EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
 
@@ -1473,9 +1501,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     if (response.body() != null) {
                                         UserItem item = response.body().getUserItem();
                                         userItems.set(position, item);
-                                        if (onUserItemChange != null) {
+                                       /* if (onUserItemChange != null) {
                                             onUserItemChange.onUserItemChange(userItems);
-                                        }
+                                        }*/
 
                                         notifyItemChanged(position);
                                         if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
@@ -1543,9 +1571,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 if (response.body().isSuccess()) {
                                                     UserItem item = response.body().getUserItem();
                                                     userItems.remove(positionInArrayList);
-                                                    if (onUserItemChange != null) {
-                                                        onUserItemChange.onUserItemChange(userItems);
-                                                    }
+                                                   /* if (onUserItemChange != null) {
+                                                         onUserItemChange.onUserItemChange(userItems);
+                                                    }*/
 
                                                     notifyItemRemoved(positionInArrayList);
                                                     dialog.dismiss();
@@ -1620,7 +1648,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
-    public interface OnUserItemChange {
-        void onUserItemChange(List<UserItem> userItems);
+    public interface OnSubscribeItemChange {
+        void onSubscribeItem(List<SubscribeItem> subscribeItems);
     }
 }

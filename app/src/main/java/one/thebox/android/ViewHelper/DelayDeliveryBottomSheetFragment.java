@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.reschedule.Reschedule;
 import one.thebox.android.R;
 import one.thebox.android.adapter.viewpager.ViewPagerAdapterReschedule;
@@ -44,6 +45,8 @@ import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 03-05-2016.
+ * <p>
+ * Updated by Developers on 05/06/2017.
  */
 public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment {
 
@@ -58,7 +61,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private TextView header, arrivingAtText, deliveryDate;
     private Reschedule rescheduleSkip;
     private View rootView;
-    private UserItem userItem;
+    private SubscribeItem subscribeItem;
     private RelativeLayout loader, skipLayout;
     private Dialog dialog;
 
@@ -66,10 +69,10 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
     }
 
-    public static DelayDeliveryBottomSheetFragment newInstance(UserItem userItem) {
+    public static DelayDeliveryBottomSheetFragment newInstance(SubscribeItem subscribeItem) {
 
         Bundle args = new Bundle();
-        args.putString(EXTRA_USER_ITEM, CoreGsonUtils.toJson(userItem));
+        args.putString(Constants.EXTRA_SUBSCRIBE_ITEM, CoreGsonUtils.toJson(subscribeItem));
         DelayDeliveryBottomSheetFragment delayDeliveryBottomSheetFragment = new DelayDeliveryBottomSheetFragment();
         delayDeliveryBottomSheetFragment.setArguments(args);
         return delayDeliveryBottomSheetFragment;
@@ -91,7 +94,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     }
 
     public void initVariable() {
-        this.userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
+        this.subscribeItem = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_SUBSCRIBE_ITEM), SubscribeItem.class);
     }
 
 
@@ -116,7 +119,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public void getRescheduleOption() {
 
         loader.setVisibility(View.VISIBLE);
-        TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), userItem.getId())
+        TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), 0)
                 .enqueue(new Callback<RescheduleResponse>() {
                     @Override
                     public void onResponse(Call<RescheduleResponse> call, Response<RescheduleResponse> response) {
@@ -186,7 +189,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
             for (int i = 0; i < tabsList.size(); i++) {
                 FragmentRescheduleUserItem fragmentRescheduleUserItem =
-                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), userItem, i);
+                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), null, i);
                 fragmentRescheduleUserItem.addListener(onDelayActionCompleted);
                 pagerAdapterReschedule.addFragment(fragmentRescheduleUserItem);
             }
@@ -279,7 +282,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
 
     public interface OnDelayActionCompleted {
-        void onDelayActionCompleted(UserItem userItem);
+        void onDelayActionCompleted(SubscribeItem subscribeItem);
     }
 
 
@@ -308,17 +311,17 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
                         final BoxLoader loader = new BoxLoader(dialog.getContext()).show();
                         TheBox.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(TheBox.getAppContext())
-                                , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
+                                , new CancelSubscriptionRequest(0, selectedtext))
                                 .enqueue(new Callback<CancelSubscriptionResponse>() {
                                     @Override
                                     public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
                                         loader.dismiss();
                                         if (response.body() != null) {
                                             if (response.body().isSuccess()) {
-                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                                // onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
                                                 // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
                                                 //Save Clevertap event
-                                                setCleverTapEventRescheduleDelivery(userItem);
+                                                setCleverTapEventRescheduleDelivery(null);
                                                 dialog.dismiss();
                                             }
                                         }

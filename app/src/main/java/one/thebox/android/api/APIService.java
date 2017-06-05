@@ -61,6 +61,7 @@ import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
+import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
@@ -226,6 +227,14 @@ public interface APIService {
     @POST("/consumer/api/v1/orders/payment")
     Call<MakePaymentResponse> makePaymentOnlineMerge(@Header("Authorization") String accessToken,
                                                      @Body MakePaymentOnlineMergeRequest makePaymentOnlineMergeRequest);
+
+
+    /**
+     * Subscription; Subscribe Item (formally UserItem)
+     */
+    @GET("/consumer/api/v1/users/subscriptions")
+    Call<SubscriptionResponse> getSubscription(@Header("Authorization") String accessToken);
+
 
     /**
      * Refator

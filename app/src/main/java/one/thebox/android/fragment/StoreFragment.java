@@ -39,7 +39,7 @@ import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;

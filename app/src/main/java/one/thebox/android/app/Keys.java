@@ -12,7 +12,7 @@ public class Keys {
     public static final String IS_AUTHENTICATED = "IS_AUTHENTICATED";
 
     /**
-     * Keys to load OrderedUserItem
+     * Keys to load Subscription
      */
     public static final String LOAD_ORDERED_USER_ITEM = "LOAD_ORDERED_USER_ITEM";
 

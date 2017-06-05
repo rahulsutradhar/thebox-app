@@ -19,7 +19,7 @@
         android:textSize="@dimen/text_medium2" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/useritem_list_recycler_view"
+        android:id="@+id/subscription_list_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />

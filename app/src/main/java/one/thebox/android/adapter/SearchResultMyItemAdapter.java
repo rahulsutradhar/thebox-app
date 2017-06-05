@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
@@ -130,7 +130,7 @@ public class SearchResultMyItemAdapter extends BaseRecyclerAdapter {
   /*         *//* for (int i = 0; i < 10; i++) {
                 categories.add(new Box.);
             }*//*
-            remainingCategoryAdapter = new MyBoxRecyclerAdapter.RemainingCategoryAdapter(mContext, categories);
+            remainingCategoryAdapter = new SubscriptionAdapter.RemainingCategoryAdapter(mContext, categories);
             recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
             recyclerView.setAdapter(remainingCategoryAdapter);*/
         }

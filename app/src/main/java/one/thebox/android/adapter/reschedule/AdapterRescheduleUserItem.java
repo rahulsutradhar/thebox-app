@@ -175,7 +175,7 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
                                         Toast.makeText(TheBox.getAppContext(), response.body().getUserItem().getArrivingAt() + " Server", Toast.LENGTH_SHORT).show();
-                                        onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
+                                        // onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
 
                                         // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
 
