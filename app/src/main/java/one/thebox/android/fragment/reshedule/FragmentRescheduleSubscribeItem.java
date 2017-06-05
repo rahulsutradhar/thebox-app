@@ -11,23 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
-import one.thebox.android.adapter.reschedule.AdapterRescheduleUserItem;
-import one.thebox.android.app.TheBox;
+import one.thebox.android.adapter.reschedule.AdapterRescheduleSubscribeItem;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
  * Created by developers on 03/04/17.
  */
 
-public class FragmentRescheduleUserItem extends Fragment {
+public class FragmentRescheduleSubscribeItem extends Fragment {
 
     private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
     private static final String EXTRA_DELIVERIES = "extra_delivery_Dates";
@@ -37,32 +36,32 @@ public class FragmentRescheduleUserItem extends Fragment {
 
     private View rootView;
     private ArrayList<Delivery> deliveries;
-    private UserItem userItem;
+    private SubscribeItem subscribeItem;
     private int positionInViewPager;
     private RecyclerView recyclerView;
-    private AdapterRescheduleUserItem adapter;
+    private AdapterRescheduleSubscribeItem adapter;
     private LinearLayout emptyState;
     private RelativeLayout loader;
     private DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted;
     private String mergeDescription;
 
 
-    public static FragmentRescheduleUserItem getInstance(Context activity, String mergeDescription, ArrayList<Delivery> deliveries, UserItem userItem, int positionInViewPager) {
+    public static FragmentRescheduleSubscribeItem getInstance(Context context, String mergeDescription, ArrayList<Delivery> deliveries, SubscribeItem subscribeItem, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_MERGE_DESCRIPTION, mergeDescription);
         bundle.putString(EXTRA_DELIVERIES, CoreGsonUtils.toJson(deliveries));
         bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
-        bundle.putString(EXTRA_USER_ITEM, CoreGsonUtils.toJson(userItem));
-        FragmentRescheduleUserItem fragmentRescheduleUserItem = new FragmentRescheduleUserItem();
-        fragmentRescheduleUserItem.setArguments(bundle);
+        bundle.putString(Constants.EXTRA_SUBSCRIBE_ITEM, CoreGsonUtils.toJson(subscribeItem));
+        FragmentRescheduleSubscribeItem fragmentRescheduleSubscribeItem = new FragmentRescheduleSubscribeItem();
+        fragmentRescheduleSubscribeItem.setArguments(bundle);
 
-        return fragmentRescheduleUserItem;
+        return fragmentRescheduleSubscribeItem;
     }
 
     /**
      * Constructor
      */
-    public FragmentRescheduleUserItem() {
+    public FragmentRescheduleSubscribeItem() {
 
     }
 
@@ -97,7 +96,7 @@ public class FragmentRescheduleUserItem extends Fragment {
     public void initVariable() {
         positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
         deliveries = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_DELIVERIES), Delivery.class);
-        userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
+        subscribeItem = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_SUBSCRIBE_ITEM), SubscribeItem.class);
         mergeDescription = getArguments().getString(EXTRA_MERGE_DESCRIPTION);
     }
 
@@ -120,7 +119,7 @@ public class FragmentRescheduleUserItem extends Fragment {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(linearLayoutManager);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            adapter = new AdapterRescheduleUserItem(getActivity(), this, deliveries, userItem, onDelayActionCompleted, mergeDescription);
+            adapter = new AdapterRescheduleSubscribeItem(getActivity(), this, deliveries, subscribeItem, onDelayActionCompleted, mergeDescription);
             adapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             recyclerView.setAdapter(adapter);
             recyclerView.setNestedScrollingEnabled(true);

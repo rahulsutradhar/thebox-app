@@ -10,8 +10,8 @@ import java.io.Serializable;
 
 public class Delivery implements Serializable {
 
-    @SerializedName("order_id")
-    private int orderId;
+    @SerializedName("order_uuid")
+    private String orderUuid;
 
     @SerializedName("delivery_date")
     private String deliveryDate;
@@ -22,12 +22,12 @@ public class Delivery implements Serializable {
     /*******************************
      * Getter Setter
      *******************************/
-    public int getOrderId() {
-        return orderId;
+    public String getOrderUuid() {
+        return orderUuid;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrderUuid(String orderUuid) {
+        this.orderUuid = orderUuid;
     }
 
     public String getDeliveryDate() {

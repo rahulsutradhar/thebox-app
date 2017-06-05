@@ -71,7 +71,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
 
         if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false)) {
-            fetchDeliveriesFromServer();
+            //fetchDeliveriesFromServer();
             PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false);
         }
 

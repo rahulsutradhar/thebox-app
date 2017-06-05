@@ -9,17 +9,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
-import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.reshedule.FragmentRescheduleUserItem;
+import one.thebox.android.fragment.reshedule.FragmentRescheduleSubscribeItem;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,26 +28,26 @@ import retrofit2.Response;
  * Created by developers on 03/04/17.
  */
 
-public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
+public class AdapterRescheduleSubscribeItem extends BaseRecyclerAdapter {
 
     private ArrayList<Delivery> deliveries;
     private Context context;
-    private FragmentRescheduleUserItem fragmentRescheduleUserItem;
-    private UserItem userItem;
+    private FragmentRescheduleSubscribeItem fragmentRescheduleSubscribeItem;
+    private SubscribeItem subscribeItem;
     private DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted;
     private String mergeDescription;
 
     /**
      * Constructor
      */
-    public AdapterRescheduleUserItem(Context context, FragmentRescheduleUserItem fragmentRescheduleUserItem, ArrayList<Delivery> deliveries,
-                                     UserItem userItem, DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted,
-                                     String mergeDescription) {
+    public AdapterRescheduleSubscribeItem(Context context, FragmentRescheduleSubscribeItem fragmentRescheduleSubscribeItem, ArrayList<Delivery> deliveries,
+                                          SubscribeItem subscribeItem, DelayDeliveryBottomSheetFragment.OnDelayActionCompleted onDelayActionCompleted,
+                                          String mergeDescription) {
         super(context);
         this.context = context;
-        this.fragmentRescheduleUserItem = fragmentRescheduleUserItem;
+        this.fragmentRescheduleSubscribeItem = fragmentRescheduleSubscribeItem;
         this.deliveries = deliveries;
-        this.userItem = userItem;
+        this.subscribeItem = subscribeItem;
         this.onDelayActionCompleted = onDelayActionCompleted;
         this.mergeDescription = mergeDescription;
         notifyDataSetChanged();
@@ -160,27 +159,27 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
 
         public void requestMergeDeliveries(final Delivery delivery) {
 
-            fragmentRescheduleUserItem.showLoader();
+            fragmentRescheduleSubscribeItem.showLoader();
             merge.setClickable(false);
             mergeTextView.setText("Merging");
-            TheBox.getAPIService().mergeUserItemWithOrder(PrefUtils.getToken(context),
-                    new MergeSubscriptionRequest(userItem.getId(), delivery.getOrderId()))
+
+
+            TheBox.getAPIService()
+                    .mergeSubscribeItemWithOrder(PrefUtils.getToken(context), subscribeItem.getUuid(),
+                            new MergeSubscriptionRequest(delivery.getOrderUuid(), ""))
                     .enqueue(new Callback<MergeSubscriptionResponse>() {
                         @Override
                         public void onResponse(Call<MergeSubscriptionResponse> call, Response<MergeSubscriptionResponse> response) {
-                            fragmentRescheduleUserItem.hideLoader();
+                            fragmentRescheduleSubscribeItem.hideLoader();
                             merge.setClickable(false);
                             mergeTextView.setText("Merged");
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
-                                        Toast.makeText(TheBox.getAppContext(), response.body().getUserItem().getArrivingAt() + " Server", Toast.LENGTH_SHORT).show();
-                                        // onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
-
-                                        // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
+                                        onDelayActionCompleted.onDelayActionCompleted(response.body().getSubscribeItem());
 
                                         //setClevertap Event
-                                        setCleverTapEventRescheduleDelivery(response.body().getUserItem(), delivery);
+                                        //setCleverTapEventRescheduleDelivery(response.body().getUserItem(), delivery);
                                     }
                                 }
                             } catch (Exception e) {
@@ -191,7 +190,7 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
 
                         @Override
                         public void onFailure(Call<MergeSubscriptionResponse> call, Throwable t) {
-                            fragmentRescheduleUserItem.hideLoader();
+                            fragmentRescheduleSubscribeItem.hideLoader();
                             merge.setClickable(true);
                             mergeTextView.setText("Merge");
                         }
@@ -212,7 +211,7 @@ public class AdapterRescheduleUserItem extends BaseRecyclerAdapter {
                 hashMap.put("quantitiy", userItem.getQuantity());
                 hashMap.put("category", userItem.getBoxItem().getCategoryId());
                 hashMap.put("reschedule_type", "merge");
-                hashMap.put("merge_order_id", delivery.getOrderId());
+                hashMap.put("merge_order_uuid", delivery.getOrderUuid());
                 hashMap.put("delivery_date", delivery.getDeliveryDate());
 
                 TheBox.getCleverTap().event.push("reschedule_delivery", hashMap);

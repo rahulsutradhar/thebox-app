@@ -235,6 +235,19 @@ public interface APIService {
     @GET("/consumer/api/v1/users/subscriptions")
     Call<SubscriptionResponse> getSubscription(@Header("Authorization") String accessToken);
 
+    /**
+     * Reschdule Subscribe Item
+     */
+    @GET("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/reschedule")
+    Call<RescheduleResponse> getRescheduleOption(@Header("Authorization") String accessToken, @Path("subscribe_item_uuid") String subscribeItemUuid);
+
+    /**
+     * Merge Subscribe Item With Another Order
+     */
+    @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/reschedule")
+    Call<MergeSubscriptionResponse> mergeSubscribeItemWithOrder(@Header("Authorization") String accessToken,
+                                                            @Path("subscribe_item_uuid") String orderUuid, @Body MergeSubscriptionRequest mergeSubscriptionRequest);
+
 
     /**
      * Refator
@@ -359,9 +372,6 @@ public interface APIService {
     Call<CancelSubscriptionResponse> delayDeliveryByOneCycle(@Header("authtoken") String authToken,
                                                              @Body CancelSubscriptionRequest cancelSubscriptionRequest);
 
-    @POST("/update_item_delivery_time")
-    Call<MergeSubscriptionResponse> mergeUserItemWithOrder(@Header("authtoken") String authToken,
-                                                           @Body MergeSubscriptionRequest mergeSubscriptionRequest);
 
     @GET("get_delay_delivery_options")
     Call<AdjustDeliveryResponse> getAdjustDeliveryOrders(@Header("authtoken") String authToken,
@@ -379,12 +389,6 @@ public interface APIService {
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
-    /**
-     * Reschdule User Item
-     */
-    @GET("/reschedule-options")
-    Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
-                                                 @Query("useritem[id]") int userItemId);
 
     /**
      * Carousel API service

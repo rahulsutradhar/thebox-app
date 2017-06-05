@@ -1326,33 +1326,30 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
                                 @Override
                                 public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
-
-                                    /*if (userItem != null) {
-                                        userItems.set(arrayListPosition, userItem);
-                                    }*/
+                                    
+                                    //update the arriving at Text on the existing list object
+                                    subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
+                                    subscribeItems.set(position, subscribeItem);
 
                                     if (onSubscribeItemChange != null) {
                                         onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                     }
-                                   /* if (onUserItemChange != null) {
-                                        onUserItemChange.onUserItemChange(userItems);
-                                    }*/
                                     notifyItemChanged(getAdapterPosition());
 
                                     //refetch orders and update, which also updates locally
-                                    UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
+                                    //UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
                                     /**
                                      * when called from SearchDeatilItemFragment update Subscription and Deliveries
                                      *  Else only Update only Deleivery
                                      */
 
-                                    if (isCalledFromSearchDetailItem) {
+                                   /* if (isCalledFromSearchDetailItem) {
                                         updateDeliveriesAfterReschedule.setNotifyTo(Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
                                     } else {
                                         updateDeliveriesAfterReschedule.setNotifyTo(Constants.DELIVERIES);
                                     }
                                     updateDeliveriesAfterReschedule.setShallNotifyAll(false);
-                                    EventBus.getDefault().post(updateDeliveriesAfterReschedule);
+                                    EventBus.getDefault().post(updateDeliveriesAfterReschedule);*/
 
                                     if (deliveryBottomSheet != null) {
                                         deliveryBottomSheet.dismiss();
