@@ -52,7 +52,7 @@ public class OrderItemsActivity extends BaseActivity {
      */
     public static Intent newInstance(Context context, Order order, int position) {
         return new Intent(context, OrderItemsActivity.class)
-                .putExtra(Constants.EXTRA_ORDERS, CoreGsonUtils.toJson(order))
+                .putExtra(Constants.EXTRA_ORDER, CoreGsonUtils.toJson(order))
                 .putExtra(Constants.EXTRA_CLICK_POSITION, position);
     }
 
@@ -69,7 +69,7 @@ public class OrderItemsActivity extends BaseActivity {
 
     private void initVariables() {
         try {
-            order = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_ORDERS), Order.class);
+            order = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_ORDER), Order.class);
             position = getIntent().getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
             setPayButton();
         } catch (Exception e) {
@@ -118,7 +118,7 @@ public class OrderItemsActivity extends BaseActivity {
 
     public void setResultForActivity() {
         Intent intent = new Intent(OrderItemsActivity.this, MainActivity.class);
-        intent.putExtra(Constants.EXTRA_ORDERS, CoreGsonUtils.toJson(order));
+        intent.putExtra(Constants.EXTRA_ORDER, CoreGsonUtils.toJson(order));
         intent.putExtra(Constants.EXTRA_CLICK_POSITION, position);
         setResult(4, intent);
         finish();
@@ -134,8 +134,7 @@ public class OrderItemsActivity extends BaseActivity {
             payTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    startActivity(ConfirmTimeSlotActivity.newInstance(OrderItemsActivity.this, OrderHelper.getAddressAndOrder(null), false));
+                    startActivity(ConfirmTimeSlotActivity.newInstance(OrderItemsActivity.this, order, true, false));
                 }
             });
             payTextView.setClickable(true);

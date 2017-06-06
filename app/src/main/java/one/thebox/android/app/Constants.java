@@ -119,7 +119,17 @@ public class Constants {
     /**
      * EXTRA ORDER
      */
-    public static final String EXTRA_ORDERS = "extra_orders";
+    public static final String EXTRA_ORDER = "extra_order";
+
+    /**
+     * Extra Is order
+     */
+    public static final String EXTRA_IS_FROM_ORDER = "extra_is_from_order";
+
+    /**
+     * Extra Is Reschedule
+     */
+    public static final String EXTRA_IS_RESCHEDULE = "extra_is_reschedule";
 
 
 }

@@ -183,7 +183,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             if (requestCode == 4) {
                 if (data.getExtras() != null) {
                     //post event Bus
-                    Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDERS), Order.class);
+                    Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDER), Order.class);
                     int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
 
                     if (order != null) {

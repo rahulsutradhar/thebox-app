@@ -253,7 +253,7 @@ public class Order extends RealmObject implements Serializable {
     private boolean paid;
 
     @SerializedName("amount_to_pay")
-    private float amountToPay;
+    private double amountToPay;
 
     @SerializedName("payment_text")
     private String paymentText;
@@ -324,11 +324,11 @@ public class Order extends RealmObject implements Serializable {
         this.noOfItems = noOfItems;
     }
 
-    public float getAmountToPay() {
+    public double getAmountToPay() {
         return amountToPay;
     }
 
-    public void setAmountToPay(float amountToPay) {
+    public void setAmountToPay(double amountToPay) {
         this.amountToPay = amountToPay;
     }
 

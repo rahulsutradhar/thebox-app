@@ -152,10 +152,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     reschedule_order_button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
-                            //open time slots activity
-                            mContext.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, OrderHelper.getAddressAndOrder(null), order.getId(), true));
-
+                            context.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true));
                         }
                     });
                 } else {
@@ -209,6 +206,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
                         //move to payment
+                        context.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, order, true, false));
                     }
                 });
 

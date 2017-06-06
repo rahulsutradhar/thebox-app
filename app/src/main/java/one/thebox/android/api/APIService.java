@@ -14,6 +14,7 @@ import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
@@ -197,6 +198,13 @@ public interface APIService {
     Call<PaymentSummaryResponse> getPaymentSummaryForMergeDeliveries(@Header("Authorization") String accessToken,
                                                                      @Path("order_uuid") String orderUuid, @Body PaymentSummaryRequest paymentSummaryRequest);
 
+    /**
+     * Make Payment
+     */
+    @POST("/consumer/api/v1/orders/payment")
+    Call<MakePaymentResponse> makePayment(@Header("Authorization") String accessToken,
+                                                 @Body MakePaymentRequest makePaymentRequest);
+
 
     /**
      * Make Payment
@@ -281,6 +289,13 @@ public interface APIService {
     @POST("consumer/api/v1/invoices/{order_item_uuid}/update")
     Call<UpdateQuantityOrderItemResponse> updateQuantityOrderItem(@Header("Authorization") String accessToken,
                                                                   @Path("order_item_uuid") String orderItemUuid, @Body UpdateQuantityOrderItemRequest updateQuantityOrderItemRequest);
+
+
+    /**
+     * Time Slot for a Order
+     */
+    @GET("consumer/api/v1/orders/{order_uuid}/slots")
+    Call<TimeSlotResponse> getTimeSlotForOrder(@Header("Authorization") String accessToken, @Path("order_uuid") String orderUuid);
 
 
     /**
@@ -430,12 +445,6 @@ public interface APIService {
     @GET("/public/app-offers")
     Call<CarouselApiResponse> getCarousel();
 
-
-    /**
-     * Time Slot for a Order
-     */
-    @GET("/consumer/api/v1/order-slots")
-    Call<TimeSlotResponse> getTimeSlotForOrder(@Query("order_id") int orderId);
 
     /**
      * Reschedule API

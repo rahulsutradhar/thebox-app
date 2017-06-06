@@ -16,6 +16,7 @@ import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
@@ -74,6 +75,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
         return intent;
     }
+
 
     /**
      * Old
@@ -149,7 +151,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
                 intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
                 intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
-                intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID,orderUuid);
+                intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
                 startActivity(intent);
 
             }
