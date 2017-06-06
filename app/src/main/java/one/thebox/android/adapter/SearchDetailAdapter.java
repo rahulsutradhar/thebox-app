@@ -3,8 +3,6 @@ package one.thebox.android.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -37,8 +35,6 @@ import java.util.List;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
-import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
-import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
@@ -46,27 +42,23 @@ import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.FullImageActivity;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
-import one.thebox.android.api.RequestBodies.UpdateOrderItemQuantityRequestBody;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
-import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
@@ -84,19 +76,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private static final int VIEW_TYPE_SEARCH_ITEM = 0;
     private static final int VIEW_TYPE_USER_ITEM = 1;
-    private static final int VIEW_TYPE_ORDER_ITEM = 2;
     private List<BoxItem> boxItems = new ArrayList<>();
-    private List<UserItem> userItems = new ArrayList<>();
-    private List<Invoice> useritems_quantities = new ArrayList<>();
-
     private Context mContext;
     private boolean shouldRemoveBoxItemOnEmptyQuantity;
-    private boolean hasUneditableUserItem;
-    private boolean hide_quantity_selector_in_this_order_item_view = false;
     private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
     private int order_id;
-    private Order order;
     private RealmList<Category> suggestedCategories = new RealmList<>();
     private int boxId;
     private boolean isCalledFromSearchDetailItem;
@@ -116,23 +101,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
-
-    public List<UserItem> getUserItems() {
-        return userItems;
-    }
-
-    public void setUserItems(RealmList<UserItem> userItems) {
-        this.userItems = userItems;
-    }
-
-    public List<Invoice> getUserItemQuantities() {
-        return useritems_quantities;
-    }
-
-    public void setUserItemQuantities(int order_id, RealmList<Invoice> useritems_quantities) {
-        this.useritems_quantities = useritems_quantities;
-        this.order_id = order_id;
-    }
 
     public List<SubscribeItem> getSubscribeItems() {
         return subscribeItems;
@@ -177,21 +145,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         isCalledFromSearchDetailItem = calledFromSearchDetailItem;
     }
 
-    public boolean isHide_quantity_selector_in_this_order_item_view() {
-        return hide_quantity_selector_in_this_order_item_view;
-    }
-
-    public void setHide_quantity_selector_in_this_order_item_view(boolean hide_quantity_selector_in_this_order_item_view) {
-        this.hide_quantity_selector_in_this_order_item_view = hide_quantity_selector_in_this_order_item_view;
-    }
-
-    public boolean isHasUneditableUserItem() {
-        return hasUneditableUserItem;
-    }
-
-    public void setHasUneditableUserItem(boolean hasUneditableUserItem) {
-        this.hasUneditableUserItem = hasUneditableUserItem;
-    }
 
     /**
      * Interface Called from SubscriptionAdapter
@@ -231,16 +184,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case VIEW_TYPE_USER_ITEM: {
                 //subscribe item
                 View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_user_item, parent, false);
-                return new UserItemViewHolder(itemView);
+                return new SubscribeItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
                 //product item
                 View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_search_detail_items, parent, false);
                 return new SearchedItemViewHolder(itemView);
-            }
-            case VIEW_TYPE_ORDER_ITEM: {
-                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_order_item, parent, false);
-                return new OrderItemViewHolder(itemView);
             }
         }
         return null;
@@ -248,37 +197,28 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof SearchedItemViewHolder) {
-            bindSearchViewHolder(holder, position - (userItems == null ? 0 : userItems.size()));
-        } else if (holder instanceof UserItemViewHolder) {
-            bindMyItemViewHolder(holder, position);
-        } else {
-            bindOrderItemViewHolder(holder, position);
-        }
-    }
 
-    private void bindOrderItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        OrderItemViewHolder itemViewHolder = (OrderItemViewHolder) holder;
-        //check if adapter holds correct position
-        if (position != RecyclerView.NO_POSITION) {
-            userItems.get(position).getBoxItem().setSelectedItemConfig(
-                    userItems.get(position).getBoxItem().getItemConfigById(userItems.get(position).getSelectedConfigId()
-                    ));
-            itemViewHolder.setViews(useritems_quantities, userItems.get(position), position);
+        if (holder instanceof SearchedItemViewHolder) {
+            bindSearchViewHolder(holder, position - (subscribeItems == null ? 0 : subscribeItems.size()));
+        } else if (holder instanceof SubscribeItemViewHolder) {
+            bindSubscribeItemViewHolder(holder, position);
         }
     }
 
     /**
      * User Subscribe Item
      */
-    private void bindMyItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        UserItemViewHolder itemViewHolder = (UserItemViewHolder) holder;
+    private void bindSubscribeItemViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        SubscribeItemViewHolder itemViewHolder = (SubscribeItemViewHolder) holder;
         //check if adapter holds correct position
         if (position != RecyclerView.NO_POSITION) {
             itemViewHolder.setViews(subscribeItems.get(position), position);
         }
     }
 
+    /**
+     * Search Product
+     */
     private void bindSearchViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final SearchedItemViewHolder searchedItemViewHolder = (SearchedItemViewHolder) holder;
 
@@ -297,223 +237,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemViewType(int position) {
         int index;
-        if (useritems_quantities.isEmpty()) {
-            index = position < (subscribeItems == null ? 0 : subscribeItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
-        } else {
-            index = VIEW_TYPE_ORDER_ITEM;
-        }
-
+        index = position < (subscribeItems == null ? 0 : subscribeItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
         return index;
-    }
-
-    private class OrderItemViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView adjustButton, productName, brand,
-                config, addButton, subtractButton, noOfItemSelected, changeButton, frequency, price, monthlySavings;
-        private ImageView productImageView;
-        private LinearLayout quantityHolder;
-        private int quantity_for_this_order = 0;
-
-        public OrderItemViewHolder(View itemView) {
-            super(itemView);
-            productName = (TextView) itemView.findViewById(R.id.product_name);
-            config = (TextView) itemView.findViewById(R.id.config);
-            productImageView = (ImageView) itemView.findViewById(R.id.product_image_view);
-            addButton = (TextView) itemView.findViewById(R.id.button_add);
-            subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
-            noOfItemSelected = (TextView) itemView.findViewById(R.id.no_of_item_selected);
-            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
-            price = (TextView) itemView.findViewById(R.id.price);
-            frequency = (TextView) itemView.findViewById(R.id.frequency);
-            monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
-        }
-
-        private void setViews(final List<Invoice> useritems_quantities, final UserItem userItem, int arrayListPosition) {
-
-
-            try {
-                for (Invoice i : useritems_quantities) {
-                    if (i.getUseritem_id() == userItem.getId()) {
-                        quantity_for_this_order = i.getInvoice_quantity();
-                        noOfItemSelected.setText(String.valueOf(i.getInvoice_quantity()));
-                    }
-                }
-
-                if (isHide_quantity_selector_in_this_order_item_view()) {
-
-                    quantityHolder.setVisibility(View.GONE);
-                    addButton.setVisibility(View.GONE);
-                    subtractButton.setVisibility(View.GONE);
-
-                } else {
-                    quantityHolder.setVisibility(View.VISIBLE);
-
-                    addButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            updateQuantity(getAdapterPosition(), quantity_for_this_order + 1);
-                        }
-                    });
-
-                    subtractButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (quantity_for_this_order > 1) {
-                                updateQuantity(getAdapterPosition(), quantity_for_this_order - 1);
-                            } else if (quantity_for_this_order == 1) {
-                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                        title("Remove " + userItem.getBoxItem().getTitle())
-                                        .positiveText("Cancel")
-                                        .negativeText("Remove")
-                                        .content(userItem.getBoxItem().getTitle() + " will be removed from this order. Are you sure?")
-                                        .callback(new MaterialDialog.ButtonCallback() {
-                                            @Override
-                                            public void onPositive(MaterialDialog materialDialog) {
-
-                                                // Dismiss the dialog
-                                                materialDialog.cancel();
-                                            }
-
-                                            @Override
-                                            public void onNegative(MaterialDialog materialDialog) {
-
-                                                // Making update call
-                                                if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                    updateQuantity(getAdapterPosition(), 0);
-                                                }
-
-                                            }
-                                        })
-                                        .build();
-                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                                dialog.show();
-                            } else {
-                                Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-                    });
-                }
-
-
-                ItemConfig itemConfig = userItem.getBoxItem().getItemConfigById(userItem.getSelectedConfigId());
-
-                price.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice() * quantity_for_this_order);
-                frequency.setText("Repeat delivery " + itemConfig.getSubscriptionText().toLowerCase());
-
-                productName.setText(userItem.getBoxItem().getTitle());
-
-                if (itemConfig.getCorrectQuantity().equals("NA")) {
-                    config.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-                } else {
-                    config.setText(itemConfig.
-                            getCorrectQuantity() + " x " +
-                            itemConfig.getSize() + " " + itemConfig.getSizeUnit());
-                }
-
-                //show savings text if exist
-                if (itemConfig.getMonthlySavingsText() != null) {
-                    if (!itemConfig.getMonthlySavingsText().isEmpty()) {
-                        monthlySavings.setText(itemConfig.getMonthlySavingsText());
-                        monthlySavings.setVisibility(View.VISIBLE);
-                    } else {
-                        monthlySavings.setText("");
-                        monthlySavings.setVisibility(View.GONE);
-                    }
-                } else {
-                    monthlySavings.setText("");
-                    monthlySavings.setVisibility(View.GONE);
-                }
-
-                //image loading
-                glideRequestManager.load(itemConfig.getItemImage())
-                        .centerCrop()
-                        .crossFade()
-                        .into(productImageView);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().updateOrderQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateOrderItemQuantityRequestBody(order_id, userItems.get(getAdapterPosition()).getId(), quantity))
-                    .enqueue(new Callback<UpdateOrderItemResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateOrderItemResponse> call, Response<UpdateOrderItemResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-
-                                            if (quantity >= 1) {
-                                                setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
-                                                setUserItems(response.body().getOrder().getUserItems());
-                                                notifyDataSetChanged();
-                                            } else {
-                                                /**
-                                                 * Save CaleverTap Event; OrderItemRemoved
-                                                 */
-                                                setCleverTapEventOrderItemRemoved(order_id, userItems.get(getAdapterPosition()));
-
-                                                setUserItemQuantities(response.body().getOrder().getId(), response.body().getOrder().getUserItemQuantities());
-                                                setUserItems(response.body().getOrder().getUserItems());
-                                                notifyItemRemoved(getAdapterPosition());
-                                            }
-                                            OrderHelper.addAndNotify(response.body().getOrder());
-
-                                            //pass order to the OrderItemActivity to update the payment value
-                                            UpdateOrderItemEvent updateOrderItemEvent = new UpdateOrderItemEvent();
-                                            updateOrderItemEvent.setOrder(response.body().getOrder());
-                                            EventBus.getDefault().post(updateOrderItemEvent);
-
-                                            //to update the UI in Upcoing fragment when the user removes or increase quantity of a item from ordered Item
-                                            PrefUtils.putBoolean(mContext, "UPDATE_UI_UPCOMING_FRAGMENT", true);
-
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                } else {
-                                    //handle error
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateOrderItemResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-        }
-
-        /**
-         * Clever tap Event
-         */
-        public void setCleverTapEventOrderItemRemoved(int orderId, UserItem userItem) {
-            try {
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("order_id", orderId);
-                hashMap.put("user_item_id", userItem.getId());
-                hashMap.put("box_item_id", userItem.getSelectedItemId());
-                hashMap.put("title", userItem.getBoxItem().getTitle());
-                hashMap.put("brand", userItem.getBoxItem().getBrand());
-                hashMap.put("category", userItem.getBoxItem().getCategoryId());
-                hashMap.put("item_config_id", userItem.getSelectedConfigId());
-
-                TheBox.getCleverTap().event.push("removed_order_item", hashMap);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-
     }
 
     private class SearchedItemViewHolder extends RecyclerView.ViewHolder {
@@ -593,33 +318,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     holderSubscribeButton.setVisibility(View.VISIBLE);
                     updateQuantityViewHolder.setVisibility(View.GONE);
                     noOfItemSelected.setText(String.valueOf(0));
-
-                    if (positionInViewPager == SearchDetailFragment.POSITION_OF_VIEW_PAGER) {
-                        if (getAdapterPosition() == 0) {
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) && (!RestClient.is_in_development)) {
-                                moveRecyclerView(true);
-                            }
-                            if ((PrefUtils.getBoolean(TheBox.getInstance(), "store_tutorial", true)) && (!RestClient.is_in_development)) {
-                                new ShowcaseHelper((Activity) mContext, 1).setTopPadding(20).show("Repeat", "Swipe right or left to select how soon to repeat", recyclerViewFrequency)
-                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                            @Override
-                                            public void onComplete() {
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "move", false);
-                                                PrefUtils.putBoolean(TheBox.getInstance(), "store_tutorial", false);
-                                                new ShowcaseHelper((Activity) mContext, 2)
-                                                        .show("Add Item", "Add your favourite item to cart", holderSubscribeButton)
-                                                        .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                                                            @Override
-                                                            public void onComplete() {
-                                                                EventBus.getDefault().post(new ShowTabTutorialEvent());
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                moveRecyclerView(true);
-                            }
-                        }
-                    }
                 }
 
                 if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
@@ -634,10 +332,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private void setupRecyclerViewFrequency(final BoxItem boxItem, final int position) {
             // hash map of frequency and corresponding PriceSizeAndSizeUnit ArrayList.
-            if (userItems == null || userItems.isEmpty()) {
-                getAdapterPosition();
-            }
-
             RealmList<ItemConfig> itemConfigs = boxItem.getItemConfigsBySelectedItemConfig();
             Collections.sort(itemConfigs, new Comparator<ItemConfig>() {
                 @Override
@@ -900,168 +594,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             CartHelperService.checkServiceRunningWhenAdded(mContext);
         }
 
-
-        private void addItemToBox(final int position) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().addToMyBox(PrefUtils.getToken(TheBox.getInstance()),
-                    new AddToMyBoxRequestBody(
-                            new AddToMyBoxRequestBody.Item(boxItems.get(position).getId()),
-                            new AddToMyBoxRequestBody.ItemConfig(boxItems.get(position).getSelectedItemConfig().getId())))
-                    .enqueue(new Callback<AddToMyBoxResponse>() {
-                        @Override
-                        public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            boxItems.get(position).setUserItemId(response.body().getUserItem().getId());
-                                            boxItems.get(position).setQuantity(boxItems.get(position).getQuantity() + 1);
-                                            boxItems.get(position).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
-
-                                            boxId = boxItems.get(position).getId();
-
-                                            suggestedCategories.clear();
-                                            suggestedCategories.addAll(response.body().getRestOfTheCategoriesInTheBox());
-                                            suggestedCategories.addAll(response.body().getRestOfTheCategoriesInOtherBox());
-                                            currentPositionOfSuggestedCategory = position;
-
-                                            //not preferable; we must used notifyItemChanged(position)
-                                            notifyDataSetChanged();
-                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-
-                                            /**
-                                             * Save CleverTapEvent; ItemAddedToCart
-                                             */
-                                            setCleverTapEventItemAddedToCart(boxItems.get(position));
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<AddToMyBoxResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-
-        }
-
-        private void updateQuantity(int position, final int quantity) throws ArrayIndexOutOfBoundsException {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            int userItemId;
-            if (userItems == null || userItems.isEmpty()) {
-                position = getAdapterPosition();
-            }
-            userItemId = boxItems.get(position).getUserItemId();
-            final int finalPosition = position;
-            TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItemId, quantity)))
-                    .enqueue(new Callback<UpdateItemConfigResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-
-                                            boxItems.get(finalPosition).setQuantity(quantity);
-                                            boxItems.get(finalPosition).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
-                                            if (quantity >= 1) {
-                                                response.body().getUserItem().setBoxItem(boxItems.get(finalPosition));
-
-                                                CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-                                                notifyItemChanged(getAdapterPosition());
-                                            } else {
-                                                CartHelper.removeUserItem(boxItems.get(getAdapterPosition()).getUserItemId(), response.body().get_cart());
-
-                                                if (shouldRemoveBoxItemOnEmptyQuantity) {
-                                                    boxItems.remove(getAdapterPosition());
-                                                    notifyItemRemoved(getAdapterPosition());
-                                                    notifyItemRangeChanged(getAdapterPosition(), getItemCount());
-
-                                                } else {
-                                                    boxItems.get(finalPosition).setUserItemId(0);
-                                                    notifyItemChanged(getAdapterPosition());
-                                                }
-
-                                                /**
-                                                 * Save CleverTap Event; ItemRemoveFromCart
-                                                 */
-                                                setCleverTapEventItemRemoveFromCart(boxItems.get(finalPosition));
-
-                                            }
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        } else {
-
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-        }
-
-        private void changeConfig(final int position, final int itemConfigId) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().updateItemConfig(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemConfigurationRequest
-                    (new UpdateItemConfigurationRequest.UserItem(boxItems.get(position).getUserItemId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
-                    .enqueue(new Callback<UpdateItemConfigResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        RealmList<Category> suggestionsCategories = boxItems.get(position).getSuggestedCategory();
-                                        boxItems.set(position, response.body().getUserItem().getFakeBoxItemObject());
-                                        boxItems.get(position).setSuggestedCategory(suggestionsCategories);
-                                        boxItems.get(position).setSavingsTitle(response.body().getUserItem().getSelectedItemConfigSavingsTitle());
-
-                                        notifyItemChanged(getAdapterPosition());
-                                        CartHelper.addOrUpdateUserItem(response.body().getUserItem(), response.body().get_cart());
-
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-        }
-
-
-        public void moveRecyclerView(final boolean finalPosition) {
-            if (PrefUtils.getBoolean(TheBox.getInstance(), "move", true)) {
-                if (finalPosition)
-                    recyclerViewFrequency.smoothScrollToPosition(frequencyAndPriceAdapter.getItemsCount());
-                else {
-                    recyclerViewFrequency.smoothScrollToPosition(0);
-                }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        moveRecyclerView(!finalPosition);
-                    }
-                }, 500);
-            }
-        }
-
         /**
          * CleverTap Event;
          * <p>
@@ -1095,14 +627,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
-    private class UserItemViewHolder extends RecyclerView.ViewHolder {
+    private class SubscribeItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, arrivingTime, config, addButton,
                 subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
         private ImageView productImageView;
         private RelativeLayout quantityHolder;
 
-        public UserItemViewHolder(View itemView) {
+        public SubscribeItemViewHolder(View itemView) {
             super(itemView);
             productName = (TextView) itemView.findViewById(R.id.product_name);
             arrivingTime = (TextView) itemView.findViewById(R.id.arriving_time);
@@ -1354,186 +886,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                     });
 
-        }
-
-
-        private void addItemToBox(final int position) throws IllegalStateException {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().addToMyBox(PrefUtils.getToken(TheBox.getInstance()),
-                    new AddToMyBoxRequestBody(
-                            new AddToMyBoxRequestBody.Item(userItems.get(position).getBoxItem().getId()),
-                            new AddToMyBoxRequestBody.ItemConfig(userItems.get(position).getBoxItem().getSelectedItemConfig().getId())))
-                    .enqueue(new Callback<AddToMyBoxResponse>() {
-                        @Override
-                        public void onResponse(Call<AddToMyBoxResponse> call, Response<AddToMyBoxResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                } else {
-                                    //parse error
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<AddToMyBoxResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-
-        }
-
-
-        private void changeConfig(final int position, final int itemConfigId) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-            TheBox.getAPIService().updateItemConfig(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemConfigurationRequest
-                    (new UpdateItemConfigurationRequest.UserItem(userItems.get(position).getId()), new UpdateItemConfigurationRequest.ItemConfig(itemConfigId)))
-                    .enqueue(new Callback<UpdateItemConfigResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        UserItem item = response.body().getUserItem();
-                                        userItems.set(position, item);
-                                       /* if (onUserItemChange != null) {
-                                            onUserItemChange.onUserItemChange(userItems);
-                                        }*/
-
-                                        notifyItemChanged(position);
-                                        if (response.body().getUserItem().getNextDeliveryScheduledAt() == null
-                                                || response.body().getUserItem().getNextDeliveryScheduledAt().isEmpty()) {
-                                            CartHelper.addOrUpdateUserItem(response.body().getUserItem(), null);
-                                        }
-
-                                        //update Savings Card in Subscription tab
-                                        EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
-
-                                        /**
-                                         *  when called from SearchDeatilItemFragment update Subscription and Deliveries
-                                         *  Else only Update only Deleivery
-                                         */
-                                        if (isCalledFromSearchDetailItem) {
-                                            OrderHelper.updateUserItemAndNotifiy(item, Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
-                                        } else {
-                                            OrderHelper.updateUserItemAndNotifiy(item, Constants.DELIVERIES);
-                                        }
-                                    }
-                                } else {
-                                    //handle error
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-        }
-
-        private void openCancelDialog(final UserItem userItem, final int positionInArrayList) throws IllegalStateException {
-            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                    title("Cancel Subscription").
-                    customView(R.layout.layout_cancel_subscription, true).
-                    positiveText("Cancel Subscription").onPositive(new MaterialDialog.SingleButtonCallback() {
-                @Override
-                public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
-                    View customView = dialog.getCustomView();
-                    RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
-                    int radioButtonID = radioGroup.getCheckedRadioButtonId();
-                    View radioButton = radioGroup.findViewById(radioButtonID);
-                    int idx = radioGroup.indexOfChild(radioButton);
-                    RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
-                    if (r == null) {
-                        Toast.makeText(TheBox.getInstance(), "Select one of the given reasons", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    String selectedtext = r.getText().toString();
-
-                    final BoxLoader loader = new BoxLoader(mContext).show();
-                    TheBox.getAPIService().cancelSubscription(PrefUtils.getToken(TheBox.getInstance())
-                            , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
-                            .enqueue(new Callback<CancelSubscriptionResponse>() {
-                                @Override
-                                public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
-                                    loader.dismiss();
-                                    try {
-                                        if (response.isSuccessful()) {
-                                            if (response.body() != null) {
-                                                if (response.body().isSuccess()) {
-                                                    UserItem item = response.body().getUserItem();
-                                                    userItems.remove(positionInArrayList);
-                                                   /* if (onUserItemChange != null) {
-                                                         onUserItemChange.onUserItemChange(userItems);
-                                                    }*/
-
-                                                    notifyItemRemoved(positionInArrayList);
-                                                    dialog.dismiss();
-                                                    CartHelper.removeUserItem(userItem.getId(), null);
-
-                                                    /**
-                                                     *  when called from SearchDeatilItemFragment update Subscription and Deliveries
-                                                     *  Else only Update only Deleivery
-                                                     */
-                                                    if (isCalledFromSearchDetailItem) {
-                                                        OrderHelper.addAndNotify(response.body().getOrders(), Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
-                                                    } else {
-                                                        OrderHelper.addAndNotify(response.body().getOrders(), Constants.DELIVERIES);
-                                                    }
-
-                                                    Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                                    //update Savings Card in Subscription tab
-                                                    EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
-                                                    /**
-                                                     * Save CleverTap Event; ItemCancelSubscription
-                                                     */
-                                                    setCleverTapEventCancelSubscription(userItem);
-
-                                                } else {
-                                                    Toast.makeText(TheBox.getInstance(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                                                }
-                                            } else {
-                                                Toast.makeText(TheBox.getInstance(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            //handle error
-                                            Toast.makeText(TheBox.getInstance(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        loader.dismiss();
-                                        dialog.dismiss();
-                                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                    loader.dismiss();
-                                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
-            }).autoDismiss(false).build();
-
-
-            dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-            dialog.show();
         }
 
         /**

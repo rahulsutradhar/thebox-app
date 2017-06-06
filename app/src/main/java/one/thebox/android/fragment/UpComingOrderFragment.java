@@ -1,6 +1,7 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,20 +17,16 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
-import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
@@ -91,7 +88,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
 
-            upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), orders);
+            upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
@@ -179,4 +176,32 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (requestCode == 4) {
+                if (data.getExtras() != null) {
+                    //post event Bus
+                    Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDERS), Order.class);
+                    int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
+
+                    if (order != null) {
+                        //all item has been removed, so refetch orders
+                        if (order.getAmountToPay() == 0) {
+                            getOrdersFromServer();
+                        } else {
+                            //partial update the order
+                            if (upcomingOrderAdapter != null) {
+                                //updates order list item if you update the items
+                                upcomingOrderAdapter.updateOrder(order, position);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

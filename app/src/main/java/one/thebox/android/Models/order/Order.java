@@ -1,4 +1,4 @@
-package one.thebox.android.Models;
+package one.thebox.android.Models.order;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,6 +8,8 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import one.thebox.android.Models.Invoice;
+import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.BoxItem;
 
 /**
@@ -256,6 +258,12 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("payment_text")
     private String paymentText;
 
+    @SerializedName("reminder_text")
+    private String reminderText;
+
+    @SerializedName("payment_complete")
+    private boolean paymentComplete;
+
 
     /****************************************
      * Getter Setter
@@ -348,5 +356,19 @@ public class Order extends RealmObject implements Serializable {
         this.paid = paid;
     }
 
+    public String getReminderText() {
+        return reminderText;
+    }
 
+    public void setReminderText(String reminderText) {
+        this.reminderText = reminderText;
+    }
+
+    public boolean isPaymentComplete() {
+        return paymentComplete;
+    }
+
+    public void setPaymentComplete(boolean paymentComplete) {
+        this.paymentComplete = paymentComplete;
+    }
 }

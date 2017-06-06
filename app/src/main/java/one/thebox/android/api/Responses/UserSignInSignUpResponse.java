@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.Invoice;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.api.ApiResponse;
 

@@ -3,7 +3,7 @@ package one.thebox.android.api.Responses.order;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.api.ApiResponse;
 
 /**

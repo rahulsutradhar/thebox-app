@@ -4,11 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import io.realm.RealmList;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
-import one.thebox.android.Models.user.Subscription;
 import one.thebox.android.api.ApiResponse;
 
 /**

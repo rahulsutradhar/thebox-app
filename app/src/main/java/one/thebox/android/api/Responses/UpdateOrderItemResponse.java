@@ -3,7 +3,7 @@ package one.thebox.android.api.Responses;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.api.ApiResponse;
 
 /**

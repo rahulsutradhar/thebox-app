@@ -116,4 +116,10 @@ public class Constants {
      */
     public static final String EXTRA_SUBSCRIBE_ITEM = "extra_subscribe_item";
 
+    /**
+     * EXTRA ORDER
+     */
+    public static final String EXTRA_ORDERS = "extra_orders";
+
+
 }

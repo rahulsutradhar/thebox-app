@@ -40,7 +40,7 @@ import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.timeslot.Slot;

@@ -173,7 +173,7 @@ public class MainActivity extends BaseActivity implements
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-           // getAllAddresses();
+            // getAllAddresses();
         }
 
         // Doing it for notification so "My Deliveries" fragment can be attached by default
@@ -1126,8 +1126,7 @@ public class MainActivity extends BaseActivity implements
                         myAccountFragment.onActivityResult(requestCode, resultCode, data);
                     }
                 }
-            }//
-
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

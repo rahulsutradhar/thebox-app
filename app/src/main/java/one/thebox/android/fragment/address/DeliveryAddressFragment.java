@@ -8,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.databinding.DeliveryAddressFragmentBinding;

@@ -9,6 +9,7 @@ import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
+import one.thebox.android.api.RequestBodies.order.UpdateQuantityOrderItemRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
@@ -66,7 +67,9 @@ import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.order.OrderItemResponse;
 import one.thebox.android.api.Responses.order.OrdersResponse;
+import one.thebox.android.api.Responses.order.UpdateQuantityOrderItemResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
@@ -265,6 +268,19 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/orders")
     Call<OrdersResponse> getOrders(@Header("Authorization") String accessToken);
+
+    /**
+     * Ordered Items
+     */
+    @GET("/consumer/api/v1/orders/{order_uuid}/invoices")
+    Call<OrderItemResponse> getOrderItems(@Header("Authorization") String accessToken, @Path("order_uuid") String orderUuid);
+
+    /**
+     * Order Item Quantity Update
+     */
+    @POST("consumer/api/v1/invoices/{order_item_uuid}/update")
+    Call<UpdateQuantityOrderItemResponse> updateQuantityOrderItem(@Header("Authorization") String accessToken,
+                                                                  @Path("order_item_uuid") String orderItemUuid, @Body UpdateQuantityOrderItemRequest updateQuantityOrderItemRequest);
 
 
     /**

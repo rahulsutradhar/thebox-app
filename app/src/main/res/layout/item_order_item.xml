@@ -56,14 +56,27 @@
                 android:textSize="@dimen/text_small3" />
 
             <TextView
+                android:id="@+id/product_brand"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:lines="1"
+                android:text="Amul"
+                android:textColor="@color/secondary_text_color"
+                android:textSize="@dimen/text_extra_small3" />
+
+
+            <TextView
                 android:id="@+id/frequency"
                 style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="3dp"
                 android:lines="1"
-                android:text="Repeats every two monts"
+                android:text="Repeats every two months"
                 android:textColor="@color/secondary_text_color"
                 android:textSize="@dimen/text_small1" />
 
@@ -83,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="3dp"
                 android:lines="1"
                 android:text="Rs 55"
                 android:textColor="@color/black"
@@ -96,7 +109,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="3dp"
                 android:lines="1"
                 android:text="Save rs 20 every month"
                 android:textColor="@color/raspberry_red"
@@ -106,7 +119,7 @@
                 android:id="@+id/layout_quantity_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="3dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
