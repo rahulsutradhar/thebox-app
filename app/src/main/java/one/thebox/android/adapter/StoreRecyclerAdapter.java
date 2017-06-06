@@ -101,19 +101,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final BaseRecyclerAdapter.ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position), position);
-
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowcaseHelper((Activity) mContext, 3)
-                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-                            PrefUtils.putBoolean(TheBox.getInstance(), "home_tutorial", false);
-                            new ShowcaseHelper((Activity) mContext, 3)
-                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
-                        }
-                    });
-        }
     }
 
     @Override

@@ -443,25 +443,19 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
 
     @Subscribe
-    public synchronized void onUpdateOrderItemEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+    public void onUpdateSavingsEvent(UpdateSavingsEvent updateSavingsEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //fetch data from server and update the list
-                    initVariables();
-                }
-            });
-        }
-    }
-
-    @Subscribe
-    public void onUpdateSavingsEvent(final UpdateSavingsEvent updateSavingsEvent) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fetchSavings();
+                    if (subscriptionAdapter != null) {
+                        //check id all items have been removed from the subscribed items list
+                        if (subscriptionAdapter.getItemsCount() == 0) {
+                            setupEmptyStateView();
+                        } else {
+                            fetchSavings();
+                        }
+                    }
                 }
             });
         }

@@ -12,6 +12,16 @@ import io.realm.RealmObject;
 
 public class Offer extends RealmObject implements Serializable {
 
+    private String uuid;
+
+    @SerializedName("category_uuid")
+    private String categoryUuid;
+
+    @SerializedName("box_uuid")
+    private String boxUuid;
+
+    private String title;
+
     @SerializedName("start_date")
     private String startDate;
 
@@ -24,9 +34,6 @@ public class Offer extends RealmObject implements Serializable {
 
     @SerializedName("image_url")
     private String imageUrl;
-
-    @SerializedName("category_id")
-    private int categoryId;
 
     @SerializedName("open_link")
     private boolean openLink;
@@ -75,19 +82,43 @@ public class Offer extends RealmObject implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public boolean isOpenLink() {
         return openLink;
     }
 
     public void setOpenLink(boolean openLink) {
         this.openLink = openLink;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getCategoryUuid() {
+        return categoryUuid;
+    }
+
+    public void setCategoryUuid(String categoryUuid) {
+        this.categoryUuid = categoryUuid;
+    }
+
+    public String getBoxUuid() {
+        return boxUuid;
+    }
+
+    public void setBoxUuid(String boxUuid) {
+        this.boxUuid = boxUuid;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

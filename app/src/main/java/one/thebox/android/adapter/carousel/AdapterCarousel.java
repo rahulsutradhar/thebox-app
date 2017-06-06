@@ -2,16 +2,15 @@ package one.thebox.android.adapter.carousel;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
@@ -139,16 +138,18 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (offer.isOpenLink() && offer.getCategoryId() > 0) {
+                        if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty()) {
 
+                            Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is yet to come.", Toast.LENGTH_SHORT).show();
                             //Clevertap event for carousel click
-                            setCleverTapEventForCarousel(offer);
+                            //setCleverTapEventForCarousel(offer);
 
                             //open search DetailFragment
-                            Intent intent = new Intent(mContext, MainActivity.class);
-                            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
-                            intent.putExtra(Constants.CATEGORY_ID, offer.getCategoryId());
-                            context.startActivity(intent);
+//                            Intent intent = new Intent(mContext, MainActivity.class);
+//                            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
+//                            intent.putExtra(Constants.CATEGORY_UUID, offer.getCategoryUuid());
+//                            context.startActivity(intent);
+
                         }
                     }
                 });
@@ -163,7 +164,7 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
         public void setCleverTapEventForCarousel(Offer offer) {
             try {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("category_id", offer.getCategoryId());
+                hashMap.put("category_uuid", offer.getCategoryUuid());
 
                 TheBox.getCleverTap().event.push("carousel_click", hashMap);
             } catch (Exception e) {

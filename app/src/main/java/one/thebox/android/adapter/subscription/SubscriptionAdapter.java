@@ -9,6 +9,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
@@ -280,14 +281,16 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                         /**
                          * SetCleverTapEventSubscribeNextSavings
                          */
-                        setCleverTapEventSubscribeNextSavings(saving);
+                        //setCleverTapEventSubscribeNextSavings(saving);
 
 
-                        String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
+                        Toast.makeText(TheBox.getAppContext(),"Have patience dude! this feature is yet to come.",Toast.LENGTH_SHORT).show();
+
+                        /*String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
                         context.startActivity(new Intent(mContext, MainActivity.class)
                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
                                 .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
-
+*/
                     }
                 });
 

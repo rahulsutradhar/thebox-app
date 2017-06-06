@@ -36,6 +36,7 @@ import java.util.List;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.items.BoxItem;
@@ -759,6 +760,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     // false otherwise
                     switch (actionUserItemSubscription) {
                         case 1:
+                            Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is coming soon", Toast.LENGTH_SHORT).show();
+
                             //Change Item Config
                                     /*final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
                                     dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
@@ -856,6 +859,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyDataSetChanged();
                                             //display message to users
                                             Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                                            //fetch orders to update the list
+                                            EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                         } else {
                                             //update item quantity and savings
                                             subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
@@ -871,6 +877,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         if (onSubscribeItemChange != null) {
                                             onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                         }
+
+                                        //do saving call and update the data
+                                        EventBus.getDefault().post(new UpdateSavingsEvent());
                                     }
                                 }
                             } catch (Exception e) {

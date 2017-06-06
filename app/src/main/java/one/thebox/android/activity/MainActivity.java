@@ -60,6 +60,7 @@ import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
 import one.thebox.android.services.notification.RegistrationIntentService;
@@ -87,6 +88,8 @@ import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_T
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
+ * <p>
+ * Modified by Developers on07/06/2017.
  */
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener
@@ -119,6 +122,7 @@ public class MainActivity extends BaseActivity implements
     private Menu menu;
     private int numberOfItemIncart = -1;
     private TextView userNameTextView;
+    private Setting setting = new Setting();
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -162,6 +166,7 @@ public class MainActivity extends BaseActivity implements
         mGcmNetworkManager = GcmNetworkManager.getInstance(this);
 
         user = PrefUtils.getUser(this);
+        setting = new SettingService().getSettings(this);
         fragmentManager = getSupportFragmentManager();
         shouldHandleDrawer();
         initViews();
@@ -172,9 +177,6 @@ public class MainActivity extends BaseActivity implements
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-            // getAllAddresses();
-        }
 
         // Doing it for notification so "My Deliveries" fragment can be attached by default
         Bundle extras = getIntent().getExtras();
@@ -185,12 +187,6 @@ public class MainActivity extends BaseActivity implements
         } else {
             attachMyBoxesFragment(1, false);
 
-        }
-
-        initCart();
-
-        if (!RestClient.is_in_development) {
-            ShowcaseHelper.removeAllTutorial();
         }
 
         btn_search.setOnClickListener(new View.OnClickListener() {
@@ -204,9 +200,6 @@ public class MainActivity extends BaseActivity implements
 
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
-
-        //Tutorial
-        // new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
 
         //Preference to load Subscription when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
@@ -238,9 +231,6 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void initCart() {
-        CartHelper.saveCartItemsIfRequire();
-    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -736,41 +726,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public void getAllAddresses() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().getAllAddresses(PrefUtils.getToken(this))
-                .enqueue(new Callback<GetAllAddressResponse>() {
-                    @Override
-                    public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-
-                                //check if users have saved address or not
-                                if (response.body().getUserAddresses() != null) {
-                                    if (response.body().getUserAddresses().size() > 0) {
-                                        PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
-
-                                        User user = PrefUtils.getUser(MainActivity.this);
-                                        if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
-                                            response.body().getUserAddresses().get(0).setCurrentAddress(true);
-                                        }
-                                        user.setAddresses(response.body().getUserAddresses());
-                                        PrefUtils.saveUser(MainActivity.this, user);
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<GetAllAddressResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
 
     @Override
     protected void onResume() {
@@ -961,7 +916,7 @@ public class MainActivity extends BaseActivity implements
      */
     public void attachCategoryFragmentForCarousel(Intent intent) {
 
-        int categoryId = intent.getIntExtra(Constants.CATEGORY_ID, 0);
+        int categoryId = intent.getIntExtra(Constants.CATEGORY_UUID, 0);
 
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
@@ -987,13 +942,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void showDrawerToggle(boolean showDrawerToggle) {
-     /*   ActionBar actionBar = getSupportActionBar();
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(showDrawerToggle);
-        actionBarDrawerToggle.syncState();
-       *//* if (!showDrawerToggle) {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }*/
+
     }
 
     @Override
@@ -1075,17 +1024,25 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void addBoxesToMenu() {
-        if (exploreItems == null || exploreItems.isEmpty()) {
+
+        if (setting.getBoxes() != null) {
+            for (Box box : setting.getBoxes()) {
+                menu.add(box.getTitle());
+            }
+        }
+        menu.add("FAQs");
+        menu.add("Terms of Use");
+
+        /*if (exploreItems == null || exploreItems.isEmpty()) {
             exploreItems = getAllExploreItems();
             for (ExploreItem exploreItem : exploreItems) {
                 menu.add(exploreItem.getTitle());
             }
             if (exploreItems != null && !exploreItems.isEmpty()) {
-                menu.add("FAQs");
-                menu.add("Terms of Use");
+
             }
 
-        }
+        }*/
         navigationView.invalidate();
     }
 

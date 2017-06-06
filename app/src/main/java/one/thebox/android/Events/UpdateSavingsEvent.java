@@ -11,4 +11,17 @@ import one.thebox.android.Models.saving.Saving;
 
 public class UpdateSavingsEvent {
 
+    private boolean emptyState;
+
+    public UpdateSavingsEvent() {
+
+    }
+
+    public boolean isEmptyState() {
+        return emptyState;
+    }
+
+    public void setEmptyState(boolean emptyState) {
+        this.emptyState = emptyState;
+    }
 }

@@ -285,6 +285,13 @@ public interface APIService {
 
 
     /**
+     * Carousel API service
+     */
+    @GET("/public/app-offers")
+    Call<CarouselApiResponse> getCarousel(@Header("Authorization") String accessToken);
+
+
+    /**
      * Refator
      */
 
@@ -423,13 +430,6 @@ public interface APIService {
 
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
-
-
-    /**
-     * Carousel API service
-     */
-    @GET("/public/app-offers")
-    Call<CarouselApiResponse> getCarousel();
 
 
     /**

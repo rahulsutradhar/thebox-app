@@ -169,8 +169,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-
+                    //update orders as SUbscribe Item has been unsubscribed
+                    getOrdersFromServer();
                 }
             });
         }

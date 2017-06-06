@@ -47,9 +47,9 @@ public class Constants {
     public static final String RUPEE_SYMBOL = "₹";
 
     /**
-     * Category Id
+     * Category UUID
      */
-    public static final String CATEGORY_ID = "extra_category_id";
+    public static final String CATEGORY_UUID = "extra_category_uuid";
 
     /**
      * Constants to Notify Boradcast
