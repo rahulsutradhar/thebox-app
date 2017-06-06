@@ -1322,10 +1322,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             subscribeItems.remove(position);
                                             notifyItemRemoved(position);
                                             notifyDataSetChanged();
+                                            //display message to users
+                                            Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                         } else {
                                             //update item quantity and savings
                                             subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
-                                            subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
+                                            if (response.body().getSubscribeItem().getSubscribedSavingText() != null) {
+                                                if (!response.body().getSubscribeItem().getSubscribedSavingText().isEmpty()) {
+                                                    subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
+                                                }
+                                            }
                                             subscribeItems.set(position, subscribeItem);
                                             notifyItemChanged(getAdapterPosition());
                                         }
@@ -1333,8 +1339,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         if (onSubscribeItemChange != null) {
                                             onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                         }
-                                        //display message to users
-                                        Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             } catch (Exception e) {

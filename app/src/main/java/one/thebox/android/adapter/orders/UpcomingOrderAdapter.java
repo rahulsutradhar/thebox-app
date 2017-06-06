@@ -1,4 +1,4 @@
-package one.thebox.android.adapter;
+package one.thebox.android.adapter.orders;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -26,58 +26,25 @@ import one.thebox.android.util.DateTimeUtil;
 
 /**
  * Created by Ajeet Kumar Meena on 15-04-2016.
+ * <p>
+ * Modified by Developers on 06/06/2017.
  */
-public class OrdersItemAdapter extends BaseRecyclerAdapter {
+public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
-    private RealmList<Order> orders = new RealmList<>();
-    private boolean isTimeSlotOrderAdapter;
-    private ArrayList<Integer> monthPrintPosition = new ArrayList<>();
+    private ArrayList<Order> orders = new ArrayList<>();
 
-    public OrdersItemAdapter(Context context, RealmList<Order> orders) {
+    public UpcomingOrderAdapter(Context context, ArrayList<Order> orders) {
         super(context);
         this.orders = orders;
-
-        String previousMonth = "";
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
-            Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-            String currentMonth = new SimpleDateFormat("MMMM").format(date);
-            if (!previousMonth.equals(currentMonth)) {
-                monthPrintPosition.add(i);
-            }
-            previousMonth = currentMonth;
-        }
-
         mViewType = RECYCLER_VIEW_TYPE_NORMAL;
 
     }
 
-    public boolean isTimeSlotOrderAdapter() {
-        return isTimeSlotOrderAdapter;
-    }
-
-    public void setTimeSlotOrderAdapter(boolean timeSlotOrderAdapter) {
-        isTimeSlotOrderAdapter = timeSlotOrderAdapter;
-    }
-
-    private boolean shouldHaveOrders() {
-        for (Order order : orders) {
-            if (!order.isCart()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void addBillItem(Order order) {
-        orders.add(order);
-    }
-
-    public RealmList<Order> getOrders() {
+    public ArrayList<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(RealmList<Order> orders) {
+    public void setOrders(ArrayList<Order> orders) {
         this.orders = orders;
     }
 
@@ -93,7 +60,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected HeaderHolder getHeaderHolder(View view) {
-        return new HeaderViewHolder(view);
+        return null;
     }
 
     @Override
@@ -109,7 +76,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             @Override
             public void onClick(View v) {
                 try {
-                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId(),orders.get(position).getOrderDate()));
+                    mContext.startActivity(OrderItemsActivity.newInstance(mContext, orders.get(position).getId(), orders.get(position).getOrderDate()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -138,7 +105,7 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
-        return R.layout.header_item_bill;
+        return 0;
     }
 
     @Override
@@ -192,6 +159,8 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                             }
                         }
                     });
+                } else {
+                    reschedule_order_button.setVisibility(View.GONE);
                 }
 
                 if (order.getOrderDate() != null) {
@@ -200,34 +169,28 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
                     dateTextView.setText("");
                 }
 
-                if (order.getDeliverySlot() != null) {
-                    timeSlot.setText(order.getDeliverySlot());
+                if (order.getDeliverySlotDuration() != null) {
+                    timeSlot.setText(order.getDeliverySlotDuration());
                 } else {
                     timeSlot.setText("");
                 }
 
-                Date date = DateTimeUtil.convertStringToDate(order.getDeliveryScheduleAt());
-                String currentMonth = new SimpleDateFormat("MMMM").format(date);
-                if (monthPrintPosition.contains(position)) {
-                    month.setVisibility(View.VISIBLE);
-                    month.setText(currentMonth);
-                } else {
-                    month.setVisibility(View.GONE);
-                }
+                //set the month value
+                month.setVisibility(View.GONE);
 
-                itemsNameTextView.setText(order.getUserItems().size() + " items");
+                itemsNameTextView.setText(order.getNoOfItems() + " items");
 
                 // Order has been unsuccessfull
                 // State 3a
-                if (!order.isSuccessful()) {
+               /* if (!order.isSuccessful()) {
                     message.setText("Order was not confirmed by the user");
                     message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
                     text_order_state.setText("Was scheduled on");
                     amountTobePaidTextView.setVisibility(View.GONE);
-                }
+                }*/
                 // Order has been closed
                 // State 3b
-                else if (!order.isOpen()) {
+                if (!order.isOpen()) {
                     message.setText("Thank you for choosing us");
                     message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
                     amountTobePaidTextView.setOnClickListener(null);
@@ -317,22 +280,4 @@ public class OrdersItemAdapter extends BaseRecyclerAdapter {
             }
         }
     }
-
-    class HeaderViewHolder extends HeaderHolder {
-        private LinearLayout payForWeekAndWeekLayout;
-
-        public HeaderViewHolder(View itemView) {
-            super(itemView);
-            payForWeekAndWeekLayout = (LinearLayout) itemView.findViewById(R.id.layout_pay_for_week_and_month);
-        }
-
-        public void setViews(boolean isHiddenPayForWeekLayout) {
-            if (isHiddenPayForWeekLayout) {
-                payForWeekAndWeekLayout.setVisibility(View.GONE);
-            } else {
-                payForWeekAndWeekLayout.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
 }

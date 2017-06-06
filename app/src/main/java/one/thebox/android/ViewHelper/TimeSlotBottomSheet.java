@@ -6,22 +6,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
-import io.realm.RealmList;
-import one.thebox.android.Models.Order;
 import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.R;
-import one.thebox.android.adapter.base.BaseRecyclerAdapter;
-import one.thebox.android.adapter.OrdersItemAdapter;
 import one.thebox.android.adapter.timeslot.DateSlotAdapter;
-import one.thebox.android.util.Constants;
-import one.thebox.android.util.DateTimeUtil;
 
 /**
  * Created by Ajeet Kumar Meena on 29-04-2016.

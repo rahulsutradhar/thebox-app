@@ -66,6 +66,7 @@ import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.order.OrdersResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
@@ -257,6 +258,13 @@ public interface APIService {
     @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/update")
     Call<UpdateQuantitySubscribeItemResponse> updateQuantitySubscribeItem(@Header("Authorization") String accessToken,
                                                                           @Path("subscribe_item_uuid") String subscribeItemUuid, @Body UpdateQuantitySubscribeItemRequest updateQuantitySubscribeItemRequest);
+
+
+    /**
+     * Orders
+     */
+    @GET("/consumer/api/v1/orders")
+    Call<OrdersResponse> getOrders(@Header("Authorization") String accessToken);
 
 
     /**

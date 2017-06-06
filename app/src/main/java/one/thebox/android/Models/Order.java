@@ -32,20 +32,12 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("delivery_scheduled_at")
     private String deliveryScheduleAt;
 
-    @SerializedName("paid")
-    private boolean paid;
-
     @SerializedName("delivered")
     private boolean delivered;
 
     @SerializedName("open")
     private boolean open;
 
-    @SerializedName("total_price")
-    private float totalPrice;
-
-    @SerializedName("delivery_charges")
-    private float deliveryCharges;
 
     @SerializedName("tax")
     private float tax;
@@ -59,47 +51,13 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("useritem_quantites")
     private RealmList<Invoice> useritem_quantites;
 
-    @SerializedName("cod")
-    private boolean cod;
-
-    @SerializedName("successfull")
-    private boolean successful;
-
     @SerializedName("payment_amount_remaining")
     private int payment_amount_remaining;
-
-    @SerializedName("order_date")
-    private String orderDate;
-
-    @SerializedName("delivery_slot_duration")
-    private String deliverySlot;
 
     public Order() {
     }
 
     public Order(Order order) {
-        this.id = order.getId();
-        this.userId = order.getUserId();
-        this.addressId = order.getAddressId();
-        this.deliveryScheduleAt = order.getDeliveryScheduleAt();
-        this.paid = order.isPaid();
-        this.delivered = order.isDelivered();
-        this.open = order.isOpen();
-        this.totalPrice = order.getTotalPrice();
-        this.deliveryCharges = order.getDeliveryCharges();
-        this.tax = order.getDeliveryCharges();
-        this.cart = order.isCart();
-        this.payment_amount_remaining = order.get_payment_amount_remaining();
-        if (order.getUserItems() != null) {
-            this.userItems = new RealmList<>();
-            this.userItems.addAll(order.getUserItems());
-        }
-
-        if (order.getUserItemQuantities() != null) {
-            this.useritem_quantites = new RealmList<>();
-            this.useritem_quantites.addAll(order.getUserItemQuantities());
-        }
-
 
     }
 
@@ -112,7 +70,6 @@ public class Order extends RealmObject implements Serializable {
         this.delivered = delivered;
         this.open = open;
         this.totalPrice = totalPrice;
-        this.deliveryCharges = deliveryCharges;
         this.tax = tax;
         this.cart = cart;
         this.userItems = userItems;
@@ -218,22 +175,6 @@ public class Order extends RealmObject implements Serializable {
         return itemString;
     }
 
-    public float getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(float totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public float getDeliveryCharges() {
-        return deliveryCharges;
-    }
-
-    public void setDeliveryCharges(float deliveryCharges) {
-        this.deliveryCharges = deliveryCharges;
-    }
-
     public float getTax() {
         return tax;
     }
@@ -242,13 +183,6 @@ public class Order extends RealmObject implements Serializable {
         this.tax = tax;
     }
 
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid = paid;
-    }
 
     public boolean isDelivered() {
         return delivered;
@@ -282,38 +216,6 @@ public class Order extends RealmObject implements Serializable {
         return total;
     }
 
-    public boolean isCod() {
-        return cod;
-    }
-
-    public void setCod(boolean cod) {
-        this.cod = cod;
-    }
-
-    public boolean isSuccessful() {
-        return successful;
-    }
-
-    public void setSuccessful(boolean successful) {
-        this.successful = successful;
-    }
-
-    public String getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getDeliverySlot() {
-        return deliverySlot;
-    }
-
-    public void setDeliverySlot(String deliverySlot) {
-        this.deliverySlot = deliverySlot;
-    }
-
 
     /**
      * Refactor
@@ -321,10 +223,39 @@ public class Order extends RealmObject implements Serializable {
     @PrimaryKey
     private String uuid;
 
+    /**
+     * For Time slots
+     */
     private String date;
 
     @SerializedName("time_slot")
     private String timeSlot;
+
+    /**
+     * For displaying orders
+     */
+    @SerializedName("order_date")
+    private String orderDate;
+
+    @SerializedName("delivery_slot_duration")
+    private String deliverySlotDuration;
+
+    @SerializedName("total_price")
+    private float totalPrice;
+
+    @SerializedName("no_of_items")
+    private int noOfItems;
+
+    private boolean cod;
+
+    private boolean paid;
+
+    @SerializedName("amount_to_pay")
+    private float amountToPay;
+
+    @SerializedName("payment_text")
+    private String paymentText;
+
 
     /****************************************
      * Getter Setter
@@ -352,4 +283,70 @@ public class Order extends RealmObject implements Serializable {
     public void setTimeSlot(String timeSlot) {
         this.timeSlot = timeSlot;
     }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getDeliverySlotDuration() {
+        return deliverySlotDuration;
+    }
+
+    public void setDeliverySlotDuration(String deliverySlotDuration) {
+        this.deliverySlotDuration = deliverySlotDuration;
+    }
+
+    public float getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(float totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public int getNoOfItems() {
+        return noOfItems;
+    }
+
+    public void setNoOfItems(int noOfItems) {
+        this.noOfItems = noOfItems;
+    }
+
+    public float getAmountToPay() {
+        return amountToPay;
+    }
+
+    public void setAmountToPay(float amountToPay) {
+        this.amountToPay = amountToPay;
+    }
+
+    public String getPaymentText() {
+        return paymentText;
+    }
+
+    public void setPaymentText(String paymentText) {
+        this.paymentText = paymentText;
+    }
+
+    public boolean isCod() {
+        return cod;
+    }
+
+    public void setCod(boolean cod) {
+        this.cod = cod;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
+    }
+
+
 }
