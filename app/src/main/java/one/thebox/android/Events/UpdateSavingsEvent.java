@@ -11,17 +11,4 @@ import one.thebox.android.Models.saving.Saving;
 
 public class UpdateSavingsEvent {
 
-    private ArrayList<Saving> savings;
-
-    public UpdateSavingsEvent(ArrayList<Saving> savings) {
-        this.savings = savings;
-    }
-
-    public ArrayList<Saving> getSavings() {
-        return savings;
-    }
-
-    public void setSavings(ArrayList<Saving> savings) {
-        this.savings = savings;
-    }
 }

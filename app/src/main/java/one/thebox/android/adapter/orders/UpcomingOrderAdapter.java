@@ -152,7 +152,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     reschedule_order_button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            context.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true));
+                            upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 4);
                         }
                     });
                 } else {

@@ -285,74 +285,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public void proceedToSlots(boolean isMerge) {
         startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(), isMerge));
     }
-
-
-    /**
-     * Logic to navigate users from cart
-     */
-    public void checkUserDetailsAndProceedPayment() {
-        try {
-
-            /**
-             * set Clevertap Event Proceed from cart
-             */
-            setCleverTapEventProocedFromCart(order);
-
-            User user = PrefUtils.getUser(getActivity());
-            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
-            RealmList<Order> orders = new RealmList<>();
-            orders.add(order);
-
-            if (user != null) {
-                //check for user details
-                if (setting.isUserDataAvailable()) {
-                    checkForAddress(user, orders);
-                } else {
-                    if (user.getName() != null && user.getEmail() != null) {
-                        checkForAddress(user, orders);
-                    } else {
-                        //proceed to user details Activity
-                        // openUserDetailsActivity(orders);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * User Data is Available now check Address
-     */
-    public void checkForAddress(User user, RealmList<Order> orders) {
-        try {
-            if (user.getAddresses() != null) {
-                if (user.getAddresses().size() > 0) {
-
-                    //if order exist move to slots else take to delivery address
-                    if (OrderHelper.isOrderExist()) {
-                        //move to slots
-                        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(),
-                                OrderHelper.getAddressAndOrder(orders), false));
-                    } else {
-                        //open Delivery Address Fragment
-                        // displayDeliveryAddress(user, orders);
-                    }
-
-                } else {
-                    //open Add Address Activity
-                    //addDeliverAddress(orders);
-                }
-            } else {
-                //open Add Address Activity
-                // addDeliverAddress(orders);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    
     /**
      * Open Add Address Form
      */

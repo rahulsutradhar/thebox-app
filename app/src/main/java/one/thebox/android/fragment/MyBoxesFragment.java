@@ -45,6 +45,7 @@ import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.subscription.SubscriptionAdapter;
 import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
+import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
@@ -145,12 +146,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         //Fetching arguments- silent notification for my items
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        fetchSubscription(show_loader_and_call);
+        //fetch Savings from server
+        fetchSavings();
 
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
-            //fetchOrderedUserItem(show_loader_and_call);
-            PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
-        }
+        //fetch subscription from server
+        fetchSubscription(show_loader_and_call);
 
         setupAppBarObserver();
         initDataChangeListener();
@@ -167,34 +167,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     private synchronized void initVariables() {
-       /* ArrayList<Subscription> subscriptions = new ArrayList<>();
-
-        //Fetch Subscription if stored in local database
-        Realm realm = TheBox.getRealm();
-        RealmResults<Subscription> realmResults1 = realm.where(Subscription.class).findAll();
-
-        RealmList<Subscription> itemRealmList = new RealmList<>();
-        itemRealmList.addAll(realm.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
-
-        if (itemRealmList.size() > 0) {
-            subscriptions.clear();
-            for (Subscription subscription : itemRealmList) {
-                if (getUserItems(subscription).size() > 0) {
-                    subscription.setUserItems(getUserItems(subscription));
-                    subscriptions.add(subscription);
-                }
-            }
-        }
-*/
         //get savings from the preferances
         saving = CoreGsonUtils.fromJson(PrefUtils.getString(getActivity(), Constants.SAVINGS), Saving.class);
-
-       /* if (subscriptions.size() > 0) {
-            setupRecyclerView(subscriptions);
-        } else {
-            setupEmptyStateView();
-        }
-*/
     }
 
 
@@ -210,23 +184,27 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
 
     private void setupRecyclerView(ArrayList<Subscription> subscriptions) {
-        //One or more items are subscribed
-        no_item_subscribed_view_holder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
+        if (subscriptions.size() > 0) {
+            //One or more items are subscribed
+            no_item_subscribed_view_holder.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
 
-        if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
-            subscriptionAdapter.setSubscriptions(subscriptions);
+            if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
+                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
+                subscriptionAdapter.setSubscriptions(subscriptions);
 
-            //This view will display the saving card as header and rest of the items
-            setDataToRecyclerView(subscriptions);
-            recyclerView.setAdapter(subscriptionAdapter);
+                //This view will display the saving card as header and rest of the items
+                setDataToRecyclerView(subscriptions);
+                recyclerView.setAdapter(subscriptionAdapter);
+            } else {
+                setDataToRecyclerView(subscriptions);
+            }
         } else {
-            setDataToRecyclerView(subscriptions);
+            setupEmptyStateView();
         }
     }
 
@@ -284,7 +262,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchOrderedUserItem(true);
+                fetchSubscription(true);
             }
         });
     }
@@ -346,16 +324,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
 
-                                    //set the Response and update the list
-                                    //get savings
-                                    if (response.body().getSavings() != null) {
-                                        if (response.body().getSavings().size() > 0) {
-                                            if (response.body().getSavings().get(0).getType().equals("current")) {
-                                                saving = response.body().getSavings().get(0);
-                                            }
-                                        }
-                                    }
-
                                     //show recyclerview
                                     if (response.body().getSubscriptions() != null) {
                                         if (response.body().getSubscriptions().size() > 0) {
@@ -390,69 +358,57 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         connectionErrorViewHelper.isVisible(true);
                     }
                 });
-
-
     }
 
 
     /**
-     * Fetch User Item
+     * Fetch Savings on Subscribe Item
      */
-    public synchronized void fetchOrderedUserItem(boolean showLoader) {
+    public void fetchSavings() {
 
-        connectionErrorViewHelper.isVisible(false);
-        if (showLoader) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
+        TheBox.getAPIService()
+                .getSavings(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<SavingsResponse>() {
+                    @Override
+                    public void onResponse(Call<SavingsResponse> call, Response<SavingsResponse> response) {
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
 
-        String token = PrefUtils.getToken(getActivity());
-        TheBox.getAPIService().getMyItems(token).enqueue(new Callback<UserItemResponse>() {
-            @Override
-            public void onResponse(Call<UserItemResponse> call, Response<UserItemResponse> response) {
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
+                                    updateSavingsUI(saving);
 
-                connectionErrorViewHelper.isVisible(false);
-                progressBar.setVisibility(View.GONE);
-
-                try {
-                    if (response.isSuccessful() && response.body() != null) {
-
-                        //get savings
-                        if (response.body().getSavings() != null) {
-                            if (response.body().getSavings().size() > 0) {
-                                if (response.body().getSavings().get(0).getType().equals("current")) {
-                                    saving = response.body().getSavings().get(0);
                                 }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-
-                        //save saving in the preferance
-                        PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
-
-                    } else {
-                        //Parse Error
-                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
-                } catch (Exception e) {
-                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.GONE);
-                    no_item_subscribed_view_holder.setVisibility(View.GONE);
-                    connectionErrorViewHelper.isVisible(true);
-                }
+                    @Override
+                    public void onFailure(Call<SavingsResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    public void updateSavingsUI(Saving saving) {
+        if (saving != null) {
+            //save saving in the preferance
+            PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
+
+            if (subscriptionAdapter != null) {
+                subscriptionAdapter.setSaving(saving);
             }
-
-            @Override
-            public void onFailure(Call<UserItemResponse> call, Throwable t) {
-                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.GONE);
-                no_item_subscribed_view_holder.setVisibility(View.GONE);
-                connectionErrorViewHelper.isVisible(true);
-            }
-        });
-
-
+        }
     }
 
 
@@ -505,26 +461,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        //update the saving card
-                        if (updateSavingsEvent.getSavings() != null) {
-                            if (updateSavingsEvent.getSavings().size() > 0) {
-
-                                //save saving in the preferance
-                                PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().get(0)));
-
-                                //update savings data in Adapter
-                                if (recyclerView != null && null != subscriptionAdapter) {
-                                    subscriptionAdapter.setSaving(updateSavingsEvent.getSavings().get(0));
-
-                                }
-
-                            }
-                        }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
+                    fetchSavings();
                 }
             });
         }
