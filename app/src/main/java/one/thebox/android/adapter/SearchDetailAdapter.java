@@ -62,10 +62,12 @@ import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
 import one.thebox.android.api.RequestBodies.UpdateOrderItemQuantityRequestBody;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
@@ -1095,8 +1097,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private class UserItemViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView productName, brand,
-                arrivingTime, config, addButton, subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
+        private TextView productName, arrivingTime, config, addButton,
+                subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
         private ImageView productImageView;
         private RelativeLayout quantityHolder;
 
@@ -1116,7 +1118,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
-        private void setViews(final SubscribeItem subscribeItem, final int arrayListPosition) {
+        private void setViews(final SubscribeItem subscribeItem, final int position) {
 
             try {
                 quantityHolder.setVisibility(View.VISIBLE);
@@ -1162,7 +1164,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     //edit subscription
-                    doEditSubscription(subscribeItem, arrayListPosition);
+                    doEditSubscription(subscribeItem, position);
 
                 }
             });
@@ -1170,118 +1172,37 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
-
-                        Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
-                        confirm_change_is_not_intentded_for_a_particular_order.build_it();
-                        confirm_change_is_not_intentded_for_a_particular_order
-                                .setPositiveButton(confirm_change_is_not_intentded_for_a_particular_order.getPositive_button_text_res_id(), new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
-                                        if (subscribeItem.getQuantity() == 0) {
-                                            addItemToBox(getAdapterPosition());
-                                        } else {
-                                            updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() + 1);
-                                        }
-                                    }
-                                })
-                                .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
-                                        Intent intent = new Intent(mContext, MainActivity.class)
-                                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 2);
-                                        mContext.startActivity(intent);
-                                    }
-                                })
-                                .show();
-
-                    } else {
-                        if (subscribeItem.getQuantity() == 0) {
-                            addItemToBox(getAdapterPosition());
-                        } else {
-                            updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() + 1);
-                        }
-                    }
+                    //increase quantity
+                    updateQuantity(subscribeItem, position, (subscribeItem.getQuantity() + 1));
                 }
             });
             subtractButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    if (PrefUtils.getBoolean(TheBox.getInstance(), "update_quantity_announcemnet", true)) {
 
-                        Announcement confirm_change_is_not_intentded_for_a_particular_order = new Announcement(mContext, 0);
-                        confirm_change_is_not_intentded_for_a_particular_order.build_it();
-                        confirm_change_is_not_intentded_for_a_particular_order
-                                .setPositiveButton(confirm_change_is_not_intentded_for_a_particular_order.getPositive_button_text_res_id(), new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-
-                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
-
-                                        if (subscribeItem.getQuantity() > 1) {
-                                            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() - 1);
+                    if (subscribeItem.getQuantity() > 1) {
+                        //decrease quantity
+                        updateQuantity(subscribeItem, position, (subscribeItem.getQuantity() - 1));
+                    }//Delete Subscribe Item
+                    else if (subscribeItem.getQuantity() == 1) {
+                        MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
+                                positiveText("Cancel")
+                                .negativeText("Unsubscribe").
+                                        onNegative(new MaterialDialog.SingleButtonCallback() {
+                                            @Override
+                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                //remove or delete Subscribe Item
+                                                updateQuantity(subscribeItem, position, 0);
                                             }
-                                        } else if (subscribeItem.getQuantity() == 1) {
-                                            MaterialDialog dialog_unsubscribe = new MaterialDialog.Builder(mContext).
-                                                    title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
-                                                    positiveText("Cancel")
-                                                    .negativeText("Unsubscribe").
-                                                            onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                                @Override
-                                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                                        // openCancelDialog(userItem, getAdapterPosition());
-                                                                    }
-                                                                }
-                                                            }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
-                                            dialog_unsubscribe.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                                            dialog_unsubscribe.show();
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                    }
-                                })
-                                .setNegativeButton(confirm_change_is_not_intentded_for_a_particular_order.getNegativeText_button_text_res_id(), new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        PrefUtils.putBoolean(TheBox.getInstance(), "update_quantity_announcemnet", false);
-                                        Intent intent = new Intent(mContext, MainActivity.class)
-                                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 11);
-                                        mContext.startActivity(intent);
-                                    }
-                                })
-                                .show();
-
+                                        }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                        dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                        dialog.show();
                     } else {
-                        if (subscribeItem.getQuantity() > 1) {
-                            if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                updateQuantity(getAdapterPosition(), subscribeItem.getQuantity() - 1);
-                            }
-                        } else if (subscribeItem.getQuantity() == 1) {
-                            MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                    title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
-                                    positiveText("Cancel")
-                                    .negativeText("Unsubscribe").
-                                            onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                @Override
-                                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                    if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                        // openCancelDialog(userItem, getAdapterPosition());
-                                                    }
-                                                }
-                                            }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
-                            dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                            dialog.show();
-                        } else {
-                            Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                     }
+
 
                 }
             });
@@ -1326,7 +1247,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
                                 @Override
                                 public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
-                                    
+
                                     //update the arriving at Text on the existing list object
                                     subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
                                     subscribeItems.set(position, subscribeItem);
@@ -1335,21 +1256,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                     }
                                     notifyItemChanged(getAdapterPosition());
-
-                                    //refetch orders and update, which also updates locally
-                                    //UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule = new UpdateDeliveriesAfterReschedule();
-                                    /**
-                                     * when called from SearchDeatilItemFragment update Subscription and Deliveries
-                                     *  Else only Update only Deleivery
-                                     */
-
-                                   /* if (isCalledFromSearchDetailItem) {
-                                        updateDeliveriesAfterReschedule.setNotifyTo(Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
-                                    } else {
-                                        updateDeliveriesAfterReschedule.setNotifyTo(Constants.DELIVERIES);
-                                    }
-                                    updateDeliveriesAfterReschedule.setShallNotifyAll(false);
-                                    EventBus.getDefault().post(updateDeliveriesAfterReschedule);*/
 
                                     if (deliveryBottomSheet != null) {
                                         deliveryBottomSheet.dismiss();
@@ -1368,9 +1274,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                 onNegative(new MaterialDialog.SingleButtonCallback() {
                                                     @Override
                                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                        if (getAdapterPosition() != RecyclerView.NO_POSITION) {
-                                                            // openCancelDialog(userItem, getAdapterPosition());
-                                                        }
+                                                        //Remove Subscribe Item
+                                                        updateQuantity(subscribeItem, position, 0);
                                                     }
                                                 }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                                 dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -1386,6 +1291,67 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
         }
+
+        /**
+         * Update Quantity for Subscribe Item; ALso remove Subscribe Item
+         *
+         * @param subscribeItem
+         * @param position
+         * @param quantity
+         */
+        private void updateQuantity(final SubscribeItem subscribeItem, final int position, final int quantity) {
+            final BoxLoader dialog = new BoxLoader(mContext).show();
+
+            TheBox.getAPIService()
+                    .updateQuantitySubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
+                            subscribeItem.getUuid(), new UpdateQuantitySubscribeItemRequest(quantity))
+                    .enqueue(new Callback<UpdateQuantitySubscribeItemResponse>() {
+                        @Override
+                        public void onResponse(Call<UpdateQuantitySubscribeItemResponse> call, Response<UpdateQuantitySubscribeItemResponse> response) {
+                            dialog.dismiss();
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body() != null) {
+
+                                        /**
+                                         * check if Subscribe Item has been delted or not;
+                                         * SubscribeItem id DELETED
+                                         */
+                                        if (response.body().isDeleted()) {
+                                            //remove item
+                                            subscribeItems.remove(position);
+                                            notifyItemRemoved(position);
+                                            notifyDataSetChanged();
+                                        } else {
+                                            //update item quantity and savings
+                                            subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
+                                            subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
+                                            subscribeItems.set(position, subscribeItem);
+                                            notifyItemChanged(getAdapterPosition());
+                                        }
+                                        //notify Subscription Adapter about the change
+                                        if (onSubscribeItemChange != null) {
+                                            onSubscribeItemChange.onSubscribeItem(subscribeItems);
+                                        }
+                                        //display message to users
+                                        Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateQuantitySubscribeItemResponse> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        }
+
 
         private void addItemToBox(final int position) throws IllegalStateException {
             final BoxLoader dialog = new BoxLoader(mContext).show();
@@ -1423,67 +1389,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        private void updateQuantity(final int position, final int quantity) throws IllegalStateException {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-
-            TheBox.getAPIService().updateQuantity(PrefUtils.getToken(TheBox.getInstance()), new UpdateItemQuantityRequestBody(new UpdateItemQuantityRequestBody.UserItem(userItems.get(position).getId(), quantity)))
-                    .enqueue(new Callback<UpdateItemConfigResponse>() {
-                        @Override
-                        public void onResponse(Call<UpdateItemConfigResponse> call, Response<UpdateItemConfigResponse> response) {
-                            dialog.dismiss();
-                            try {
-                                if (response.isSuccessful()) {
-                                    if (response.body() != null) {
-                                        if (response.body().isSuccess()) {
-                                            int prevQuantity = userItems.get(position).getQuantity();
-                                            UserItem item = response.body().getUserItem();
-                                            item.setBoxId(response.body().getBoxId());
-
-                                            if (quantity >= 1) {
-                                                userItems.set(position, item);
-                                                notifyItemChanged(position);
-                                                CartHelper.addOrUpdateUserItem(item, null);
-                                            } else {
-                                                CartHelper.removeUserItem(userItems.get(position).getId(), null);
-                                                userItems.remove(position);
-                                                notifyItemRemoved(getAdapterPosition());
-                                            }
-                                          /*  if (onUserItemChange != null) {
-                                                onUserItemChange.onUserItemChange(userItems);
-                                            }
-*/
-                                            //update Savings Card in Subscription tab
-                                            EventBus.getDefault().post(new UpdateSavingsEvent(response.body().getSavings()));
-
-                                            /**
-                                             *  when called from SearchDeatilItemFragment update Subscription and Deliveries
-                                             *  Else only Update only Deleivery
-                                             */
-                                            if (isCalledFromSearchDetailItem) {
-                                                OrderHelper.updateUserItemAndNotifiy(item, Constants.BROADCAST_SUBSCRIPTION_AND_DELIVERIES);
-                                            } else {
-                                                OrderHelper.updateUserItemAndNotifiy(item, Constants.DELIVERIES);
-                                            }
-
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(TheBox.getInstance(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                } else {
-                                    //handle error
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<UpdateItemConfigResponse> call, Throwable t) {
-                            dialog.dismiss();
-                        }
-                    });
-        }
 
         private void changeConfig(final int position, final int itemConfigId) {
             final BoxLoader dialog = new BoxLoader(mContext).show();

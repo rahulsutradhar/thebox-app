@@ -13,6 +13,7 @@ import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
@@ -67,6 +68,7 @@ import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -246,7 +248,15 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/reschedule")
     Call<MergeSubscriptionResponse> mergeSubscribeItemWithOrder(@Header("Authorization") String accessToken,
-                                                            @Path("subscribe_item_uuid") String orderUuid, @Body MergeSubscriptionRequest mergeSubscriptionRequest);
+                                                                @Path("subscribe_item_uuid") String subscribeItemUuid, @Body MergeSubscriptionRequest mergeSubscriptionRequest);
+
+
+    /**
+     * Update Subscribe Item Quantity
+     */
+    @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/update")
+    Call<UpdateQuantitySubscribeItemResponse> updateQuantitySubscribeItem(@Header("Authorization") String accessToken,
+                                                                          @Path("subscribe_item_uuid") String subscribeItemUuid, @Body UpdateQuantitySubscribeItemRequest updateQuantitySubscribeItemRequest);
 
 
     /**
