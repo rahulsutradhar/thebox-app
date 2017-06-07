@@ -13,9 +13,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.carousel.Offer;
@@ -174,29 +177,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private RemainingCategoryAdapter remainingCategoryAdapter;
-        private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private TextView title, add_more_items, savingsTitle;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
+        private Box box;
+
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+                EventBus.getDefault().post(new DisplayProductForBoxEvent(box));
             }
         };
 
-        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifyItemChanged(getAdapterPosition());
-            }
-        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -217,6 +211,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(Box box, int position) {
+            this.box = box;
             this.title.setText(box.getTitle());
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);

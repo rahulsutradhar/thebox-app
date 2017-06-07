@@ -410,10 +410,6 @@ public class MainActivity extends BaseActivity implements
             case R.id.view_bill:
                 attachOrderFragment();
                 return true;
-           /* case R.id.explore_boxes: {
-                attachExploreBoxes();
-                return true;
-            }*/
             default: {
                 String menuName = (String) menuItem.getTitle();
                 openBoxByName(menuName);
@@ -542,14 +538,8 @@ public class MainActivity extends BaseActivity implements
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
-            ExploreItem selectedExploreItem = null;
-            for (ExploreItem exploreItem : exploreItems) {
-                if (exploreItem.getTitle().equals(name)) {
-                    selectedExploreItem = exploreItem;
-                    break;
-                }
-            }
-            attachExploreItemDetailFragment(selectedExploreItem);
+            Toast.makeText(TheBox.getAppContext(), "Dude! have patience, this feature is yet to come", Toast.LENGTH_SHORT).show();
+            //attachExploreItemDetailFragment(selectedExploreItem);
         }
     }
 
@@ -642,7 +632,6 @@ public class MainActivity extends BaseActivity implements
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-//        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
@@ -1010,18 +999,6 @@ public class MainActivity extends BaseActivity implements
         this.searchAction = searchAction;
     }
 
-    public ArrayList<ExploreItem> getAllExploreItems() {
-        ArrayList<ExploreItem> exploreItems = new ArrayList<>();
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        for (Box box : boxes) {
-            exploreItems.add(new ExploreItem(box.getBoxId(), box.getBoxDetail().getTitle()));
-        }
-        return exploreItems;
-    }
 
     public void addBoxesToMenu() {
 
@@ -1033,16 +1010,6 @@ public class MainActivity extends BaseActivity implements
         menu.add("FAQs");
         menu.add("Terms of Use");
 
-        /*if (exploreItems == null || exploreItems.isEmpty()) {
-            exploreItems = getAllExploreItems();
-            for (ExploreItem exploreItem : exploreItems) {
-                menu.add(exploreItem.getTitle());
-            }
-            if (exploreItems != null && !exploreItems.isEmpty()) {
-
-            }
-
-        }*/
         navigationView.invalidate();
     }
 

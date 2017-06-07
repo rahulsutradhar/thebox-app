@@ -36,6 +36,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
 import one.thebox.android.Events.TabEvent;
@@ -438,6 +439,22 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     }
 
     /**
+     * Search Box UUid for Box;
+     */
+    public void searchCategoryForBox(Box selectedBox) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(selectedBox.getUuid())) {
+                        displayProduct(box.getCategories(), "", selectedBox.getTitle(), 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Set Data and Display Products
      */
     public void displayProduct(RealmList<Category> categories, String categoryUuid, String boxTitle, int position) {
@@ -471,6 +488,18 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                 @Override
                 public void run() {
                     searchCategoryForSavings(displayProductForSavingsEvent.getBoxUuid(), displayProductForSavingsEvent.getBoxTitle());
+                }
+            });
+        }
+    }
+
+    @Subscribe
+    public void eventDisplayProductForBox(final DisplayProductForBoxEvent displayProductForBoxEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchCategoryForBox(displayProductForBoxEvent.getBox());
                 }
             });
         }
