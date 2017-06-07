@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -21,8 +22,10 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.UpdateProfileActivity;
 import one.thebox.android.api.ApiResponse;
+import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -90,6 +93,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             userName.setText(user.getName());
             email.setText(user.getEmail());
             phoneNumber.setText(user.getPhoneNumber());
+
             if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
                 editAddressButton.setVisibility(View.GONE);
                 showAllAddressesButton.setVisibility(View.VISIBLE);
@@ -178,36 +182,13 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-           /* case R.id.button_show_all_address: {
-                startActivity(new Intent(getActivity(), AddressActivity.class));
-                break;
-            }*/
             case R.id.button_show_all_orders: {
                 startActivity(new Intent(getActivity(), OrderDetailActivity.class));
                 break;
             }
             case R.id.button_sign_out: {
-                final BoxLoader dialog = new BoxLoader(getActivity()).show();
-                TheBox.getAPIService().signOut(PrefUtils.getToken(getActivity()))
-                        .enqueue(new Callback<ApiResponse>() {
-                            @Override
-                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                                dialog.dismiss();
-
-                                /**
-                                 * Save CleverTap Event; Logout
-                                 */
-                                setCleverTapEventLogout(PrefUtils.getUser(getActivity()));
-
-                                (new AccountManager(getActivity())).delete_account_data();
-                                getActivity().finish();
-                            }
-
-                            @Override
-                            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                                dialog.dismiss();
-                            }
-                        });
+                new AuthenticationService().logOut(getContext(), true);
+                break;
             }
         }
     }

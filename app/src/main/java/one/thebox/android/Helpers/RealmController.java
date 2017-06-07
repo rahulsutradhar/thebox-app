@@ -3,7 +3,7 @@ package one.thebox.android.Helpers;
 import java.util.List;
 
 import io.realm.Realm;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.app.TheBox;
 

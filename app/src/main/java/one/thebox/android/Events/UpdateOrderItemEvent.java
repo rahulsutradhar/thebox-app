@@ -1,7 +1,6 @@
 package one.thebox.android.Events;
 
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.order.Order;
 
 /**
  * Created by Ajeet Kumar Meena on 12-06-2016.

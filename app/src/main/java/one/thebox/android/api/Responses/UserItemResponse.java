@@ -4,11 +4,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import io.realm.RealmList;
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.OrderedUserItem;
+import one.thebox.android.Models.user.Subscription;
 
 /**
  * Created by nbansal2211 on 17/12/16.
@@ -17,7 +15,7 @@ public class UserItemResponse {
 
     @SerializedName("data")
     @Expose
-    private ArrayList<OrderedUserItem> orderedUserItems;
+    private ArrayList<Subscription> subscriptions;
 
     private ArrayList<Saving> savings;
 
@@ -25,12 +23,12 @@ public class UserItemResponse {
 
     }
 
-    public ArrayList<OrderedUserItem> getOrderedUserItems() {
-        return orderedUserItems;
+    public ArrayList<Subscription> getSubscriptions() {
+        return subscriptions;
     }
 
-    public void setOrderedUserItems(ArrayList<OrderedUserItem> orderedUserItems) {
-        this.orderedUserItems = orderedUserItems;
+    public void setSubscriptions(ArrayList<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     public ArrayList<Saving> getSavings() {

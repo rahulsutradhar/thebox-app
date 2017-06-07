@@ -3,11 +3,10 @@ package one.thebox.android.api.RequestBodies;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.api.ApiResponse;

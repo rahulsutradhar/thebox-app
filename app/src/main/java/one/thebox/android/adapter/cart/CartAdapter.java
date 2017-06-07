@@ -20,7 +20,7 @@ import java.util.Comparator;
 
 import io.realm.RealmList;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;

@@ -13,7 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +23,7 @@ import com.gun0912.tedpermission.TedPermission;
 import java.util.ArrayList;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;

@@ -2,7 +2,6 @@ package one.thebox.android.Helpers.cart;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
 
@@ -11,10 +10,9 @@ import java.util.ArrayList;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import one.thebox.android.Models.BoxItem;
-import one.thebox.android.Models.Cart;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;

@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,9 +24,9 @@ import io.realm.RealmList;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
@@ -48,7 +47,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
-    private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
     private CartAdapter adapter;
@@ -287,73 +285,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(), isMerge));
     }
 
-
-    /**
-     * Logic to navigate users from cart
-     */
-    public void checkUserDetailsAndProceedPayment() {
-        try {
-
-            /**
-             * set Clevertap Event Proceed from cart
-             */
-            setCleverTapEventProocedFromCart(order);
-
-            User user = PrefUtils.getUser(getActivity());
-            Setting setting = PrefUtils.getSettings(TheBox.getInstance());
-            RealmList<Order> orders = new RealmList<>();
-            orders.add(order);
-
-            if (user != null) {
-                //check for user details
-                if (setting.isUserDataAvailable()) {
-                    checkForAddress(user, orders);
-                } else {
-                    if (user.getName() != null && user.getEmail() != null) {
-                        checkForAddress(user, orders);
-                    } else {
-                        //proceed to user details Activity
-                        // openUserDetailsActivity(orders);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * User Data is Available now check Address
-     */
-    public void checkForAddress(User user, RealmList<Order> orders) {
-        try {
-            if (user.getAddresses() != null) {
-                if (user.getAddresses().size() > 0) {
-
-                    //if order exist move to slots else take to delivery address
-                    if (OrderHelper.isOrderExist()) {
-                        //move to slots
-                        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(),
-                                OrderHelper.getAddressAndOrder(orders), false));
-                    } else {
-                        //open Delivery Address Fragment
-                        // displayDeliveryAddress(user, orders);
-                    }
-
-                } else {
-                    //open Add Address Activity
-                    //addDeliverAddress(orders);
-                }
-            } else {
-                //open Add Address Activity
-                // addDeliverAddress(orders);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     /**
      * Open Add Address Form
      */
@@ -405,11 +336,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public void setCleverTapEventOpenCart() {
         try {
             HashMap<String, Object> cartItems = new HashMap<>();
-            cartItems.put("cart_id", order.getId());
-            cartItems.put("user_id", order.getUserId());
-            cartItems.put("total_price_cart", order.getTotalPrice());
-            cartItems.put("item_quantity_cart", order.getUserItems().size());
-
             TheBox.getCleverTap().event.push("open_cart", cartItems);
         } catch (Exception e) {
             e.printStackTrace();

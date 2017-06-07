@@ -47,9 +47,9 @@ public class Constants {
     public static final String RUPEE_SYMBOL = "₹";
 
     /**
-     * Category Id
+     * Category UUID
      */
-    public static final String CATEGORY_ID = "extra_category_id";
+    public static final String CATEGORY_UUID = "extra_category_uuid";
 
     /**
      * Constants to Notify Boradcast
@@ -75,6 +75,11 @@ public class Constants {
      * EXTRA BOX NAME
      */
     public static final String EXTRA_BOX_NAME = "extra_box_name";
+
+    /**
+     * Extra Box Uuid
+     */
+    public static final String EXTRA_BOX_UUID = "extra_box_uuid";
 
     /**
      * EXTRA CATEGORY
@@ -110,6 +115,26 @@ public class Constants {
      * EXTRA SELECTED UUID
      */
     public static final String EXTRA_SELECTED_ORDER_UUID = "extra_selected_order_uuid";
+
+    /**
+     * EXTRA SUBSCRIBE ITEM
+     */
+    public static final String EXTRA_SUBSCRIBE_ITEM = "extra_subscribe_item";
+
+    /**
+     * EXTRA ORDER
+     */
+    public static final String EXTRA_ORDER = "extra_order";
+
+    /**
+     * Extra Is order
+     */
+    public static final String EXTRA_IS_FROM_ORDER = "extra_is_from_order";
+
+    /**
+     * Extra Is Reschedule
+     */
+    public static final String EXTRA_IS_RESCHEDULE = "extra_is_reschedule";
 
 
 }

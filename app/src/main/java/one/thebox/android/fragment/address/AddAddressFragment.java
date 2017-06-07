@@ -8,11 +8,10 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.databinding.AddAddressFragmentBinding;

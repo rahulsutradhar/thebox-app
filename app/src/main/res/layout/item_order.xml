@@ -201,6 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@drawable/green_borders"
+                    android:clickable="true"
                     android:gravity="center"
                     android:paddingBottom="@dimen/padding_medium_button_vertical"
                     android:paddingLeft="@dimen/padding_medium_button_horizontal"

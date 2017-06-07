@@ -7,7 +7,7 @@ import java.io.Serializable;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
+import one.thebox.android.Models.items.BoxItem;
 
 public class UserItem extends RealmObject implements Serializable {
     @Ignore
@@ -26,8 +26,6 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("user_id")
     private int userId;
 
-    @SerializedName("quantity")
-    private int quantity;
 
     @SerializedName("next_delivery_scheduled_at")
     private String nextDeliveryScheduledAt;
@@ -38,8 +36,6 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("itemconfig_id")
     private int selectedConfigId;
 
-    @SerializedName("item")
-    private BoxItem boxItem;
 
     @SerializedName("box_id")
     private int boxId;
@@ -47,8 +43,6 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("cart_id")
     private int cartId;
 
-    @SerializedName("arriving_at")
-    private String arrivingAt;
 
     @SerializedName("savings_title")
     private String selectedItemConfigSavingsTitle;
@@ -102,22 +96,7 @@ public class UserItem extends RealmObject implements Serializable {
         this.cartId = cartId;
     }
 
-    /*  @Override
-      public boolean equals(Object o) {
-          UserItem userItem = (UserItem) o;
-          return userItem != null && this.id == userItem.getId()
-                  && userCategoryId == userItem.getUserCategoryId()
-                  && selectedItemId == userItem.getSelectedItemId() && userId == userItem.getId()
-                  && quantity == userItem.getQuantity()
-                  && nextDeliveryScheduledAt.equals(userItem.getNextDeliveryScheduledAt())
-                  && stillSubscribed == userItem.getStillSubscribed()
-                  && selectedConfigId == userItem.getSelectedConfigId()
-                  && boxItem.equals(userItem.getBoxItem())
-                  && cartId == userItem.getCartId();
 
-
-      }
-  */
     public int getId() {
         return id;
     }
@@ -150,13 +129,6 @@ public class UserItem extends RealmObject implements Serializable {
         this.userId = userId;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 
     public String getNextDeliveryScheduledAt() {
         return nextDeliveryScheduledAt;
@@ -182,21 +154,6 @@ public class UserItem extends RealmObject implements Serializable {
         this.selectedConfigId = selectedConfigId;
     }
 
-    public BoxItem getBoxItem() {
-        return boxItem;
-    }
-
-    public void setBoxItem(BoxItem boxItem) {
-        this.boxItem = boxItem;
-    }
-
-    public String getArrivingAt() {
-        return arrivingAt;
-    }
-
-    public void setArrivingAt(String arrivingAt) {
-        this.arrivingAt = arrivingAt;
-    }
 
     public String getSelectedItemConfigSavingsTitle() {
         return selectedItemConfigSavingsTitle;
@@ -226,5 +183,81 @@ public class UserItem extends RealmObject implements Serializable {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+
+    /**
+     * Refactor
+     */
+    private String uuid;
+
+    private int quantity;
+
+    @SerializedName("subscribed_saving_text")
+    private String subscribedSavingText;
+
+    @SerializedName("arriving_at")
+    private String arrivingAt;
+
+    @SerializedName("itemconfig")
+    private ItemConfig selectedItemConfig;
+
+    @SerializedName("item")
+    private BoxItem boxItem;
+
+
+    /************************************
+     * Getter Setter
+     ************************************/
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getArrivingAt() {
+        return arrivingAt;
+    }
+
+    public void setArrivingAt(String arrivingAt) {
+        this.arrivingAt = arrivingAt;
+    }
+
+    public boolean isStillSubscribed() {
+        return stillSubscribed;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getSubscribedSavingText() {
+        return subscribedSavingText;
+    }
+
+    public void setSubscribedSavingText(String subscribedSavingText) {
+        this.subscribedSavingText = subscribedSavingText;
+    }
+
+    public ItemConfig getSelectedItemConfig() {
+        return selectedItemConfig;
+    }
+
+    public void setSelectedItemConfig(ItemConfig selectedItemConfig) {
+        this.selectedItemConfig = selectedItemConfig;
+    }
+
+    public BoxItem getBoxItem() {
+        return boxItem;
+    }
+
+    public void setBoxItem(BoxItem boxItem) {
+        this.boxItem = boxItem;
     }
 }

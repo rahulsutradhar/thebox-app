@@ -11,17 +11,17 @@ import one.thebox.android.Models.saving.Saving;
 
 public class UpdateSavingsEvent {
 
-    private ArrayList<Saving> savings;
+    private boolean emptyState;
 
-    public UpdateSavingsEvent(ArrayList<Saving> savings) {
-        this.savings = savings;
+    public UpdateSavingsEvent() {
+
     }
 
-    public ArrayList<Saving> getSavings() {
-        return savings;
+    public boolean isEmptyState() {
+        return emptyState;
     }
 
-    public void setSavings(ArrayList<Saving> savings) {
-        this.savings = savings;
+    public void setEmptyState(boolean emptyState) {
+        this.emptyState = emptyState;
     }
 }

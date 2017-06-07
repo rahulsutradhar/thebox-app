@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.Cart;
 import one.thebox.android.Models.User;
+import one.thebox.android.Models.items.Box;
 
 /**
  * Created by nbansal2211 on 03/01/17.
@@ -33,6 +34,8 @@ public class Setting implements Serializable {
     private boolean addressAvailable;
 
     private User user;
+
+    private ArrayList<Box> boxes;
 
 
     /***************************************
@@ -93,5 +96,13 @@ public class Setting implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public ArrayList<Box> getBoxes() {
+        return boxes;
+    }
+
+    public void setBoxes(ArrayList<Box> boxes) {
+        this.boxes = boxes;
     }
 }

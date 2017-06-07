@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,36 +15,30 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
+import java.util.ArrayList;
+
 import one.thebox.android.Events.OnHomeTabChangeEvent;
-import one.thebox.android.Events.UpdateDeliveriesAfterReschedule;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
-import one.thebox.android.adapter.OrdersItemAdapter;
+import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
+import one.thebox.android.api.Responses.order.OrdersResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.Constants;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class UpComingOrderFragment extends Fragment implements View.OnClickListener {
 
-    //Variables
-    public int scene_number = 0;
-
-    //Views
     private View rootView;
     private RecyclerView recyclerView;
-    private OrdersItemAdapter ordersItemAdapter;
-    private RealmList<Order> orders = new RealmList<>();
+    private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
     private GifImageView progress_bar;
 
@@ -67,45 +60,11 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
         initViews();
-        initVariables(false);
 
-
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false)) {
-            fetchDeliveriesFromServer();
-            PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false);
-        }
+        //request Serve and fetch Order
+        getOrdersFromServer();
 
         return rootView;
-    }
-
-    private void initVariables(boolean checkOrderSize) {
-
-        //ignore Order class if order successful is false
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Order> query = realm.where(Order.class).notEqualTo("successful", false);
-        RealmResults<Order> realmResults = query.notEqualTo(Order.FIELD_ID, 0).equalTo(Order.FIELD_IS_CART, false).findAll();
-
-        orders.clear();
-        for (Order order : realmResults) {
-            orders.add(order);
-        }
-
-        if (!orders.isEmpty()) {
-            scene_number = 0;
-        } else {
-            //show error message
-            scene_number = -1;
-        }
-
-        //this called when we remove useritem from OrderedItem
-        if (checkOrderSize) {
-            if (orders != null) {
-                if (orders.size() < 4) {
-                    //if order size is less than 4 fetch orders again
-                    fetchDeliveriesFromServer();
-                }
-            }
-        }
     }
 
     private void initViews() {
@@ -113,39 +72,27 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
 
-        switch (scene_number) {
-            case -1: {
-                no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.GONE);
-                no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
-                    }
-                });
-                break;
+        no_orders_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
             }
-            case 0: {
-                setupRecyclerView();
-                no_orders_subscribed_view_holder.setVisibility(View.GONE);
-                progress_bar.setVisibility(View.GONE);
-                break;
-            }
+        });
+    }
+
+
+    private void setupRecyclerView(ArrayList<Order> orders) {
+        if (orders.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            no_orders_subscribed_view_holder.setVisibility(View.GONE);
+
+            upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(upcomingOrderAdapter);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
-    }
-
-    /**
-     * Fetch Deliveries from Server
-     */
-    public void fetchDeliveriesFromServer() {
-        OrderHelper.getOrderAndNotify(false);
-    }
-
-    private void setupRecyclerView() {
-        recyclerView.setVisibility(View.VISIBLE);
-        ordersItemAdapter = new OrdersItemAdapter(getActivity(), orders);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(ordersItemAdapter);
     }
 
     @Override
@@ -163,32 +110,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         int id = v.getId();
     }
 
-    // Called after Constants.PREF_IS_ORDER_IS_LOADING is switched from false to true
-    @Subscribe
-    public void onUpdateUpcomingDeliveries(final UpdateUpcomingDeliveriesEvent updateUpcomingDeliveriesEvent) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    initVariables(false);
-                    initViews();
-
-                }
-            });
-        }
-    }
-
-    //called after rescheudle delivery
-    @Subscribe
-    public void onUpdateDeliveries(UpdateDeliveriesAfterReschedule updateDeliveriesAfterReschedule) {
-        try {
-            //fetch order and update accordingly
-            OrderHelper.getOrderAndNotify(updateDeliveriesAfterReschedule.getNotifyTo(), updateDeliveriesAfterReschedule.isShallNotifyAll());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onStart() {
@@ -205,13 +126,83 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+    }
 
-        if (PrefUtils.getBoolean(getActivity(), "UPDATE_UI_UPCOMING_FRAGMENT", false)) {
-            //first show update locally
-            initVariables(true);
-            initViews();
-            PrefUtils.putBoolean(getActivity(), "UPDATE_UI_UPCOMING_FRAGMENT", false);
+    /**
+     * Fetch Orders from Server
+     */
+    public void getOrdersFromServer() {
+        progress_bar.setVisibility(View.VISIBLE);
+        TheBox.getAPIService()
+                .getOrders(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<OrdersResponse>() {
+                    @Override
+                    public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
+                        progress_bar.setVisibility(View.GONE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    setupRecyclerView(response.body().getOrders());
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Exception", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<OrdersResponse> call, Throwable t) {
+                        progress_bar.setVisibility(View.GONE);
+                        Toast.makeText(TheBox.getAppContext(), "Failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    /**
+     * Called from Subscription tab to update order
+     */
+    @Subscribe
+    public void onUpdateUpcomingDeliveries(final UpdateUpcomingDeliveriesEvent updateUpcomingDeliveriesEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //update orders as SUbscribe Item has been unsubscribed
+                    getOrdersFromServer();
+                }
+            });
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            //Order Item Activtiy or Confirm TimeSlot Activity
+            if (requestCode == 4) {
+                if (data.getExtras() != null) {
+                    //post event Bus
+                    Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDER), Order.class);
+                    int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
+
+                    if (order != null) {
+                        //all item has been removed, so refetch orders
+                        if (order.getAmountToPay() == 0) {
+                            getOrdersFromServer();
+                        } else {
+                            //partial update the order
+                            if (upcomingOrderAdapter != null) {
+                                //updates order list item if you update the items
+                                upcomingOrderAdapter.updateOrder(order, position);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
