@@ -8,51 +8,29 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="&quot;Great customer service is our pride&quot;"
-        android:textColor="@color/brilliant_rose" />
+        android:textColor="@color/raspberry_red" />
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:text="Help us improve by selecting one or many of"
         android:textColor="@color/primary_text_color" />
 
-    <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/reschedule_reason_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:scrollbars="vertical">
 
-        <one.thebox.android.ViewHelper.MontserratRadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:buttonTint="@color/primary_text_color"
-            android:text="Item is not finished"
-            android:textColor="@color/primary_text_color" />
+    </android.support.v7.widget.RecyclerView>
 
-        <one.thebox.android.ViewHelper.MontserratRadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:buttonTint="@color/primary_text_color"
-            android:checked="false"
-            android:text="Trying out a new Item"
-            android:textColor="@color/primary_text_color" />
-
-        <one.thebox.android.ViewHelper.MontserratRadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:buttonTint="@color/primary_text_color"
-            android:checked="false"
-            android:text="My reason is not listed"
-            android:textColor="@color/primary_text_color" />
-
-    </RadioGroup>
 
 </LinearLayout>

@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.Order;
-
 /**
  * Created by vaibhav on 18/07/16.
  */

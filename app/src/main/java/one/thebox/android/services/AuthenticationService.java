@@ -1,7 +1,9 @@
 package one.thebox.android.services;
 
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -10,9 +12,15 @@ import java.util.HashMap;
 import io.fabric.sdk.android.Fabric;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.User;
+import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by developers on 18/02/17.
@@ -146,6 +154,53 @@ public class AuthenticationService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Log out
+     */
+    public void logOut(final Context context, final boolean showLoader) {
+        final BoxLoader dialog = new BoxLoader(context);
+        if (showLoader) {
+            dialog.show();
+        }
+        TheBox.getAPIService()
+                .logOut(PrefUtils.getToken(TheBox.getAppContext()))
+                .enqueue(new Callback<LogoutResponse>() {
+                    @Override
+                    public void onResponse(Call<LogoutResponse> call, Response<LogoutResponse> response) {
+                        if (showLoader) {
+                            dialog.dismiss();
+                        }
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    navigateToSplash(context);
+                                } else {
+                                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<LogoutResponse> call, Throwable t) {
+                        if (showLoader) {
+                            dialog.dismiss();
+                        }
+                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void navigateToSplash(Context context) {
+        AccountManager accountManager = new AccountManager(context);
+        accountManager.deleteAccountData();
     }
 
 

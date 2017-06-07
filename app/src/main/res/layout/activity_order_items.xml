@@ -22,21 +22,44 @@
         app:contentInsetRight="6dp"
         app:contentInsetStart="6dp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/button_pay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:text="Pay"
-        android:textColor="@color/white" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/button_pay"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/button_pay"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/primary"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="Pay"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/empty_state"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="No item found."
+            android:textColor="@color/davy_grey"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
 
 
 </LinearLayout>

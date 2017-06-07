@@ -21,6 +21,9 @@ public class Saving implements Serializable {
     @SerializedName("suggestion_box_id")
     private int suggestionBoxId;
 
+    @SerializedName("suggestion_box_uuid")
+    private String suggestedBoxUuid;
+
     @SerializedName("suggestion_box_name")
     private String suggestionBoxName;
 
@@ -42,6 +45,18 @@ public class Saving implements Serializable {
     public Saving() {
 
     }
+
+    public String getSuggestedBoxUuid() {
+        return suggestedBoxUuid;
+    }
+
+    public void setSuggestedBoxUuid(String suggestedBoxUuid) {
+        this.suggestedBoxUuid = suggestedBoxUuid;
+    }
+
+    /************************************
+     * Getter Setter
+     ************************************/
 
     public String getType() {
         return type;

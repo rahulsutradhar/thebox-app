@@ -9,12 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.IntStringObject;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;

@@ -9,10 +9,10 @@ import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.VerifyOtpRequestBody;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
+import one.thebox.android.api.RequestBodies.order.RescheduleOrderRequest;
+import one.thebox.android.api.RequestBodies.order.UpdateQuantityOrderItemRequest;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.PaymentDetailsResponse;
@@ -57,15 +57,24 @@ import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.api.Responses.address.AddressResponse;
+import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
+import one.thebox.android.api.Responses.boxes.BoxCategoryResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
+import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.api.Responses.order.OrderItemResponse;
+import one.thebox.android.api.Responses.order.OrdersResponse;
+import one.thebox.android.api.Responses.order.RescheduleOrderResponse;
+import one.thebox.android.api.Responses.order.UpdateQuantityOrderItemResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
+import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -102,6 +111,12 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/resend-verf")
     Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
+
+    /**
+     * Signout
+     */
+    @GET("consumer/api/v1/users/logout")
+    Call<LogoutResponse> logOut(@Header("Authorization") String accessToken);
 
     /**
      * User Setting API
@@ -151,6 +166,12 @@ public interface APIService {
     @GET("/consumer/api/v1/categories")
     Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
 
+    /**
+     * Get All Category for Box UUID
+     */
+    @GET("consumer/api/v1/boxes/{box_uuid}")
+    Call<BoxCategoryResponse> getCategories(@Header("Authorization") String accessToken, @Path("box_uuid") String boxUuid);
+
 
     /**
      * Sync Cart with Server
@@ -190,42 +211,95 @@ public interface APIService {
     Call<PaymentSummaryResponse> getPaymentSummaryForMergeDeliveries(@Header("Authorization") String accessToken,
                                                                      @Path("order_uuid") String orderUuid, @Body PaymentSummaryRequest paymentSummaryRequest);
 
-
     /**
      * Make Payment
-     * <p>
-     * COD - Cart
      */
     @POST("/consumer/api/v1/orders/payment")
-    Call<MakePaymentResponse> makePaymentCodCart(@Header("Authorization") String accessToken,
-                                                 @Body MakePaymentCodCartRequest makePaymentCodCartRequest);
+    Call<MakePaymentResponse> makePayment(@Header("Authorization") String accessToken,
+                                          @Body MakePaymentRequest makePaymentRequest);
 
     /**
-     * Make Payment
-     * <p>
-     * COD - Merge
+     * Subscription; Subscribe Item (formally UserItem)
      */
-    @POST("/consumer/api/v1/orders/payment")
-    Call<MakePaymentResponse> makePaymentCodMerge(@Header("Authorization") String accessToken,
-                                                  @Body MakePaymentCodMergeRequest makePaymentCodMergeRequest);
+    @GET("/consumer/api/v1/users/subscriptions")
+    Call<SubscriptionResponse> getSubscription(@Header("Authorization") String accessToken);
 
     /**
-     * Make Payment
-     * <p>
-     * Online - Cart
+     * Reschdule Subscribe Item
      */
-    @POST("/consumer/api/v1/orders/payment")
-    Call<MakePaymentResponse> makePaymentOnlineCart(@Header("Authorization") String accessToken,
-                                                    @Body MakePaymentOnlineCartRequest makePaymentOnlineCartRequest);
+    @GET("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/reschedule")
+    Call<RescheduleResponse> getRescheduleOption(@Header("Authorization") String accessToken, @Path("subscribe_item_uuid") String subscribeItemUuid);
 
     /**
-     * Make Payment
-     * <p>
-     * Online - Merge
+     * Merge Subscribe Item With Another Order
      */
-    @POST("/consumer/api/v1/orders/payment")
-    Call<MakePaymentResponse> makePaymentOnlineMerge(@Header("Authorization") String accessToken,
-                                                     @Body MakePaymentOnlineMergeRequest makePaymentOnlineMergeRequest);
+    @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/reschedule")
+    Call<MergeSubscriptionResponse> mergeSubscribeItemWithOrder(@Header("Authorization") String accessToken,
+                                                                @Path("subscribe_item_uuid") String subscribeItemUuid, @Body MergeSubscriptionRequest mergeSubscriptionRequest);
+
+
+    /**
+     * Update Subscribe Item Quantity
+     */
+    @POST("/consumer/api/v1/subscriptions/{subscribe_item_uuid}/update")
+    Call<UpdateQuantitySubscribeItemResponse> updateQuantitySubscribeItem(@Header("Authorization") String accessToken,
+                                                                          @Path("subscribe_item_uuid") String subscribeItemUuid, @Body UpdateQuantitySubscribeItemRequest updateQuantitySubscribeItemRequest);
+
+
+    /**
+     * Savings on Subscribe Item
+     */
+    @GET("consumer/api/v1/users/savings")
+    Call<SavingsResponse> getSavings(@Header("Authorization") String accessToken);
+
+
+    /**
+     * Orders
+     */
+    @GET("/consumer/api/v1/orders")
+    Call<OrdersResponse> getOrders(@Header("Authorization") String accessToken);
+
+    /**
+     * Ordered Items
+     */
+    @GET("/consumer/api/v1/orders/{order_uuid}/invoices")
+    Call<OrderItemResponse> getOrderItems(@Header("Authorization") String accessToken, @Path("order_uuid") String orderUuid);
+
+    /**
+     * Order Item Quantity Update
+     */
+    @POST("consumer/api/v1/invoices/{order_item_uuid}/update")
+    Call<UpdateQuantityOrderItemResponse> updateQuantityOrderItem(@Header("Authorization") String accessToken,
+                                                                  @Path("order_item_uuid") String orderItemUuid, @Body UpdateQuantityOrderItemRequest updateQuantityOrderItemRequest);
+
+
+    /**
+     * Time Slot for a Order
+     */
+    @GET("consumer/api/v1/orders/{order_uuid}/slots")
+    Call<TimeSlotResponse> getTimeSlotForOrder(@Header("Authorization") String accessToken, @Path("order_uuid") String orderUuid);
+
+    /**
+     * Reschedule order
+     */
+    @POST("/consumer/api/v1/orders/{order_uuid}/reschedule")
+    Call<RescheduleOrderResponse> rescheduleOrder(@Header("Authorization") String accessToken,
+                                                  @Path("order_uuid") String orderUuid, @Body RescheduleOrderRequest rescheduleOrderRequest);
+
+    /**
+     * Reschedule Timeslot API
+     */
+    @GET("consumer/api/v1/slots-available")
+    Call<TimeSlotResponse> getRescheduleTimeSlot(@Header("Authorization") String accessToken,
+                                                 @Query("order_uuid") String orderUuid, @Query("type") String type);
+
+
+    /**
+     * Carousel API service
+     */
+    @GET("/public/app-offers")
+    Call<CarouselApiResponse> getCarousel(@Header("Authorization") String accessToken);
+
 
     /**
      * Refator
@@ -274,8 +348,6 @@ public interface APIService {
     Call<SearchDetailResponse> getSearchResults(@Header("authtoken") String authToken,
                                                 @Query("query") String query);
 
-    @POST("/users/sign_out")
-    Call<ApiResponse> signOut(@Header("authtoken") String authToken);
 
     @POST("/updatemyprofile")
     Call<UserSignInSignUpResponse> updateProfile(@Header("authtoken") String authtoken,
@@ -350,9 +422,6 @@ public interface APIService {
     Call<CancelSubscriptionResponse> delayDeliveryByOneCycle(@Header("authtoken") String authToken,
                                                              @Body CancelSubscriptionRequest cancelSubscriptionRequest);
 
-    @POST("/update_item_delivery_time")
-    Call<MergeSubscriptionResponse> mergeUserItemWithOrder(@Header("authtoken") String authToken,
-                                                           @Body MergeSubscriptionRequest mergeSubscriptionRequest);
 
     @GET("get_delay_delivery_options")
     Call<AdjustDeliveryResponse> getAdjustDeliveryOrders(@Header("authtoken") String authToken,
@@ -369,32 +438,6 @@ public interface APIService {
 
     @POST("/devices")
     Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
-
-    /**
-     * Reschdule User Item
-     */
-    @GET("/reschedule-options")
-    Call<RescheduleResponse> getRescheduleOption(@Header("authtoken") String authToken,
-                                                 @Query("useritem[id]") int userItemId);
-
-    /**
-     * Carousel API service
-     */
-    @GET("/public/app-offers")
-    Call<CarouselApiResponse> getCarousel();
-
-
-    /**
-     * Time Slot for a Order
-     */
-    @GET("/consumer/api/v1/order-slots")
-    Call<TimeSlotResponse> getTimeSlotForOrder(@Query("order_id") int orderId);
-
-    /**
-     * Reschedule API
-     */
-    @GET("/consumer/api/v1/slots-available")
-    Call<TimeSlotResponse> getRescheduleTimeSlot(@Query("order_id") int orderId, @Query("type") String type);
 
 
     /**

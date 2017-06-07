@@ -42,15 +42,11 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.SearchResult;
@@ -60,14 +56,12 @@ import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
+import one.thebox.android.fragment.dialog.UpdateDialogFragment;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
 import one.thebox.android.services.notification.RegistrationIntentService;
-import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.AutoCompleteFragment;
@@ -87,6 +81,8 @@ import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_T
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
+ * <p>
+ * Modified by Developers on07/06/2017.
  */
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener
@@ -103,7 +99,6 @@ public class MainActivity extends BaseActivity implements
 
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
-    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -119,6 +114,7 @@ public class MainActivity extends BaseActivity implements
     private Menu menu;
     private int numberOfItemIncart = -1;
     private TextView userNameTextView;
+    private Setting setting = new Setting();
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -162,6 +158,7 @@ public class MainActivity extends BaseActivity implements
         mGcmNetworkManager = GcmNetworkManager.getInstance(this);
 
         user = PrefUtils.getUser(this);
+        setting = new SettingService().getSettings(this);
         fragmentManager = getSupportFragmentManager();
         shouldHandleDrawer();
         initViews();
@@ -172,9 +169,6 @@ public class MainActivity extends BaseActivity implements
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-            getAllAddresses();
-        }
 
         // Doing it for notification so "My Deliveries" fragment can be attached by default
         Bundle extras = getIntent().getExtras();
@@ -187,12 +181,6 @@ public class MainActivity extends BaseActivity implements
 
         }
 
-        initCart();
-
-        if (!RestClient.is_in_development) {
-            ShowcaseHelper.removeAllTutorial();
-        }
-
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,29 +188,25 @@ public class MainActivity extends BaseActivity implements
                 startActivityForResult(intent, 1);
             }
         });
-        //getSettingsData();
 
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
-        //Tutorial
-        // new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
-
-        //Preference to load OrderedUserItem when user open the app
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
+        //Preference to load Subscription when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
 
+        //Check for App Update
+        checkAppUpdate();
+        //check for showing message to user usign dialog
+        checkForCommonDialog();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        //Preference to load OrderedUserItem when user open the app be false
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, false);
+        //Preference to load Subscription when user open the app be false
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, false);
 
     }
@@ -238,9 +222,6 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void initCart() {
-        CartHelper.saveCartItemsIfRequire();
-    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -318,9 +299,6 @@ public class MainActivity extends BaseActivity implements
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         putToggleListener();
-/*
-        navigationView.setCheckedItem(R.id.explore_boxes);
-*/
     }
 
     public void putToggleListener() {
@@ -420,10 +398,6 @@ public class MainActivity extends BaseActivity implements
             case R.id.view_bill:
                 attachOrderFragment();
                 return true;
-           /* case R.id.explore_boxes: {
-                attachExploreBoxes();
-                return true;
-            }*/
             default: {
                 String menuName = (String) menuItem.getTitle();
                 openBoxByName(menuName);
@@ -432,36 +406,22 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-   /* private void getSettingsData() {
-        TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
-                .enqueue(new Callback<SettingsResponse>() {
-                    @Override
-                    public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                        if (response.isSuccessful()) {
-                            if (response != null && response.body() != null) {
-                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
-                                checkAppUpdate(response.body());
-                                checkForCommonDialog(response.body().getData());
-                            }
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                    }
-                });
-    }*/
-
-   /* private void checkAppUpdate(SettingsResponse response) {
+    /**
+     * Check for App Update Option
+     */
+    private void checkAppUpdate() {
         try {
-            if (null != response.getData() && response.getData().isNew_version_available()) {
-                if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
-                    if (null != response.getData().getUpdatePopupDetails()) {
-                        UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(),
-                                response.getData().isForce_update());
-                        dialogFragment.show(fragmentManager, "Update");
-                        if (!response.getData().isForce_update()) {
-                            saveCacheTime();
+            if (setting != null) {
+                if (setting.isNew_version_available()) {
+                    if (isPopupRequiredToDisplay() || setting.isForce_update()) {
+                        if (null != setting.getUpdatePopupDetails()) {
+                            UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(setting.getUpdatePopupDetails(),
+                                    setting.isForce_update());
+                            dialogFragment.show(fragmentManager, "Update");
+                            if (!setting.isForce_update()) {
+                                saveCacheTime();
+                            }
                         }
                     }
                 }
@@ -471,27 +431,29 @@ public class MainActivity extends BaseActivity implements
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
     /**
      * Check for Common Dialog
      */
-    private void checkForCommonDialog(final Setting setting) {
+    private void checkForCommonDialog() {
         try {
-            if (setting.getCommonPopupDetails() != null) {
-                //if false then display popup
-                if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
+            if (setting != null) {
+                if (setting.getCommonPopupDetails() != null) {
+                    //if false then display popup
+                    if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //show the popup or dialog
-                            displayCommonDialog(setting.getCommonPopupDetails());
-                        }
-                    }, 2000);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //show the popup or dialog
+                                displayCommonDialog(setting.getCommonPopupDetails());
+                            }
+                        }, 2000);
 
 
+                    }
                 }
             }
         } catch (NullPointerException npe) {
@@ -545,21 +507,17 @@ public class MainActivity extends BaseActivity implements
         return prevTime <= currentTime;
     }
 
-
+    /**
+     * Called when we click on Navigation Drawer Item
+     */
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
             startActivity(TermsOfUserActivity.getIntent(this, true));
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
-            ExploreItem selectedExploreItem = null;
-            for (ExploreItem exploreItem : exploreItems) {
-                if (exploreItem.getTitle().equals(name)) {
-                    selectedExploreItem = exploreItem;
-                    break;
-                }
-            }
-            attachExploreItemDetailFragment(selectedExploreItem);
+            //search from setting Box List
+            searchBoxUuidForBoxTitle(name);
         }
     }
 
@@ -648,11 +606,10 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
+    private void attachSearchDetailFragmentForCategory(String boxUuid, String boxTitle) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-//        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
@@ -665,7 +622,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(boxUuid, boxTitle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -736,41 +693,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public void getAllAddresses() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().getAllAddresses(PrefUtils.getToken(this))
-                .enqueue(new Callback<GetAllAddressResponse>() {
-                    @Override
-                    public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-
-                                //check if users have saved address or not
-                                if (response.body().getUserAddresses() != null) {
-                                    if (response.body().getUserAddresses().size() > 0) {
-                                        PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
-
-                                        User user = PrefUtils.getUser(MainActivity.this);
-                                        if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
-                                            response.body().getUserAddresses().get(0).setCurrentAddress(true);
-                                        }
-                                        user.setAddresses(response.body().getUserAddresses());
-                                        PrefUtils.saveUser(MainActivity.this, user);
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<GetAllAddressResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
 
     @Override
     protected void onResume() {
@@ -836,8 +758,8 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 5: {
-                attachExploreItemDetailFragment(CoreGsonUtils.fromJson
-                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));
+               /* attachSearchDetailFragmentForCategory(CoreGsonUtils.fromJson
+                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));*/
                 break;
             }
             case 6: {
@@ -961,7 +883,7 @@ public class MainActivity extends BaseActivity implements
      */
     public void attachCategoryFragmentForCarousel(Intent intent) {
 
-        int categoryId = intent.getIntExtra(Constants.CATEGORY_ID, 0);
+        int categoryId = intent.getIntExtra(Constants.CATEGORY_UUID, 0);
 
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
@@ -987,13 +909,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void showDrawerToggle(boolean showDrawerToggle) {
-     /*   ActionBar actionBar = getSupportActionBar();
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(showDrawerToggle);
-        actionBarDrawerToggle.syncState();
-       *//* if (!showDrawerToggle) {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }*/
+
     }
 
     @Override
@@ -1061,31 +977,17 @@ public class MainActivity extends BaseActivity implements
         this.searchAction = searchAction;
     }
 
-    public ArrayList<ExploreItem> getAllExploreItems() {
-        ArrayList<ExploreItem> exploreItems = new ArrayList<>();
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        for (Box box : boxes) {
-            exploreItems.add(new ExploreItem(box.getBoxId(), box.getBoxDetail().getTitle()));
-        }
-        return exploreItems;
-    }
 
     public void addBoxesToMenu() {
-        if (exploreItems == null || exploreItems.isEmpty()) {
-            exploreItems = getAllExploreItems();
-            for (ExploreItem exploreItem : exploreItems) {
-                menu.add(exploreItem.getTitle());
-            }
-            if (exploreItems != null && !exploreItems.isEmpty()) {
-                menu.add("FAQs");
-                menu.add("Terms of Use");
-            }
 
+        if (setting.getBoxes() != null) {
+            for (Box box : setting.getBoxes()) {
+                menu.add(box.getTitle());
+            }
         }
+        menu.add("FAQs");
+        menu.add("Terms of Use");
+
         navigationView.invalidate();
     }
 
@@ -1126,11 +1028,37 @@ public class MainActivity extends BaseActivity implements
                         myAccountFragment.onActivityResult(requestCode, resultCode, data);
                     }
                 }
-            }//
-
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Search Box Uuid for Box Title
+     */
+    public void searchBoxUuidForBoxTitle(String title) {
+        if (setting.getBoxes() != null) {
+            if (setting.getBoxes().size() > 0) {
+                for (Box box : setting.getBoxes()) {
+                    if (box.getTitle().equalsIgnoreCase(title)) {
+                        navigateToSearchDetailFragment(box.getUuid(), box.getTitle());
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Move to Search Detail Fragment
+     * fetch category and Display product
+     */
+    public void navigateToSearchDetailFragment(String boxUuid, String boxTitle) {
+        attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
+    }
+
+
 }
 

@@ -1,11 +1,9 @@
 package one.thebox.android.api.Responses.boxes;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.api.ApiResponse;
 
 /**

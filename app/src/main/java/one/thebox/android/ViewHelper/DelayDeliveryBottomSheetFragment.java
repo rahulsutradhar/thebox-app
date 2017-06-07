@@ -1,6 +1,7 @@
 package one.thebox.android.ViewHelper;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,13 +9,13 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,17 +26,20 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
+import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.Models.reschedule.Reschedule;
+import one.thebox.android.Models.reschedule.RescheduleReason;
 import one.thebox.android.R;
+import one.thebox.android.adapter.reschedule.RescheduleReasonAdapter;
 import one.thebox.android.adapter.viewpager.ViewPagerAdapterReschedule;
+import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
+import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
-import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
-import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.reshedule.FragmentRescheduleUserItem;
+import one.thebox.android.fragment.reshedule.FragmentRescheduleSubscribeItem;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -44,11 +48,12 @@ import retrofit2.Response;
 
 /**
  * Created by Ajeet Kumar Meena on 03-05-2016.
+ * <p>
+ * Updated by Developers on 05/06/2017.
  */
 public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment {
 
-    private static final String EXTRA_USER_ITEM = "extra_user_item";
-    public static final String TAG = "Reschulde User item";
+    public static final String TAG = "Reschulde Subscribe Item";
 
     private OnDelayActionCompleted onDelayActionCompleted;
     private TabLayout tabLayout;
@@ -58,18 +63,20 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private TextView header, arrivingAtText, deliveryDate;
     private Reschedule rescheduleSkip;
     private View rootView;
-    private UserItem userItem;
+    private SubscribeItem subscribeItem;
     private RelativeLayout loader, skipLayout;
     private Dialog dialog;
+    private ArrayList<RescheduleReason> rescheduleReasons = new ArrayList<>();
+    private RescheduleReason rescheduleReason;
 
     public DelayDeliveryBottomSheetFragment() {
 
     }
 
-    public static DelayDeliveryBottomSheetFragment newInstance(UserItem userItem) {
+    public static DelayDeliveryBottomSheetFragment newInstance(SubscribeItem subscribeItem) {
 
         Bundle args = new Bundle();
-        args.putString(EXTRA_USER_ITEM, CoreGsonUtils.toJson(userItem));
+        args.putString(Constants.EXTRA_SUBSCRIBE_ITEM, CoreGsonUtils.toJson(subscribeItem));
         DelayDeliveryBottomSheetFragment delayDeliveryBottomSheetFragment = new DelayDeliveryBottomSheetFragment();
         delayDeliveryBottomSheetFragment.setArguments(args);
         return delayDeliveryBottomSheetFragment;
@@ -86,12 +93,13 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         rootView = inflater.inflate(R.layout.layout_bottom_sheet, container, false);
         initViews();
         initVariable();
+        //fetch Reschedule data from server
         getRescheduleOption();
         return rootView;
     }
 
     public void initVariable() {
-        this.userItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_USER_ITEM), UserItem.class);
+        this.subscribeItem = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_SUBSCRIBE_ITEM), SubscribeItem.class);
     }
 
 
@@ -116,43 +124,56 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public void getRescheduleOption() {
 
         loader.setVisibility(View.VISIBLE);
-        TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), userItem.getId())
+        TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), subscribeItem.getUuid())
                 .enqueue(new Callback<RescheduleResponse>() {
                     @Override
                     public void onResponse(Call<RescheduleResponse> call, Response<RescheduleResponse> response) {
                         loader.setVisibility(View.GONE);
-                        if (response.isSuccessful()) {
-                            if (response.body() != null) {
-                                parseData(response.body());
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    //parse response data
+                                    parseData(response.body());
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            setUIDataWhenFailed();
+                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<RescheduleResponse> call, Throwable t) {
                         loader.setVisibility(View.GONE);
+                        setUIDataWhenFailed();
+                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
 
     }
 
     public void parseData(RescheduleResponse rescheduleResponse) {
-        ArrayList<Reschedule> tabsList = new ArrayList<>();
-        ArrayList<String> mergeDescription = new ArrayList<>();
+        try {
+            ArrayList<Reschedule> tabsList = new ArrayList<>();
+            this.rescheduleReasons = rescheduleResponse.getRescheduleReasons();
 
-        for (Reschedule reschedule : rescheduleResponse.getReschedules()) {
-            if (reschedule.getPriority() == 1) {
-                this.rescheduleSkip = reschedule;
-            } else {
-                tabsList.add(reschedule);
+            for (Reschedule reschedule : rescheduleResponse.getReschedules()) {
+                if (reschedule.getPriority() == 1) {
+                    this.rescheduleSkip = reschedule;
+                } else {
+                    tabsList.add(reschedule);
+                }
             }
-        }
 
-        setData(rescheduleResponse);
-        setupViewPagerWithTab(tabsList);
+            setUIData(rescheduleResponse);
+            setupViewPagerWithTab(tabsList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setData(RescheduleResponse rescheduleResponse) {
+    public void setUIData(RescheduleResponse rescheduleResponse) {
         try {
 
             if (rescheduleResponse.getTitle() != null) {
@@ -178,6 +199,18 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         }
     }
 
+    public void setUIDataWhenFailed() {
+        try {
+
+            header.setText("Reschedule");
+            arrivingAtText.setText("Item is " + subscribeItem.getArrivingAt());
+            deliveryDate.setText("");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setupViewPagerWithTab(ArrayList<Reschedule> tabsList) {
         if (getActivity() == null) {
             return;
@@ -185,10 +218,10 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         try {
             pagerAdapterReschedule = new ViewPagerAdapterReschedule(getChildFragmentManager(), getActivity(), tabsList);
             for (int i = 0; i < tabsList.size(); i++) {
-                FragmentRescheduleUserItem fragmentRescheduleUserItem =
-                        FragmentRescheduleUserItem.getInstance(getActivity(), tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), userItem, i);
-                fragmentRescheduleUserItem.addListener(onDelayActionCompleted);
-                pagerAdapterReschedule.addFragment(fragmentRescheduleUserItem);
+                FragmentRescheduleSubscribeItem fragmentRescheduleSubscribeItem =
+                        FragmentRescheduleSubscribeItem.getInstance(getActivity(), tabsList.get(i).getMergeDescription(), tabsList.get(i).getDeliveries(), subscribeItem, i);
+                fragmentRescheduleSubscribeItem.addListener(onDelayActionCompleted);
+                pagerAdapterReschedule.addFragment(fragmentRescheduleSubscribeItem);
             }
 
             viewPager.setAdapter(pagerAdapterReschedule);
@@ -268,8 +301,12 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openDeliverInNextCycleDialog();
-                dialog.dismiss();
+                if (rescheduleSkip.getDeliveries().size() > 0) {
+                    openDeliverInNextCycleDialog(subscribeItem, rescheduleSkip.getDeliveries().get(0));
+                    dialog.dismiss();
+                } else {
+                    //something went wrong
+                }
             }
         });
 
@@ -279,14 +316,15 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
 
     public interface OnDelayActionCompleted {
-        void onDelayActionCompleted(UserItem userItem);
+        void onDelayActionCompleted(SubscribeItem subscribeItem);
     }
 
 
     /**
      * Skip Delivery
      */
-    private void openDeliverInNextCycleDialog() {
+    private void openDeliverInNextCycleDialog(final SubscribeItem subscribeItem, final Delivery delivery) {
+        final Context mContext = dialog.getContext();
         MaterialDialog dialogMaterial = new MaterialDialog.Builder(dialog.getContext())
                 .title("Skip Delivery")
                 .customView(R.layout.layout_skip_delivery, true)
@@ -294,45 +332,71 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull final MaterialDialog dialog, @NonNull DialogAction which) {
-                        View customView = dialog.getCustomView();
-                        RadioGroup radioGroup = (RadioGroup) customView.findViewById(R.id.radio_group);
-                        int radioButtonID = radioGroup.getCheckedRadioButtonId();
-                        View radioButton = radioGroup.findViewById(radioButtonID);
-                        int idx = radioGroup.indexOfChild(radioButton);
-                        RadioButton r = (RadioButton) radioGroup.getChildAt(idx);
-                        if (r == null) {
-                            Toast.makeText(dialog.getContext(), "Select at least one option", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        String selectedtext = r.getText().toString();
-
-                        final BoxLoader loader = new BoxLoader(dialog.getContext()).show();
-                        TheBox.getAPIService().delayDeliveryByOneCycle(PrefUtils.getToken(TheBox.getAppContext())
-                                , new CancelSubscriptionRequest(userItem.getId(), selectedtext))
-                                .enqueue(new Callback<CancelSubscriptionResponse>() {
-                                    @Override
-                                    public void onResponse(Call<CancelSubscriptionResponse> call, Response<CancelSubscriptionResponse> response) {
-                                        loader.dismiss();
-                                        if (response.body() != null) {
-                                            if (response.body().isSuccess()) {
-                                                onDelayActionCompleted.onDelayActionCompleted(response.body().getUserItem());
-                                                // OrderHelper.updateUserItemAndNotifiy(response.body().getUserItem(), Constants.DELIVERIES);
-                                                //Save Clevertap event
-                                                setCleverTapEventRescheduleDelivery(userItem);
-                                                dialog.dismiss();
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<CancelSubscriptionResponse> call, Throwable t) {
-                                        loader.dismiss();
-                                    }
-                                });
+                        prooceedToReschedule(mContext, delivery, subscribeItem);
                     }
                 }).build();
+
+
+        View customView = dialogMaterial.getCustomView();
+        RecyclerView recyclerView = (RecyclerView) customView.findViewById(R.id.reschedule_reason_list);
+        LinearLayoutManager manager = new LinearLayoutManager(dialog.getContext());
+        recyclerView.setLayoutManager(manager);
+        RescheduleReasonAdapter rescheduleReasonAdapter = new RescheduleReasonAdapter(dialog.getContext());
+        rescheduleReasonAdapter.setRescheduleReasons(rescheduleReasons);
+        rescheduleReasonAdapter.attachListener(new RescheduleReasonAdapter.OnRescheduleReasonActionCompleted() {
+            @Override
+            public void onRescheduleReason(RescheduleReason rescheduleReason) {
+                setRescheduleReason(rescheduleReason);
+            }
+        });
+
+        recyclerView.setAdapter(rescheduleReasonAdapter);
+
+
         dialogMaterial.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
         dialogMaterial.show();
+    }
+
+    public void prooceedToReschedule(Context context, Delivery delivery, SubscribeItem subscribeItem) {
+        String rescheduleReasonUuid;
+        if (getRescheduleReason() != null) {
+            rescheduleReasonUuid = getRescheduleReason().getUuid();
+        } else {
+            rescheduleReasonUuid = rescheduleReasons.get(0).getUuid();
+        }
+
+        final BoxLoader dialog = new BoxLoader(context).show();
+        //do network call for reschedule
+        TheBox.getAPIService()
+                .mergeSubscribeItemWithOrder(PrefUtils.getToken(TheBox.getAppContext()), subscribeItem.getUuid(),
+                        new MergeSubscriptionRequest(delivery.getOrderUuid(), rescheduleReasonUuid))
+                .enqueue(new Callback<MergeSubscriptionResponse>() {
+                    @Override
+                    public void onResponse(Call<MergeSubscriptionResponse> call, Response<MergeSubscriptionResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    onDelayActionCompleted.onDelayActionCompleted(response.body().getSubscribeItem());
+
+                                    //setClevertap Event
+                                    //setCleverTapEventRescheduleDelivery(response.body().getUserItem(), delivery);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MergeSubscriptionResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     /**
@@ -355,5 +419,13 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public RescheduleReason getRescheduleReason() {
+        return rescheduleReason;
+    }
+
+    public void setRescheduleReason(RescheduleReason rescheduleReason) {
+        this.rescheduleReason = rescheduleReason;
     }
 }

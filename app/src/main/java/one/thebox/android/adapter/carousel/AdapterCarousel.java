@@ -2,16 +2,18 @@ package one.thebox.android.adapter.carousel;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.RealmList;
+import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
@@ -139,16 +141,9 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (offer.isOpenLink() && offer.getCategoryId() > 0) {
-
-                            //Clevertap event for carousel click
-                            setCleverTapEventForCarousel(offer);
-
-                            //open search DetailFragment
-                            Intent intent = new Intent(mContext, MainActivity.class);
-                            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
-                            intent.putExtra(Constants.CATEGORY_ID, offer.getCategoryId());
-                            context.startActivity(intent);
+                        if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty() && !offer.getBoxUuid().isEmpty()) {
+                            //send request to StoreFragment to show products
+                            EventBus.getDefault().post(new DisplayProductForCarouselEvent(offer));
                         }
                     }
                 });
@@ -163,7 +158,7 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
         public void setCleverTapEventForCarousel(Offer offer) {
             try {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("category_id", offer.getCategoryId());
+                hashMap.put("category_uuid", offer.getCategoryUuid());
 
                 TheBox.getCleverTap().event.push("carousel_click", hashMap);
             } catch (Exception e) {

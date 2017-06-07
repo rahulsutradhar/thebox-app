@@ -8,8 +8,6 @@ import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,15 +16,11 @@ import com.bumptech.glide.RequestManager;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
-import one.thebox.android.Events.OnCategorySelectEvent;
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Events.DisplayProductForBoxEvent;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserCategory;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
@@ -35,7 +29,6 @@ import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.carousel.AdapterCarousel;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 
@@ -111,19 +104,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final BaseRecyclerAdapter.ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position), position);
-
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowcaseHelper((Activity) mContext, 3)
-                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-                            PrefUtils.putBoolean(TheBox.getInstance(), "home_tutorial", false);
-                            new ShowcaseHelper((Activity) mContext, 3)
-                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
-                        }
-                    });
-        }
     }
 
     @Override
@@ -197,29 +177,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private RemainingCategoryAdapter remainingCategoryAdapter;
-        private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private TextView title, add_more_items, savingsTitle;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
+        private Box box;
+
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+                EventBus.getDefault().post(new DisplayProductForBoxEvent(box));
             }
         };
 
-        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifyItemChanged(getAdapterPosition());
-            }
-        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -240,6 +211,7 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(Box box, int position) {
+            this.box = box;
             this.title.setText(box.getTitle());
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);

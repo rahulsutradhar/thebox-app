@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -35,11 +36,15 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import one.thebox.android.Events.DisplayProductForBoxEvent;
+import one.thebox.android.Events.DisplayProductForCarouselEvent;
+import one.thebox.android.Events.DisplayProductForSavingsEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.Box;
+import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
@@ -71,8 +76,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private StoreRecyclerAdapter storeRecyclerAdapter;
     private View rootLayout;
     private GifImageView progressBar;
-    private FloatingActionButton floatingActionButton;
-    private RealmList<Box> boxRealmList = new RealmList<>();
     private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
@@ -125,39 +128,8 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         return rootLayout;
     }
 
-    private void setUpBoxes() {
-        // Add to boxRealmList list only if there are items in box
-        Iterator<Box> iterator = this.boxRealmList.iterator();
-        while (iterator.hasNext()) {
-            Box box = iterator.next();
-            if (box.getAllItemInTheBox() == null || box.getAllItemInTheBox().isEmpty()) {
-                iterator.remove();
-            } else {
-                box.setAllItemsInTheBox(getUserItems(box.getBoxId()));
-            }
-        }
-
-    }
-
-    private List<UserItem> getUserItems(int boxId) {
-        Realm realm = TheBox.getRealm();
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
-        List<UserItem> list = new ArrayList<>();
-        list.addAll(items);
-        return list;
-    }
-
     private void initVariables() {
-       /* Realm realm = TheBox.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        realmResults = realmResults.sort("priority", Sort.DESCENDING);
 
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        this.boxRealmList.clear();
-        this.boxRealmList.addAll(boxes);
-*/
         /**
          * Fetch Carousel from Preferances
          */
@@ -296,42 +268,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         super.onDetach();
     }
 
-   /* public void getMyBoxes() {
-        Log.d("From Store", "Calling gogetmybox");
-        progressBar.setVisibility(View.VISIBLE);
-        connectionErrorViewHelper.isVisible(false);
-        TheBox.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
-                .enqueue(new Callback<MyBoxResponse>() {
-                    @Override
-                    public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        progressBar.setVisibility(View.GONE);
-
-                        if (response.body() != null) {
-                            if (!(boxRealmList.equals(response.body().getBoxes()))) {
-                                boxRealmList.clear();
-                                boxRealmList.addAll(response.body().getBoxes());
-
-                                //save locally
-                                storeToRealm(boxRealmList);
-                            }
-                        } *//*else if (response.raw().code() == 401) {
-                            (new AccountManager(getActivity()))
-                                    .delete_account_data();
-                            getActivity().finish();
-                        }*//*
-                    }
-
-                    @Override
-                    public void onFailure(Call<MyBoxResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
-                    }
-                });
-    }*/
-
-
     /**
      * Fetch Boxes from Server
      */
@@ -350,7 +286,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-                                    boxes = response.body().getBoxes();
+                                    boxes.addAll(response.body().getBoxes());
                                     setupRecyclerView();
                                 }
                             }
@@ -371,7 +307,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
 
 
     public void getCarousel() {
-        TheBox.getAPIService().getCarousel()
+        TheBox.getAPIService().getCarousel(PrefUtils.getToken(getActivity()))
                 .enqueue(new Callback<CarouselApiResponse>() {
                     @Override
                     public void onResponse(Call<CarouselApiResponse> call, Response<CarouselApiResponse> response) {
@@ -397,46 +333,12 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                 });
     }
 
-    private void storeToRealm(final RealmList<Box> boxes) {
-        final Realm superRealm = TheBox.getRealm();
-        superRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-
-                realm.copyToRealmOrUpdate(boxes);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                if (null != getActivity()) {
-                    initVariables();
-
-                    ((MainActivity) getActivity()).addBoxesToMenu();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-            }
-        });
-
-    }
-
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-//        fabHolder.setTranslationY(-offset);
     }
 
     public void onTabEvent(TabEvent tabEvent) {
-//        if (getActivity() == null) {
-//            return;
-//        }
-//        if (tabEvent.getNumberOfItemsInCart() > 0) {
-//            noOfItemsInCart.setVisibility(View.VISIBLE);
-//            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
-//        } else {
-//            noOfItemsInCart.setVisibility(View.GONE);
-//        }
+
     }
 
     private boolean isRegistered;
@@ -494,5 +396,119 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             }
         }
     };
+
+
+    /**
+     * Search Box Uuid for Offer; Carousel and get All Category
+     */
+    public void searchCategoryFoCarousel(Offer offer) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(offer.getBoxUuid())) {
+                        int index = 0;
+                        for (Category category : box.getCategories()) {
+                            if (category.getUuid().equalsIgnoreCase(offer.getCategoryUuid())) {
+                                displayProduct(box.getCategories(), category.getUuid(), box.getTitle(), index);
+                            }
+                            index++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Search Box UUid for Savings;
+     */
+    public void searchCategoryForSavings(String boxUuid, String boxTitle) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(boxUuid)) {
+                        displayProduct(box.getCategories(), "", boxTitle, 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Search Box UUid for Box;
+     */
+    public void searchCategoryForBox(Box selectedBox) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(selectedBox.getUuid())) {
+                        displayProduct(box.getCategories(), "", selectedBox.getTitle(), 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set Data and Display Products
+     */
+    public void displayProduct(RealmList<Category> categories, String categoryUuid, String boxTitle, int position) {
+        Intent intent = new Intent(getActivity(), MainActivity.class)
+                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))
+                .putExtra(Constants.EXTRA_CLICKED_CATEGORY_UID, categoryUuid)
+                .putExtra(Constants.EXTRA_CLICK_POSITION, position)
+                .putExtra(Constants.EXTRA_BOX_NAME, boxTitle);
+        startActivity(intent);
+    }
+
+    /**
+     * OnClicking Carousel
+     */
+    @Subscribe
+    public void eventDisplayProductForCarousel(final DisplayProductForCarouselEvent displayProductForCarouselEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    searchCategoryFoCarousel(displayProductForCarouselEvent.getOffer());
+                }
+            });
+        }
+    }
+
+    /**
+     * On Clicking Savings
+     */
+    @Subscribe
+    public void eventDisplayProductForSavings(final DisplayProductForSavingsEvent displayProductForSavingsEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchCategoryForSavings(displayProductForSavingsEvent.getBoxUuid(), displayProductForSavingsEvent.getBoxTitle());
+                }
+            });
+        }
+    }
+
+    /**
+     * On Clicking Box
+     */
+    @Subscribe
+    public void eventDisplayProductForBox(final DisplayProductForBoxEvent displayProductForBoxEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchCategoryForBox(displayProductForBoxEvent.getBox());
+                }
+            });
+        }
+    }
 
 }

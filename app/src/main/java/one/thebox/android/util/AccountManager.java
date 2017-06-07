@@ -19,7 +19,7 @@ public class AccountManager {
         this.context = context;
     }
 
-    public void delete_account_data() {
+    public void deleteAccountData() {
         PrefUtils.removeAll(TheBox.getInstance());
         RealmController.clean_db();
 

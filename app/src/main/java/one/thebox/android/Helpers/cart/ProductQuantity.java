@@ -4,7 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.BoxItem;
+import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Cart;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.services.cart.CartHelperService;
