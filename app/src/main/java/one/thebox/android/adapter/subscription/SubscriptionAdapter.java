@@ -13,10 +13,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import one.thebox.android.Events.DisplayProductForSavingsEvent;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
@@ -280,19 +283,8 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
 
-                        /**
-                         * SetCleverTapEventSubscribeNextSavings
-                         */
-                        //setCleverTapEventSubscribeNextSavings(saving);
-
-
-                        Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is yet to come.", Toast.LENGTH_SHORT).show();
-
-                        /*String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
-                        context.startActivity(new Intent(mContext, MainActivity.class)
-                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
-*/
+                        //pass info to StoreFragment and display products
+                        EventBus.getDefault().post(new DisplayProductForSavingsEvent(saving.getSuggestedBoxUuid(), saving.getSuggestionBoxName()));
                     }
                 });
 

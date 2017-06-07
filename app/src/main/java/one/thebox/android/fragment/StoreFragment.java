@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -35,10 +36,13 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import one.thebox.android.Events.DisplayProductForCarouselEvent;
+import one.thebox.android.Events.DisplayProductForSavingsEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
+import one.thebox.android.Models.Category;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.carousel.Offer;
@@ -283,7 +287,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-                                    boxes = response.body().getBoxes();
+                                    boxes.addAll(response.body().getBoxes());
                                     setupRecyclerView();
                                 }
                             }
@@ -393,5 +397,83 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             }
         }
     };
+
+
+    /**
+     * Search Box Uuid for Offer; Carousel and get All Category
+     */
+    public void searchCategoryFoCarousel(Offer offer) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(offer.getBoxUuid())) {
+                        int index = 0;
+                        for (Category category : box.getCategories()) {
+                            if (category.getUuid().equalsIgnoreCase(offer.getCategoryUuid())) {
+                                displayProduct(box.getCategories(), category.getUuid(), box.getTitle(), index);
+                            }
+                            index++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Search Box UUid for Savings;
+     */
+    public void searchCategoryForSavings(String boxUuid, String boxTitle) {
+        if (boxes != null) {
+            if (boxes.size() > 0) {
+                for (Box box : boxes) {
+                    if (box.getUuid().equalsIgnoreCase(boxUuid)) {
+                        displayProduct(box.getCategories(), "", boxTitle, 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Set Data and Display Products
+     */
+    public void displayProduct(RealmList<Category> categories, String categoryUuid, String boxTitle, int position) {
+        Intent intent = new Intent(getActivity(), MainActivity.class)
+                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))
+                .putExtra(Constants.EXTRA_CLICKED_CATEGORY_UID, categoryUuid)
+                .putExtra(Constants.EXTRA_CLICK_POSITION, position)
+                .putExtra(Constants.EXTRA_BOX_NAME, boxTitle);
+        startActivity(intent);
+    }
+
+
+    @Subscribe
+    public void eventDisplayProductForCarousel(final DisplayProductForCarouselEvent displayProductForCarouselEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    searchCategoryFoCarousel(displayProductForCarouselEvent.getOffer());
+                }
+            });
+        }
+    }
+
+    @Subscribe
+    public void eventDisplayProductForSavings(final DisplayProductForSavingsEvent displayProductForSavingsEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchCategoryForSavings(displayProductForSavingsEvent.getBoxUuid(), displayProductForSavingsEvent.getBoxTitle());
+                }
+            });
+        }
+    }
 
 }

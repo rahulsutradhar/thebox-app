@@ -193,10 +193,8 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
          */
         if (subscriptions.size() > 0 && saving != null) {
             if (saving.isSaving()) {
-                Toast.makeText(TheBox.getAppContext(), "Savings True", Toast.LENGTH_SHORT).show();
                 subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             } else {
-                Toast.makeText(TheBox.getAppContext(), "Savings False", Toast.LENGTH_SHORT).show();
                 subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
             }
         }
@@ -204,7 +202,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
          * Show only user items
          */
         else if (subscriptions.size() > 0 && saving == null) {
-            Toast.makeText(TheBox.getAppContext(), "Savings NULL", Toast.LENGTH_SHORT).show();
             subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
         }
     }

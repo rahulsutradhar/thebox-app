@@ -8,9 +8,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
@@ -138,18 +141,9 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty()) {
-
-                            Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is yet to come.", Toast.LENGTH_SHORT).show();
-                            //Clevertap event for carousel click
-                            //setCleverTapEventForCarousel(offer);
-
-                            //open search DetailFragment
-//                            Intent intent = new Intent(mContext, MainActivity.class);
-//                            intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 8);
-//                            intent.putExtra(Constants.CATEGORY_UUID, offer.getCategoryUuid());
-//                            context.startActivity(intent);
-
+                        if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty() && !offer.getBoxUuid().isEmpty()) {
+                            //send request to StoreFragment to show products
+                            EventBus.getDefault().post(new DisplayProductForCarouselEvent(offer));
                         }
                     }
                 });

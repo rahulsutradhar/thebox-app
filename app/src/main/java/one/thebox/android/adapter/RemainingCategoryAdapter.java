@@ -248,16 +248,7 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
             if (isSearchDetailItemFragment) {
                 EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
             } else {
-                /*ArrayList<Integer> catIds = new ArrayList<>();
-                for (Category category1 : categories) {
-                    catIds.add(category1.getId());
-                }
-                ArrayList<Integer> user_catIds = new ArrayList<>();
-                if (!my_catIds.isEmpty()) {
-                    for (UserCategory usercategory : my_catIds) {
-                        user_catIds.add(usercategory.getCategory().getId());
-                    }
-                }*/
+                
                 Intent intent = new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
                         .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))

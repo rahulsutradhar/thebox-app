@@ -149,6 +149,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         return searchDetailFragment;
     }
 
+
+    /**
+     * OLD
+     */
     public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName, int clickedCategoryId) {
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
@@ -371,7 +375,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             for (int i = 0; i < categories.size(); i++) {
                 Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), i);
                 adapter.addFragment(fragment, categories.get(i));
-                //adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
             }
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
@@ -808,11 +811,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (getActivity() == null) {
             return;
         }
-//        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
-//        mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.primary)));
-//        mFab.setOnClickListener(fabClickListener);
-//        numberOfItemsInCart.setVisibility(View.VISIBLE);
-//        numberOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
     }
 
     @Subscribe
@@ -826,12 +824,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             if (showSpecialCardEvent.isVisible()) {
                 specialCardView.setVisibility(View.VISIBLE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
 
             } else {
                 specialCardView.setVisibility(View.GONE);
                 specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
-//                fabHolder.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popup));
             }
             previousScrollAction = showSpecialCardEvent.isVisible();
         }
