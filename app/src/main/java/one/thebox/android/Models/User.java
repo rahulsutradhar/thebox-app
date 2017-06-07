@@ -48,7 +48,7 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("email")
     private String email;
 
-    @SerializedName("phonenumber")
+    @SerializedName("phone_number")
     private String phoneNumber;
 
     private RealmList<Address> addresses;

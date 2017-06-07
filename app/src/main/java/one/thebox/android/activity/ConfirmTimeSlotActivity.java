@@ -53,20 +53,11 @@ import retrofit2.Response;
 
 public class ConfirmTimeSlotActivity extends BaseActivity {
 
-    public static final String EXTRA_ADDRESS_AND_ORDERS = "extra_address_and_orders";
-    private static final String IS_RESCHEDULING = "is_rescheduling";
-    private static final String RESCHEDULE_ORDER_ID = "reschedule_order_id";
-    boolean isCart = false;
-    private ArrayList<AddressAndOrder> addressAndOrders;
-    private RealmList<Order> mergeOrders;
     private TextView proceedToPayment;
     private LinearLayout timeHolderLinearLayout;
     private RelativeLayout layoutInformation;
-    private Date currentSelectedDate;
     private TextView timeSlotTextView, textViewSelectDate, timeSlotInformationTitle;
-    private Date nextSlotDate;
     private RecyclerView timeSlotRecyclerView;
-    private Order currentSelectedOrder;
     private ImageView dropDownIcon;
     private MergeOrderAdapter mergeOrderAdapter;
 
@@ -134,7 +125,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 setTitle("Select Time Slot");
                 initViewsCasePayForOrder();
             }
-
         } else {
             if (isMerge) {
                 //merge cart
@@ -545,7 +535,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                     intent.putExtra(Constants.EXTRA_CLICK_POSITION, 0);
                                     setResult(4, intent);
                                     finish();
-                                    
+
                                 } else {
                                     Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -683,11 +673,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void setCleverTapEventTimeSlotsFromCart() {
         try {
             HashMap<String, Object> objectHashMap = new HashMap<>();
-            if (addressAndOrders != null) {
-                if (addressAndOrders.size() > 0) {
-                    objectHashMap.put("order_id", addressAndOrders.get(0).getOrderId());
-                }
-            }
             objectHashMap.put("order_date", selectedTimeSlot.getDate());
             objectHashMap.put("order_time_slot", selectedSlot.getName());
             objectHashMap.put("order_time_stamp", selectedSlot.getTimestamp());
@@ -715,11 +700,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void setCleverTapEventTimeSlotsMergeWithDeliveries(int mergeOrderId) {
         HashMap<String, Object> objectHashMap = new HashMap<>();
         objectHashMap.put("merge_order_id", mergeOrderId);
-        if (addressAndOrders != null) {
-            if (addressAndOrders.size() > 0) {
-                objectHashMap.put("order_date", addressAndOrders.get(0).getDateString());
-            }
-        }
         TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
     }
 

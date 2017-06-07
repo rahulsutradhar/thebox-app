@@ -58,8 +58,10 @@ import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
+import one.thebox.android.Models.update.UpdatePopupDetails;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
+import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
@@ -106,7 +108,6 @@ public class MainActivity extends BaseActivity implements
 
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
-    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -196,17 +197,18 @@ public class MainActivity extends BaseActivity implements
                 startActivityForResult(intent, 1);
             }
         });
-        //getSettingsData();
 
         setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
         //Preference to load Subscription when user open the app
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
 
+        //Check for App Update
+        checkAppUpdate();
+        //check for showing message to user usign dialog
+        checkForCommonDialog();
     }
 
     @Override
@@ -214,8 +216,6 @@ public class MainActivity extends BaseActivity implements
         super.onDestroy();
 
         //Preference to load Subscription when user open the app be false
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, false);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, false);
 
     }
@@ -418,36 +418,22 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-   /* private void getSettingsData() {
-        TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
-                .enqueue(new Callback<SettingsResponse>() {
-                    @Override
-                    public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                        if (response.isSuccessful()) {
-                            if (response != null && response.body() != null) {
-                                PrefUtils.saveSettings(MainActivity.this, response.body().getData());
-                                checkAppUpdate(response.body());
-                                checkForCommonDialog(response.body().getData());
-                            }
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                    }
-                });
-    }*/
-
-   /* private void checkAppUpdate(SettingsResponse response) {
+    /**
+     * Check for App Update Option
+     */
+    private void checkAppUpdate() {
         try {
-            if (null != response.getData() && response.getData().isNew_version_available()) {
-                if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
-                    if (null != response.getData().getUpdatePopupDetails()) {
-                        UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(),
-                                response.getData().isForce_update());
-                        dialogFragment.show(fragmentManager, "Update");
-                        if (!response.getData().isForce_update()) {
-                            saveCacheTime();
+            if (setting != null) {
+                if (setting.isNew_version_available()) {
+                    if (isPopupRequiredToDisplay() || setting.isForce_update()) {
+                        if (null != setting.getUpdatePopupDetails()) {
+                            UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(setting.getUpdatePopupDetails(),
+                                    setting.isForce_update());
+                            dialogFragment.show(fragmentManager, "Update");
+                            if (!setting.isForce_update()) {
+                                saveCacheTime();
+                            }
                         }
                     }
                 }
@@ -457,27 +443,29 @@ public class MainActivity extends BaseActivity implements
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
     /**
      * Check for Common Dialog
      */
-    private void checkForCommonDialog(final Setting setting) {
+    private void checkForCommonDialog() {
         try {
-            if (setting.getCommonPopupDetails() != null) {
-                //if false then display popup
-                if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
+            if (setting != null) {
+                if (setting.getCommonPopupDetails() != null) {
+                    //if false then display popup
+                    if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //show the popup or dialog
-                            displayCommonDialog(setting.getCommonPopupDetails());
-                        }
-                    }, 2000);
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //show the popup or dialog
+                                displayCommonDialog(setting.getCommonPopupDetails());
+                            }
+                        }, 2000);
 
 
+                    }
                 }
             }
         } catch (NullPointerException npe) {

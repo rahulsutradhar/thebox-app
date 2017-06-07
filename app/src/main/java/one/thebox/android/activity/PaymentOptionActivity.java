@@ -1,68 +1,44 @@
 package one.thebox.android.activity;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 import com.razorpay.Checkout;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.RealmList;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.AddressAndOrder;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.R;
 import one.thebox.android.R2;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
-import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
-import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
-import one.thebox.android.api.RequestBodies.PaymentRequestBody;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
-import one.thebox.android.api.Responses.PaymentResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
-import one.thebox.android.util.AppUtil;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
@@ -96,8 +72,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private User user;
 
     private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
-    private String razorpayPaymentID;
-    private int cleverTapOrderId;
 
     private boolean isMerge;
     private Address address;
@@ -358,7 +332,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     public void onPaymentSuccess(String razorpayPaymentID) {
-        this.razorpayPaymentID = razorpayPaymentID;
         setRequestDataForOnline(razorpayPaymentID);
     }
 
@@ -390,7 +363,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
         hashMap.put("amount", totalPayment);
         hashMap.put("payment_status", "success");
-        hashMap.put("order_id", cleverTapOrderId);
 
         TheBox.getCleverTap().event.push("payment_mode", hashMap);
     }
@@ -404,7 +376,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
         hashMap.put("amount", totalPayment);
         hashMap.put("payment_status", "failed");
-        hashMap.put("order_id", cleverTapOrderId);
 
         /**
          * 1- razorpay

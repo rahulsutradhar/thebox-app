@@ -11,10 +11,6 @@ import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
 import one.thebox.android.api.RequestBodies.order.RescheduleOrderRequest;
 import one.thebox.android.api.RequestBodies.order.UpdateQuantityOrderItemRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentCodMergeRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineCartRequest;
-import one.thebox.android.api.RequestBodies.payment.MakePaymentOnlineMergeRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
@@ -61,6 +57,7 @@ import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.UpdateOrderItemResponse;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.api.Responses.address.AddressResponse;
+import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
@@ -113,6 +110,12 @@ public interface APIService {
      */
     @POST("/consumer/api/v1/resend-verf")
     Call<ResendOtpResponse> resendOtpAuth(@Body ResendOtpRequestBody resendOtpRequestBody);
+
+    /**
+     * Signout
+     */
+    @GET("consumer/api/v1/users/logout")
+    Call<LogoutResponse> logOut(@Header("Authorization") String accessToken);
 
     /**
      * User Setting API
@@ -296,6 +299,14 @@ public interface APIService {
      */
 
 
+
+
+
+
+
+
+
+
     @POST("/users")
     Call<UserSignInSignUpResponse> createNewUser(
             @Body CreateUserRequestBody createUserRequestBody
@@ -338,8 +349,6 @@ public interface APIService {
     Call<SearchDetailResponse> getSearchResults(@Header("authtoken") String authToken,
                                                 @Query("query") String query);
 
-    @POST("/users/sign_out")
-    Call<ApiResponse> signOut(@Header("authtoken") String authToken);
 
     @POST("/updatemyprofile")
     Call<UserSignInSignUpResponse> updateProfile(@Header("authtoken") String authtoken,

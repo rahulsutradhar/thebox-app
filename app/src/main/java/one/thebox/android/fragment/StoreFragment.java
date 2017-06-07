@@ -76,8 +76,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private StoreRecyclerAdapter storeRecyclerAdapter;
     private View rootLayout;
     private GifImageView progressBar;
-    private FloatingActionButton floatingActionButton;
-    private RealmList<Box> boxRealmList = new RealmList<>();
     private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
@@ -467,7 +465,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         startActivity(intent);
     }
 
-
+    /**
+     * OnClicking Carousel
+     */
     @Subscribe
     public void eventDisplayProductForCarousel(final DisplayProductForCarouselEvent displayProductForCarouselEvent) {
         if (getActivity() != null) {
@@ -481,6 +481,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         }
     }
 
+    /**
+     * On Clicking Savings
+     */
     @Subscribe
     public void eventDisplayProductForSavings(final DisplayProductForSavingsEvent displayProductForSavingsEvent) {
         if (getActivity() != null) {
@@ -493,6 +496,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
         }
     }
 
+    /**
+     * On Clicking Box
+     */
     @Subscribe
     public void eventDisplayProductForBox(final DisplayProductForBoxEvent displayProductForBoxEvent) {
         if (getActivity() != null) {

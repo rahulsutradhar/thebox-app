@@ -83,8 +83,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
      */
     private RequestManager glideRequestManager;
 
-    private boolean show_loader = false;
-
     public MyBoxesFragment() {
 
     }
@@ -143,7 +141,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
     }
 
-    private synchronized void initVariables() {
+    private void initVariables() {
         //get savings from the preferances
         saving = CoreGsonUtils.fromJson(PrefUtils.getString(getActivity(), Constants.SAVINGS), Saving.class);
     }

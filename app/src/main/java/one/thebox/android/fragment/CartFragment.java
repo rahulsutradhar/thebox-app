@@ -47,7 +47,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
-    private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
     private CartAdapter adapter;
@@ -285,7 +284,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public void proceedToSlots(boolean isMerge) {
         startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(), isMerge));
     }
-    
+
     /**
      * Open Add Address Form
      */
@@ -337,11 +336,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     public void setCleverTapEventOpenCart() {
         try {
             HashMap<String, Object> cartItems = new HashMap<>();
-            cartItems.put("cart_id", order.getId());
-            cartItems.put("user_id", order.getUserId());
-            cartItems.put("total_price_cart", order.getTotalPrice());
-            cartItems.put("item_quantity_cart", order.getUserItems().size());
-
             TheBox.getCleverTap().event.push("open_cart", cartItems);
         } catch (Exception e) {
             e.printStackTrace();

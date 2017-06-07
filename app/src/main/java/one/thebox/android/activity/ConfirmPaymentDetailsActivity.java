@@ -32,24 +32,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
-    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
-    private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
-    private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
-    private static final String EXTRA_IS_MERGING = "is_merging_order";
-    private static final String EXTRA_ORDER_ID = "extra_order_id";
-    private static final String EXTRA_PAY_FROM_ORDER = "extra_pay_From_order";
-
-
-    private static final String EXTRA_IS_CART = "is_from_cart";
-
     private RecyclerView recyclerViewPaymentDetail;
     private PaymentDetailsAdapter adapter;
     private TextView payButton;
-    private User user;
-    private int mergeOrderId;
     private String amountToPay;
-    private boolean isMerging, isCart, payFromOrder;
-    private int orderId;
 
 
     private Address address;
@@ -73,33 +59,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
         intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
-        return intent;
-    }
-
-
-    /**
-     * Old
-     */
-    /*public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, boolean isCart) {
-        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_IS_CART, isCart);
-        return intent;
-    }
-*/
-    public static Intent getInstance(Context context, int orderId, boolean payFromOrder, ArrayList<AddressAndOrder> addressAndOrders) {
-        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ORDER_ID, orderId);
-        intent.putExtra(EXTRA_PAY_FROM_ORDER, payFromOrder);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        return intent;
-    }
-
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId, boolean isMerging) {
-        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
-        intent.putExtra(EXTRA_IS_MERGING, isMerging);
         return intent;
     }
 
@@ -231,40 +190,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
     }
 
-
-    /**
-     * API call for payment Details When user proceed from Cart
-     */
-    public void fetchPaymentDetailsData(HashMap<String, Integer> params) {
-        final BoxLoader dialog = new BoxLoader(this).show();
-
-        TheBox.getAPIService().getPaymentDetailsData(params)
-                .enqueue(new Callback<PaymentDetailsResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentDetailsResponse> call, Response<PaymentDetailsResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.isSuccessful()) {
-                                if (response.body() != null) {
-                                    amountToPay = response.body().getAmountToPay();
-                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
-                                    setUpData(response.body().getPurchaseDatas());
-                                }
-                            }
-
-                        } catch (NullPointerException npe) {
-                            npe.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentDetailsResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-
-    }
-
     /**
      * Set the list by removing the null values
      */
@@ -294,7 +219,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
 
 
     }
-
 
     public void setCleverTapEventPaymentDetailActivity() {
         HashMap<String, Object> objectHashMap = new HashMap<>();

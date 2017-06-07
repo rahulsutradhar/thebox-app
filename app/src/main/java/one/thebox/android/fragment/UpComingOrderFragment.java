@@ -61,10 +61,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         rootView = inflater.inflate(R.layout.fragment_up_coming_order, container, false);
         initViews();
 
+        //request Serve and fetch Order
         getOrdersFromServer();
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false)) {
-            PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_MY_DELIVERIES, false);
-        }
 
         return rootView;
     }
@@ -162,7 +160,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     }
 
-
+    /**
+     * Called from Subscription tab to update order
+     */
     @Subscribe
     public void onUpdateUpcomingDeliveries(final UpdateUpcomingDeliveriesEvent updateUpcomingDeliveriesEvent) {
         if (getActivity() != null) {
@@ -180,6 +180,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         try {
+            //Order Item Activtiy or Confirm TimeSlot Activity
             if (requestCode == 4) {
                 if (data.getExtras() != null) {
                     //post event Bus
