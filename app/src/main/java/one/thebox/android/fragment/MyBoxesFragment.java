@@ -60,6 +60,8 @@ import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_T
 
 /**
  * Created by vaibhav on 17/08/16.
+ * <p>
+ * Modified by Developers on 07/06/2017.
  */
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
@@ -72,8 +74,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private LinearLayout no_item_subscribed_view_holder;
-    private String monthly_bill;
-    private String total_no_of_items;
     private boolean show_loader_and_call = false;
     private boolean isRegistered;
     private Saving saving;
@@ -83,27 +83,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
      */
     private RequestManager glideRequestManager;
 
-
-    private boolean isLocallyUpdated;
-    private boolean has_one_or_more_subscribed_items = false;
     private boolean show_loader = false;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-
-        }
-    };
-
 
     public MyBoxesFragment() {
 
@@ -146,16 +126,13 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         //Fetching arguments- silent notification for my items
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        //fetch Savings from server
-        fetchSavings();
-
         //fetch subscription from server
         fetchSubscription(show_loader_and_call);
 
         setupAppBarObserver();
         initDataChangeListener();
 
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        onTabEvent(new TabEvent(CartHelper.getCartSize()));
 
         return rootLayout;
     }
@@ -184,27 +161,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
 
     private void setupRecyclerView(ArrayList<Subscription> subscriptions) {
-        if (subscriptions.size() > 0) {
-            //One or more items are subscribed
-            no_item_subscribed_view_holder.setVisibility(View.GONE);
-            progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+        //One or more items are subscribed
+        no_item_subscribed_view_holder.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
 
-            if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
-                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
-                subscriptionAdapter.setSubscriptions(subscriptions);
+        if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
 
-                //This view will display the saving card as header and rest of the items
-                setDataToRecyclerView(subscriptions);
-                recyclerView.setAdapter(subscriptionAdapter);
-            } else {
-                setDataToRecyclerView(subscriptions);
-            }
+            //This view will display the saving card as header and rest of the items
+            setDataToRecyclerView(subscriptions);
+            recyclerView.setAdapter(subscriptionAdapter);
         } else {
-            setupEmptyStateView();
+            setDataToRecyclerView(subscriptions);
         }
     }
 
@@ -221,8 +193,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
          */
         if (subscriptions.size() > 0 && saving != null) {
             if (saving.isSaving()) {
+                Toast.makeText(TheBox.getAppContext(), "Savings True", Toast.LENGTH_SHORT).show();
                 subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             } else {
+                Toast.makeText(TheBox.getAppContext(), "Savings False", Toast.LENGTH_SHORT).show();
                 subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
             }
         }
@@ -230,6 +204,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
          * Show only user items
          */
         else if (subscriptions.size() > 0 && saving == null) {
+            Toast.makeText(TheBox.getAppContext(), "Savings NULL", Toast.LENGTH_SHORT).show();
             subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
         }
     }
@@ -290,8 +265,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void onResume() {
         super.onResume();
         initDataChangeListener();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                new IntentFilter(BROADCAST_EVENT_TAB));
     }
 
     @Override
@@ -324,10 +297,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
 
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
+
                                     //show recyclerview
                                     if (response.body().getSubscriptions() != null) {
                                         if (response.body().getSubscriptions().size() > 0) {
+                                            //update the list
                                             setupRecyclerView(response.body().getSubscriptions());
+
                                         } else {
                                             setupEmptyStateView();
                                         }
@@ -374,7 +359,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-
                                     //set the Response and update the list
                                     //get savings
                                     if (response.body().getSavings() != null) {
@@ -395,7 +379,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
                     @Override
                     public void onFailure(Call<SavingsResponse> call, Throwable t) {
-
                     }
                 });
     }
@@ -442,6 +425,9 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
 
+    /**
+     * Called from Updating Subscription Item
+     */
     @Subscribe
     public void onUpdateSavingsEvent(UpdateSavingsEvent updateSavingsEvent) {
         if (getActivity() != null) {
@@ -453,6 +439,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                         if (subscriptionAdapter.getItemsCount() == 0) {
                             setupEmptyStateView();
                         } else {
+                            //fetch savings to update
                             fetchSavings();
                         }
                     }

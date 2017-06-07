@@ -13,6 +13,8 @@ import one.thebox.android.api.ApiResponse;
 
 public class SubscriptionResponse extends ApiResponse implements Serializable {
 
+    private ArrayList<Saving> savings;
+
     private ArrayList<Subscription> subscriptions;
 
     public SubscriptionResponse() {
@@ -25,5 +27,13 @@ public class SubscriptionResponse extends ApiResponse implements Serializable {
 
     public void setSubscriptions(ArrayList<Subscription> subscriptions) {
         this.subscriptions = subscriptions;
+    }
+
+    public ArrayList<Saving> getSavings() {
+        return savings;
+    }
+
+    public void setSavings(ArrayList<Saving> savings) {
+        this.savings = savings;
     }
 }

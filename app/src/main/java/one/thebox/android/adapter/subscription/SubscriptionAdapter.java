@@ -253,6 +253,7 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
 
         public void setViews(final Saving saving) {
             try {
+
                 if (saving.getMonthlyBill() != null) {
                     monthlyBillText.setText(saving.getMonthlyBill().getTitle());
                     monthlyBillValue.setText(saving.getMonthlyBill().getValue());
@@ -267,6 +268,7 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                     totalItemsText.setText(saving.getTotalItem().getTitle());
                     totalItemValue.setText(saving.getTotalItem().getValue());
                 }
+
 
                 if (saving.getSuggestionBoxTitle() != null) {
                     subscriptionBoxTitle.setText(Html.fromHtml(saving.getSuggestionBoxTitle()));
@@ -284,7 +286,7 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                         //setCleverTapEventSubscribeNextSavings(saving);
 
 
-                        Toast.makeText(TheBox.getAppContext(),"Have patience dude! this feature is yet to come.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is yet to come.", Toast.LENGTH_SHORT).show();
 
                         /*String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(saving.getSuggestionBoxId(), saving.getSuggestionBoxName()));
                         context.startActivity(new Intent(mContext, MainActivity.class)
