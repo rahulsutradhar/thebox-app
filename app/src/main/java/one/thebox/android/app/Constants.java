@@ -77,6 +77,11 @@ public class Constants {
     public static final String EXTRA_BOX_NAME = "extra_box_name";
 
     /**
+     * Extra Box Uuid
+     */
+    public static final String EXTRA_BOX_UUID = "extra_box_uuid";
+
+    /**
      * EXTRA CATEGORY
      */
     public static final String EXTRA_CATEGORY = "extra_category";

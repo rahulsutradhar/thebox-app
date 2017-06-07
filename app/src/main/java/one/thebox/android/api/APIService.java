@@ -61,6 +61,7 @@ import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
 import one.thebox.android.api.Responses.authentication.ResendOtpResponse;
 import one.thebox.android.api.Responses.authentication.VerifyOtpResponse;
+import one.thebox.android.api.Responses.boxes.BoxCategoryResponse;
 import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
@@ -164,6 +165,12 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/categories")
     Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
+
+    /**
+     * Get All Category for Box UUID
+     */
+    @GET("consumer/api/v1/boxes/{box_uuid}")
+    Call<BoxCategoryResponse> getCategories(@Header("Authorization") String accessToken, @Path("box_uuid") String boxUuid);
 
 
     /**
@@ -297,14 +304,6 @@ public interface APIService {
     /**
      * Refator
      */
-
-
-
-
-
-
-
-
 
 
     @POST("/users")

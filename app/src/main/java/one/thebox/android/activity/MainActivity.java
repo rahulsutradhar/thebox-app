@@ -42,10 +42,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
@@ -58,7 +54,6 @@ import one.thebox.android.Models.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
-import one.thebox.android.Models.update.UpdatePopupDetails;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
 import one.thebox.android.fragment.dialog.UpdateDialogFragment;
@@ -66,11 +61,7 @@ import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
 import one.thebox.android.services.notification.RegistrationIntentService;
-import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.api.Responses.GetAllAddressResponse;
 import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.AutoCompleteFragment;
@@ -308,9 +299,6 @@ public class MainActivity extends BaseActivity implements
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         putToggleListener();
-/*
-        navigationView.setCheckedItem(R.id.explore_boxes);
-*/
     }
 
     public void putToggleListener() {
@@ -519,15 +507,17 @@ public class MainActivity extends BaseActivity implements
         return prevTime <= currentTime;
     }
 
-
+    /**
+     * Called when we click on Navigation Drawer Item
+     */
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
             startActivity(TermsOfUserActivity.getIntent(this, true));
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
-            Toast.makeText(TheBox.getAppContext(), "Dude! have patience, this feature is yet to come", Toast.LENGTH_SHORT).show();
-            //attachExploreItemDetailFragment(selectedExploreItem);
+            //search from setting Box List
+            searchBoxUuidForBoxTitle(name);
         }
     }
 
@@ -616,7 +606,7 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
+    private void attachSearchDetailFragmentForCategory(String boxUuid, String boxTitle) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
@@ -632,7 +622,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(boxUuid, boxTitle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -768,8 +758,8 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 5: {
-                attachExploreItemDetailFragment(CoreGsonUtils.fromJson
-                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));
+               /* attachSearchDetailFragmentForCategory(CoreGsonUtils.fromJson
+                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));*/
                 break;
             }
             case 6: {
@@ -1043,5 +1033,32 @@ public class MainActivity extends BaseActivity implements
             e.printStackTrace();
         }
     }
+
+    /**
+     * Search Box Uuid for Box Title
+     */
+    public void searchBoxUuidForBoxTitle(String title) {
+        if (setting.getBoxes() != null) {
+            if (setting.getBoxes().size() > 0) {
+                for (Box box : setting.getBoxes()) {
+                    if (box.getTitle().equalsIgnoreCase(title)) {
+                        navigateToSearchDetailFragment(box.getUuid(), box.getTitle());
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Move to Search Detail Fragment
+     * fetch category and Display product
+     */
+    public void navigateToSearchDetailFragment(String boxUuid, String boxTitle) {
+        attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
+    }
+
+
 }
 

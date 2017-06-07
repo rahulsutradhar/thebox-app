@@ -47,6 +47,7 @@ import one.thebox.android.Models.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
@@ -54,6 +55,7 @@ import one.thebox.android.activity.MainActivity;
 import one.thebox.android.api.RequestBodies.SearchDetailResponse;
 import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.ExploreBoxResponse;
+import one.thebox.android.api.Responses.boxes.BoxCategoryResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
@@ -97,6 +99,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     private ArrayList<Category> categories = new ArrayList<>();
     private String categoryUid;
+    private String boxUuid;
 
 
     private int clickPosition, clickedCategoryId;
@@ -143,6 +146,23 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         bundle.putString(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories));
         bundle.putString(Constants.EXTRA_CLICKED_CATEGORY_UID, categoryUid);
         bundle.putInt(Constants.EXTRA_CLICK_POSITION, clickPosition);
+        bundle.putString(Constants.EXTRA_BOX_NAME, boxName);
+        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
+        searchDetailFragment.setArguments(bundle);
+        return searchDetailFragment;
+    }
+
+    /**
+     * Called from Main Activity To fetch category For box UUid
+     * On Click Navigation item
+     *
+     * @param boxUuid
+     * @param boxName
+     * @return
+     */
+    public static SearchDetailFragment getInstance(String boxUuid, String boxName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_BOX_UUID, boxUuid);
         bundle.putString(Constants.EXTRA_BOX_NAME, boxName);
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
@@ -201,6 +221,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             clickPosition = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
             categoryUid = getArguments().getString(Constants.EXTRA_CLICKED_CATEGORY_UID);
             boxName = getArguments().getString(Constants.EXTRA_BOX_NAME);
+            boxUuid = getArguments().getString(Constants.EXTRA_BOX_UUID);
 
 
             //old
@@ -221,49 +242,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         }
     }
 
-    private void setCategories() {
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Category> query = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
-        for (int i = 0; i < catIds.size(); i++) {
-            if (catIds.size() - 1 == i) {
-                query.equalTo(Category.FIELD_ID, catIds.get(i));
-            } else {
-                query.equalTo(Category.FIELD_ID, catIds.get(i)).or();
-            }
-        }
-        if (catIds.size() != 0) {
-            RealmResults<Category> realmResults = query.findAll();
-            for (Category category : realmResults) {
-                categories.add(category);
-
-                if (clickedCategoryId != -1) {
-                    if (clickedCategoryId == category.getId()) {
-                        clickPosition = categories.size() - 1;
-                    }
-                }
-            }
-        }
-        RealmQuery<Category> query_user_cat = realm.where(Category.class).notEqualTo(Category.FIELD_ID, 0);
-        for (int i = 0; i < user_catIds.size(); i++) {
-            if (user_catIds.size() - 1 == i) {
-                query_user_cat.equalTo(Category.FIELD_ID, user_catIds.get(i));
-            } else {
-                query_user_cat.equalTo(Category.FIELD_ID, user_catIds.get(i)).or();
-            }
-        }
-        if (user_catIds.size() != 0) {
-            RealmResults<Category> realmResults_user_cat = query_user_cat.findAll();
-            for (Category category : realmResults_user_cat) {
-                categories.add(category);
-
-                if (clickedCategoryId != -1) {
-                    if (clickedCategoryId == category.getId()) {
-                        clickPosition = categories.size() - 1;
-                    }
-                }
-            }
-        }
-    }
 
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
@@ -281,20 +259,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (source) {
-                    case 0: {
-                        getSearchDetails();
-                        break;
-                    }
-                    case 1: {
-                        getCategoryDetail();
-                        break;
-                    }
-                    case 2: {
-                        getExploreDetails();
-                        break;
-                    }
-                }
+                //check data and decide for navigation
+                checkAndDecideNavigation();
             }
         });
         noResultFound = (TextView) rootView.findViewById(R.id.no_result_found);
@@ -319,29 +285,15 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         if (!boxName.isEmpty()) {
             setToolbarTitle();
         }
-
-        if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-            //((MainActivity) getActivity()).getToolbar().setTitle(getArguments().getString(BOX_NAME));
-        } else {
-            if (exploreItem != null) {
-                //   ((MainActivity) getActivity()).getToolbar().setTitle(exploreItem.getTitle());
-            } else {
-                // ((MainActivity) getActivity()).getToolbar().setTitle(query);
-            }
-        }
-
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
             setupAppBarObserver();
+            checkAndDecideNavigation();
 
-            if (!categories.isEmpty()) {
+
+            /*if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
                 setupViewPagerAndTabsForBoxCategory();
-            }
-
-
-            if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-                //setupViewPagerAndTabsForBoxCategory();
             } else {
                 if (exploreItem == null) {
                     if (catId == 0) {
@@ -349,18 +301,34 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         getSearchDetails();
                     } else {
                         source = 1;
-                        getCategoryDetail();
+                         getCategoryDetail();
                     }
                 } else {
                     source = 2;
-                    getExploreDetails();
+                      getExploreDetails();
                 }
-            }
+            }*/
         }
-
-
         return rootView;
     }
+
+    /**
+     * Check And Decide navigation
+     */
+    public void checkAndDecideNavigation() {
+        if (!categories.isEmpty()) {
+            //when category list is passed
+            setupViewPagerAndTabsForBoxCategory();
+        } else {
+            /**
+             * when you have box UUID is passed
+             * Request Serve and fetch All Categories
+             */
+            getCategoriesForBoxUuid();
+        }
+
+    }
+
 
     /**
      * Set The Tabs When clicked category from Box
@@ -432,6 +400,44 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * Request Server And Fetch Cartegories
+     */
+    public void getCategoriesForBoxUuid() {
+        progressBar.setVisibility(View.VISIBLE);
+        connectionErrorViewHelper.isVisible(false);
+
+        TheBox.getAPIService()
+                .getCategories(PrefUtils.getToken(getActivity()), boxUuid)
+                .enqueue(new Callback<BoxCategoryResponse>() {
+                    @Override
+                    public void onResponse(Call<BoxCategoryResponse> call, Response<BoxCategoryResponse> response) {
+                        progressBar.setVisibility(View.GONE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    categories.clear();
+                                    categories.addAll(response.body().getCategories());
+                                    //set the view pager and tab
+                                    setupViewPagerAndTabsForBoxCategory();
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BoxCategoryResponse> call, Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
+                    }
+                });
+    }
+
 
     private void setupViewPagerAndTabs() {
         if (getActivity() == null) {
