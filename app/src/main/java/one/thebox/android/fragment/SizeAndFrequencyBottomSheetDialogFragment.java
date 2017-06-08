@@ -18,6 +18,7 @@ import one.thebox.android.Models.IntStringObject;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
@@ -25,7 +26,6 @@ import one.thebox.android.util.CoreGsonUtils;
  */
 public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialogFragment {
     public static final String TAG = "Choose size and frequency";
-    private static final String EXTRA_BOX_ITEM = "extra_box_item";
     TreeMap<IntStringObject, RealmList<ItemConfig>> hashMap = new TreeMap<>();
 
     private ViewPager viewPager;
@@ -37,7 +37,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     public static SizeAndFrequencyBottomSheetDialogFragment newInstance(BoxItem boxItem) {
 
         Bundle args = new Bundle();
-        args.putString(EXTRA_BOX_ITEM, CoreGsonUtils.toJson(boxItem));
+        args.putString(Constants.EXTRA_BOX_ITEM, CoreGsonUtils.toJson(boxItem));
         SizeAndFrequencyBottomSheetDialogFragment fragment = new SizeAndFrequencyBottomSheetDialogFragment();
         fragment.setArguments(args);
         return fragment;
@@ -86,7 +86,7 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     }
 
     private void initVariables() {
-        boxItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_BOX_ITEM), BoxItem.class);
+        boxItem = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_BOX_ITEM), BoxItem.class);
         hashMap = boxItem.getFrequencyItemConfigHashMap();
     }
 

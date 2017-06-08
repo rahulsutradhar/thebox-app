@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,8 @@ import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
+import one.thebox.android.Events.UpdateSubscribeItemEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.Category;
@@ -79,6 +82,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
+    private boolean mIsRestoredFromBackstack;
 
     private RealmList<Box> boxes = new RealmList<>();
 
@@ -242,12 +246,14 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.mIsRestoredFromBackstack = false;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         removeChangeListener();
+        this.mIsRestoredFromBackstack = true;
     }
 
     @Override

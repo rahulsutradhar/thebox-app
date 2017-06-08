@@ -10,18 +10,18 @@ import java.io.Serializable;
 
 public class RegistrationIdRequestBody implements Serializable {
 
-    private Device device;
+    @SerializedName("registration_id")
+    String registrationId;
 
     public RegistrationIdRequestBody(String registrationId) {
-        this.device = new Device(registrationId);
+        this.registrationId = registrationId;
     }
 
-    private class Device {
-        @SerializedName("registration_id")
-        String registrationId;
+    public String getRegistrationId() {
+        return registrationId;
+    }
 
-        public Device(String registrationId) {
-            this.registrationId = registrationId;
-        }
+    public void setRegistrationId(String registrationId) {
+        this.registrationId = registrationId;
     }
 }

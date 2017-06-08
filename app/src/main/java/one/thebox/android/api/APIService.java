@@ -12,6 +12,7 @@ import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
 import one.thebox.android.api.RequestBodies.order.RescheduleOrderRequest;
 import one.thebox.android.api.RequestBodies.order.UpdateQuantityOrderItemRequest;
 import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateItemConfigSubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
 import one.thebox.android.api.Responses.LocalityResponse;
@@ -74,7 +75,9 @@ import one.thebox.android.api.Responses.order.UpdateQuantityOrderItemResponse;
 import one.thebox.android.api.Responses.payment.MakePaymentResponse;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateItemConfigSubscribeItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
+import one.thebox.android.api.Responses.user.DeviceTokenResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -117,6 +120,13 @@ public interface APIService {
      */
     @GET("consumer/api/v1/users/logout")
     Call<LogoutResponse> logOut(@Header("Authorization") String accessToken);
+
+    /**
+     * Notification
+     * Update GCM Token
+     */
+    @POST("consumer/api/v1/users/device")
+    Call<DeviceTokenResponse> storeGcmRegistrationToken(@Header("Authorization") String accessToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
     /**
      * User Setting API
@@ -172,7 +182,6 @@ public interface APIService {
     @GET("consumer/api/v1/boxes/{box_uuid}")
     Call<BoxCategoryResponse> getCategories(@Header("Authorization") String accessToken, @Path("box_uuid") String boxUuid);
 
-
     /**
      * Sync Cart with Server
      */
@@ -219,7 +228,8 @@ public interface APIService {
                                           @Body MakePaymentRequest makePaymentRequest);
 
     /**
-     * Subscription; Subscribe Item (formally UserItem)
+     * Subscription;
+     * Subscribe Item (formally UserItem)
      */
     @GET("/consumer/api/v1/users/subscriptions")
     Call<SubscriptionResponse> getSubscription(@Header("Authorization") String accessToken);
@@ -237,7 +247,6 @@ public interface APIService {
     Call<MergeSubscriptionResponse> mergeSubscribeItemWithOrder(@Header("Authorization") String accessToken,
                                                                 @Path("subscribe_item_uuid") String subscribeItemUuid, @Body MergeSubscriptionRequest mergeSubscriptionRequest);
 
-
     /**
      * Update Subscribe Item Quantity
      */
@@ -245,6 +254,12 @@ public interface APIService {
     Call<UpdateQuantitySubscribeItemResponse> updateQuantitySubscribeItem(@Header("Authorization") String accessToken,
                                                                           @Path("subscribe_item_uuid") String subscribeItemUuid, @Body UpdateQuantitySubscribeItemRequest updateQuantitySubscribeItemRequest);
 
+    /**
+     * Update Subscribe Item ItemConfig
+     */
+    @POST("consumer/api/v1/subscriptions/{subscribe_item_uuid}/itemconfig")
+    Call<UpdateItemConfigSubscribeItemResponse> updateItemConfigSubscribeItem(@Header("Authorization") String accessToken,
+                                                                              @Path("subscribe_item_uuid") String subscribeItemUuid,@Body UpdateItemConfigSubscribeItemRequest updateItemConfigSubscribeItemRequest);
 
     /**
      * Savings on Subscribe Item
@@ -436,8 +451,6 @@ public interface APIService {
     @POST("merge_cartitems_with_order_payment_online")
     Call<PaymentResponse> merge_cart_items_to_order_payment_online(@Header("authtoken") String authToken, @Body OnlinePaymentRequest mergeCartToOrderRequestBody);
 
-    @POST("/devices")
-    Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
 
     /**

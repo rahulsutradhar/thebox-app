@@ -43,7 +43,7 @@ public class BaseCustomRecycleAdapter<T extends RealmObject> extends RecyclerVie
                 holder = new BoxHolder(inflater.inflate(R.layout.item_subscriptions, null));
                 break;
             case AppConstants.ViewType.USER_MY_BOX_ITEM:
-                holder = new UserItemHolder(inflater.inflate(R.layout.item_user_item, null));
+                holder = new UserItemHolder(inflater.inflate(R.layout.item_subscribe_item, null));
                 break;
         }
         return holder;

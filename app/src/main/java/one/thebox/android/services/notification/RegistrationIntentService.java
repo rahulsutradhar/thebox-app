@@ -21,6 +21,7 @@ import java.io.IOException;
 import one.thebox.android.R;
 import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
+import one.thebox.android.api.Responses.user.DeviceTokenResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
@@ -62,7 +63,7 @@ public class RegistrationIntentService extends IntentService {
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(gcm_token);
             Hotline.getInstance(this).updateGcmRegistrationToken(gcm_token);
-            
+
             // Subscribe to topic channels
             subscribeTopics(gcm_token);
 
@@ -88,22 +89,32 @@ public class RegistrationIntentService extends IntentService {
      * Modify this method to associate the user's GCM registration gcm_token with any server-side account
      * maintained by your application.
      *
-     * @param gcm_token The new gcm_token.
+     * @param gcmToken The new gcm_token.
      */
-    private void sendRegistrationToServer(String gcm_token) {
-        TheBox.getAPIService().postRegistrationId(
-                PrefUtils.getToken(TheBox.getInstance()), new RegistrationIdRequestBody(gcm_token))
-                .enqueue(new Callback<ApiResponse>() {
+    private void sendRegistrationToServer(String gcmToken) {
+        TheBox.getAPIService()
+                .storeGcmRegistrationToken(PrefUtils.getToken(TheBox.getInstance()), new RegistrationIdRequestBody(gcmToken))
+                .enqueue(new Callback<DeviceTokenResponse>() {
                     @Override
-                    public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                    public void onResponse(Call<DeviceTokenResponse> call, Response<DeviceTokenResponse> response) {
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    //TODO: do something
+                                }
+                            }
 
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse> call, Throwable t) {
+                    public void onFailure(Call<DeviceTokenResponse> call, Throwable t) {
 
                     }
                 });
+
     }
 
     /**

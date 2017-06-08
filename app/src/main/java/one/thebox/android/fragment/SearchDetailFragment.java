@@ -341,7 +341,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             progressBar.setVisibility(View.GONE);
             final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
             for (int i = 0; i < categories.size(); i++) {
-                Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), i);
+                Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), categories, i);
                 adapter.addFragment(fragment, categories.get(i));
             }
             viewPager.setAdapter(adapter);

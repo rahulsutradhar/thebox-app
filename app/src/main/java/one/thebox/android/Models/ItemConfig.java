@@ -36,14 +36,6 @@ public class ItemConfig extends RealmObject implements Serializable {
         this.correctQuantity = correctQuantity;
     }
 
-    public String getSubscriptionText() {
-        return subscriptionText;
-    }
-
-    public void setSubscriptionText(String subscriptionText) {
-        this.subscriptionText = subscriptionText;
-    }
-
 
     public String getSavingsTitle() {
         return savingsTitle;
@@ -193,6 +185,14 @@ public class ItemConfig extends RealmObject implements Serializable {
 
     public void setSubscriptionType(int subscriptionType) {
         this.subscriptionType = subscriptionType;
+    }
+
+    public String getSubscriptionText() {
+        return subscriptionText;
+    }
+
+    public void setSubscriptionText(String subscriptionText) {
+        this.subscriptionText = subscriptionText;
     }
 
     public int getPriority() {

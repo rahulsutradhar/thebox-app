@@ -29,10 +29,6 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("id")
     private int id;
 
-
-    @SerializedName("minititle")
-    private String minititle;
-
     @SerializedName("box_id")
     private int boxId;
 
@@ -90,14 +86,6 @@ public class Category extends RealmObject implements Serializable {
     }
 
 
-    public String getMinititle() {
-        return minititle;
-    }
-
-    public void setMinititle(String minititle) {
-        this.minititle = minititle;
-    }
-
 
     /**
      * Refactor
@@ -105,6 +93,8 @@ public class Category extends RealmObject implements Serializable {
     private String uuid;
 
     private String title;
+
+    private String minititle;
 
     @SerializedName("icon_url")
     private String categoryImage;
@@ -179,5 +169,13 @@ public class Category extends RealmObject implements Serializable {
 
     public void setBoxItems(RealmList<BoxItem> boxItems) {
         this.boxItems = boxItems;
+    }
+
+    public String getMinititle() {
+        return minititle;
+    }
+
+    public void setMinititle(String minititle) {
+        this.minititle = minititle;
     }
 }

@@ -16,6 +16,8 @@ import io.realm.annotations.PrimaryKey;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.IntStringObject;
 import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.user.Subscription;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.IntStringComparator;
 
@@ -192,6 +194,21 @@ public class BoxItem extends RealmObject implements Serializable {
 
     private ItemConfig selectedItemConfig;
 
+    /**
+     * Used to display Product
+     */
+    @SerializedName("my_item")
+    private UserItem userItem;
+
+    @Ignore
+    private boolean showCategorySuggestion = false;
+
+    /**
+     * Used to determine the view of the card
+     */
+    @Ignore
+    private int itemViewType;
+
     /************************************************
      * Helper Methods
      ************************************************/
@@ -350,4 +367,27 @@ public class BoxItem extends RealmObject implements Serializable {
         this.quantity = quantity;
     }
 
+    public boolean isShowCategorySuggestion() {
+        return showCategorySuggestion;
+    }
+
+    public void setShowCategorySuggestion(boolean showCategorySuggestion) {
+        this.showCategorySuggestion = showCategorySuggestion;
+    }
+
+    public UserItem getUserItem() {
+        return userItem;
+    }
+
+    public void setUserItem(UserItem userItem) {
+        this.userItem = userItem;
+    }
+
+    public int getItemViewType() {
+        return itemViewType;
+    }
+
+    public void setItemViewType(int itemViewType) {
+        this.itemViewType = itemViewType;
+    }
 }
