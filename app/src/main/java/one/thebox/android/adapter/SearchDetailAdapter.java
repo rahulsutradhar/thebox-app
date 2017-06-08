@@ -56,10 +56,12 @@ import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
 import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
 import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateItemConfigSubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
 import one.thebox.android.api.Responses.AddToMyBoxResponse;
 import one.thebox.android.api.Responses.CancelSubscriptionResponse;
 import one.thebox.android.api.Responses.UpdateItemConfigResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateItemConfigSubscribeItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
 import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
@@ -760,20 +762,24 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     // false otherwise
                     switch (actionUserItemSubscription) {
                         case 1:
-                            Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is coming soon", Toast.LENGTH_SHORT).show();
+                            //Update ItemConfig
+                            subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            //Change Item Config
-                                    /*final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                        @Override
-                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                            dialogFragment.dismiss();
+                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(
+                                    subscribeItem.getBoxItem());
+                            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                @Override
+                                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                    dialogFragment.dismiss();
+                                    //remove the selected item config inside BoxItem
+                                    subscribeItem.getBoxItem().setSelectedItemConfig(null);
+                                    //request server and update Item Config
+                                    updateItemConfig(subscribeItem, position, selectedItemConfig);
 
-                                            //changeConfig(arrayListPosition, selectedItemConfig.getId());
-                                        }
-                                    });*/
+                                }
+                            });
                             break;
                         case 2:
                             //Reschedule
@@ -860,8 +866,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             //display message to users
                                             Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                                            //fetch orders to update the list
-                                            EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                         } else {
                                             //update item quantity and savings
                                             subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
@@ -880,6 +884,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                         //do saving call and update the data
                                         EventBus.getDefault().post(new UpdateSavingsEvent());
+                                        //fetch orders to update the list
+                                        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                     }
                                 }
                             } catch (Exception e) {
@@ -894,8 +900,60 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
-
         }
+
+        /**
+         * Update ItemConfig for Subscribe Item
+         *
+         * @param subscribeItem
+         * @param position
+         * @param selectedItemConfig
+         */
+        private void updateItemConfig(final SubscribeItem subscribeItem, final int position, final ItemConfig selectedItemConfig) {
+            final BoxLoader dialog = new BoxLoader(mContext).show();
+
+            TheBox.getAPIService()
+                    .updateItemConfigSubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
+                            subscribeItem.getUuid(), new UpdateItemConfigSubscribeItemRequest(selectedItemConfig.getUuid()))
+                    .enqueue(new Callback<UpdateItemConfigSubscribeItemResponse>() {
+                        @Override
+                        public void onResponse(Call<UpdateItemConfigSubscribeItemResponse> call, Response<UpdateItemConfigSubscribeItemResponse> response) {
+                            dialog.dismiss();
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body().isStatus()) {
+                                        subscribeItem.setSelectedItemConfig(response.body().getSubscribeItem().getSelectedItemConfig());
+                                        subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
+                                        subscribeItems.set(position, subscribeItem);
+                                        notifyItemChanged(getAdapterPosition());
+
+                                        //notify Subscription Adapter about the change
+                                        if (onSubscribeItemChange != null) {
+                                            onSubscribeItemChange.onSubscribeItem(subscribeItems);
+                                        }
+
+                                        //do saving call and update the data
+                                        EventBus.getDefault().post(new UpdateSavingsEvent());
+                                        //fetch orders to update the list
+                                        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
+
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateItemConfigSubscribeItemResponse> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
 
         /**
          * Clever tab Event Cancel Subscription
