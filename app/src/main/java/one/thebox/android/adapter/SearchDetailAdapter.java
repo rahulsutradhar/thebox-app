@@ -1,9 +1,7 @@
 
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,40 +30,26 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.FullImageActivity;
-import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
-import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
-import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
-import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateItemConfigSubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
-import one.thebox.android.api.Responses.AddToMyBoxResponse;
-import one.thebox.android.api.Responses.CancelSubscriptionResponse;
-import one.thebox.android.api.Responses.UpdateItemConfigResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateItemConfigSubscribeItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
-import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.PrefUtils;
@@ -180,7 +162,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (viewType) {
             case VIEW_TYPE_USER_ITEM: {
                 //subscribe item
-                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_user_item, parent, false);
+                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_subscribe_item, parent, false);
                 return new SubscribeItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
@@ -671,7 +653,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 quantityHolder.setVisibility(View.VISIBLE);
                 noOfItemSelected.setText(String.valueOf(subscribeItem.getQuantity()));
                 ItemConfig selectedItemConfig = subscribeItem.getSelectedItemConfig();
-                price.setText(Constants.RUPEE_SYMBOL + " " + selectedItemConfig.getPrice() * selectedItemConfig.getQuantity());
+                price.setText(Constants.RUPEE_SYMBOL + " " + (subscribeItem.getQuantity() * selectedItemConfig.getPrice()));
                 frequency.setText("Repeat " + selectedItemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());

@@ -160,29 +160,11 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
     }
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
-        private SearchDetailAdapter subscribeItemAdapter;
+        private SubscribeItemAdapter subscribeItemAdapter;
         private RecyclerView recyclerViewUserItems;
         private TextView title;
 
         private LinearLayoutManager verticalLinearLayoutManager;
-        private View.OnClickListener openBoxListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(subscriptions.get(getAdapterPosition()).getBoxId(),
-                        subscriptions.get(getAdapterPosition()).getTitle()));
-
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
-            }
-        };
-
-        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifyItemChanged(getAdapterPosition());
-            }
-        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -204,6 +186,10 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                 if (subscription.getSubscribeItems() == null || subscription.getSubscribeItems().isEmpty()) {
                     this.recyclerViewUserItems.setVisibility(View.GONE);
                     this.title.setVisibility(View.GONE);
+                    subscriptions.remove(position);
+                    notifyItemRemoved(position);
+                    notifyDataSetChanged();
+
                 } else {
                     this.recyclerViewUserItems.setVisibility(View.VISIBLE);
                     this.recyclerViewUserItems.setLayoutManager(verticalLinearLayoutManager);
@@ -212,20 +198,15 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                     //set title the box category
                     this.title.setText(subscription.getTitle());
 
-                    this.subscribeItemAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
+                    this.subscribeItemAdapter = new SubscribeItemAdapter(mContext, glideRequestManager);
                     this.subscribeItemAdapter.setSubscribeItems(subscription.getSubscribeItems());
-
-                    this.subscribeItemAdapter = new SearchDetailAdapter(mContext, glideRequestManager);
-                    this.subscribeItemAdapter.setBoxItems(null, subscription.getSubscribeItems());
                     this.subscribeItemAdapter.addOnSubscribeItemChangeListener(new SearchDetailAdapter.OnSubscribeItemChange() {
                         @Override
                         public void onSubscribeItem(List<SubscribeItem> subscribeItems) {
-                            subscriptions.get(position).setAllSubscribeItem(subscribeItems);
+                            subscriptions.get(position).setSubscribeItems(subscribeItems);
                             setViews(subscriptions.get(position), position);
                         }
                     });
-
-                    this.subscribeItemAdapter.setCalledFromSearchDetailItem(false);
                     this.recyclerViewUserItems.setAdapter(subscribeItemAdapter);
                 }
             } catch (Exception e) {
