@@ -77,6 +77,7 @@ import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateItemConfigSubscribeItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
+import one.thebox.android.api.Responses.user.DeviceTokenResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -119,6 +120,13 @@ public interface APIService {
      */
     @GET("consumer/api/v1/users/logout")
     Call<LogoutResponse> logOut(@Header("Authorization") String accessToken);
+
+    /**
+     * Notification
+     * Update GCM Token
+     */
+    @POST("consumer/api/v1/users/device")
+    Call<DeviceTokenResponse> storeGcmRegistrationToken(@Header("Authorization") String accessToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
     /**
      * User Setting API
@@ -443,8 +451,6 @@ public interface APIService {
     @POST("merge_cartitems_with_order_payment_online")
     Call<PaymentResponse> merge_cart_items_to_order_payment_online(@Header("authtoken") String authToken, @Body OnlinePaymentRequest mergeCartToOrderRequestBody);
 
-    @POST("/devices")
-    Call<ApiResponse> postRegistrationId(@Header("authtoken") String authToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
 
 
     /**
