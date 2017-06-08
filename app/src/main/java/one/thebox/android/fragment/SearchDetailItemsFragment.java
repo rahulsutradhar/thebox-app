@@ -73,7 +73,6 @@ public class SearchDetailItemsFragment extends Fragment {
     private GifImageView progressBar;
     private String query;
     private int catId = -1;
-    private RealmList<Category> categories = new RealmList<>();
     private List<SubscribeItem> subscribeItems = new ArrayList<>();
     private List<BoxItem> boxItems = new ArrayList<>();
     private int source;
@@ -85,6 +84,7 @@ public class SearchDetailItemsFragment extends Fragment {
 
     private Category category;
     private int positionInViewPager;
+    private RealmList<Category> suggestedCategories = new RealmList<>();
 
     private List<BoxItem> cartItems;
 
@@ -103,10 +103,11 @@ public class SearchDetailItemsFragment extends Fragment {
      * @param category
      * @return
      */
-    public static SearchDetailItemsFragment getInstance(Category category, int positionInViewPager) {
+    public static SearchDetailItemsFragment getInstance(Category category, List<Category> categories, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EXTRA_CATEGORY, CoreGsonUtils.toJson(category));
         bundle.putInt(Constants.EXTRA_CLICK_POSITION, positionInViewPager);
+        bundle.putString(Constants.EXTRA_CATEGORY_LIST, CoreGsonUtils.toJson(categories));
         bundle.putInt(EXTRA_SOURCE, SOURCE_BOX_CATEGORY);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
@@ -114,6 +115,9 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
 
+    /**
+     * OLD
+     */
     public static SearchDetailItemsFragment getInstance(SearchResult searchResult, int positionInViewPager) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_QUERY, searchResult.getResult());
@@ -153,10 +157,14 @@ public class SearchDetailItemsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         if (rootView == null) {
-            initVariables();
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
+            initVariables();
             initViews();
-            getDataBasedOnSource();
+
+            //request Server to get the Boc Catgeory Items
+            getBoxCategoryItems();
+
+            //getDataBasedOnSource();
         }
         return rootView;
     }
@@ -233,15 +241,17 @@ public class SearchDetailItemsFragment extends Fragment {
         }
     };
 
-    private void initVariables() {
+    public void initVariables() {
         try {
             category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
+            suggestedCategories = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(Constants.EXTRA_CATEGORY_LIST), Category.class);
             positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
             source = getArguments().getInt(EXTRA_SOURCE);
             cartItems = CartHelper.getCart();
 
-            //old
+            updateSuggestionCatgeoryListBasedOnSelectedCategory();
 
+            //old
             query = getArguments().getString(EXTRA_QUERY);
             catId = getArguments().getInt(EXTRA_CAT_ID);
             //userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
@@ -251,8 +261,19 @@ public class SearchDetailItemsFragment extends Fragment {
         } catch (NullPointerException npe) {
             npe.printStackTrace();
         }
+    }
 
+    /**
+     * Set Suggestion Category List based on Selected Category
+     */
+    public void updateSuggestionCatgeoryListBasedOnSelectedCategory() {
 
+        for (int i = 0; i < suggestedCategories.size(); i++) {
+            if (suggestedCategories.get(i).getUuid().equalsIgnoreCase(category.getUuid())) {
+                suggestedCategories.remove(i);
+                break;
+            }
+        }
     }
 
     private void initViews() {
@@ -307,6 +328,8 @@ public class SearchDetailItemsFragment extends Fragment {
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setPositionInViewPager(positionInViewPager);
+            searchDetailAdapter.setSuggestedCategories(suggestedCategories);
+            //check with cart item and evaluate data
             setData();
             LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
@@ -392,8 +415,8 @@ public class SearchDetailItemsFragment extends Fragment {
                             //userItems.addAll(response.body().getMyNonSearchedItems());
                             boxItems.add(response.body().getSearchedItem());
                             boxItems.addAll(response.body().getNormalItems());
-                            categories.add(response.body().getSearchedCategory());
-                            categories.addAll(response.body().getRestCategories());
+                            // categories.add(response.body().getSearchedCategory());
+                            //categories.addAll(response.body().getRestCategories());
                             setupRecyclerView();
                         }
                     }
@@ -410,7 +433,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private void clearData() {
         //  userItems.clear();
         boxItems.clear();
-        categories.clear();
+        //categories.clear();
     }
 
 
@@ -487,10 +510,10 @@ public class SearchDetailItemsFragment extends Fragment {
                             setBoxItemsBasedOnUserItems(response.body().getMyBoxItems(), boxItems);
 
                             if (null != response.body().getSelectedCategory()) {
-                                categories.add(response.body().getSelectedCategory());
+                                //  categories.add(response.body().getSelectedCategory());
                             }
                             if (null != response.body().getRestCategories()) {
-                                categories.addAll(response.body().getRestCategories());
+                                // categories.addAll(response.body().getRestCategories());
                             }
                             initDataChangeListener();
 

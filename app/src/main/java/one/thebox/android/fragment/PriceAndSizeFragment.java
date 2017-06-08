@@ -12,12 +12,13 @@ import io.realm.RealmList;
 import one.thebox.android.Models.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SizeAndFrequencyAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 
 
 public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
-    private final static String EXTRA_ITEM_CONFIG_ARRAY_LIST = "item_config_array_list";
+
     private View rootView;
     private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private RecyclerView recyclerView;
@@ -31,7 +32,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
     public static PriceAndSizeFragment newInstance(RealmList<ItemConfig> itemConfigs) {
         PriceAndSizeFragment fragment = new PriceAndSizeFragment();
         Bundle args = new Bundle();
-        args.putString(EXTRA_ITEM_CONFIG_ARRAY_LIST, CoreGsonUtils.toJson(itemConfigs));
+        args.putString(Constants.EXTRA_ITEM_CONFIG_LIST, CoreGsonUtils.toJson(itemConfigs));
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,7 +64,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
     private void initVariable() {
         itemConfigs = CoreGsonUtils.fromJsontoRealmList(
-                getArguments().getString(EXTRA_ITEM_CONFIG_ARRAY_LIST), ItemConfig.class
+                getArguments().getString(Constants.EXTRA_ITEM_CONFIG_LIST), ItemConfig.class
         );
     }
 
@@ -72,7 +73,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
         sizeAndFrequencyAdapter.setItemConfigs(itemConfigs);
         if (selectedItemConfig != null) {
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if(itemConfigs.get(i).equals(selectedItemConfig)) {
+                if (itemConfigs.get(i).equals(selectedItemConfig)) {
                     sizeAndFrequencyAdapter.setCurrentItemSelected(i);
                     break;
                 }

@@ -113,18 +113,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.subscribeItems = subscribeItems;
     }
 
-    private void setSuggestedCategoriesAndBoxId(int boxId, List<Category> suggestedCategories) {
-        this.boxId = boxId;
-        this.suggestedCategories.clear();
-        this.suggestedCategories.addAll(suggestedCategories);
+    public RealmList<Category> getSuggestedCategories() {
+        return suggestedCategories;
     }
 
-    public int getOrderId() {
-        return order_id;
-    }
-
-    public void setOrderId(int order_id) {
-        this.order_id = order_id;
+    public void setSuggestedCategories(RealmList<Category> suggestedCategories) {
+        this.suggestedCategories = suggestedCategories;
     }
 
     public List<BoxItem> getBoxItems() {
@@ -323,13 +317,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     noOfItemSelected.setText(String.valueOf(0));
                 }
 
-                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
+                if (boxItem.isShowCategorySuggestion()) {
+                    if (suggestedCategories != null) {
+                        if (suggestedCategories.size() > 0) {
+                            savingHolder.setVisibility(View.VISIBLE);
+                            setupRecyclerViewSuggestedCategories(suggestedCategories);
+                        } else {
+                            savingHolder.setVisibility(View.GONE);
+                        }
+                    } else {
+                        savingHolder.setVisibility(View.GONE);
+                    }
+                    boxItem.setShowCategorySuggestion(false);
+                } else {
+
+                }
+
+               /* if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
                     savingHolder.setVisibility(View.VISIBLE);
                     setupRecyclerViewSuggestedCategories(suggestedCategories);
 
                 } else {
                     savingHolder.setVisibility(View.GONE);
-                }
+                }*/
             }
         }
 
@@ -551,6 +561,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
+            boxItem.setShowCategorySuggestion(true);
             boxItems.get(position).setQuantity(1);
             notifyItemChanged(position);
             CartHelper.addBoxItemToCart(boxItem);
@@ -564,6 +575,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(0);
+            boxItem.setShowCategorySuggestion(false);
             boxItems.get(position).setQuantity(0);
             notifyItemChanged(position);
             CartHelper.removeItemFromCart(boxItem);
@@ -773,8 +785,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                 @Override
                                 public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
                                     dialogFragment.dismiss();
-                                    //remove the selected item config inside BoxItem
-                                    subscribeItem.getBoxItem().setSelectedItemConfig(null);
                                     //request server and update Item Config
                                     updateItemConfig(subscribeItem, position, selectedItemConfig);
 
@@ -922,9 +932,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body().isStatus()) {
-                                        subscribeItem.setSelectedItemConfig(response.body().getSubscribeItem().getSelectedItemConfig());
-                                        subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
-                                        subscribeItems.set(position, subscribeItem);
+
+                                        subscribeItems.set(position, response.body().getSubscribeItem());
                                         notifyItemChanged(getAdapterPosition());
 
                                         //notify Subscription Adapter about the change

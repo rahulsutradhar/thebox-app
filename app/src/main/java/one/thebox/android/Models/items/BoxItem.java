@@ -192,6 +192,9 @@ public class BoxItem extends RealmObject implements Serializable {
 
     private ItemConfig selectedItemConfig;
 
+    @Ignore
+    private boolean showCategorySuggestion = false;
+
     /************************************************
      * Helper Methods
      ************************************************/
@@ -350,4 +353,11 @@ public class BoxItem extends RealmObject implements Serializable {
         this.quantity = quantity;
     }
 
+    public boolean isShowCategorySuggestion() {
+        return showCategorySuggestion;
+    }
+
+    public void setShowCategorySuggestion(boolean showCategorySuggestion) {
+        this.showCategorySuggestion = showCategorySuggestion;
+    }
 }

@@ -86,6 +86,12 @@ public class Constants {
      */
     public static final String EXTRA_CATEGORY = "extra_category";
 
+
+    /**
+     * EXTRA CATEGORY LIST
+     */
+    public static final String EXTRA_CATEGORY_LIST = "extra_category_list";
+
     /**
      * Update Cart Polling Time
      */
@@ -135,6 +141,16 @@ public class Constants {
      * Extra Is Reschedule
      */
     public static final String EXTRA_IS_RESCHEDULE = "extra_is_reschedule";
+
+    /**
+     * EXTRA BOX ITEM
+     */
+    public static final String EXTRA_BOX_ITEM = "extra_box_item";
+
+    /**
+     * EXTRA ITEM CONFIG LIST
+     */
+    public final static String EXTRA_ITEM_CONFIG_LIST = "extra_item_config_array_list";
 
 
 }
