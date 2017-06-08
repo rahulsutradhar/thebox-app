@@ -172,19 +172,18 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
             }
 
             //Saving text display if not empty
-               /* if (category.getAverageSavings() != null) {
-                    if (!category.getAverageSavings().isEmpty()) {
-                        savingTextView.setVisibility(View.VISIBLE);
-                        savingTextView.setText(category.getAverageSavings());
-                    } else {
-                        savingTextView.setVisibility(View.GONE);
-                        savingTextView.setText("");
-                    }
+            if (category.getAverageSavings() != null) {
+                if (!category.getAverageSavings().isEmpty()) {
+                    savingTextView.setVisibility(View.VISIBLE);
+                    savingTextView.setText(category.getAverageSavings());
                 } else {
                     savingTextView.setVisibility(View.GONE);
                     savingTextView.setText("");
                 }
-*/
+            } else {
+                savingTextView.setVisibility(View.GONE);
+                savingTextView.setText("");
+            }
             //clickevent
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -248,7 +247,7 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
             if (isSearchDetailItemFragment) {
                 EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
             } else {
-                
+
                 Intent intent = new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
                         .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))

@@ -276,8 +276,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
 
         //set the flags
-        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
+        PrefUtils.putBoolean(PaymentOptionActivity.this, Constants.SUBSCRIPTION_UPDATED, false);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
         Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);

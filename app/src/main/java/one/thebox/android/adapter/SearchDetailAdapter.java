@@ -1,9 +1,7 @@
 
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,38 +30,27 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
+import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Invoice;
 import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.WrapContentLinearLayoutManager;
 import one.thebox.android.activity.FullImageActivity;
-import one.thebox.android.api.RequestBodies.AddToMyBoxRequestBody;
-import one.thebox.android.api.RequestBodies.CancelSubscriptionRequest;
-import one.thebox.android.api.RequestBodies.UpdateItemConfigurationRequest;
-import one.thebox.android.api.RequestBodies.UpdateItemQuantityRequestBody;
+import one.thebox.android.api.RequestBodies.subscribeitem.UpdateItemConfigSubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;
-import one.thebox.android.api.Responses.AddToMyBoxResponse;
-import one.thebox.android.api.Responses.CancelSubscriptionResponse;
-import one.thebox.android.api.Responses.UpdateItemConfigResponse;
+import one.thebox.android.api.Responses.subscribeitem.UpdateItemConfigSubscribeItemResponse;
 import one.thebox.android.api.Responses.subscribeitem.UpdateQuantitySubscribeItemResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
-import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.PrefUtils;
@@ -73,87 +58,41 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static one.thebox.android.app.Constants.VIEW_TYPE_SEARCH_ITEM;
+import static one.thebox.android.app.Constants.VIEW_TYPE_SUBSCRIBE_ITEM;
+
 public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int VIEW_TYPE_SEARCH_ITEM = 0;
-    private static final int VIEW_TYPE_USER_ITEM = 1;
     private List<BoxItem> boxItems = new ArrayList<>();
     private Context mContext;
-    private boolean shouldRemoveBoxItemOnEmptyQuantity;
-    private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
-    private int order_id;
     private RealmList<Category> suggestedCategories = new RealmList<>();
-    private int boxId;
-    private boolean isCalledFromSearchDetailItem;
-
-    /**
-     * User Subscribed Item
-     */
-    private List<SubscribeItem> subscribeItems = new ArrayList<>();
-
-    /**
-     * Interface
-     */
-    private OnSubscribeItemChange onSubscribeItemChange;
-
 
     /**
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
 
-    public List<SubscribeItem> getSubscribeItems() {
-        return subscribeItems;
+    public RealmList<Category> getSuggestedCategories() {
+        return suggestedCategories;
     }
 
-    public void setSubscribeItems(List<SubscribeItem> subscribeItems) {
-        this.subscribeItems = subscribeItems;
-    }
-
-    private void setSuggestedCategoriesAndBoxId(int boxId, List<Category> suggestedCategories) {
-        this.boxId = boxId;
-        this.suggestedCategories.clear();
-        this.suggestedCategories.addAll(suggestedCategories);
-    }
-
-    public int getOrderId() {
-        return order_id;
-    }
-
-    public void setOrderId(int order_id) {
-        this.order_id = order_id;
+    public void setSuggestedCategories(RealmList<Category> suggestedCategories) {
+        this.suggestedCategories = suggestedCategories;
     }
 
     public List<BoxItem> getBoxItems() {
         return boxItems;
     }
 
-    public void setBoxItems(RealmList<BoxItem> boxItems) {
+    public void setBoxItems(List<BoxItem> boxItems) {
         this.boxItems = boxItems;
+        notifyDataSetChanged();
     }
 
     public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {
         this.mContext = context;
         this.glideRequestManager = glideRequestManager;
-    }
-
-    public boolean isCalledFromSearchDetailItem() {
-        return isCalledFromSearchDetailItem;
-    }
-
-    public void setCalledFromSearchDetailItem(boolean calledFromSearchDetailItem) {
-        isCalledFromSearchDetailItem = calledFromSearchDetailItem;
-    }
-
-
-    /**
-     * Interface Called from SubscriptionAdapter
-     *
-     * @param onSubscribeItemChange
-     */
-    public void addOnSubscribeItemChangeListener(OnSubscribeItemChange onSubscribeItemChange) {
-        this.onSubscribeItemChange = onSubscribeItemChange;
     }
 
     public int getPositionInViewPager() {
@@ -164,27 +103,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.positionInViewPager = positionInViewPager;
     }
 
-    public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
-        this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
-    }
-
-    public void setBoxItems(List<BoxItem> boxItems, List<SubscribeItem> subscribeItems) {
-        if (boxItems != null) {
-            this.boxItems = boxItems;
-        }
-        if (subscribeItems != null) {
-            this.subscribeItems = subscribeItems;
-        }
-        notifyDataSetChanged();
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         switch (viewType) {
-            case VIEW_TYPE_USER_ITEM: {
+            case Constants.VIEW_TYPE_SUBSCRIBE_ITEM: {
                 //subscribe item
-                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_user_item, parent, false);
+                View itemView = LayoutInflater.from(TheBox.getInstance()).inflate(R.layout.item_subscribe_item, parent, false);
                 return new SubscribeItemViewHolder(itemView);
             }
             case VIEW_TYPE_SEARCH_ITEM: {
@@ -200,7 +126,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         if (holder instanceof SearchedItemViewHolder) {
-            bindSearchViewHolder(holder, position - (subscribeItems == null ? 0 : subscribeItems.size()));
+            bindSearchViewHolder(holder, position);
         } else if (holder instanceof SubscribeItemViewHolder) {
             bindSubscribeItemViewHolder(holder, position);
         }
@@ -213,7 +139,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         SubscribeItemViewHolder itemViewHolder = (SubscribeItemViewHolder) holder;
         //check if adapter holds correct position
         if (position != RecyclerView.NO_POSITION) {
-            itemViewHolder.setViews(subscribeItems.get(position), position);
+            itemViewHolder.setViews(boxItems.get(position), boxItems.get(position).getUserItem().getSubscribeItem(), position);
         }
     }
 
@@ -232,16 +158,26 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return (boxItems == null ? 0 : boxItems.size()) + (subscribeItems == null ? 0 : subscribeItems.size());
+        return boxItems.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        int index;
-        index = position < (subscribeItems == null ? 0 : subscribeItems.size()) ? VIEW_TYPE_USER_ITEM : VIEW_TYPE_SEARCH_ITEM;
-        return index;
+        int viewType = Constants.VIEW_TYPE_SEARCH_ITEM;
+        switch (boxItems.get(position).getItemViewType()) {
+            case Constants.VIEW_TYPE_SEARCH_ITEM:
+                viewType = Constants.VIEW_TYPE_SEARCH_ITEM;
+                break;
+            case Constants.VIEW_TYPE_SUBSCRIBE_ITEM:
+                viewType = Constants.VIEW_TYPE_SUBSCRIBE_ITEM;
+                break;
+        }
+        return viewType;
     }
 
+    /**
+     * Search Item; Or Product ITEM
+     */
     private class SearchedItemViewHolder extends RecyclerView.ViewHolder {
 
         private RecyclerView recyclerViewSavings;
@@ -321,13 +257,29 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     noOfItemSelected.setText(String.valueOf(0));
                 }
 
-                if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
+                if (boxItem.isShowCategorySuggestion()) {
+                    if (suggestedCategories != null) {
+                        if (suggestedCategories.size() > 0) {
+                            savingHolder.setVisibility(View.VISIBLE);
+                            setupRecyclerViewSuggestedCategories(suggestedCategories);
+                        } else {
+                            savingHolder.setVisibility(View.GONE);
+                        }
+                    } else {
+                        savingHolder.setVisibility(View.GONE);
+                    }
+                    boxItem.setShowCategorySuggestion(false);
+                } else {
+
+                }
+
+               /* if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
                     savingHolder.setVisibility(View.VISIBLE);
                     setupRecyclerViewSuggestedCategories(suggestedCategories);
 
                 } else {
                     savingHolder.setVisibility(View.GONE);
-                }
+                }*/
             }
         }
 
@@ -549,6 +501,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
+            boxItem.setShowCategorySuggestion(true);
             boxItems.get(position).setQuantity(1);
             notifyItemChanged(position);
             CartHelper.addBoxItemToCart(boxItem);
@@ -562,6 +515,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(0);
+            boxItem.setShowCategorySuggestion(false);
             boxItems.get(position).setQuantity(0);
             notifyItemChanged(position);
             CartHelper.removeItemFromCart(boxItem);
@@ -627,7 +581,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
-
+    /**
+     * Subscribe Item
+     */
     private class SubscribeItemViewHolder extends RecyclerView.ViewHolder {
 
         private TextView productName, arrivingTime, config, addButton,
@@ -651,13 +607,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
-        private void setViews(final SubscribeItem subscribeItem, final int position) {
+        private void setViews(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position) {
 
             try {
                 quantityHolder.setVisibility(View.VISIBLE);
                 noOfItemSelected.setText(String.valueOf(subscribeItem.getQuantity()));
                 ItemConfig selectedItemConfig = subscribeItem.getSelectedItemConfig();
-                price.setText(Constants.RUPEE_SYMBOL + " " + selectedItemConfig.getPrice() * selectedItemConfig.getQuantity());
+                price.setText(Constants.RUPEE_SYMBOL + " " + (subscribeItem.getQuantity() * selectedItemConfig.getPrice()));
                 frequency.setText("Repeat " + selectedItemConfig.getSubscriptionText().toLowerCase());
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());
@@ -697,7 +653,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     //edit subscription
-                    doEditSubscription(subscribeItem, position);
+                    doEditSubscription(boxItem, subscribeItem, position);
 
                 }
             });
@@ -706,17 +662,16 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     //increase quantity
-                    updateQuantity(subscribeItem, position, (subscribeItem.getQuantity() + 1));
+                    updateQuantity(boxItem, subscribeItem, position, (subscribeItem.getQuantity() + 1));
                 }
             });
             subtractButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-
                     if (subscribeItem.getQuantity() > 1) {
                         //decrease quantity
-                        updateQuantity(subscribeItem, position, (subscribeItem.getQuantity() - 1));
+                        updateQuantity(boxItem, subscribeItem, position, (subscribeItem.getQuantity() - 1));
                     }//Delete Subscribe Item
                     else if (subscribeItem.getQuantity() == 1) {
                         MaterialDialog dialog = new MaterialDialog.Builder(mContext).
@@ -727,7 +682,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             @Override
                                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                 //remove or delete Subscribe Item
-                                                updateQuantity(subscribeItem, position, 0);
+                                                updateQuantity(boxItem, subscribeItem, position, 0);
                                             }
                                         }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                         dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -745,7 +700,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         /**
          * Edit Subscription
          */
-        private void doEditSubscription(final SubscribeItem subscribeItem, final int position) {
+        private void doEditSubscription(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position) {
             final EditItemFragment dialogFragment = EditItemFragment.newInstance();
 
             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
@@ -760,20 +715,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     // false otherwise
                     switch (actionUserItemSubscription) {
                         case 1:
-                            Toast.makeText(TheBox.getAppContext(), "Have patience dude! this feature is coming soon", Toast.LENGTH_SHORT).show();
+                            //Update ItemConfig
+                            subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            //Change Item Config
-                                    /*final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
-                                    dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                            , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                                    dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                        @Override
-                                        public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                            dialogFragment.dismiss();
+                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(
+                                    subscribeItem.getBoxItem());
+                            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                @Override
+                                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                    dialogFragment.dismiss();
+                                    //request server and update Item Config
+                                    updateItemConfig(boxItem, subscribeItem, position, selectedItemConfig);
 
-                                            //changeConfig(arrayListPosition, selectedItemConfig.getId());
-                                        }
-                                    });*/
+                                }
+                            });
                             break;
                         case 2:
                             //Reschedule
@@ -785,17 +742,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                     //update the arriving at Text on the existing list object
                                     subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
-                                    subscribeItems.set(position, subscribeItem);
-
-                                    if (onSubscribeItemChange != null) {
-                                        onSubscribeItemChange.onSubscribeItem(subscribeItems);
-                                    }
-                                    notifyItemChanged(getAdapterPosition());
+                                    boxItem.getUserItem().setSubscribeItem(subscribeItem);
+                                    boxItems.set(position, boxItem);
+                                    notifyItemChanged(position);
 
                                     if (deliveryBottomSheet != null) {
                                         deliveryBottomSheet.dismiss();
                                     }
-
+                                    updateHomeTabs();
                                 }
                             });
                             break;
@@ -810,7 +764,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     @Override
                                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                                         //Remove Subscribe Item
-                                                        updateQuantity(subscribeItem, position, 0);
+                                                        updateQuantity(boxItem, subscribeItem, position, 0);
                                                     }
                                                 }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
                                 dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
@@ -834,7 +788,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param position
          * @param quantity
          */
-        private void updateQuantity(final SubscribeItem subscribeItem, final int position, final int quantity) {
+        private void updateQuantity(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position, final int quantity) {
             final BoxLoader dialog = new BoxLoader(mContext).show();
 
             TheBox.getAPIService()
@@ -853,15 +807,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                          * SubscribeItem id DELETED
                                          */
                                         if (response.body().isDeleted()) {
-                                            //remove item
-                                            subscribeItems.remove(position);
-                                            notifyItemRemoved(position);
-                                            notifyDataSetChanged();
-                                            //display message to users
+                                            /**
+                                             * Update Subscribe Item to Search Item
+                                             */
+                                            boxItem.getUserItem().setSubscribeItemAvailable(false);
+                                            boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                                            notifyItemChanged(position);
                                             Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                                            //fetch orders to update the list
-                                            EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                         } else {
                                             //update item quantity and savings
                                             subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
@@ -870,16 +823,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                                     subscribeItem.setSubscribedSavingText(response.body().getSubscribeItem().getSubscribedSavingText());
                                                 }
                                             }
-                                            subscribeItems.set(position, subscribeItem);
-                                            notifyItemChanged(getAdapterPosition());
+                                            boxItem.getUserItem().setSubscribeItem(subscribeItem);
+                                            boxItems.set(position, boxItem);
+                                            //  subscribeItems.set(position, subscribeItem);
+                                            notifyItemChanged(position);
                                         }
-                                        //notify Subscription Adapter about the change
-                                        if (onSubscribeItemChange != null) {
-                                            onSubscribeItemChange.onSubscribeItem(subscribeItems);
-                                        }
-
-                                        //do saving call and update the data
-                                        EventBus.getDefault().post(new UpdateSavingsEvent());
+                                        updateHomeTabs();
                                     }
                                 }
                             } catch (Exception e) {
@@ -894,7 +843,57 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
+        }
 
+        /**
+         * Update ItemConfig for Subscribe Item
+         *
+         * @param subscribeItem
+         * @param position
+         * @param selectedItemConfig
+         */
+        private void updateItemConfig(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position, final ItemConfig selectedItemConfig) {
+            final BoxLoader dialog = new BoxLoader(mContext).show();
+
+            TheBox.getAPIService()
+                    .updateItemConfigSubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
+                            subscribeItem.getUuid(), new UpdateItemConfigSubscribeItemRequest(selectedItemConfig.getUuid()))
+                    .enqueue(new Callback<UpdateItemConfigSubscribeItemResponse>() {
+                        @Override
+                        public void onResponse(Call<UpdateItemConfigSubscribeItemResponse> call, Response<UpdateItemConfigSubscribeItemResponse> response) {
+                            dialog.dismiss();
+                            try {
+                                if (response.isSuccessful()) {
+                                    if (response.body().isStatus()) {
+
+                                        boxItem.getUserItem().setSubscribeItem(response.body().getSubscribeItem());
+                                        boxItems.set(position, boxItem);
+                                        notifyItemChanged(position);
+
+                                        updateHomeTabs();
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UpdateItemConfigSubscribeItemResponse> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+
+        public void updateHomeTabs() {
+            //do subscription call and update the data
+            EventBus.getDefault().post(new UpdateSubscribeItemEvent());
+            //fetch orders to update the list
+            EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
         }
 
         /**
@@ -915,7 +914,4 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
-    public interface OnSubscribeItemChange {
-        void onSubscribeItem(List<SubscribeItem> subscribeItems);
-    }
 }

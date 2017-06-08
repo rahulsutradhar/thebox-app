@@ -3,15 +3,20 @@ package one.thebox.android.services;
 import android.app.Activity;
 import android.content.Context;
 
+import java.lang.annotation.Annotation;
+
+import okhttp3.ResponseBody;
 import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.activity.OtpVerificationActivity;
 import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 
 /**
@@ -52,6 +57,21 @@ public class SettingService {
 
                                 if (activity != null) {
                                     sendResponse(activity, true, calledFrom);
+                                }
+                            } else {
+                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                    //parse error send by the server and show message
+                                    Converter<ResponseBody, SettingsResponse> errorConverter =
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.setting.SettingsResponse.class,
+                                                    new Annotation[0]);
+                                    one.thebox.android.api.Responses.setting.SettingsResponse error = errorConverter.convert(
+                                            response.errorBody());
+
+                                    //display error message
+                                    if (error.getResponsecode() == 401) {
+                                        //UnAuthorised; logout and move to Splash
+                                        new AuthenticationService().logOut(context, false);
+                                    }
                                 }
                             }
                         } catch (Exception e) {

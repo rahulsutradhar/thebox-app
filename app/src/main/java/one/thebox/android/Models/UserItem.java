@@ -8,12 +8,12 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.items.SubscribeItem;
 
 public class UserItem extends RealmObject implements Serializable {
     @Ignore
     public static final String FIELD_ID = "id";
 
-    @PrimaryKey
     @SerializedName("id")
     private int id;
 
@@ -185,10 +185,6 @@ public class UserItem extends RealmObject implements Serializable {
         this.orderId = orderId;
     }
 
-
-    /**
-     * Refactor
-     */
     private String uuid;
 
     private int quantity;
@@ -205,10 +201,6 @@ public class UserItem extends RealmObject implements Serializable {
     @SerializedName("item")
     private BoxItem boxItem;
 
-
-    /************************************
-     * Getter Setter
-     ************************************/
     public int getQuantity() {
         return quantity;
     }
@@ -259,5 +251,35 @@ public class UserItem extends RealmObject implements Serializable {
 
     public void setBoxItem(BoxItem boxItem) {
         this.boxItem = boxItem;
+    }
+
+
+    /**
+     * Refactor
+     */
+    @SerializedName("available")
+    private boolean SubscribeItemAvailable;
+
+    @SerializedName("subscription")
+    private SubscribeItem subscribeItem;
+
+    /************************************
+     * Getter Setter
+     ************************************/
+
+    public boolean isSubscribeItemAvailable() {
+        return SubscribeItemAvailable;
+    }
+
+    public void setSubscribeItemAvailable(boolean subscribeItemAvailable) {
+        SubscribeItemAvailable = subscribeItemAvailable;
+    }
+
+    public SubscribeItem getSubscribeItem() {
+        return subscribeItem;
+    }
+
+    public void setSubscribeItem(SubscribeItem subscribeItem) {
+        this.subscribeItem = subscribeItem;
     }
 }

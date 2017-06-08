@@ -147,14 +147,12 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(TheBox.getAppContext(), "Exception", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<OrdersResponse> call, Throwable t) {
                         progress_bar.setVisibility(View.GONE);
-                        Toast.makeText(TheBox.getAppContext(), "Failed", Toast.LENGTH_SHORT).show();
                     }
                 });
 

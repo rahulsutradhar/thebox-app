@@ -47,7 +47,7 @@ public class Subscription implements Serializable {
      * UserItems
      */
     @SerializedName("subscribed_items")
-    private ArrayList<SubscribeItem> subscribeItems;
+    private List<SubscribeItem> subscribeItems;
 
     @Ignore
     private List<SubscribeItem> allSubscribeItem = new ArrayList<>();
@@ -73,11 +73,11 @@ public class Subscription implements Serializable {
         this.title = title;
     }
 
-    public ArrayList<SubscribeItem> getSubscribeItems() {
+    public List<SubscribeItem> getSubscribeItems() {
         return subscribeItems;
     }
 
-    public void setSubscribeItems(ArrayList<SubscribeItem> subscribeItems) {
+    public void setSubscribeItems(List<SubscribeItem> subscribeItems) {
         this.subscribeItems = subscribeItems;
     }
 
