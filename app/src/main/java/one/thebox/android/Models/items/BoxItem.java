@@ -16,6 +16,8 @@ import io.realm.annotations.PrimaryKey;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.IntStringObject;
 import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.user.Subscription;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.IntStringComparator;
 
@@ -191,6 +193,12 @@ public class BoxItem extends RealmObject implements Serializable {
     private int quantity;
 
     private ItemConfig selectedItemConfig;
+
+    /**
+     * Used to display Product
+     */
+    @SerializedName("my_item")
+    private UserItem userItem;
 
     @Ignore
     private boolean showCategorySuggestion = false;

@@ -63,24 +63,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int VIEW_TYPE_USER_ITEM = 1;
     private List<BoxItem> boxItems = new ArrayList<>();
     private Context mContext;
-    private boolean shouldRemoveBoxItemOnEmptyQuantity;
-    private int currentPositionOfSuggestedCategory = -1;
     private int positionInViewPager = -1;
-    private int order_id;
     private RealmList<Category> suggestedCategories = new RealmList<>();
-    private int boxId;
-    private boolean isCalledFromSearchDetailItem;
 
     /**
      * User Subscribed Item
      */
     private List<SubscribeItem> subscribeItems = new ArrayList<>();
-
-    /**
-     * Interface
-     */
-    private OnSubscribeItemChange onSubscribeItemChange;
-
 
     /**
      * GLide Request Manager
@@ -116,34 +105,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.glideRequestManager = glideRequestManager;
     }
 
-    public boolean isCalledFromSearchDetailItem() {
-        return isCalledFromSearchDetailItem;
-    }
-
-    public void setCalledFromSearchDetailItem(boolean calledFromSearchDetailItem) {
-        isCalledFromSearchDetailItem = calledFromSearchDetailItem;
-    }
-
-
-    /**
-     * Interface Called from SubscriptionAdapter
-     *
-     * @param onSubscribeItemChange
-     */
-    public void addOnSubscribeItemChangeListener(OnSubscribeItemChange onSubscribeItemChange) {
-        this.onSubscribeItemChange = onSubscribeItemChange;
-    }
-
     public int getPositionInViewPager() {
         return positionInViewPager;
     }
 
     public void setPositionInViewPager(int positionInViewPager) {
         this.positionInViewPager = positionInViewPager;
-    }
-
-    public void setShouldRemoveBoxItemOnEmptyQuantity(boolean shouldRemoveBoxItemOnEmptyQuantity) {
-        this.shouldRemoveBoxItemOnEmptyQuantity = shouldRemoveBoxItemOnEmptyQuantity;
     }
 
     public void setBoxItems(List<BoxItem> boxItems, List<SubscribeItem> subscribeItems) {
@@ -785,9 +752,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
                                     subscribeItems.set(position, subscribeItem);
 
-                                    if (onSubscribeItemChange != null) {
+                                   /* if (onSubscribeItemChange != null) {
                                         onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                     }
+                                   */
                                     notifyItemChanged(getAdapterPosition());
 
                                     if (deliveryBottomSheet != null) {
@@ -870,10 +838,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemChanged(getAdapterPosition());
                                         }
                                         //notify Subscription Adapter about the change
-                                        if (onSubscribeItemChange != null) {
+                                       /* if (onSubscribeItemChange != null) {
                                             onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                         }
-
+*/
                                         //do saving call and update the data
                                         EventBus.getDefault().post(new UpdateSavingsEvent());
                                         //fetch orders to update the list
@@ -919,10 +887,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         notifyItemChanged(getAdapterPosition());
 
                                         //notify Subscription Adapter about the change
-                                        if (onSubscribeItemChange != null) {
+                                       /* if (onSubscribeItemChange != null) {
                                             onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                         }
-
+*/
                                         //do saving call and update the data
                                         EventBus.getDefault().post(new UpdateSavingsEvent());
                                         //fetch orders to update the list
