@@ -170,4 +170,12 @@ public class Category extends RealmObject implements Serializable {
     public void setBoxItems(RealmList<BoxItem> boxItems) {
         this.boxItems = boxItems;
     }
+
+    public String getMinititle() {
+        return minititle;
+    }
+
+    public void setMinititle(String minititle) {
+        this.minititle = minititle;
+    }
 }

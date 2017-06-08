@@ -351,13 +351,34 @@ public class SearchDetailItemsFragment extends Fragment {
                     BoxItem cartItem = cartItems.get(pos);
                     boxItem.setQuantity(cartItem.getQuantity());
                     boxItem.setSelectedItemConfig(cartItem.getSelectedItemConfig());
+                    boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                    boxItems.set(i, boxItem);
+                } else {
+                    if (boxItem.getUserItem() != null) {
+                        if (checkForSubscribeItem(boxItem.getUserItem())) {
+                            boxItem.setItemViewType(Constants.VIEW_TYPE_SUBSCRIBE_ITEM);
+                        } else {
+                            boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                        }
+                        boxItems.set(i, boxItem);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < boxItems.size(); i++) {
+                BoxItem boxItem = boxItems.get(i);
+                if (boxItem.getUserItem() != null) {
+                    if (checkForSubscribeItem(boxItem.getUserItem())) {
+                        boxItem.setItemViewType(Constants.VIEW_TYPE_SUBSCRIBE_ITEM);
+                    } else {
+                        boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                    }
                     boxItems.set(i, boxItem);
                 }
             }
-            searchDetailAdapter.setBoxItems(boxItems, subscribeItems);
-        } else {
-            searchDetailAdapter.setBoxItems(boxItems, subscribeItems);
         }
+
+        searchDetailAdapter.setBoxItems(boxItems);
     }
 
     /**
@@ -394,6 +415,17 @@ public class SearchDetailItemsFragment extends Fragment {
                     break;
                 }
             }
+        }
+        return flag;
+    }
+
+    /**
+     * Check For Subscribe Item
+     */
+    public boolean checkForSubscribeItem(UserItem userItem) {
+        boolean flag = false;
+        if (userItem.isSubscribeItemAvailable()) {
+            flag = true;
         }
         return flag;
     }

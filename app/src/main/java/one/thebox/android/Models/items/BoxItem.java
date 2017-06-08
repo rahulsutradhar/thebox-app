@@ -203,6 +203,12 @@ public class BoxItem extends RealmObject implements Serializable {
     @Ignore
     private boolean showCategorySuggestion = false;
 
+    /**
+     * Used to determine the view of the card
+     */
+    @Ignore
+    private int itemViewType;
+
     /************************************************
      * Helper Methods
      ************************************************/
@@ -367,5 +373,21 @@ public class BoxItem extends RealmObject implements Serializable {
 
     public void setShowCategorySuggestion(boolean showCategorySuggestion) {
         this.showCategorySuggestion = showCategorySuggestion;
+    }
+
+    public UserItem getUserItem() {
+        return userItem;
+    }
+
+    public void setUserItem(UserItem userItem) {
+        this.userItem = userItem;
+    }
+
+    public int getItemViewType() {
+        return itemViewType;
+    }
+
+    public void setItemViewType(int itemViewType) {
+        this.itemViewType = itemViewType;
     }
 }

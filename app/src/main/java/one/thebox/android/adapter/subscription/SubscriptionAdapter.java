@@ -200,7 +200,7 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
 
                     this.subscribeItemAdapter = new SubscribeItemAdapter(mContext, glideRequestManager);
                     this.subscribeItemAdapter.setSubscribeItems(subscription.getSubscribeItems());
-                    this.subscribeItemAdapter.addOnSubscribeItemChangeListener(new SearchDetailAdapter.OnSubscribeItemChange() {
+                    this.subscribeItemAdapter.addOnSubscribeItemChangeListener(new SubscribeItemAdapter.OnSubscribeItemChange() {
                         @Override
                         public void onSubscribeItem(List<SubscribeItem> subscribeItems) {
                             subscriptions.get(position).setSubscribeItems(subscribeItems);

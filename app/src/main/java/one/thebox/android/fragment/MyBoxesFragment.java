@@ -33,6 +33,7 @@ import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
+import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.UserItem;
@@ -394,7 +395,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -433,6 +433,22 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                             fetchSavings();
                         }
                     }
+                }
+            });
+        }
+
+    }
+
+    /**
+     * Called from Updating Subscription Item
+     */
+    @Subscribe
+    public void onUpdateSubscribeItemEvent(UpdateSubscribeItemEvent updateSubscribeItemEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    fetchSubscription(false);
                 }
             });
         }

@@ -57,7 +57,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
     /**
      * Interface
      */
-    private SearchDetailAdapter.OnSubscribeItemChange onSubscribeItemChange;
+    private SubscribeItemAdapter.OnSubscribeItemChange onSubscribeItemChange;
 
     /**
      * User Subscribed Item
@@ -84,7 +84,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
      *
      * @param onSubscribeItemChange
      */
-    public void addOnSubscribeItemChangeListener(SearchDetailAdapter.OnSubscribeItemChange onSubscribeItemChange) {
+    public void addOnSubscribeItemChangeListener(SubscribeItemAdapter.OnSubscribeItemChange onSubscribeItemChange) {
         this.onSubscribeItemChange = onSubscribeItemChange;
     }
 

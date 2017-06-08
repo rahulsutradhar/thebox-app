@@ -152,5 +152,18 @@ public class Constants {
      */
     public final static String EXTRA_ITEM_CONFIG_LIST = "extra_item_config_array_list";
 
+    /**
+     * Search Detail Adapter
+     * <p>
+     * COnstant Value for View Type
+     */
+    public static final int VIEW_TYPE_SEARCH_ITEM = 0;
+    public static final int VIEW_TYPE_SUBSCRIBE_ITEM = 1;
+
+    /**
+     * SUBSCRIPTION UPDATED
+     */
+    public final static String SUBSCRIPTION_UPDATED = "subscription_updated";
+
 
 }
