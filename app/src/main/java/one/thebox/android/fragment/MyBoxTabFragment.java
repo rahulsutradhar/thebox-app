@@ -1,33 +1,26 @@
 package one.thebox.android.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
-import one.thebox.android.Models.SearchResult;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.viewpager.ViewPagerAdapterHome;
-import one.thebox.android.util.CoreGsonUtils;
 import pl.droidsonroids.gif.GifImageView;
 
 /**

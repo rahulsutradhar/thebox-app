@@ -1,49 +1,28 @@
 package one.thebox.android.api.Responses;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.Category;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.api.ApiResponse;
 
 /**
  * Created by Ajeet Kumar Meena on 21-04-2016.
  */
 public class SearchAutoCompleteResponse extends ApiResponse implements Serializable {
-    private List<String> items;
-    private List<Category> categories;
 
-    public SearchAutoCompleteResponse(List<String> items, List<Category> categories) {
-        this.items = items;
-        this.categories = categories;
+    @SerializedName("category")
+    private ArrayList<SearchResult> searchResults;
+
+    public ArrayList<SearchResult> getSearchResults() {
+        return searchResults;
     }
 
-    public List<String> getItems() {
-        try {
-            if (this.items == null || this.items.size() == 0) {
-                items = new ArrayList<>();
-                /*for (Category cat : categories) {
-                    if (cat.getItems() != null) {
-                        items.addAll(cat.getItems());
-                    }
-                }*/
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return items;
-    }
-
-    public void setItems(List<String> items) {
-        this.items = items;
-    }
-
-    public List<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
+    public void setSearchResults(ArrayList<SearchResult> searchResults) {
+        this.searchResults = searchResults;
     }
 }

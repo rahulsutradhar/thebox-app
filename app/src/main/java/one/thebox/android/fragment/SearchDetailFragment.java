@@ -24,6 +24,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,9 +33,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.ShowTabTutorialEvent;
@@ -43,11 +41,10 @@ import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.Category;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.SearchResult;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
-import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
@@ -71,38 +68,25 @@ import retrofit2.Response;
  */
 public class SearchDetailFragment extends BaseFragment implements AppBarObserver.OnOffsetChangeListener {
 
-    public static final String EXTRA_MY_BOX_CATEGORIES_ID = "my_box_category_click_event";
-    public static final String EXTRA_MY_BOX_USER_CATEGORIES_ID = "my_box_user_category_click_event";
-    public static final String EXTRA_CLICK_POSITION = "extra_click_position";
     public static final String BOX_NAME = "box_name";
-    public static final String EXTRA_CLICKED_CATEGORY_ID = "extra_clicked_category";
-    public static final String TRIGERED_FROM = "trigered_from";
-    private static final String EXTRA_QUERY = "extra_query";
     private static final String EXTRA_CAT_ID = "extra_cat_id";
-    private static final String EXTRA_EXPLORE_ITEM = "extra_explore_item";
     public static final String EXTRA_NUMBER_OF_TABS = "extra_number_of_tabs";
     public static final String BROADCAST_EVENT_TAB = "broadcast_event_tab";
     private String boxName;
-    private String query;
-    private int catId;
     private View rootView;
     private LinearLayout linearLayoutHolder;
     private GifImageView progressBar;
-    private FloatingActionButton floatingActionButton;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private ArrayList<UserItem> userItems = new ArrayList<>();
-    private ArrayList<BoxItem> boxItems = new ArrayList<>();
-    private ExploreItem exploreItem;
-    private ArrayList<Integer> catIds = new ArrayList<>();
-    private ArrayList<Integer> user_catIds = new ArrayList<>();
 
     private ArrayList<Category> categories = new ArrayList<>();
     private String categoryUid;
     private String boxUuid;
+    private String searchQuery = "";
+    private SearchResult searchResult;
 
 
-    private int clickPosition, clickedCategoryId;
+    private int clickPosition;
     private TextView noResultFound, itemsInCart, savings;
     //    private FrameLayout fabHolder;
     private CardView specialCardView;
@@ -169,34 +153,17 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         return searchDetailFragment;
     }
 
-
     /**
-     * OLD
+     * Called When you Do Search
+     *
+     * @param searchResult
+     * @param searchQuery
+     * @return
      */
-    public static SearchDetailFragment getInstance(ArrayList<Integer> catIds, ArrayList<Integer> user_catIds, int clickPosition, String boxName, int clickedCategoryId) {
+    public static SearchDetailFragment getInstance(SearchResult searchResult, String searchQuery) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_CLICK_POSITION, clickPosition);
-        bundle.putString(EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(catIds));
-        bundle.putString(EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(user_catIds));
-        bundle.putString(BOX_NAME, boxName);
-        bundle.putInt(EXTRA_CLICKED_CATEGORY_ID, clickedCategoryId);
-        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
-        searchDetailFragment.setArguments(bundle);
-        return searchDetailFragment;
-    }
-
-    public static SearchDetailFragment getInstance(SearchResult searchResult) {
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_QUERY, searchResult.getResult());
-        bundle.putInt(EXTRA_CAT_ID, searchResult.getId());
-        SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
-        searchDetailFragment.setArguments(bundle);
-        return searchDetailFragment;
-    }
-
-    public static SearchDetailFragment getInstance(ExploreItem exploreItem) {
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_EXPLORE_ITEM, CoreGsonUtils.toJson(exploreItem));
+        bundle.putString(Constants.EXTRA_SEARCH_QUERY, searchQuery);
+        bundle.putString(Constants.EXTRA_SEARCH_RESULT, CoreGsonUtils.toJson(searchResult));
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
         return searchDetailFragment;
@@ -222,20 +189,14 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             categoryUid = getArguments().getString(Constants.EXTRA_CLICKED_CATEGORY_UID);
             boxName = getArguments().getString(Constants.EXTRA_BOX_NAME);
             boxUuid = getArguments().getString(Constants.EXTRA_BOX_UUID);
+            searchQuery = getArguments().getString(Constants.EXTRA_SEARCH_QUERY);
+            searchResult = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_SEARCH_RESULT), SearchResult.class);
 
-
-            //old
-            query = getArguments().getString(EXTRA_QUERY);
-            catId = getArguments().getInt(EXTRA_CAT_ID);
-            exploreItem = CoreGsonUtils.fromJson(getArguments().getString(EXTRA_EXPLORE_ITEM), ExploreItem.class);
-            catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);//Null Pointer Here
-            user_catIds = CoreGsonUtils.fromJsontoArrayList(getArguments().getString(EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);//Null Pointer Here
-
-            clickedCategoryId = getArguments().getInt(EXTRA_CLICKED_CATEGORY_ID);
-            if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-                //setCategories();
+            if (searchResult != null) {
+                boxUuid = searchResult.getBoxUuid();
+                categoryUid = searchResult.getCategoryUuid();
+                boxName = searchResult.getBoxTitle();
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -243,19 +204,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
 
-    private View.OnClickListener fabClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
-        }
-    };
-
     private void initViews() {
         linearLayoutHolder = (LinearLayout) rootView.findViewById(R.id.holder);
         progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        onTabEvent(new TabEvent(CartHelper.getCartSize()));
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -282,32 +236,16 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         // Inflate the layout for this fragment
         initVariables();
 
-        if (!boxName.isEmpty()) {
-            setToolbarTitle();
+        if (boxName != null) {
+            if (!boxName.isEmpty()) {
+                setToolbarTitle();
+            }
         }
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_search_detail, container, false);
             initViews();
             setupAppBarObserver();
             checkAndDecideNavigation();
-
-
-            /*if ((!catIds.isEmpty()) || (!user_catIds.isEmpty())) {
-                setupViewPagerAndTabsForBoxCategory();
-            } else {
-                if (exploreItem == null) {
-                    if (catId == 0) {
-                        source = 0;
-                        getSearchDetails();
-                    } else {
-                        source = 1;
-                         getCategoryDetail();
-                    }
-                } else {
-                    source = 2;
-                      getExploreDetails();
-                }
-            }*/
         }
         return rootView;
     }
@@ -320,11 +258,13 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             //when category list is passed
             setupViewPagerAndTabsForBoxCategory();
         } else {
+
             /**
              * when you have box UUID is passed
              * Request Serve and fetch All Categories
              */
             getCategoriesForBoxUuid();
+
         }
 
     }
@@ -341,7 +281,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             progressBar.setVisibility(View.GONE);
             final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
             for (int i = 0; i < categories.size(); i++) {
-                Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), categories, i);
+                Fragment fragment = SearchDetailItemsFragment.getInstance(categories.get(i), categories, i, searchQuery);
                 adapter.addFragment(fragment, categories.get(i));
             }
             viewPager.setAdapter(adapter);
@@ -383,7 +323,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 @Override
                 public void onPageSelected(int position) {
                     POSITION_OF_VIEW_PAGER = position;
-                    ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), position);
                 }
 
                 @Override
@@ -420,8 +359,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                                 if (response.body() != null) {
                                     categories.clear();
                                     categories.addAll(response.body().getCategories());
-                                    //set the view pager and tab
-                                    setupViewPagerAndTabsForBoxCategory();
+                                    //check for category UUID
+                                    checkSearchedCategory();
                                 }
                             }
 
@@ -438,270 +377,26 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 });
     }
 
-
-    private void setupViewPagerAndTabs() {
-        if (getActivity() == null) {
-            return;
-        }
-
-        if (title != null) {
-            ((MainActivity) getActivity()).getToolbar().setTitle(title);
-        } else {
-            ((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
-        }
-
-        final ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(SearchDetailItemsFragment.getInstance(getActivity(), userItems, boxItems, 0), categories.get(0));
-        for (int i = 1; i < categories.size(); i++) {
-            adapter.addFragment(SearchDetailItemsFragment.getInstance(new SearchResult(categories.get(i).getId(), categories.get(i).getTitle()), i), categories.get(i));
-        }
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
-        int length = tabLayout.getTabCount();
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), true));
-                try {
-                    Field field = tab.getClass().getField("mView");
-                    field.setAccessible(true);
-                    View view = null;
-                    view = (View) field.get(view);
-                    final View finalView = view;
-                    view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                        }
-                    });
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                tab.setCustomView(adapter.getTabView(tab.getCustomView(), tab.getPosition(), false));
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        for (int i = 0; i < length; i++) {
-            if (i == 0) {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
-            } else {
-                tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
-            }
-        }
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (exploreItem != null) {
-                    exploreItem.setDefaultPositionOfViewPager(position);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        if (exploreItem != null) {
-            viewPager.setCurrentItem(exploreItem.getDefaultPositionOfViewPager());
-        }
-    }
-
-    public void getSearchDetails() {
-        linearLayoutHolder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        connectionErrorViewHelper.isVisible(false);
-
-        TheBox.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
-                .enqueue(new Callback<SearchDetailResponse>() {
-                    @Override
-                    public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-
-                        if (response.body() != null) {
-                            boxName = response.body().getBoxName();
-
-                            setBoxItemBasedOnSearch(response.body());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<SearchDetailResponse> call, Throwable t) {
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
-                    }
-                });
-    }
-
-    public void setBoxItemBasedOnSearch(SearchDetailResponse response) {
-        try {
-            /**
-             * Display the searched Item first
-             */
-            //searched Item if User Item
-            setUserItems(response.getMySearchItem());
-
-            //search Item if Box Item
-            if (response.getSearchedItem().getId() != 0) {
-                boxItems.add(response.getSearchedItem());
-            }
-
-            //set Subscribed item
-            for (UserItem item : response.getMyNonSearchedItems()) {
-                setUserItems(item);
-            }
-
-            //normal items
-            boxItems.addAll(response.getNormalItems());
-
-            categories.add(response.getSearchedCategory());
-            categories.addAll(response.getRestCategories());
-
-            setupViewPagerAndTabs();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     /**
-     * If Cart Item add it to boxItems
-     * else add it to user items
+     * Check Category UUID Searched for and then Display
      */
-    public void setUserItems(UserItem userItem) {
-
-        try {
-            if (userItem != null) {
-                if (userItem.getId() != 0) {
-                    //subscribed Item
-                    if (!TextUtils.isEmpty(userItem.getNextDeliveryScheduledAt())) {
-                        userItems.add(userItem);
-                    }//cart items
-                    else if (userItem.getStillSubscribed()) {
-
-                        BoxItem boxItem = userItem.getBoxItem();
-                        boxItem.setUserItemId(userItem.getId());
-                        boxItem.setQuantity(userItem.getQuantity());
-                        boxItem.setSelectedItemConfig(boxItem.getItemConfigById(userItem.getSelectedConfigId()));
-                        boxItem.setSavingsTitle(userItem.getSelectedItemConfigSavingsTitle());
-
-                        boxItems.add(boxItem);
-                    }
+    public void checkSearchedCategory() {
+        if (!categoryUid.isEmpty()) {
+            int index = 0;
+            //search catgory in the list and find the position
+            for (Category category : categories) {
+                if (category.getUuid().equalsIgnoreCase(categoryUid)) {
+                    clickPosition = index;
+                    break;
                 }
+                index++;
             }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void getCategoryDetail() {
-        linearLayoutHolder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        connectionErrorViewHelper.isVisible(false);
-
-        TheBox.getAPIService().getCategoryBoxItems(PrefUtils.getToken(getActivity()), catId)
-                .enqueue(new Callback<CategoryBoxItemsResponse>() {
-                    @Override
-                    public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(false);
-
-                        if (response.body() != null) {
-                            boxName = response.body().getBoxName();
-                            title = response.body().getBoxName();
-
-                            for (UserItem item : response.body().getMyBoxItems()) {
-                                setUserItems(item);
-                            }
-                            boxItems.addAll(response.body().getNormalBoxItems());
-
-                            categories.add(response.body().getSelectedCategory());
-                            categories.addAll(response.body().getRestCategories());
-                            setupViewPagerAndTabs();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
-                    }
-                });
-    }
-
-    public void getExploreDetails() {
-        connectionErrorViewHelper.isVisible(false);
-        title = exploreItem.getTitle();
-        TheBox.getAPIService().getExploreBox(PrefUtils.getToken(getActivity()), exploreItem.getId())
-                .enqueue(new Callback<ExploreBoxResponse>() {
-                    @Override
-                    public void onResponse(Call<ExploreBoxResponse> call, Response<ExploreBoxResponse> response) {
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(false);
-                        if (response.body() != null) {
-
-                            for (UserItem item : response.body().getMyItems()) {
-                                setUserItems(item);
-                            }
-                            boxItems.addAll(response.body().getNormalItems());
-
-                            categories.add(response.body().getSelectedCategory());
-                            categories.addAll(response.body().getRestCategories());
-                            setupViewPagerAndTabs();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ExploreBoxResponse> call, Throwable t) {
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(false);
-                    }
-                });
-    }
-
-    @Subscribe
-    public void OnCategorySelectEvent(OnCategorySelectEvent onCategorySelectEvent) {
-        int tabPosition = getTabPosition(onCategorySelectEvent.getCategory());
-        if (tabPosition != -1) {
-            viewPager.setCurrentItem(tabPosition);
+            //set the view pager and tab
+            setupViewPagerAndTabsForBoxCategory();
         } else {
-            startActivity(new Intent(getActivity(), MainActivity.class)
-                    .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
-                    .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(
-                            new SearchResult(onCategorySelectEvent.getCategory().getId(), onCategorySelectEvent.getCategory().getTitle()))));
+            //set the view pager and tab
+            setupViewPagerAndTabsForBoxCategory();
         }
-    }
-
-    public int getTabPosition(Category category) {
-        for (int i = 0; i < categories.size(); i++) {
-            if (category.equals(categories.get(i))) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     @Override
@@ -719,7 +414,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Override
     public void onResume() {
         super.onResume();
-        //((MainActivity) getActivity()).getToolbar().setSubtitle(boxName);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
@@ -775,42 +469,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     }
 
     @Subscribe
-    public void OnShowTabTutorialEvent(ShowTabTutorialEvent showTabTutorialEvent) {
-        moveViewPager(clickPosition);
-        if (!RestClient.is_in_development) {
-            new ShowcaseHelper(getActivity(), 4).show("Categories", "Swipe right or left to browse categories. Tap to select", tabLayout)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-//                            new ShowcaseHelper(getActivity(), 5).show("Cart", "All added items in your current session are here in the cart", fabHolder).setShouldBeOnMiddle(true);
-                            tabLayout.setScrollPosition(clickPosition, 0, true);
-                            shouldMoveMore = false;
-                        }
-                    });
-        }
-    }
-
-    @Subscribe
     public void showSpecialCard() {
 
-    }
-
-    private boolean shouldMoveMore = true;
-
-    public void moveViewPager(final int position) {
-        if (shouldMoveMore) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    viewPager.setCurrentItem(position);
-                    if (position >= 1) {
-                        moveViewPager(position - 1);
-                    } else {
-                        moveViewPager(position + 1);
-                    }
-                }
-            }, 1000);
-        }
     }
 
     public void onTabEvent(TabEvent tabEvent) {

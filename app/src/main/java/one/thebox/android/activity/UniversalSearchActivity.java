@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import one.thebox.android.Events.SearchEvent;
-import one.thebox.android.Models.SearchResult;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 
 import one.thebox.android.ViewHelper.ShowcaseHelper;
@@ -67,7 +68,6 @@ public class UniversalSearchActivity extends Activity {
     private Call<SearchAutoCompleteResponse> call;
     private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
-    private int tempScroll;
     @BindView(R.id.progress_bar)
     GifImageView progressBar;
 
@@ -79,9 +79,19 @@ public class UniversalSearchActivity extends Activity {
             progressBar.setVisibility(View.GONE);
             progress_bar_text.setVisibility(View.GONE);
             callHasBeenCompleted = true;
-            if (response.body() != null) {
-                onSearchEvent(new SearchEvent(query, response.body()));
+            try {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        onSearchEvent(new SearchEvent(query, response.body().getSearchResults()));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                progressBar.setVisibility(View.GONE);
+                progress_bar_text.setVisibility(View.GONE);
+                callHasBeenCompleted = true;
             }
+
         }
 
         @Override
@@ -129,7 +139,6 @@ public class UniversalSearchActivity extends Activity {
             @Override
             public void afterTextChanged(Editable s) {
                 query = s.toString();
-//                attachSearchResultFragment();
                 if (s.length() > 0) {
                     imgSearchCancel.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
@@ -162,19 +171,6 @@ public class UniversalSearchActivity extends Activity {
             }
         });
 
-
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "search_bar_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowcaseHelper(this, 0)
-                    .show("Search", "Search for an item, brand or category", headerSearch)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-                            PrefUtils.putBoolean(TheBox.getInstance(), "search_bar_tutorial", false);
-                        }
-                    });
-
-
-        }
     }
 
 
@@ -214,7 +210,7 @@ public class UniversalSearchActivity extends Activity {
 
     public void onSearchEvent(SearchEvent searchEvent) {
         searchResults.clear();
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
+        /*for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
             String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
             int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
             SearchResult searchResult = new SearchResult(categoryId, categoryName);
@@ -224,16 +220,30 @@ public class UniversalSearchActivity extends Activity {
             String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
             SearchResult searchResult = new SearchResult(itemName);
             searchResults.add(searchResult);
-        }
-        if (searchResults.size() == 0) {
+        }*/
+
+        if (searchEvent.getSearchResults() != null) {
+            if (searchEvent.getSearchResults().size() > 0) {
+                searchResults = searchEvent.getSearchResults();
+                //results available
+                llNoResult.setVisibility(View.GONE);
+                searchRecyclerView.setVisibility(View.VISIBLE);
+                if (searchAutoCompleteAdapter != null) {
+                    searchAutoCompleteAdapter.setSearchResults(searchResults);
+                    searchAutoCompleteAdapter.setSearchQuery(query);
+                    searchRecyclerView.setAdapter(searchAutoCompleteAdapter);
+                }
+            } else {
+                //empty state
+                llNoResult.setVisibility(View.VISIBLE);
+                searchRecyclerView.setVisibility(View.GONE);
+            }
+        } else {
+            //empty state
             llNoResult.setVisibility(View.VISIBLE);
             searchRecyclerView.setVisibility(View.GONE);
-        } else {
-            llNoResult.setVisibility(View.GONE);
-            searchRecyclerView.setVisibility(View.VISIBLE);
         }
-        searchAutoCompleteAdapter.setSearchResults(searchResults);
-        searchRecyclerView.setAdapter(searchAutoCompleteAdapter);
+
     }
 
 

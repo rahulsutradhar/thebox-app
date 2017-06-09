@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +21,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import one.thebox.android.Events.SearchEvent;
-import one.thebox.android.Models.SearchResult;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
@@ -37,7 +35,7 @@ public class AutoCompleteFragment extends Fragment {
     private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
     private TextView noItemFoundTextView;
-    private int tempScroll;
+    private String query;
 
     public AutoCompleteFragment() {
     }
@@ -52,7 +50,6 @@ public class AutoCompleteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        ((MainActivity) getActivity()).getToolbar().setTitle("Search");
         rootView = inflater.inflate(R.layout.fragment_all_items, container, false);
         initViews();
         setupRecyclerView();
@@ -84,7 +81,7 @@ public class AutoCompleteFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     if (searchAutoCompleteAdapter.getSearchResults().size() != 0)
-                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0));
+                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0), query);
                     return true;
                 }
                 return false;
@@ -92,12 +89,16 @@ public class AutoCompleteFragment extends Fragment {
         });
     }
 
+    /**
+     * Called from Main Activity; Which passed search result for API call
+     *
+     * @param searchEvent
+     */
     @Subscribe
     public void onSearchEvent(SearchEvent searchEvent) {
         try {
 
-            searchResults.clear();
-            if (searchEvent.getSearchAutoCompleteResponse().getCategories() != null) {
+           /* if (searchEvent.getSearchAutoCompleteResponse().getCategories() != null) {
                 for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
                     String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
                     int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
@@ -113,16 +114,33 @@ public class AutoCompleteFragment extends Fragment {
                     searchResults.add(searchResult);
                 }
             }
-            
-            if (searchResults.size() == 0) {
+
+*/
+            searchResults.clear();
+            query = searchEvent.getQuery();
+            if (searchEvent.getSearchResults() != null) {
+                if (searchEvent.getSearchResults().size() > 0) {
+
+                    searchResults = searchEvent.getSearchResults();
+                    //results is available; display results
+                    noItemFoundTextView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+
+                    if (searchAutoCompleteAdapter != null) {
+                        searchAutoCompleteAdapter.setSearchResults(searchResults);
+                        searchAutoCompleteAdapter.setSearchQuery(searchEvent.getQuery());
+                        recyclerView.setAdapter(searchAutoCompleteAdapter);
+                    }
+                } else {
+                    //no item found
+                    noItemFoundTextView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                }
+            } else {
+                //no item found
                 noItemFoundTextView.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
-            } else {
-                noItemFoundTextView.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
             }
-            searchAutoCompleteAdapter.setSearchResults(searchResults);
-            recyclerView.setAdapter(searchAutoCompleteAdapter);
 
         } catch (Exception e) {
             e.printStackTrace();

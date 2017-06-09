@@ -1,46 +1,56 @@
-package one.thebox.android.Models;
+package one.thebox.android.Models.search;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 
 /**
  * Created by Ajeet Kumar Meena on 13-04-2016.
+ * <p>
+ * Modified by Developers on 9/06/2017.
  */
-public class SearchResult {
-    private int id;
-    private String result;
+public class SearchResult implements Serializable {
 
-    public SearchResult(String result) {
-        this.result = result;
+    @SerializedName("category_uuid")
+    private String categoryUuid;
+
+    @SerializedName("box_uuid")
+    private String boxUuid;
+
+    @SerializedName("box_title")
+    private String boxTitle;
+
+    private String title;
+
+    public String getCategoryUuid() {
+        return categoryUuid;
     }
 
-    public SearchResult(int id, String result) {
-        this.id = id;
-        this.result = result;
+    public void setCategoryUuid(String categoryUuid) {
+        this.categoryUuid = categoryUuid;
     }
 
-    public String getResult() {
-        return result;
+    public String getBoxUuid() {
+        return boxUuid;
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setBoxUuid(String boxUuid) {
+        this.boxUuid = boxUuid;
     }
 
-    public static class SearchSuggestion {
-        private boolean isSelected;
-
-        public boolean isSelected() {
-            return isSelected;
-        }
-
-        public void setSelected(boolean selected) {
-            isSelected = selected;
-        }
+    public String getTitle() {
+        return title;
     }
 
-    public int getId() {
-        return id;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getBoxTitle() {
+        return boxTitle;
+    }
+
+    public void setBoxTitle(String boxTitle) {
+        this.boxTitle = boxTitle;
     }
 }
