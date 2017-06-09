@@ -1,4 +1,4 @@
-package one.thebox.android.Models;
+package one.thebox.android.Models.cart;
 
 import com.google.gson.annotations.SerializedName;
 

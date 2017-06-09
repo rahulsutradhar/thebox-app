@@ -47,10 +47,10 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Box;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.SearchResult;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.search.SearchResult;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
@@ -123,8 +123,12 @@ public class MainActivity extends BaseActivity implements
             callHasBeenCompleted = true;
             try {
                 if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        EventBus.getDefault().post(new SearchEvent(query, response.body()));
+                    if (response.body().isStatus()) {
+                        if (response.body() != null) {
+                            EventBus.getDefault().post(new SearchEvent(query, response.body().getSearchResults()));
+                        }
+                    } else {
+                        //SHow an error message
                     }
                 } else {
                     //handle error
@@ -164,8 +168,16 @@ public class MainActivity extends BaseActivity implements
         initViews();
         setupNavigationDrawer();
 
-        //synced memory with cart
-        ProductQuantity.syncedWithCart(CartHelper.getCart(), this);
+        if (setting.getCartItems() != null) {
+            //update Cart
+            CartHelper.updateCart(setting.getParsedCartItems());
+            //synced memory with cart
+            ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
+
+            setCartOnToolBar();
+        } else {
+            setCartOnToolBar();
+        }
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
@@ -189,7 +201,6 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
         //Preference to load Subscription when user open the app
@@ -246,7 +257,7 @@ public class MainActivity extends BaseActivity implements
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems;
         if (numberOfItemIncart == -1) {
-            numberOfItems = CartHelper.getCartSize();
+            numberOfItems = ProductQuantity.getCartSize();
         } else {
             numberOfItems = numberOfItemIncart;
         }
@@ -331,6 +342,10 @@ public class MainActivity extends BaseActivity implements
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
         searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
+
+        /**
+         * Search Text Change Listener
+         */
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -580,7 +595,10 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    public void attachSearchDetailFragment(SearchResult query) {
+    /**
+     * Called from Search
+     */
+    public void attachSearchDetailFragment(SearchResult searchResult) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
@@ -596,7 +614,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -752,9 +770,8 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 4: {
-                attachSearchDetailFragment
-                        (CoreGsonUtils.fromJson
-                                (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), SearchResult.class));
+                //Search Results
+                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
                 break;
             }
             case 5: {

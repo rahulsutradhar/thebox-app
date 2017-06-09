@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.app.TheBox;
 
 /**

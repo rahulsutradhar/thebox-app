@@ -129,6 +129,7 @@ public class OrderItemsActivity extends BaseActivity {
             payTextView.setText("Payment Complete");
             payTextView.setBackgroundColor(Color.LTGRAY);
             payTextView.setClickable(false);
+            payTextView.setEnabled(false);
         } else {
             payTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + order.getAmountToPay());
             payTextView.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +139,7 @@ public class OrderItemsActivity extends BaseActivity {
                 }
             });
             payTextView.setClickable(true);
+            payTextView.setEnabled(true);
         }
     }
 

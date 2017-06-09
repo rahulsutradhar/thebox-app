@@ -14,6 +14,7 @@ import io.realm.RealmResults;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.timeslot.Slot;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;

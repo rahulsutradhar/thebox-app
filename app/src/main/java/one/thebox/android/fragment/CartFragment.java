@@ -20,14 +20,12 @@ import com.bumptech.glide.RequestManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.RealmList;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.order.Order;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;

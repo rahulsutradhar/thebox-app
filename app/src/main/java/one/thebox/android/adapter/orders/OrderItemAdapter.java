@@ -12,7 +12,7 @@ import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.Models.order.OrderItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;

@@ -3,13 +3,10 @@ package one.thebox.android.Models.user;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import one.thebox.android.Models.BaseAdapterModel;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.app.AppConstants;
 
 public class BoxData extends RealmObject implements AppConstants.viewTypeInterface {

@@ -3,7 +3,7 @@ package one.thebox.android.api.Responses.boxes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.api.ApiResponse;
 
 /**

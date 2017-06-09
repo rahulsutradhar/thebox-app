@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.User;
-
 /**
  * Created by 32 on 25-04-2016.
  */

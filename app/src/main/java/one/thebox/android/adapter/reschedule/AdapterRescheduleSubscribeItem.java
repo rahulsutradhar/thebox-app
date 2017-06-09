@@ -4,12 +4,11 @@ import android.content.Context;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.R;

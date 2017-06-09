@@ -2,7 +2,7 @@ package one.thebox.android.api.Responses.category;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.api.ApiResponse;
 
 /**

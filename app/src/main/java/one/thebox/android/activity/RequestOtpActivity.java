@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.lang.annotation.Annotation;
 
 import okhttp3.ResponseBody;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;

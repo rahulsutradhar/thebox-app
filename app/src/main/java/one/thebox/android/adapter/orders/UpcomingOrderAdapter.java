@@ -192,14 +192,16 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
                 if (order.isPaymentComplete()) {
                     amountTobePaidTextView.setClickable(false);
+                    amountTobePaidTextView.setEnabled(false);
                     message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
                     amountTobePaidTextView.setBackgroundColor(Color.WHITE);
                 } else {
                     amountTobePaidTextView.setClickable(true);
+                    amountTobePaidTextView.setEnabled(true);
                     if (order.isCod() && !order.isPaid()) {
                         message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
                     } else {
-                        message.setTextColor(mContext.getResources().getColor(R.color.secondary_text_color));
+                        message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
                     }
                 }
                 amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {

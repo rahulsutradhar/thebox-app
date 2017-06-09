@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Cart;
+import one.thebox.android.Models.cart.Cart;
 
 /**
  * Created by developers on 06/06/17.

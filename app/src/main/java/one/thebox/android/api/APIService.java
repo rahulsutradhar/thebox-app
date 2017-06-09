@@ -174,7 +174,8 @@ public interface APIService {
      * Get all items for the category
      */
     @GET("/consumer/api/v1/categories")
-    Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken, @Query("uuid") String uuid);
+    Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken,
+                                                  @Query("uuid") String uuid, @Query("query") String searchQuery);
 
     /**
      * Get All Category for Box UUID
@@ -259,7 +260,7 @@ public interface APIService {
      */
     @POST("consumer/api/v1/subscriptions/{subscribe_item_uuid}/itemconfig")
     Call<UpdateItemConfigSubscribeItemResponse> updateItemConfigSubscribeItem(@Header("Authorization") String accessToken,
-                                                                              @Path("subscribe_item_uuid") String subscribeItemUuid,@Body UpdateItemConfigSubscribeItemRequest updateItemConfigSubscribeItemRequest);
+                                                                              @Path("subscribe_item_uuid") String subscribeItemUuid, @Body UpdateItemConfigSubscribeItemRequest updateItemConfigSubscribeItemRequest);
 
     /**
      * Savings on Subscribe Item
@@ -317,6 +318,14 @@ public interface APIService {
 
 
     /**
+     * Search Products
+     */
+    @GET("/consumer/api/v1/categories/autocomplete")
+    Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("Authorization") String accessToken,
+                                                        @Query("q") String query);
+
+
+    /**
      * Refator
      */
 
@@ -351,10 +360,6 @@ public interface APIService {
    /* @GET("/users/setting")
     Call<SettingsResponse> getSettings(@Header("authtoken") String authToken, @Query("app_version") String appVersion);
 */
-
-    @GET("/autocomplete")
-    Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("authtoken") String authToken,
-                                                        @Query("query") String query);
 
     @GET("/get_all_boxes")
     Call<ExploreItemResponse> getAllExploreBoxes(@Header("authtoken") String authToken);
@@ -450,7 +455,6 @@ public interface APIService {
 
     @POST("merge_cartitems_with_order_payment_online")
     Call<PaymentResponse> merge_cart_items_to_order_payment_online(@Header("authtoken") String authToken, @Body OnlinePaymentRequest mergeCartToOrderRequestBody);
-
 
 
     /**

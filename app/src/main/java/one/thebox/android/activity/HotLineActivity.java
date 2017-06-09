@@ -11,7 +11,7 @@ import com.freshdesk.hotline.HotlineUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.util.PrefUtils;
 

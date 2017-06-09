@@ -1,9 +1,8 @@
-package one.thebox.android.Models;
+package one.thebox.android.Models.user;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

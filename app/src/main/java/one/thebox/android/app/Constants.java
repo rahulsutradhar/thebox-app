@@ -165,5 +165,21 @@ public class Constants {
      */
     public final static String SUBSCRIPTION_UPDATED = "subscription_updated";
 
+    /**
+     * Pass Search Result Data
+     */
+    public final static String EXTRA_SEARCH_RESULT_DATA = "extra_search_result_data";
+
+    /**
+     * Pass Search Result Data
+     */
+    public final static String EXTRA_SEARCH_RESULT = "extra_search_result";
+
+
+    /**
+     * Pass Search Query
+     */
+    public final static String EXTRA_SEARCH_QUERY = "extra_search_query";
+
 
 }
