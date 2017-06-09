@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.Subscription;
+import one.thebox.android.Models.items.Subscription;
 
 /**
  * Created by nbansal2211 on 17/12/16.

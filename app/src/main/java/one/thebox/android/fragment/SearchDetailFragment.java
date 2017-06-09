@@ -7,20 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,31 +26,22 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Events.ShowSpecialCardEvent;
-import one.thebox.android.Events.ShowTabTutorialEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.search.SearchResult;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.api.RequestBodies.SearchDetailResponse;
-import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
-import one.thebox.android.api.Responses.ExploreBoxResponse;
 import one.thebox.android.api.Responses.boxes.BoxCategoryResponse;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
@@ -82,8 +70,8 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     private ArrayList<Category> categories = new ArrayList<>();
     private String categoryUid;
     private String boxUuid;
-    private String searchQuery = "";
     private SearchResult searchResult;
+    private String searchQuery = "";
 
 
     private int clickPosition;
@@ -157,12 +145,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
      * Called When you Do Search
      *
      * @param searchResult
-     * @param searchQuery
      * @return
      */
-    public static SearchDetailFragment getInstance(SearchResult searchResult, String searchQuery) {
+    public static SearchDetailFragment getInstance(SearchResult searchResult) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.EXTRA_SEARCH_QUERY, searchQuery);
         bundle.putString(Constants.EXTRA_SEARCH_RESULT, CoreGsonUtils.toJson(searchResult));
         SearchDetailFragment searchDetailFragment = new SearchDetailFragment();
         searchDetailFragment.setArguments(bundle);
@@ -189,12 +175,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             categoryUid = getArguments().getString(Constants.EXTRA_CLICKED_CATEGORY_UID);
             boxName = getArguments().getString(Constants.EXTRA_BOX_NAME);
             boxUuid = getArguments().getString(Constants.EXTRA_BOX_UUID);
-            searchQuery = getArguments().getString(Constants.EXTRA_SEARCH_QUERY);
             searchResult = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_SEARCH_RESULT), SearchResult.class);
 
             if (searchResult != null) {
                 boxUuid = searchResult.getBoxUuid();
                 categoryUid = searchResult.getCategoryUuid();
+                searchQuery = searchResult.getTitle();
                 boxName = searchResult.getBoxTitle();
             }
 
@@ -363,7 +349,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                                     checkSearchedCategory();
                                 }
                             }
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -373,6 +358,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                     public void onFailure(Call<BoxCategoryResponse> call, Throwable t) {
                         progressBar.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(true);
+
                     }
                 });
     }
@@ -381,19 +367,26 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
      * Check Category UUID Searched for and then Display
      */
     public void checkSearchedCategory() {
-        if (!categoryUid.isEmpty()) {
-            int index = 0;
-            //search catgory in the list and find the position
-            for (Category category : categories) {
-                if (category.getUuid().equalsIgnoreCase(categoryUid)) {
-                    clickPosition = index;
-                    break;
+        if (categoryUid != null) {
+            if (!categoryUid.isEmpty()) {
+                int index = 0;
+                //search catgory in the list and find the position
+                for (Category category : categories) {
+                    if (category.getUuid().equalsIgnoreCase(categoryUid)) {
+                        clickPosition = index;
+                        break;
+                    }
+                    index++;
                 }
-                index++;
+                //set the view pager and tab
+                setupViewPagerAndTabsForBoxCategory();
+            } else {
+                Toast.makeText(TheBox.getAppContext(), "EMpty", Toast.LENGTH_SHORT).show();
+                //set the view pager and tab
+                setupViewPagerAndTabsForBoxCategory();
             }
-            //set the view pager and tab
-            setupViewPagerAndTabsForBoxCategory();
         } else {
+            Toast.makeText(TheBox.getAppContext(), "Category Uuid not NULL", Toast.LENGTH_SHORT).show();
             //set the view pager and tab
             setupViewPagerAndTabsForBoxCategory();
         }

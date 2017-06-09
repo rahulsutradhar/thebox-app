@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.order.Order;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.saving.Saving;
 import one.thebox.android.api.ApiResponse;
 

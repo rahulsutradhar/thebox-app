@@ -1,4 +1,4 @@
-package one.thebox.android.Models.user;
+package one.thebox.android.Models.items;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -6,11 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 
 /**

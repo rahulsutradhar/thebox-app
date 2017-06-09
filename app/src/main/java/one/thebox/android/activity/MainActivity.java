@@ -47,10 +47,10 @@ import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Box;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.search.SearchResult;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity implements
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems;
         if (numberOfItemIncart == -1) {
-            numberOfItems = CartHelper.getCartSize();
+            numberOfItems = ProductQuantity.getCartSize();
         } else {
             numberOfItems = numberOfItemIncart;
         }
@@ -598,7 +598,7 @@ public class MainActivity extends BaseActivity implements
     /**
      * Called from Search
      */
-    public void attachSearchDetailFragment(SearchResult searchResult, String searchQuery) {
+    public void attachSearchDetailFragment(SearchResult searchResult) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
@@ -614,7 +614,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult, searchQuery);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -771,8 +771,7 @@ public class MainActivity extends BaseActivity implements
             }
             case 4: {
                 //Search Results
-                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class),
-                        intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY));
+                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
                 break;
             }
             case 5: {

@@ -7,7 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;

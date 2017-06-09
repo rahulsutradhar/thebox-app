@@ -21,13 +21,12 @@ import java.util.List;
 
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
-import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.DelayDeliveryBottomSheetFragment;
-import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateItemConfigSubscribeItemRequest;
 import one.thebox.android.api.RequestBodies.subscribeitem.UpdateQuantitySubscribeItemRequest;

@@ -19,8 +19,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.Calendar;
 
-import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.Announcement;
 import one.thebox.android.ViewHelper.BoxLoader;

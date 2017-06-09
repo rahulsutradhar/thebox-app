@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.items.Box;
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.util.DisplayUtil;

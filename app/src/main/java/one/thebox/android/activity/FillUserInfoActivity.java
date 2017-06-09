@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.order.Order;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;

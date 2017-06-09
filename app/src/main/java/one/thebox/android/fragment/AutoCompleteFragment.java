@@ -81,7 +81,7 @@ public class AutoCompleteFragment extends Fragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     if (searchAutoCompleteAdapter.getSearchResults().size() != 0)
-                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0), query);
+                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0));
                     return true;
                 }
                 return false;
@@ -97,25 +97,6 @@ public class AutoCompleteFragment extends Fragment {
     @Subscribe
     public void onSearchEvent(SearchEvent searchEvent) {
         try {
-
-           /* if (searchEvent.getSearchAutoCompleteResponse().getCategories() != null) {
-                for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
-                    String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
-                    int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
-                    SearchResult searchResult = new SearchResult(categoryId, categoryName);
-                    searchResults.add(searchResult);
-                }
-            }
-
-            if (searchEvent.getSearchAutoCompleteResponse().getItems() != null) {
-                for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
-                    String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
-                    SearchResult searchResult = new SearchResult(itemName);
-                    searchResults.add(searchResult);
-                }
-            }
-
-*/
             searchResults.clear();
             query = searchEvent.getQuery();
             if (searchEvent.getSearchResults() != null) {

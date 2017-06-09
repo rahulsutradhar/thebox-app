@@ -1,10 +1,11 @@
-package one.thebox.android.Models.items;
+package one.thebox.android.Models.cart;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.BoxItem;
 
 /**
  * Created by developers on 09/06/17.

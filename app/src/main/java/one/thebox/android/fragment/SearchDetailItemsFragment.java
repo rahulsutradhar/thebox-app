@@ -1,12 +1,10 @@
 package one.thebox.android.fragment;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,28 +18,22 @@ import com.bumptech.glide.RequestManager;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
-import one.thebox.android.Helpers.RealmChangeManager;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.Category;
-import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.search.SearchResult;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
-import one.thebox.android.api.RequestBodies.SearchDetailResponse;
-import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
 import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;

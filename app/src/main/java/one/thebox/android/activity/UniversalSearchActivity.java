@@ -210,17 +210,6 @@ public class UniversalSearchActivity extends Activity {
 
     public void onSearchEvent(SearchEvent searchEvent) {
         searchResults.clear();
-        /*for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
-            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
-            int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
-            SearchResult searchResult = new SearchResult(categoryId, categoryName);
-            searchResults.add(searchResult);
-        }
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
-            String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
-            SearchResult searchResult = new SearchResult(itemName);
-            searchResults.add(searchResult);
-        }*/
 
         if (searchEvent.getSearchResults() != null) {
             if (searchEvent.getSearchResults().size() > 0) {

@@ -6,11 +6,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.Cart;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.items.CartItem;
+import one.thebox.android.Models.cart.CartItem;
 
 /**
  * Created by nbansal2211 on 03/01/17.

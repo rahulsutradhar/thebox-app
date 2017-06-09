@@ -10,9 +10,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import one.thebox.android.Models.BoxDetail;
-import one.thebox.android.Models.Category;
 import one.thebox.android.Models.UserCategory;
-import one.thebox.android.Models.UserItem;
 
 public class Box extends RealmObject implements Serializable {
     @Ignore
