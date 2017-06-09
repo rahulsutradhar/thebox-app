@@ -296,9 +296,12 @@ public class CartHelper {
     }
 
     /**
-     * Update Cart After fetching from Server
+     * Update Cart After fetching from Server; when app opens
      */
     public static void updateCart(final RealmList<BoxItem> boxItems) {
+        //remove all item
+        clearCart(false);
+        //not update all item
         Realm realm = TheBox.getRealm();
         realm.executeTransactionAsync
                 (new Realm.Transaction() {

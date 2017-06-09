@@ -100,13 +100,11 @@ public class ProductQuantity {
     }
 
     /**
-     * Synced With Cart Item
+     * Synced With Cart Item; fetched in Setting call
      */
-    public static void syncedWithCart(ArrayList<BoxItem> boxItems, Context context) {
+    public static void syncedWithCart(ArrayList<Cart> carts, Context context) {
         trash();
-        for (BoxItem boxItem : boxItems) {
-            addProduct(boxItem);
-        }
+        setProductQuantities(carts);
 
         //check if service is running or not
         CartHelperService.checkServiceRunningWhenAdded(context);

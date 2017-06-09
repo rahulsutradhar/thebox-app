@@ -5,9 +5,12 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import io.realm.RealmList;
 import one.thebox.android.Models.Cart;
 import one.thebox.android.Models.User;
 import one.thebox.android.Models.items.Box;
+import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.items.CartItem;
 
 /**
  * Created by nbansal2211 on 03/01/17.
@@ -36,6 +39,48 @@ public class Setting implements Serializable {
     private User user;
 
     private ArrayList<Box> boxes;
+
+    @SerializedName("cart")
+    private ArrayList<CartItem> cartItems;
+
+
+    /***************************************
+     * Methods
+     ***************************************/
+
+    /**
+     * For Realm Database, sync
+     *
+     * @return
+     */
+    public RealmList<BoxItem> getParsedCartItems() {
+        RealmList<BoxItem> boxItems = new RealmList<>();
+
+        for (CartItem cartItem : getCartItems()) {
+            BoxItem boxItem = cartItem.getBoxItem();
+            boxItem.setQuantity(cartItem.getQuantity());
+            boxItem.setSelectedItemConfig(cartItem.getSelectedItemconfig());
+            boxItems.add(boxItem);
+        }
+
+        return boxItems;
+    }
+
+    /**
+     * For Product Quantitites; sync
+     *
+     * @return
+     */
+    public ArrayList<Cart> getParsedCartUuids() {
+        ArrayList<Cart> carts = new ArrayList<>();
+
+        for (CartItem cartItem : getCartItems()) {
+            Cart cart = new Cart(cartItem.getBoxUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
+            carts.add(cart);
+        }
+
+        return carts;
+    }
 
 
     /***************************************
@@ -105,4 +150,13 @@ public class Setting implements Serializable {
     public void setBoxes(ArrayList<Box> boxes) {
         this.boxes = boxes;
     }
+
+    public ArrayList<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(ArrayList<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
 }

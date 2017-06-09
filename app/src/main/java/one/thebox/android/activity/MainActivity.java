@@ -168,8 +168,16 @@ public class MainActivity extends BaseActivity implements
         initViews();
         setupNavigationDrawer();
 
-        //synced memory with cart
-        ProductQuantity.syncedWithCart(CartHelper.getCart(), this);
+        if (setting.getCartItems() != null) {
+            //update Cart
+            CartHelper.updateCart(setting.getParsedCartItems());
+            //synced memory with cart
+            ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
+
+            setCartOnToolBar();
+        } else {
+            setCartOnToolBar();
+        }
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
@@ -193,7 +201,6 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
         //Preference to load Subscription when user open the app
@@ -607,7 +614,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult,searchQuery);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult, searchQuery);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
