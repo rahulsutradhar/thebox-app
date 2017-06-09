@@ -473,6 +473,30 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     }
 
+    @Subscribe
+    public void OnCategorySelectEvent(OnCategorySelectEvent onCategorySelectEvent) {
+        int tabPosition = getTabPosition(onCategorySelectEvent.getCategory());
+        if (tabPosition != -1) {
+            viewPager.setCurrentItem(tabPosition);
+        }
+    }
+
+
+    public int getTabPosition(Category selectedCategory) {
+        int tabPosition = -1;
+        if (!categories.isEmpty()) {
+            int index = 0;
+            for (Category category : categories) {
+                if (category.getUuid().equalsIgnoreCase(selectedCategory.getUuid())) {
+                    tabPosition = index;
+                    break;
+                }
+                index++;
+            }
+        }
+        return tabPosition;
+    }
+
     public void onTabEvent(TabEvent tabEvent) {
         if (getActivity() == null) {
             return;

@@ -54,7 +54,7 @@ import retrofit2.Response;
 
 
 public class SearchDetailItemsFragment extends Fragment {
-    
+
     private int pageNumber = 1;
     private View rootView;
     private RecyclerView recyclerView;

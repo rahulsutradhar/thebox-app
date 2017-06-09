@@ -31,18 +31,10 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Category> categories = new RealmList<>();
     private boolean isSearchDetailItemFragment;
-    private RealmList<UserCategory> my_catIds;
     private Box box;
     private Context context;
     private RequestManager mRequestManager;
 
-    public RemainingCategoryAdapter(Context context, RealmList<Category> categories, RealmList<UserCategory> my_catIds, RequestManager mRequestManager) {
-        super(context);
-        this.categories = categories;
-        this.my_catIds = my_catIds;
-        this.context = context;
-        this.mRequestManager = mRequestManager;
-    }
 
     public RemainingCategoryAdapter(Context context, RealmList<Category> categories, RequestManager mRequestManager) {
         super(context);
@@ -97,10 +89,7 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
         if (position < categories.size()) {
             itemViewHolder.setViewHolder(categories.get(position), position);
-        } else {
-            itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()), position);
         }
-
         // When used in Search Detail Fragment
         if (isSearchDetailItemFragment) {
             setAnimation(itemViewHolder.itemView);
@@ -123,11 +112,7 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        if (my_catIds == null) {
-            return categories.size();
-        } else {
-            return (categories.size() + my_catIds.size());
-        }
+        return categories.size();
     }
 
     @Override
@@ -194,49 +179,6 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
 
             mRequestManager.load(category.getCategoryImage())
-                    .centerCrop()
-                    .crossFade()
-                    .into(categoryIcon);
-
-        }
-
-        public void setViewHolder(final UserCategory userCategory, final int position) {
-            categoryNameTextView.setText(userCategory.getCategory().getMinititle());
-
-            noOfItems.setVisibility(View.GONE);
-
-                /*if (userCategory.getNo_of_items() == 1) {
-                    noOfItems.setText("1 item subscribed");
-                } else {
-                    noOfItems.setText(userCategory.getNo_of_items() + " items subscribed");
-                }
-
-                categoryIcon.setMaxWidth(noOfItems.getWidth());
-*/
-            //Saving text display if not empty
-                /*if (userCategory.getCategory().getAverageSavings() != null) {
-                    if (!userCategory.getCategory().getAverageSavings().isEmpty()) {
-                        savingTextView.setVisibility(View.VISIBLE);
-                        savingTextView.setText(userCategory.getCategory().getAverageSavings());
-                    } else {
-                        savingTextView.setVisibility(View.GONE);
-                        savingTextView.setText("");
-                    }
-                } else {
-                    savingTextView.setVisibility(View.GONE);
-                    savingTextView.setText("");
-                }
-*/
-            //clickevent
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    handleCLickEvent(userCategory.getCategory(), position);
-                }
-            });
-
-
-            mRequestManager.load(userCategory.getCategory().getCategoryImage())
                     .centerCrop()
                     .crossFade()
                     .into(categoryIcon);

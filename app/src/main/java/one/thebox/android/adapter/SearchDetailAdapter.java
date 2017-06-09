@@ -272,14 +272,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 } else {
 
                 }
-
-               /* if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
-                    savingHolder.setVisibility(View.VISIBLE);
-                    setupRecyclerViewSuggestedCategories(suggestedCategories);
-
-                } else {
-                    savingHolder.setVisibility(View.GONE);
-                }*/
             }
         }
 
