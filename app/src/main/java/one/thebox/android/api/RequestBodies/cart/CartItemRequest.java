@@ -3,7 +3,7 @@ package one.thebox.android.api.RequestBodies.cart;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Cart;
+import one.thebox.android.Models.cart.Cart;
 
 /**
  * Created by developers on 01/06/17.

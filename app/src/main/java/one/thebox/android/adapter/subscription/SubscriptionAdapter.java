@@ -1,15 +1,12 @@
 package one.thebox.android.adapter.subscription;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 
@@ -20,20 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
-import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.Subscription;
+import one.thebox.android.Models.items.Subscription;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.SearchDetailAdapter;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
-import one.thebox.android.api.RestClient;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 11-04-2016.

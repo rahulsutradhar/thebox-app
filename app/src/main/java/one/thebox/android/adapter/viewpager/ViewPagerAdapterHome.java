@@ -8,14 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import one.thebox.android.Models.Category;
 import one.thebox.android.R;
-
-import static com.razorpay.Segment.context;
 
 /**
  * Created by developers on 10/04/17.

@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 import io.realm.RealmObject;
-import one.thebox.android.Models.ItemConfig;
 
 /**
  * Created by developers on 05/06/17.

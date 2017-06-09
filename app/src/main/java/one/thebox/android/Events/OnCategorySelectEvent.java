@@ -1,6 +1,6 @@
 package one.thebox.android.Events;
 
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 
 /**
  * Created by Ajeet Kumar Meena on 11-05-2016.

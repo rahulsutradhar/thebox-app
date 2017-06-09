@@ -11,9 +11,9 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.Models.order.Order;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SearchDetailFragment;
@@ -296,9 +296,12 @@ public class CartHelper {
     }
 
     /**
-     * Update Cart After fetching from Server
+     * Update Cart After fetching from Server; when app opens
      */
     public static void updateCart(final RealmList<BoxItem> boxItems) {
+        //remove all item
+        clearCart(false);
+        //not update all item
         Realm realm = TheBox.getRealm();
         realm.executeTransactionAsync
                 (new Realm.Transaction() {

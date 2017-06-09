@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 
 

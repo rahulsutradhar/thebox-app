@@ -1,14 +1,11 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,19 +24,14 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
-import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.Subscription;
-import one.thebox.android.api.Responses.UserItemResponse;
+import one.thebox.android.Models.items.Subscription;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
@@ -48,7 +40,6 @@ import one.thebox.android.adapter.subscription.SubscriptionAdapter;
 import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
 import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
 import one.thebox.android.app.Constants;
-import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -56,8 +47,6 @@ import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 
 /**
  * Created by vaibhav on 17/08/16.

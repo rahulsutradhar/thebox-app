@@ -15,7 +15,7 @@ import java.util.TreeMap;
 import io.realm.RealmList;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.IntStringObject;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.app.Constants;

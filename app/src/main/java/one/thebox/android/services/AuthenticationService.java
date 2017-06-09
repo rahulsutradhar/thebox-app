@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
 import one.thebox.android.BuildConfig;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.app.Keys;

@@ -8,6 +8,8 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.items.UserItem;
 
 public class UserCategory extends RealmObject implements Serializable {
 

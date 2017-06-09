@@ -30,14 +30,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.Category;
-import one.thebox.android.Models.ItemConfig;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -59,7 +58,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static one.thebox.android.app.Constants.VIEW_TYPE_SEARCH_ITEM;
-import static one.thebox.android.app.Constants.VIEW_TYPE_SUBSCRIBE_ITEM;
 
 public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -272,14 +270,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 } else {
 
                 }
-
-               /* if (boxItem.getId() == boxId && !suggestedCategories.isEmpty() && position == currentPositionOfSuggestedCategory) {
-                    savingHolder.setVisibility(View.VISIBLE);
-                    setupRecyclerViewSuggestedCategories(suggestedCategories);
-
-                } else {
-                    savingHolder.setVisibility(View.GONE);
-                }*/
             }
         }
 

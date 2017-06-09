@@ -12,16 +12,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.AddressAndOrder;
-import one.thebox.android.Models.User;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
-import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
 import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
-import one.thebox.android.api.Responses.PaymentDetailsResponse;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;

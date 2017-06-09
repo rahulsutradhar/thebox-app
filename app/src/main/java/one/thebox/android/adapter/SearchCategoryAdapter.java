@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 

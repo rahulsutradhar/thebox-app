@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.Cart;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.services.cart.CartHelperService;
 
 /**
@@ -100,13 +100,11 @@ public class ProductQuantity {
     }
 
     /**
-     * Synced With Cart Item
+     * Synced With Cart Item; fetched in Setting call
      */
-    public static void syncedWithCart(ArrayList<BoxItem> boxItems, Context context) {
+    public static void syncedWithCart(ArrayList<Cart> carts, Context context) {
         trash();
-        for (BoxItem boxItem : boxItems) {
-            addProduct(boxItem);
-        }
+        setProductQuantities(carts);
 
         //check if service is running or not
         CartHelperService.checkServiceRunningWhenAdded(context);

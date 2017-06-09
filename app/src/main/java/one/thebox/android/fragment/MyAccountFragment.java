@@ -8,30 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.UpdateProfileActivity;
-import one.thebox.android.api.ApiResponse;
-import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
-import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class MyAccountFragment extends Fragment implements View.OnClickListener {

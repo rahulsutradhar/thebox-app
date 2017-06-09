@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,13 +14,10 @@ import org.json.JSONObject;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
-import one.thebox.android.Models.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MutedVideoView;
-import one.thebox.android.app.Constants;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.services.SettingService;
-import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.

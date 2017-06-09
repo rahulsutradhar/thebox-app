@@ -9,7 +9,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import one.thebox.android.Models.Invoice;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.BoxItem;
 
 /**

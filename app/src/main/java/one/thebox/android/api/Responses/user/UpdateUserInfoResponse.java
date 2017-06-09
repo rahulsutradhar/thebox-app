@@ -2,7 +2,7 @@ package one.thebox.android.api.Responses.user;
 
 import java.io.Serializable;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.api.ApiResponse;
 
 /**

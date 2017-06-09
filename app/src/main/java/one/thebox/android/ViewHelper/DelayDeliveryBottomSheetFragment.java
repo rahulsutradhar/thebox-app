@@ -26,7 +26,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.items.UserItem;
 import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.Models.reschedule.Delivery;
 import one.thebox.android.Models.reschedule.Reschedule;

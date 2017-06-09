@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.Subscription;
+import one.thebox.android.Models.items.Subscription;
 import one.thebox.android.api.ApiResponse;
 
 /**
