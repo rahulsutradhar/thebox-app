@@ -381,12 +381,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 //set the view pager and tab
                 setupViewPagerAndTabsForBoxCategory();
             } else {
-                Toast.makeText(TheBox.getAppContext(), "EMpty", Toast.LENGTH_SHORT).show();
                 //set the view pager and tab
                 setupViewPagerAndTabsForBoxCategory();
             }
         } else {
-            Toast.makeText(TheBox.getAppContext(), "Category Uuid not NULL", Toast.LENGTH_SHORT).show();
             //set the view pager and tab
             setupViewPagerAndTabsForBoxCategory();
         }

@@ -54,8 +54,6 @@ public class MyGcmListenerService extends GcmListenerService {
 
             if (notificationInfo != null && notificationInfo.getNotificationActions().size() > 0) {
                 if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
-                    //Updating Prefrences
-                    PrefUtils.putBoolean(TheBox.getInstance(), Constants.PREF_IS_ORDER_IS_LOADING, true);
                     ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
                 } else {
                     new NotificationHelper(this, notificationInfo).show();
