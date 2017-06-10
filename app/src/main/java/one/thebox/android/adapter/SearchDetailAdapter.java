@@ -33,6 +33,7 @@ import io.realm.RealmList;
 import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.items.ItemConfig;
@@ -902,6 +903,72 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
         }
 
+    }
+
+
+    /**
+     * Update on Event Passed from Cart
+     * <p>
+     * When Cart Update Quantity; Increase or Decrease
+     */
+    public synchronized void updateQuantityEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the quantity
+                        boxItem.setQuantity(updatedBoxItem.getQuantity());
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
+    }
+
+    /**
+     * When Cart Remove Quantity
+     */
+    public synchronized void removeQuantityEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the quantity
+                        boxItem.setQuantity(0);
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
+    }
+
+    /**
+     * When Cart Update ItemConfig
+     */
+    public synchronized void updateItemConfigEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the quantity
+                        boxItem.setSelectedItemConfig(updatedBoxItem.getSelectedItemConfig());
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
     }
 
 }

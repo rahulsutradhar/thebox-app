@@ -14,11 +14,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.SyncCartItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.items.ItemConfig;
@@ -28,6 +31,7 @@ import one.thebox.android.activity.FullImageActivity;
 import one.thebox.android.adapter.FrequencyAndPriceAdapter;
 import one.thebox.android.adapter.RemainingCategoryAdapter;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
@@ -386,6 +390,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
                 //check for background service
                 CartHelperService.checkServiceRunningWhenAdded(mContext);
+
+                /**
+                 * Pass Event to Update the Search Items
+                 */
+                EventBus.getDefault().post(new SyncCartItemEvent(Constants.UPDATE_QUANTITY_EVENT, updatedBoxItem));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -395,6 +404,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
          * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
+            /**
+             * Pass Event to Update the Search Items
+             */
+            EventBus.getDefault().post(new SyncCartItemEvent(Constants.REMOVE_ITEM_EVENT, boxItem));
+
             CartHelper.removeItemFromCart(boxItem);
             boxItems.remove(position);
             notifyDataSetChanged();
@@ -419,6 +433,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
                 //check for background service
                 CartHelperService.checkServiceRunningWhenAdded(mContext);
+
+                /**
+                 * Pass Event to Update the Search Items
+                 */
+                EventBus.getDefault().post(new SyncCartItemEvent(Constants.UPDATE_ITEMCONFIG_EVENT, updatedBoxItem));
             } catch (Exception e) {
                 e.printStackTrace();
             }

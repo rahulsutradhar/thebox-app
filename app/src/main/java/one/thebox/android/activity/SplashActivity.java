@@ -96,7 +96,7 @@ public class SplashActivity extends Activity {
             navigateToHome();
         } else {
             if (requestCounter > 1) {
-                Toast.makeText(this, "Something went Wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Something went wrong, please check your internet connection.", Toast.LENGTH_SHORT).show();
             } else {
                 fetchSettingFromServer();
             }

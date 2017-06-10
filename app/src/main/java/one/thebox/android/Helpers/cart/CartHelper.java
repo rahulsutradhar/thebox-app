@@ -312,6 +312,7 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
+                        sendUpdateNoItemsInCartBroadcast(getCartSize());
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override

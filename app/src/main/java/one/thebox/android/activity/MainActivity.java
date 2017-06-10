@@ -174,9 +174,7 @@ public class MainActivity extends BaseActivity implements
             //synced memory with cart
             ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
 
-            setCartOnToolBar();
-        } else {
-            setCartOnToolBar();
+
         }
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -207,6 +205,7 @@ public class MainActivity extends BaseActivity implements
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
 
+        setCartOnToolBar();
         //Check for App Update
         checkAppUpdate();
         //check for showing message to user usign dialog
