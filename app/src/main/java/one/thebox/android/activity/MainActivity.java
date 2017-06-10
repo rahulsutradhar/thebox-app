@@ -748,6 +748,7 @@ public class MainActivity extends BaseActivity implements
 
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
+                attachMyBoxesFragment(1, true);
                 break;
             }
 
@@ -794,6 +795,10 @@ public class MainActivity extends BaseActivity implements
             /**
              * Notifications Action Handiling
              */
+            case 9:{
+                attachMyBoxesFragment(2, false);
+                break;
+            }
             case 10: {
                 attachMyBoxesFragment(1, false);
                 break;

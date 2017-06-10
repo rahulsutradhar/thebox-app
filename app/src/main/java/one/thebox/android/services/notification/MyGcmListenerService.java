@@ -53,11 +53,7 @@ public class MyGcmListenerService extends GcmListenerService {
             NotificationInfo notificationInfo = CoreGsonUtils.fromJson(notificationInfoString, NotificationInfo.class);
 
             if (notificationInfo != null && notificationInfo.getNotificationActions().size() > 0) {
-                if (notificationInfo.getNotificationActions().get(0).getActionId() < 10) {
-                    ActionExecuter.performAction(this, notificationInfo.getNotificationActions().get(0).getActionId(), notificationInfo.getNotificationActions().get(0).getActionExrta());
-                } else {
-                    new NotificationHelper(this, notificationInfo).show();
-                }
+                new NotificationHelper(this, notificationInfo).show();
             } else {
                 new NotificationHelper(this, notificationInfo).show();
             }
