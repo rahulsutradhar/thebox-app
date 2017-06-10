@@ -469,9 +469,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void displayNumberOfOption(final BoxItem boxItem, final int position) {
-            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
+                    SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+
             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                 @Override
                 public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
@@ -712,8 +714,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             //Update ItemConfig
                             subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(
-                                    subscribeItem.getBoxItem());
+                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                    subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
+
                             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {

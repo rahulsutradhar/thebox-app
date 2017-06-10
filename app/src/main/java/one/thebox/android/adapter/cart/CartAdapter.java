@@ -362,7 +362,8 @@ public class CartAdapter extends BaseRecyclerAdapter {
         }
 
         private void displayNumberOfOption(final BoxItem boxItem, final int position) {
-            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
+                    SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {

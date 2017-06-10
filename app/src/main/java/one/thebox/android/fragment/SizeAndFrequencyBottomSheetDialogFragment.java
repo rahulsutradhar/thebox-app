@@ -1,5 +1,6 @@
 package one.thebox.android.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -20,6 +21,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
 import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.IntStringComparator;
 
 /**
  * Created by Ajeet Kumar Meena on 09-05-2016.
@@ -33,15 +35,20 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     private View rootView;
     private BoxItem boxItem;
     private OnSizeAndFrequencySelected onSizeAndFrequencySelected;
+    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
+    private ItemConfig selectedItemConfig;
 
-    public static SizeAndFrequencyBottomSheetDialogFragment newInstance(BoxItem boxItem) {
 
-        Bundle args = new Bundle();
-        args.putString(Constants.EXTRA_BOX_ITEM, CoreGsonUtils.toJson(boxItem));
-        SizeAndFrequencyBottomSheetDialogFragment fragment = new SizeAndFrequencyBottomSheetDialogFragment();
-        fragment.setArguments(args);
-        return fragment;
+    @SuppressLint("ValidFragment")
+    public SizeAndFrequencyBottomSheetDialogFragment(RealmList<ItemConfig> itemConfigs, ItemConfig selectedItemConfig) {
+        this.itemConfigs = itemConfigs;
+        this.selectedItemConfig = selectedItemConfig;
     }
+
+    public SizeAndFrequencyBottomSheetDialogFragment() {
+
+    }
+
 
     public void attachListener(OnSizeAndFrequencySelected onSizeAndFrequencySelected) {
         this.onSizeAndFrequencySelected = onSizeAndFrequencySelected;
@@ -59,18 +66,18 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
 
     private void setupViewPager() {
         int defaultSelectedPosition = 0;
-        String keySelectedPosition = boxItem.getSelectedItemConfig().getSubscriptionText();
+        String keySelectedPosition = selectedItemConfig.getSubscriptionText();
         Set<IntStringObject> keySet = hashMap.keySet();
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), getActivity());
         int i = 0;
         for (IntStringObject key : keySet) {
 
-            PriceAndSizeFragment priceAndSizeFragment = PriceAndSizeFragment.newInstance(hashMap.get(key));
+            PriceAndSizeFragment priceAndSizeFragment = new PriceAndSizeFragment(hashMap.get(key));
             priceAndSizeFragment.addListener(onSizeAndFrequencySelected);
             if (key.getString().equals(keySelectedPosition)) {
                 defaultSelectedPosition = i;
-                priceAndSizeFragment.setSelectedItemConfig(boxItem.getSelectedItemConfig());
+                priceAndSizeFragment.setSelectedItemConfig(selectedItemConfig);
             }
             adapter.addFragment(priceAndSizeFragment, key.getString());
             i++;
@@ -86,12 +93,38 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     }
 
     private void initVariables() {
-        boxItem = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_BOX_ITEM), BoxItem.class);
-        hashMap = boxItem.getFrequencyItemConfigHashMap();
+        //parse the items
+        hashMap = getFrequencyItemConfigHashMap();
     }
 
     public interface OnSizeAndFrequencySelected {
         void onSizeAndFrequencySelected(
                 ItemConfig selectedItemConfig);
     }
+
+    /**
+     * Group Item Configs
+     */
+    public TreeMap<IntStringObject, RealmList<ItemConfig>> getFrequencyItemConfigHashMap() {
+
+        TreeMap<IntStringObject, RealmList<ItemConfig>> frequencyItemConfigHashMap = new TreeMap<>(new IntStringComparator());
+
+        for (int i = 0; i < itemConfigs.size(); i++) {
+            String subscriptionText = itemConfigs.get(i).getSubscriptionText();
+            int subscriptionType = itemConfigs.get(i).getSubscriptionType();
+            IntStringObject key = new IntStringObject(subscriptionType, subscriptionText);
+
+            if (frequencyItemConfigHashMap.get(key) == null || frequencyItemConfigHashMap.get(key).isEmpty()) {
+                RealmList<ItemConfig> tempItemConfigs = new RealmList<>();
+                tempItemConfigs.add(itemConfigs.get(i));
+                frequencyItemConfigHashMap.put(key, tempItemConfigs);
+            } else {
+                RealmList<ItemConfig> tempItemConfig = frequencyItemConfigHashMap.get(key);
+                tempItemConfig.add(itemConfigs.get(i));
+                frequencyItemConfigHashMap.put(key, tempItemConfig);
+            }
+        }
+        return frequencyItemConfigHashMap;
+    }
+
 }
