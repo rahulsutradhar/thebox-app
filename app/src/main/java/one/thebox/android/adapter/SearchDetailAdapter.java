@@ -493,7 +493,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
             boxItem.setShowCategorySuggestion(true);
-            boxItems.get(position).setQuantity(1);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.addBoxItemToCart(boxItem);
 
@@ -507,7 +507,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void removeItemFromCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(0);
             boxItem.setShowCategorySuggestion(false);
-            boxItems.get(position).setQuantity(0);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.removeItemFromCart(boxItem);
 
@@ -520,7 +520,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             boxItem.setQuantity(quantity);
-            boxItems.get(position).setQuantity(quantity);
+            boxItem.setShowCategorySuggestion(false);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.updateQuantityInCart(boxItem, quantity);
 
@@ -533,7 +534,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
             CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
-            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+            boxItem.setSelectedItemConfig(selectedItemConfig);
+            boxItem.setShowCategorySuggestion(false);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
 
             //check for background service
@@ -919,6 +922,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
                         //update the quantity
                         boxItem.setQuantity(updatedBoxItem.getQuantity());
+                        boxItem.setShowCategorySuggestion(false);
                         boxItems.set(index, boxItem);
                         notifyItemChanged(index);
                         break;
@@ -940,6 +944,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
                         //update the quantity
                         boxItem.setQuantity(0);
+                        boxItem.setShowCategorySuggestion(false);
                         boxItems.set(index, boxItem);
                         notifyItemChanged(index);
                         break;
@@ -959,8 +964,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             for (BoxItem boxItem : getBoxItems()) {
                 if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
                     if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
-                        //update the quantity
+                        //update the item config
                         boxItem.setSelectedItemConfig(updatedBoxItem.getSelectedItemConfig());
+                        boxItem.setShowCategorySuggestion(false);
                         boxItems.set(index, boxItem);
                         notifyItemChanged(index);
                         break;
