@@ -250,7 +250,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         } else {
             if (requestCounter > 1) {
                 dialog.dismiss();
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Something went wrong, please check your internet connection.", Toast.LENGTH_SHORT).show();
                 requestCounter = 0;
                 navigateToHome();
             } else {

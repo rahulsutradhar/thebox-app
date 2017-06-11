@@ -88,7 +88,8 @@ public class UserItemHolder extends BaseHolder {
                         switch (actionUserItemSubscription) {
                             case 1:
 
-                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(userItem.getBoxItem());
+                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                        userItem.getBoxItem().getItemConfigs(), userItem.getSelectedItemConfig());
                                 dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager()
                                         , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                                 dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {

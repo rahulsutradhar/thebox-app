@@ -1,5 +1,6 @@
 package one.thebox.android.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,21 +21,19 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
 
     private View rootView;
-    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private RecyclerView recyclerView;
     private ItemConfig selectedItemConfig;
     private SizeAndFrequencyAdapter sizeAndFrequencyAdapter;
     private SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected;
+    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
 
-    public PriceAndSizeFragment() {
+
+    @SuppressLint("ValidFragment")
+    public PriceAndSizeFragment(RealmList<ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
     }
 
-    public static PriceAndSizeFragment newInstance(RealmList<ItemConfig> itemConfigs) {
-        PriceAndSizeFragment fragment = new PriceAndSizeFragment();
-        Bundle args = new Bundle();
-        args.putString(Constants.EXTRA_ITEM_CONFIG_LIST, CoreGsonUtils.toJson(itemConfigs));
-        fragment.setArguments(args);
-        return fragment;
+    public PriceAndSizeFragment() {
     }
 
     public void setSelectedItemConfig(ItemConfig itemConfig) {
@@ -55,17 +54,10 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_price_and_size, container, false);
-            initVariable();
             initViews();
             setupRecyclerView();
         }
         return rootView;
-    }
-
-    private void initVariable() {
-        itemConfigs = CoreGsonUtils.fromJsontoRealmList(
-                getArguments().getString(Constants.EXTRA_ITEM_CONFIG_LIST), ItemConfig.class
-        );
     }
 
     private void setupRecyclerView() {

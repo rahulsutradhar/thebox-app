@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import one.thebox.android.Events.ShowSpecialCardEvent;
+import one.thebox.android.Events.SyncCartItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.items.Category;
@@ -60,6 +62,7 @@ public class SearchDetailItemsFragment extends Fragment {
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private int totalItems;
     private int maxPageNumber;
+    private boolean isRegistered;
 
     private Category category;
     private int positionInViewPager;
@@ -361,6 +364,56 @@ public class SearchDetailItemsFragment extends Fragment {
                     }
                 });
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isRegistered) {
+            EventBus.getDefault().unregister(this);
+            isRegistered = false;
+        }
+    }
+
+    /**
+     * Synced with cart product item on editing cart
+     */
+    @Subscribe
+    public void syncedWithCart(final SyncCartItemEvent syncCartItemEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (syncCartItemEvent.getEventType()) {
+
+                        case Constants.UPDATE_QUANTITY_EVENT: //update Quantity
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.updateQuantityEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                        case Constants.REMOVE_ITEM_EVENT://remove qunatity
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.removeQuantityEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                        case Constants.UPDATE_ITEMCONFIG_EVENT:
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.updateItemConfigEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                    }
+                }
+            });
+        }
     }
 
 }

@@ -33,6 +33,7 @@ import io.realm.RealmList;
 import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.items.ItemConfig;
@@ -468,9 +469,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         private void displayNumberOfOption(final BoxItem boxItem, final int position) {
-            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(boxItem);
+            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
+                    SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+
             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
                 @Override
                 public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
@@ -492,7 +495,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
             boxItem.setShowCategorySuggestion(true);
-            boxItems.get(position).setQuantity(1);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.addBoxItemToCart(boxItem);
 
@@ -506,7 +509,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void removeItemFromCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(0);
             boxItem.setShowCategorySuggestion(false);
-            boxItems.get(position).setQuantity(0);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.removeItemFromCart(boxItem);
 
@@ -519,7 +522,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             boxItem.setQuantity(quantity);
-            boxItems.get(position).setQuantity(quantity);
+            boxItem.setShowCategorySuggestion(false);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.updateQuantityInCart(boxItem, quantity);
 
@@ -532,7 +536,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
             CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
-            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+            boxItem.setSelectedItemConfig(selectedItemConfig);
+            boxItem.setShowCategorySuggestion(false);
+            boxItems.set(position, boxItem);
             notifyItemChanged(position);
 
             //check for background service
@@ -708,8 +714,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             //Update ItemConfig
                             subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(
-                                    subscribeItem.getBoxItem());
+                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                    subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
+
                             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
@@ -902,6 +909,75 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
         }
 
+    }
+
+
+    /**
+     * Update on Event Passed from Cart
+     * <p>
+     * When Cart Update Quantity; Increase or Decrease
+     */
+    public synchronized void updateQuantityEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the quantity
+                        boxItem.setQuantity(updatedBoxItem.getQuantity());
+                        boxItem.setShowCategorySuggestion(false);
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
+    }
+
+    /**
+     * When Cart Remove Quantity
+     */
+    public synchronized void removeQuantityEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the quantity
+                        boxItem.setQuantity(0);
+                        boxItem.setShowCategorySuggestion(false);
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
+    }
+
+    /**
+     * When Cart Update ItemConfig
+     */
+    public synchronized void updateItemConfigEvent(BoxItem updatedBoxItem) {
+        int index = 0;
+        if (getBoxItems() != null) {
+            for (BoxItem boxItem : getBoxItems()) {
+                if (boxItem.getItemViewType() == Constants.VIEW_TYPE_SEARCH_ITEM) {
+                    if (boxItem.getUuid().equalsIgnoreCase(updatedBoxItem.getUuid())) {
+                        //update the item config
+                        boxItem.setSelectedItemConfig(updatedBoxItem.getSelectedItemConfig());
+                        boxItem.setShowCategorySuggestion(false);
+                        boxItems.set(index, boxItem);
+                        notifyItemChanged(index);
+                        break;
+                    }
+                }
+                index++;
+            }
+        }
     }
 
 }

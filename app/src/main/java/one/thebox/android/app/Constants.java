@@ -181,5 +181,12 @@ public class Constants {
      */
     public final static String EXTRA_SEARCH_QUERY = "extra_search_query";
 
+    /**
+     * Event for updating search product on updating cart
+     */
+    public final static int UPDATE_QUANTITY_EVENT = 1;
+    public final static int REMOVE_ITEM_EVENT = 2;
+    public final static int UPDATE_ITEMCONFIG_EVENT = 3;
+
 
 }

@@ -224,8 +224,12 @@ public class CartHelper {
                     @Override
                     public void execute(Realm realm) {
                         if (itemConfig != null) {
-                            BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
-                            boxItem1.setSelectedItemConfig(itemConfig);
+                            ItemConfig updatedItemConfig = realm.where(ItemConfig.class).equalTo("uuid", itemConfig.getUuid()).findFirst();
+
+                            if (updatedItemConfig != null) {
+                                BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+                                boxItem1.setSelectedItemConfig(updatedItemConfig);
+                            }
                         }
                     }
                 }, new Realm.Transaction.OnSuccess() {
@@ -237,6 +241,7 @@ public class CartHelper {
                 }, new Realm.Transaction.OnError() {
                     @Override
                     public void onError(Throwable error) {
+                        Toast.makeText(TheBox.getAppContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -312,6 +317,7 @@ public class CartHelper {
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
+                        sendUpdateNoItemsInCartBroadcast(getCartSize());
                     }
                 }, new Realm.Transaction.OnError() {
                     @Override

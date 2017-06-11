@@ -36,6 +36,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.shouldCloseActivityOnBackPress = true;
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setVisible(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setVisible(false);
+    }
+
     @Override
     protected void onPostResume() {
         super.onPostResume();
@@ -169,4 +182,5 @@ public abstract class BaseActivity extends AppCompatActivity {
             inputManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
 }
