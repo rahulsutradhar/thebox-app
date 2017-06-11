@@ -40,7 +40,7 @@ public class ProductQuantity {
             int index = 0;
             boolean flag = false;
             for (Cart cart : getProductQuantities()) {
-                if (cart.getItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+                if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                     flag = true;
                     setProduct(boxItem, index);
                     break;
@@ -63,7 +63,7 @@ public class ProductQuantity {
     public static void removeProduct(BoxItem boxItem) {
         int index = 0;
         for (Cart cart : productQuantities) {
-            if (cart.getItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.remove(index);
                 break;
             }
@@ -77,7 +77,7 @@ public class ProductQuantity {
     public static void updateQuantity(BoxItem boxItem, int quantity) {
         int index = 0;
         for (Cart cart : productQuantities) {
-            if (cart.getItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.get(index).setQuantity(quantity);
                 break;
             }
@@ -91,7 +91,7 @@ public class ProductQuantity {
     public static void updateItemConfig(BoxItem boxItem, ItemConfig selectedItemConfig) {
         int index = 0;
         for (Cart cart : productQuantities) {
-            if (cart.getItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.get(index).setItemConfigUuid(selectedItemConfig.getUuid());
                 break;
             }

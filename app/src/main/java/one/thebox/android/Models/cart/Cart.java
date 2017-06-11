@@ -11,25 +11,25 @@ import java.io.Serializable;
 public class Cart implements Serializable {
 
     @SerializedName("item_uuid")
-    private String itemUuid;
+    private String boxItemUuid;
 
     private int quantity;
 
     @SerializedName("itemconfig_uuid")
     private String itemConfigUuid;
 
-    public Cart(String itemUuid, int quantity, String itemConfigUuid) {
-        this.itemUuid = itemUuid;
+    public Cart(String boxItemUuid, int quantity, String itemConfigUuid) {
+        this.boxItemUuid = boxItemUuid;
         this.quantity = quantity;
         this.itemConfigUuid = itemConfigUuid;
     }
 
-    public String getItemUuid() {
-        return itemUuid;
+    public String getBoxItemUuid() {
+        return boxItemUuid;
     }
 
-    public void setItemUuid(String itemUuid) {
-        this.itemUuid = itemUuid;
+    public void setBoxItemUuid(String boxItemUuid) {
+        this.boxItemUuid = boxItemUuid;
     }
 
     public int getQuantity() {

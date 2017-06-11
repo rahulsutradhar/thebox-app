@@ -174,9 +174,7 @@ public class MainActivity extends BaseActivity implements
             //synced memory with cart
             ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
 
-            setCartOnToolBar();
-        } else {
-            setCartOnToolBar();
+
         }
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -207,6 +205,7 @@ public class MainActivity extends BaseActivity implements
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
 
+        setCartOnToolBar();
         //Check for App Update
         checkAppUpdate();
         //check for showing message to user usign dialog
@@ -749,6 +748,7 @@ public class MainActivity extends BaseActivity implements
 
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
+                attachMyBoxesFragment(1, true);
                 break;
             }
 
@@ -795,6 +795,10 @@ public class MainActivity extends BaseActivity implements
             /**
              * Notifications Action Handiling
              */
+            case 9:{
+                attachMyBoxesFragment(2, false);
+                break;
+            }
             case 10: {
                 attachMyBoxesFragment(1, false);
                 break;

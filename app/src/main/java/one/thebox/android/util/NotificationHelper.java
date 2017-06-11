@@ -18,9 +18,12 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 import one.thebox.android.R;
+import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.app.*;
 import one.thebox.android.app.Constants;
+import one.thebox.android.services.AuthenticationService;
 
 /**
  * Created by Ajeet Kumar Meena on 11-02-2016.
@@ -212,7 +215,10 @@ public class NotificationHelper {
     private PendingIntent getActionPendingIntent(int index) {
         if (notificationInfo.getNotificationActions() != null && !notificationInfo.getNotificationActions().isEmpty()
                 && notificationInfo.getNotificationActions().size() >= index + 1) {
-            Intent intent = new Intent(context, MainActivity.class);
+            //select the Activity to navigate
+            Intent intent;
+            intent = new Intent(context, SplashActivity.class);
+
             //Action to be Perform
             if (notificationInfo.getNotificationActions().size() > 0) {
                 intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
@@ -237,4 +243,5 @@ public class NotificationHelper {
     public void setNotificationInfo(NotificationInfo notificationInfo) {
         this.notificationInfo = notificationInfo;
     }
+
 }

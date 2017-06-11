@@ -282,8 +282,8 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                             //Update ItemConfig
                             subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = SizeAndFrequencyBottomSheetDialogFragment.newInstance(
-                                    subscribeItem.getBoxItem());
+                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                    subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
                             dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
                                     , SizeAndFrequencyBottomSheetDialogFragment.TAG);
                             dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
