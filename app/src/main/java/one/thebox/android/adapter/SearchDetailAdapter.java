@@ -501,6 +501,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             //check for background service
             CartHelperService.checkServiceRunningWhenAdded(mContext);
+
+            /**
+             * SetCleverTapEventAddItemToCart
+             */
+            setCleverTapEventItemAddedToCart(boxItem);
         }
 
         /**
@@ -515,6 +520,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             //check for background service
             CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
+
+            /**
+             * SetCleverTapEventRemoveItem
+             */
+            setCleverTapEventItemRemoveFromCart(boxItem);
         }
 
         /**
@@ -551,11 +561,19 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * Item Added to Cart; Subscribed
          */
         public void setCleverTapEventItemAddedToCart(BoxItem boxItem) {
-            TheBox.getCleverTap().event.push("item_added_to_cart", getParam(boxItem));
+            try {
+                TheBox.getCleverTap().event.push("item_added_to_cart", getParam(boxItem));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public void setCleverTapEventItemRemoveFromCart(BoxItem boxItem) {
-            TheBox.getCleverTap().event.push("item_remove_from_cart", getParam(boxItem));
+            try {
+                TheBox.getCleverTap().event.push("item_remove_from_cart", getParam(boxItem));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public HashMap getParam(BoxItem boxItem) {
@@ -563,9 +581,10 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             try {
                 hashMap.put("title", boxItem.getTitle());
                 hashMap.put("brand", boxItem.getBrand());
-                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
-                        boxItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSize() + " " +
+                        boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
                 hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
+                hashMap.put("item_config_uuid", boxItem.getSelectedItemConfig().getUuid());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -809,6 +828,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                             notifyItemChanged(position);
                                             Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
+                                            /**
+                                             * Set Clever tab Event CanCel Subscription
+                                             */
+                                            setCleverTapEventCancelSubscription(subscribeItem);
+
                                         } else {
                                             //update item quantity and savings
                                             subscribeItem.setQuantity(response.body().getSubscribeItem().getQuantity());
@@ -893,10 +917,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         /**
          * Clever tab Event Cancel Subscription
          */
-        public void setCleverTapEventCancelSubscription(UserItem userItem) {
-            HashMap<String, Object> hashMap = new HashMap<>();
+        public void setCleverTapEventCancelSubscription(SubscribeItem subscribeItem) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("subscribe_item_uuid", subscribeItem.getUuid());
+                hashMap.put("title", subscribeItem.getBoxItem().getTitle());
+                hashMap.put("box_item_uuid", subscribeItem.getBoxItem().getUuid());
+                hashMap.put("item_config_uuid", subscribeItem.getSelectedItemConfig().getUuid());
+                hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
+                        subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_subscription", subscribeItem.getSelectedItemConfig().getSubscriptionText());
 
-            TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
+
+                TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }

@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.TimeZone;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import okhttp3.ResponseBody;
 import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
@@ -51,12 +53,14 @@ import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
@@ -285,6 +289,21 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 if (response.body() != null) {
                                     boxes.addAll(response.body().getBoxes());
                                     setupRecyclerView();
+                                }
+                            } else {
+                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
+                                    //parse error send by the server and show message
+                                    Converter<ResponseBody, BoxResponse> errorConverter =
+                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.boxes.BoxResponse.class,
+                                                    new Annotation[0]);
+                                    one.thebox.android.api.Responses.boxes.BoxResponse error = errorConverter.convert(
+                                            response.errorBody());
+                                    //unauthorized
+                                    if (error.getResponsecode() == 401) {
+                                        //UnAuthorised; logout and move to Splash
+                                        new AuthenticationService().logOut(getActivity(), false);
+                                    }
+
                                 }
                             }
                         } catch (Exception e) {

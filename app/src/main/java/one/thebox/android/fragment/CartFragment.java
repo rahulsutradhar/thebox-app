@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.order.Order;
@@ -73,6 +74,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             if (boxItems.size() > 0) {
                 if (isUpdateRecyclerview) {
                     setupRecyclerView();
+
                 }
                 setCartPrice(CartHelper.getCartPrice());
 
@@ -147,11 +149,20 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 //request server to set cart
                 if (ProductQuantity.getCartSize() > 0) {
                     requestServerConfirmCart();
+                    // set celver tap even when proceed from cart
+                    setCleverTapEventProocedFromCart();
+
                 } else {
-                    Toast.makeText(getActivity(), "Ypur cart seems empty, please add items", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Your cart seems empty, please add items", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        /**
+         * Save CleverTap Event; OpenCart
+         */
+        setCleverTapEventOpenCart();
+
 
     }
 
@@ -193,11 +204,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             }
         });
 
-
-        /**
-         * Save CleverTap Event; OpenCart
-         */
-        //setCleverTapEventOpenCart();
     }
 
 
@@ -321,15 +327,28 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         startActivity(intent);
     }
 
-    public void setCleverTapEventProocedFromCart(Order order) {
+    /**
+     * When proceed from Cart
+     */
+    public void setCleverTapEventProocedFromCart() {
         HashMap<String, Object> cartItems = new HashMap<>();
+        cartItems.put("user_uuid", PrefUtils.getUser(getActivity()).getUuid());
+        cartItems.put("item_quantity_cart", ProductQuantity.getCartSize());
+        cartItems.put("total_price_cart", CartHelper.getCartPrice());
 
         TheBox.getCleverTap().event.push("proceed_from_cart", cartItems);
     }
 
+    /**
+     * Clevertap event for cart Items
+     */
     public void setCleverTapEventOpenCart() {
         try {
             HashMap<String, Object> cartItems = new HashMap<>();
+            cartItems.put("user_uuid", PrefUtils.getUser(getActivity()).getUuid());
+            cartItems.put("item_quantity_cart", ProductQuantity.getCartSize());
+            cartItems.put("total_price_cart", CartHelper.getCartPrice());
+
             TheBox.getCleverTap().event.push("open_cart", cartItems);
         } catch (Exception e) {
             e.printStackTrace();

@@ -19,6 +19,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.SyncCartItemEvent;
@@ -417,6 +418,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
             //check for background service
             CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
+
+            /**
+             * SetCleverTapEventRemoveItem
+             */
+            setCleverTapEventItemRemoveFromCart(boxItem);
         }
 
         /**
@@ -448,6 +454,34 @@ public class CartAdapter extends BaseRecyclerAdapter {
             if (cartFragment != null) {
                 cartFragment.initVariables(false);
             }
+        }
+
+        /**
+         * CleverTap Event;
+         * <p>
+         * Remove Item from Cart;
+         */
+        public void setCleverTapEventItemRemoveFromCart(BoxItem boxItem) {
+            try {
+                TheBox.getCleverTap().event.push("item_remove_from_cart", getParam(boxItem));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public HashMap getParam(BoxItem boxItem) {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            try {
+                hashMap.put("title", boxItem.getTitle());
+                hashMap.put("brand", boxItem.getBrand());
+                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSize() + " " +
+                        boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
+                hashMap.put("item_config_uuid", boxItem.getSelectedItemConfig().getUuid());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return hashMap;
         }
 
     }

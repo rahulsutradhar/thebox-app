@@ -230,8 +230,8 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.recyclerViewCategories.setVisibility(View.VISIBLE);
             this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
             if (box.getCategories() != null) {
-                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, box.getCategories(), glideRequestManager);
-                this.remainingCategoryAdapter.setBox(boxes.get(position));
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(
+                        mContext, box.getCategories(), box.getUuid(), box.getTitle(), glideRequestManager);
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }
 

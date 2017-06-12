@@ -32,16 +32,12 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private PaymentDetailsAdapter adapter;
     private TextView payButton;
     private String amountToPay;
-
-
     private Address address;
     private long timeSlotTimeStamp;
     private boolean isMerge;
     private String orderUuid;
 
-    /**
-     * Refactor
-     */
+
     public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
         intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
@@ -81,7 +77,6 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 fetchPaymentForMergeDeliveries();
 
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();
