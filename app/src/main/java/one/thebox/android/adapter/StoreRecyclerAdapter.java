@@ -1,8 +1,6 @@
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -20,17 +18,10 @@ import java.util.ArrayList;
 import io.realm.RealmList;
 import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Models.items.Box;
-import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.carousel.AdapterCarousel;
-import one.thebox.android.api.RestClient;
-import one.thebox.android.app.TheBox;
-import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by vaibhav on 17/08/16.
@@ -239,8 +230,8 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
             this.recyclerViewCategories.setVisibility(View.VISIBLE);
             this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
             if (box.getCategories() != null) {
-                this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, box.getCategories(), glideRequestManager);
-                this.remainingCategoryAdapter.setBox(boxes.get(position));
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(
+                        mContext, box.getCategories(), box.getUuid(), box.getTitle(), glideRequestManager);
                 this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
             }
 

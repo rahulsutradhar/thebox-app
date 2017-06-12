@@ -221,7 +221,9 @@ public class NotificationHelper {
 
             //Action to be Perform
             if (notificationInfo.getNotificationActions().size() > 0) {
-                intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+                if (notificationInfo.getNotificationActions().get(index).getActionId()!=0) {
+                    intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, notificationInfo.getNotificationActions().get(index).getActionId());
+                }
             }
             //set Extra data
             if (notificationInfo.getParams() != null) {

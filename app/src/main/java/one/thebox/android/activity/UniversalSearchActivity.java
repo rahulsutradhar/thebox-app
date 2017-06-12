@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -28,10 +27,8 @@ import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 
-import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
-import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
-import one.thebox.android.api.RestClient;
+import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;

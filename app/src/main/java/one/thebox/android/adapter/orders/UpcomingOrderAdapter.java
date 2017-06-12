@@ -1,6 +1,5 @@
 package one.thebox.android.adapter.orders;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
@@ -8,19 +7,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.haha.perflib.Main;
-
 import java.util.ArrayList;
 
-import io.realm.RealmList;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
-import one.thebox.android.app.Constants;
 import one.thebox.android.fragment.UpComingOrderFragment;
 
 
@@ -190,20 +183,30 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                 message.setText(order.getReminderText());
                 amountTobePaidTextView.setText(order.getPaymentText());
 
+                /**
+                 * Condition for colors
+                 */
                 if (order.isPaymentComplete()) {
                     amountTobePaidTextView.setClickable(false);
                     amountTobePaidTextView.setEnabled(false);
-                    message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                    amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    if (order.isCod()) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
+                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    } else if (order.isPaid()) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    }
                 } else {
                     amountTobePaidTextView.setClickable(true);
                     amountTobePaidTextView.setEnabled(true);
-                    if (order.isCod() && !order.isPaid()) {
-                        message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
+
+                    if (order.isCod() == false && order.isPaid() == false && order.isDelivered() == true) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.accent));
                     } else {
-                        message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
+                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
                     }
                 }
+
                 amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

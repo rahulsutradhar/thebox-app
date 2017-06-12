@@ -516,98 +516,6 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     }
 
-
-    /**
-     * Add New address to server
-     */
-    private void addAddress(final Address address) {
-       /* final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
-        TheBox.getAPIService().addAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
-                new AddAddressRequestBody(
-                        new AddAddressRequestBody.Address(
-                                localityUid,
-                                address.getLabel(),
-                                address.getFlat(),
-                                address.getSociety(),
-                                address.getStreet())))
-                .enqueue(new Callback<AddressesApiResponse>() {
-                    @Override
-                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.isSuccessful()) {
-                                if (response.body() != null) {
-                                    if (response.body().isSuccess()) {
-                                        updateAddressLocally(response.body().getAddress());
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-    }
-
-
-    /**
-     * Edit Addres or Update Addres to Server
-     */
-    public void updateAdddress(final Address address) {
-       /* final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
-        TheBox.getAPIService().updateAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
-                new UpdateAddressRequestBody(
-                        new UpdateAddressRequestBody.Address(
-                                address.getId(),
-                                localityUid,
-                                address.getLabel(),
-                                address.getFlat(),
-                                address.getSociety(),
-                                address.getStreet())))
-                .enqueue(new Callback<AddressesApiResponse>() {
-                    @Override
-                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.isSuccessful()) {
-                                if (response.body() != null) {
-                                    if (response.body().isSuccess()) {
-                                        updateAddressLocally(response.body().getAddress());
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-    }
-
-
     public void updateAddressLocally(Address address) {
         try {
             User user = PrefUtils.getUser(addAddressFragment.getActivity());
@@ -681,7 +589,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
      */
     public void setCleverTapEventSaveAddress(Address address) {
         HashMap<String, Object> saveAddress = new HashMap<>();
-        saveAddress.put("delivery_address", address);
+        saveAddress.put("address_uuid", address.getUuid());
 
         TheBox.getCleverTap().event.push("save_address", saveAddress);
 

@@ -86,7 +86,7 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
             final BoxLoader dialog = new BoxLoader(this).show();
             TheBox.getAPIService().updateProfile(
                     PrefUtils.getToken(this), new StoreUserInfoRequestBody(new StoreUserInfoRequestBody.User
-                            (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getLocalityCode())))
+                            (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getAddresses().get(0).getLocalityUuid())))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
                         @Override
                         public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

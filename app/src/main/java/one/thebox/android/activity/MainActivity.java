@@ -48,7 +48,6 @@ import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.Category;
-import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.notifications.Params;
@@ -61,7 +60,7 @@ import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
 import one.thebox.android.services.notification.RegistrationIntentService;
-import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
+import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.AutoCompleteFragment;
@@ -108,7 +107,6 @@ public class MainActivity extends BaseActivity implements
     private ImageView buttonSpecialAction, searchAction, btn_search, chatbutton;
     private EditText searchView;
     private String query;
-    private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
     private Menu menu;
@@ -173,7 +171,6 @@ public class MainActivity extends BaseActivity implements
             CartHelper.updateCart(setting.getParsedCartItems());
             //synced memory with cart
             ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
-
 
         }
 
@@ -526,7 +523,9 @@ public class MainActivity extends BaseActivity implements
      */
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
-            startActivity(TermsOfUserActivity.getIntent(this, true));
+            Intent intent = new Intent(MainActivity.this, HotLineActivity.class);
+            intent.putExtra(Constants.EXTRA_NAVIGATE_TO_HOTLINE_FAQ, true);
+            startActivity(intent);
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
@@ -795,7 +794,7 @@ public class MainActivity extends BaseActivity implements
             /**
              * Notifications Action Handiling
              */
-            case 9:{
+            case 9: {
                 attachMyBoxesFragment(2, false);
                 break;
             }

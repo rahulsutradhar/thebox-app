@@ -79,6 +79,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private String orderUuid;
     private Order order;
     private boolean isPayFromOrder = false;
+    private String razorpayId = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -249,20 +250,47 @@ public class PaymentOptionActivity extends AppCompatActivity {
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body().isStatus()) {
+                                    /**
+                                     * SetCelver tap Event
+                                     * Success
+                                     */
+                                    setCleverTapEventPayments(true, 0);
+
                                     //payment Successfull
                                     paymentCompleteClearCartAndMoveToHome();
                                 } else {
+                                    /**
+                                     * Failed
+                                     * Set Celver tap Event
+                                     * Response
+                                     */
+                                    setCleverTapEventPayments(false, 3);
+
                                     Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         } catch (Exception e) {
                             Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                            /**
+                             * Failed
+                             * Set Celver tap Event
+                             * Response
+                             */
+                            setCleverTapEventPayments(false, 3);
+
                         }
                     }
 
                     @Override
                     public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
                         Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        /**
+                         * Failed
+                         * Set Celver tap Event
+                         * Server
+                         */
+                        setCleverTapEventPayments(false, 2);
+
                     }
                 });
     }
@@ -331,10 +359,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     public void onPaymentSuccess(String razorpayPaymentID) {
+        razorpayId = razorpayPaymentID;
         setRequestDataForOnline(razorpayPaymentID);
     }
 
     private void payOnLine(String razorpayPaymentID) {
+        razorpayId = razorpayPaymentID;
         setRequestDataForOnline(razorpayPaymentID);
     }
 
@@ -342,7 +372,10 @@ public class PaymentOptionActivity extends AppCompatActivity {
     public void onPaymentError(int code, String response) {
         try {
             Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
-            setCleverTapEventPaymentModeFailure(1);
+            /**
+             * Set Celver tap Event; failed- razorpay
+             */
+            setCleverTapEventPayments(false, 1);
         } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
         }
@@ -350,51 +383,54 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     /**
-     * Clever Tap Event
-     * Success
+     * Set Clever Tap Event For Payments
      */
-    public void setCleverTapEventPaymentModeSuccess() {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        if (POSITION_OF_VIEW_PAGER == 0) {
-            hashMap.put("mode", "razorpay");
-        } else if (POSITION_OF_VIEW_PAGER == 1) {
-            hashMap.put("mode", "cod");
+    public void setCleverTapEventPayments(boolean paymentStatus, int failedMode) {
+        try {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            if (POSITION_OF_VIEW_PAGER == 0) {
+                hashMap.put("mode", "razorpay");
+            } else if (POSITION_OF_VIEW_PAGER == 1) {
+                hashMap.put("mode", "cod");
+            }
+            hashMap.put("amount", totalPayment);
+
+            //payment status
+            if (paymentStatus) {
+                hashMap.put("payment_status", "success");
+            } else {
+                hashMap.put("payment_status", "failed");
+            }
+
+            hashMap.put("razorpay_id", razorpayId);
+            /**
+             * if failed; failed mode;
+             * 0- not failed
+             * 1- razorpay
+             * 2-server
+             * 3-response
+             */
+            if (failedMode != 0) {
+                switch (failedMode) {
+                    case 1:
+                        hashMap.put("failed_mode", "razorpay");
+                        break;
+                    case 2:
+                        hashMap.put("failed_mode", "server");
+                        break;
+                    case 3:
+                        hashMap.put("failed_mode", "response");
+                        break;
+                }
+            } else {
+                hashMap.put("failed_mode", "");
+            }
+
+            TheBox.getCleverTap().event.push("payment_mode", hashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        hashMap.put("amount", totalPayment);
-        hashMap.put("payment_status", "success");
 
-        TheBox.getCleverTap().event.push("payment_mode", hashMap);
-    }
-
-    public void setCleverTapEventPaymentModeFailure(int failedMode) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        if (POSITION_OF_VIEW_PAGER == 0) {
-            hashMap.put("mode", "razorpay");
-        } else if (POSITION_OF_VIEW_PAGER == 1) {
-            hashMap.put("mode", "cod");
-        }
-        hashMap.put("amount", totalPayment);
-        hashMap.put("payment_status", "failed");
-
-        /**
-         * 1- razorpay
-         * 2- server failed or bad request
-         * 3- response returns failed
-         */
-        switch (failedMode) {
-            case 1:
-                hashMap.put("failed_mode", "razorpay");
-                break;
-            case 2:
-                hashMap.put("failed_mode", "server");
-                break;
-            case 3:
-                hashMap.put("failed_mode", "response");
-                break;
-        }
-
-
-        TheBox.getCleverTap().event.push("payment_mode", hashMap);
     }
 
 

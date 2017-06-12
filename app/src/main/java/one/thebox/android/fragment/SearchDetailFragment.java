@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,7 +32,6 @@ import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Models.items.Category;
-import one.thebox.android.Models.ExploreItem;
 import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
@@ -76,14 +73,12 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
 
     private int clickPosition;
     private TextView noResultFound, itemsInCart, savings;
-    //    private FrameLayout fabHolder;
+
     private CardView specialCardView;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
-    private int source;
     public static int POSITION_OF_VIEW_PAGER;
     private boolean previousScrollAction = false;
     private int noOfTabs;
-    private String title;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -299,7 +294,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
             viewPager.setCurrentItem(clickPosition);
             POSITION_OF_VIEW_PAGER = clickPosition;
-            ExploreItem.setDefaultPositionOfViewPager(getArguments().getString(BOX_NAME), clickPosition);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -520,11 +514,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void setCleverTapEventBrowseCategory(Category category) {
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("box_id", category.getBoxId());
+
             hashMap.put("box_title", getArguments().getString(BOX_NAME));
-            hashMap.put("category_id", category.getId());
+            hashMap.put("category_uuid", category.getUuid());
             hashMap.put("category_title", category.getTitle());
-            hashMap.put("number_of_items", category.getNoOfItems());
+            hashMap.put("number_of_items", category.getNumberOfItem());
 
             TheBox.getCleverTap().event.push("browse_category", hashMap);
 

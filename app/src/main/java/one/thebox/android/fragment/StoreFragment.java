@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.TimeZone;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
+import okhttp3.ResponseBody;
 import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
@@ -51,12 +53,14 @@ import one.thebox.android.api.Responses.boxes.BoxResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.DateTimeUtil;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
@@ -117,7 +121,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
 
             setupAppBarObserver();
 
-            onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+            onTabEvent(new TabEvent(CartHelper.getCartSize()));
             initDataChangeListener();
         }
         return rootLayout;
@@ -285,6 +289,11 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 if (response.body() != null) {
                                     boxes.addAll(response.body().getBoxes());
                                     setupRecyclerView();
+                                }
+                            } else {
+                                //Unauthorized
+                                if (response.code() == 401) {
+                                    new AuthenticationService().navigateToSplash(getActivity());
                                 }
                             }
                         } catch (Exception e) {

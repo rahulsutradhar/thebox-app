@@ -9,49 +9,6 @@ import io.realm.annotations.PrimaryKey;
 
 public class ItemConfig extends RealmObject implements Serializable {
 
-    @SerializedName("id")
-    private int id;
-
-    @SerializedName("correct_quantity")
-    private String correctQuantity;
-
-
-    @SerializedName("savings_title")
-    private String savingsTitle;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-
-    public String getCorrectQuantity() {
-        return correctQuantity;
-    }
-
-    public void setCorrectQuantity(String correctQuantity) {
-        this.correctQuantity = correctQuantity;
-    }
-
-
-    public String getSavingsTitle() {
-        return savingsTitle;
-    }
-
-    public void setSavingsTitle(String savingsTitle) {
-        this.savingsTitle = savingsTitle;
-    }
-
-
-    public ItemConfig() {
-    }
-
-    /**
-     * Refactor
-     */
     @PrimaryKey
     private String uuid;
 

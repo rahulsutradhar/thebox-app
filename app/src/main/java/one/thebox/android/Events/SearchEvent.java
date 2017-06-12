@@ -3,7 +3,6 @@ package one.thebox.android.Events;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.search.SearchResult;
-import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
 
 /**
  * Created by Ajeet Kumar Meena on 21-04-2016.

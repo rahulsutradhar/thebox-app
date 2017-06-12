@@ -253,8 +253,13 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
 
+                        /**
+                         * Set Clever Tab Event on Clicking Savings Cart
+                         */
+                        setCleverTapEventSubscribeNextSavings(saving);
+
                         //pass info to StoreFragment and display products
-                        EventBus.getDefault().post(new DisplayProductForSavingsEvent(saving.getSuggestedBoxUuid(), saving.getSuggestionBoxName()));
+                        EventBus.getDefault().post(new DisplayProductForSavingsEvent(saving.getSuggestionBoxUuid(), saving.getSuggestionBoxName()));
                     }
                 });
 
@@ -271,8 +276,8 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
         public void setCleverTapEventSubscribeNextSavings(Saving saving) {
             try {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("box_id", saving.getSuggestionBoxId());
-                hashMap.put("box_name", saving.getSuggestionBoxName());
+                hashMap.put("box_uuid", saving.getSuggestionBoxUuid());
+                hashMap.put("box_title", saving.getSuggestionBoxName());
 
                 TheBox.getCleverTap().event.push("subscribe_next_savings", hashMap);
 
