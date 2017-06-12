@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.PrefUtils;
 
 /**
@@ -28,11 +29,10 @@ public class HotLineActivity extends BaseActivity {
     TextView txtFaq;
 
     private User user;
-
+    private boolean shalNavigateToFaq = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_hotline);
@@ -49,7 +49,10 @@ public class HotLineActivity extends BaseActivity {
 
         Hotline.getInstance(getApplicationContext()).updateUser(hlUser);
 
-//        Hotline.showConversations(getApplicationContext());
+        shalNavigateToFaq = getIntent().getBooleanExtra(Constants.EXTRA_NAVIGATE_TO_HOTLINE_FAQ, false);
+        if (shalNavigateToFaq) {
+            navigateToFAQ();
+        }
 
         txtContactSupport.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,16 +64,22 @@ public class HotLineActivity extends BaseActivity {
         txtFaq.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FaqOptions faqOptions = new FaqOptions()
-                        .showFaqCategoriesAsGrid(true)
-                        .showContactUsOnAppBar(true)
-                        .showContactUsOnFaqScreens(false)
-                        .showContactUsOnFaqNotHelpful(false);
-                Hotline.showFAQs(getApplicationContext(), faqOptions);
+                navigateToFAQ();
             }
         });
 
+    }
 
+    public void navigateToFAQ() {
+        FaqOptions faqOptions = new FaqOptions()
+                .showFaqCategoriesAsGrid(true)
+                .showContactUsOnAppBar(true)
+                .showContactUsOnFaqScreens(false)
+                .showContactUsOnFaqNotHelpful(false);
+        Hotline.showFAQs(getApplicationContext(), faqOptions);
+        if (shalNavigateToFaq) {
+            finish();
+        }
     }
 
 }

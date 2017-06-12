@@ -523,7 +523,9 @@ public class MainActivity extends BaseActivity implements
      */
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
-            startActivity(TermsOfUserActivity.getIntent(this, true));
+            Intent intent = new Intent(MainActivity.this, HotLineActivity.class);
+            intent.putExtra(Constants.EXTRA_NAVIGATE_TO_HOTLINE_FAQ, true);
+            startActivity(intent);
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {

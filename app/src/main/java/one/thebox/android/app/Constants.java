@@ -198,5 +198,10 @@ public class Constants {
     public final static int REMOVE_ITEM_EVENT = 2;
     public final static int UPDATE_ITEMCONFIG_EVENT = 3;
 
+    /**
+     * Shall Navigate to FAQ
+     */
+    public final static String EXTRA_NAVIGATE_TO_HOTLINE_FAQ = "extra_navigate_to_hotline_faq";
+
 
 }
