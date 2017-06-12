@@ -30,6 +30,10 @@ public class OrderItem implements Serializable {
     @SerializedName("itemconfig")
     private ItemConfig selectedItemConfig;
 
+    /********************************
+     * GETTER SETTER
+     ********************************/
+
     public String getUuid() {
         return uuid;
     }

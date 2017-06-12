@@ -142,6 +142,11 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
                     @Override
                     public void onClick(View v) {
                         if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty() && !offer.getBoxUuid().isEmpty()) {
+                            /**
+                             * Set Clever Tab Event Fro Carousel Click
+                             */
+                            setCleverTapEventForCarousel(offer);
+
                             //send request to StoreFragment to show products
                             EventBus.getDefault().post(new DisplayProductForCarouselEvent(offer));
                         }
@@ -158,7 +163,10 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
         public void setCleverTapEventForCarousel(Offer offer) {
             try {
                 HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("uuid", offer.getUuid());
                 hashMap.put("category_uuid", offer.getCategoryUuid());
+                hashMap.put("box_uuid", offer.getBoxUuid());
+                hashMap.put("box_title", offer.getTitle());
 
                 TheBox.getCleverTap().event.push("carousel_click", hashMap);
             } catch (Exception e) {

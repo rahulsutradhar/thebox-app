@@ -1,4 +1,4 @@
-package one.thebox.android.api.Responses;
+package one.thebox.android.api.Responses.search;
 
 import com.google.gson.annotations.SerializedName;
 

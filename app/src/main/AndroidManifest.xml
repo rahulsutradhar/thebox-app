@@ -153,10 +153,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/app_name"
-
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OnBoardingActivity"
@@ -272,11 +268,8 @@
             android:name="CLEVERTAP_TOKEN"
             android:value="@string/clevertab_account_token" />
 
-        <service
-            android:name=".services.UpdateOrderService"
-            android:enabled="true" />
         <!--
- ATTENTION: This was auto-generated to add Google Play services to your project for
+    ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
         <meta-data

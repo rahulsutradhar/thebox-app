@@ -17,7 +17,6 @@ import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.order.OrderItem;
 import one.thebox.android.R;
@@ -143,6 +142,9 @@ public class OrderItemsActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Called from OrderItemAdapter
+     */
     public void updateView(Order order) {
         this.order = order;
         if (order.getNoOfItems() == 0) {

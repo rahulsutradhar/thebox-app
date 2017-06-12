@@ -12,6 +12,9 @@ import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
 import one.thebox.android.Models.items.Box;
@@ -20,6 +23,7 @@ import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
@@ -30,11 +34,17 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
     private RealmList<Category> categories = new RealmList<>();
     private boolean isSearchDetailItemFragment;
-    private Box box;
+    private String boxUuid, boxTitle;
     private Context context;
     private RequestManager mRequestManager;
 
-
+    /**
+     * Called from search Detail Adapter
+     *
+     * @param context
+     * @param categories
+     * @param mRequestManager
+     */
     public RemainingCategoryAdapter(Context context, RealmList<Category> categories, RequestManager mRequestManager) {
         super(context);
         this.categories = categories;
@@ -42,8 +52,22 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
         this.mRequestManager = mRequestManager;
     }
 
-    public void setBox(Box box) {
-        this.box = box;
+    /**
+     * Called from Store Adapter
+     *
+     * @param context
+     * @param categories
+     * @param boxUuid
+     * @param boxTitle
+     * @param mRequestManager
+     */
+    public RemainingCategoryAdapter(Context context, RealmList<Category> categories, String boxUuid, String boxTitle, RequestManager mRequestManager) {
+        super(context);
+        this.categories = categories;
+        this.context = context;
+        this.boxUuid = boxUuid;
+        this.boxTitle = boxTitle;
+        this.mRequestManager = mRequestManager;
     }
 
     public boolean isSearchDetailItemFragment() {
@@ -150,9 +174,9 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(final Category category, final int position) {
             if (isSearchDetailItemFragment) {
-                categoryNameTextView.setText(category.getTitle());
+                categoryNameTextView.setText(category.getMinititle());
             } else {
-                categoryNameTextView.setText(category.getTitle());
+                categoryNameTextView.setText(category.getMinititle());
             }
 
             //Saving text display if not empty
@@ -186,17 +210,59 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
         public void handleCLickEvent(Category category, int position) {
             if (isSearchDetailItemFragment) {
+                setCleverTapEventForSuggestedCategoryClicked(category);
                 EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
             } else {
+
+                /**
+                 * Save Clevertap Event for Category Selected
+                 */
+                setCleverTapEventForBoxCategorySelected(category);
 
                 Intent intent = new Intent(mContext, MainActivity.class)
                         .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
                         .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))
                         .putExtra(Constants.EXTRA_CLICKED_CATEGORY_UID, category.getUuid())
                         .putExtra(Constants.EXTRA_CLICK_POSITION, position)
-                        .putExtra(Constants.EXTRA_BOX_NAME, box.getTitle());
+                        .putExtra(Constants.EXTRA_BOX_NAME, boxTitle);
 
                 mContext.startActivity(intent);
+            }
+        }
+
+        /**
+         * Set Clevertab Event for Suggested Category Clicked
+         */
+        public void setCleverTapEventForSuggestedCategoryClicked(Category category) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("category_uuid", category.getUuid());
+                hashMap.put("category_title", category.getTitle());
+                hashMap.put("category_num_of_item", category.getNumberOfItem());
+
+                TheBox.getCleverTap().event.push("suggested_category_clicked", hashMap);
+
+            } catch (Exception e) {
+
+            }
+        }
+
+        /**
+         * Set Clevertab Event for Category Clicked
+         */
+        public void setCleverTapEventForBoxCategorySelected(Category category) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("category_uuid", category.getUuid());
+                hashMap.put("category_title", category.getTitle());
+                hashMap.put("category_num_of_item", category.getNumberOfItem());
+                hashMap.put("box_uuid", boxUuid);
+                hashMap.put("box_title", boxTitle);
+
+                TheBox.getCleverTap().event.push("box_category_clicked", hashMap);
+
+            } catch (Exception e) {
+
             }
         }
     }

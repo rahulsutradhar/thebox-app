@@ -153,7 +153,12 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(ItemConfig itemConfig) {
 
-            sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            if (itemConfig.getSize() == 0) {
+                sizeTextView.setText(itemConfig.getQuantity() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            } else {
+                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            }
+
 
             costTextView.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
 

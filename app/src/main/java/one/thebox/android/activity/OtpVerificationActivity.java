@@ -276,7 +276,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
             HashMap<String, Object> userLogin = new HashMap<>();
             userLogin.put("Phone", user.getPhoneNumber());
             userLogin.put("Unique Id", user.getUuid());
-            userLogin.put("User_id", user.getId());
             if (user.getEmail() != null) {
                 if (!user.getEmail().isEmpty()) {
                     userLogin.put("Email", user.getEmail());

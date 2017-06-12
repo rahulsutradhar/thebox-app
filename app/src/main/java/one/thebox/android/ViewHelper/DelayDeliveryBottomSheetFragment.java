@@ -405,13 +405,6 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public void setCleverTapEventRescheduleDelivery(UserItem userItem) {
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("user_item_id", userItem.getId());
-            hashMap.put("box_item_id", userItem.getBoxItem().getId());
-            hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("brand", userItem.getBoxItem().getBrand());
-            hashMap.put("item_config_id", userItem.getSelectedConfigId());
-            hashMap.put("quantitiy", userItem.getQuantity());
-            hashMap.put("category", userItem.getBoxItem().getCategoryId());
             hashMap.put("reschedule_type", "skip");
 
             TheBox.getCleverTap().event.push("reschedule_delivery", hashMap);

@@ -179,7 +179,11 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                 price.setText(Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
                 frequency.setText("Repeat delivery " + selectedItemConfig.getSubscriptionText().toLowerCase());
 
-                config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                if (selectedItemConfig.getSize() == 0) {
+                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                } else {
+                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                }
 
                 //show savings text if exist
                 if (orderItem.getSavingsText() != null) {

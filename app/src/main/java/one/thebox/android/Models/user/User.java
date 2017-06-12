@@ -14,23 +14,6 @@ import one.thebox.android.Models.address.Address;
  * Created by Ajeet Kumar Meena on 19-04-2016.
  */
 public class User extends RealmObject implements Serializable {
-    @Ignore
-    public static final String FIELD_USER_ID = "id";
-    @Ignore
-    public static final String FIELD_EMAIL = "id";
-    @Ignore
-    public static final String FIELD_PHONE_NUMBER = "id";
-    @Ignore
-    public static final String FIELD_IS_OTP_CONFIRMED = "id";
-    @Ignore
-    public static final String FIELD_NAME = "id";
-    @Ignore
-    public static final String FIELD_LOCALITY_CODE = "id";
-    @Ignore
-    public static final String FIELD_AUTH_TOKEN = "id";
-    @Ignore
-    public static final String FIELD_ADDRESSES = "addresses";
-
 
     /**
      * User Unique Id
@@ -38,6 +21,9 @@ public class User extends RealmObject implements Serializable {
     @PrimaryKey
     private String uuid;
 
+    /**
+     * Session Token
+     */
     @SerializedName("access_token")
     private String accessToken;
 
@@ -53,83 +39,8 @@ public class User extends RealmObject implements Serializable {
     private RealmList<Address> addresses;
 
 
-    /**
-     * Old
-     */
-    @SerializedName("id")
-    private int id;
-
-    @SerializedName("otp_secret_key_confirmed")
-    private boolean isOtpConfirmed;
-
-
-    @SerializedName("localitycode")
-    private String localityCode;
-
-
-    @SerializedName("cart_id")
-    private int cartId;
-
     public User() {
     }
-
-    public User(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.phoneNumber = user.getPhoneNumber();
-        this.isOtpConfirmed = user.isOtpConfirmed();
-        this.name = user.getName();
-        this.localityCode = user.getLocalityCode();
-        this.accessToken = user.getAccessToken();
-    }
-
-    public User(int id, String email, String phoneNumber, boolean isOtpConfirmed, String name, String localityCode, String accessToken) {
-        this.id = id;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.isOtpConfirmed = isOtpConfirmed;
-        this.name = name;
-        this.localityCode = localityCode;
-        this.accessToken = accessToken;
-    }
-
-    public int getCartId() {
-        return cartId;
-    }
-
-    public void setCartId(int cartId) {
-        this.cartId = cartId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public boolean isOtpConfirmed() {
-        return isOtpConfirmed;
-    }
-
-    public void setOtpConfirmed(boolean otpConfirmed) {
-        isOtpConfirmed = otpConfirmed;
-    }
-
-
-    public String getLocalityCode() {
-        return localityCode;
-    }
-
-    public void setLocalityCode(String localityCode) {
-        this.localityCode = localityCode;
-    }
-
-    /**
-     * New
-     */
-
 
     public String getPhoneNumber() {
         return phoneNumber;

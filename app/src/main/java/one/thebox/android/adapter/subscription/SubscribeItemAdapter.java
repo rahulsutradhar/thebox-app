@@ -184,7 +184,12 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());
 
-                config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                //item config Size
+                if (selectedItemConfig.getSize() == 0) {
+                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                } else {
+                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                }
                 arrivingTime.setText(subscribeItem.getArrivingAt());
 
 
@@ -316,7 +321,8 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                     if (deliveryBottomSheet != null) {
                                         deliveryBottomSheet.dismiss();
                                     }
-
+                                    //fetch orders to update the list
+                                    EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                 }
                             });
                             break;
@@ -380,6 +386,11 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                             notifyDataSetChanged();
                                             //display message to users
                                             Toast.makeText(TheBox.getAppContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                                            /**
+                                             * Set Clever tab Event CanCel Subscription
+                                             */
+                                            setCleverTapEventCancelSubscription(subscribeItem);
 
                                         } else {
                                             //update item quantity and savings
@@ -473,17 +484,22 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
         /**
          * Clever tab Event Cancel Subscription
          */
-        public void setCleverTapEventCancelSubscription(UserItem userItem) {
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("user_item_id", userItem.getId());
-            hashMap.put("box_item_id", userItem.getBoxItem().getId());
-            hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("brand", userItem.getBoxItem().getBrand());
-            hashMap.put("item_config_id", userItem.getSelectedConfigId());
-            hashMap.put("quantitiy", userItem.getQuantity());
-            hashMap.put("category", userItem.getBoxItem().getCategoryId());
+        public void setCleverTapEventCancelSubscription(SubscribeItem subscribeItem) {
+            try {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("subscribe_item_uuid", subscribeItem.getUuid());
+                hashMap.put("title", subscribeItem.getBoxItem().getTitle());
+                hashMap.put("box_item_uuid", subscribeItem.getBoxItem().getUuid());
+                hashMap.put("item_config_uuid", subscribeItem.getSelectedItemConfig().getUuid());
+                hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
+                        subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                hashMap.put("item_config_subscription", subscribeItem.getSelectedItemConfig().getSubscriptionText());
 
-            TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
+
+                TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }

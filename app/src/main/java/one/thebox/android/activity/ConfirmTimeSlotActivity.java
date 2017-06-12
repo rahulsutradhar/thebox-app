@@ -27,7 +27,7 @@ import one.thebox.android.Models.timeslot.TimeSlotInformation;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
-import one.thebox.android.adapter.MergeOrderAdapter;
+import one.thebox.android.adapter.timeslot.MergeOrderAdapter;
 import one.thebox.android.adapter.timeslot.TimeSlotAdapter;
 import one.thebox.android.api.RequestBodies.order.RescheduleOrderRequest;
 import one.thebox.android.api.Responses.TimeSlotResponse;
@@ -57,7 +57,6 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private Slot selectedSlot;
     private int selectedSlotPosition = -1;
     private TimeSlotAdapter timeSlotAdapter;
-    private int orderId = 0;
     private TimeSlotInformation timeSlotInformation;
 
     private boolean isMerge;
@@ -163,7 +162,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                     /**
                      * Save Clever Tap Event; TimeSlotsFromCart
                      */
-                    /*setCleverTapEventTimeSlotsFromCart();*/
+                    setCleverTapEventTimeSlotsFromCart();
                     startActivity(ConfirmPaymentDetailsActivity.getInstance(ConfirmTimeSlotActivity.this, isMerge, address, selectedSlot.getTimestamp()));
                 }
             }
@@ -195,6 +194,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 /**
                  * Save CleverTapEvent; TimeSlotMergeWithDeliveries
                  */
+                setCleverTapEventTimeSlotsForMerge();
             }
         });
 
@@ -273,6 +273,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
                 try {
                     if (selectedSlot != null) {
+                        /**
+                         * SetCleverTap Event for: Pay for order
+                         */
+                        setCleverTapEventTimeSlotsForOrderToPay();
+
                         Intent intent = new Intent(ConfirmTimeSlotActivity.this, PaymentOptionActivity.class);
                         intent.putExtra(Constants.EXTRA_ORDER, CoreGsonUtils.toJson(order));
                         intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, selectedSlot.getTimestamp());
@@ -662,9 +667,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void setCleverTapEventTimeSlotsFromCart() {
         try {
             HashMap<String, Object> objectHashMap = new HashMap<>();
-            objectHashMap.put("order_date", selectedTimeSlot.getDate());
-            objectHashMap.put("order_time_slot", selectedSlot.getName());
-            objectHashMap.put("order_time_stamp", selectedSlot.getTimestamp());
+            objectHashMap.put("order_is_cart", true);
+            objectHashMap.put("order_is_merge", false);
+            objectHashMap.put("order_is_reshedule", false);
+            objectHashMap.put("order_is_pay", false);
+            objectHashMap.put("slot_name", selectedSlot.getName());
+            objectHashMap.put("time_stamp", selectedSlot.getTimestamp());
 
             TheBox.getCleverTap().event.push("time_slots_from_cart", objectHashMap);
         } catch (Exception e) {
@@ -675,10 +683,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     public void setCleverTapEventTimeSlotsRescheduleOrder() {
         try {
             HashMap<String, Object> objectHashMap = new HashMap<>();
-            objectHashMap.put("order_id", orderId);
-            objectHashMap.put("order_date", selectedTimeSlot.getDate());
-            objectHashMap.put("order_time_slot", selectedSlot.getName());
-            objectHashMap.put("order_time_stamp", selectedSlot.getTimestamp());
+            objectHashMap.put("order_is_reshedule", true);
+            objectHashMap.put("slot_date", selectedTimeSlot.getDate());
+            objectHashMap.put("slot_name", selectedSlot.getName());
+            objectHashMap.put("time_stamp", selectedSlot.getTimestamp());
 
             TheBox.getCleverTap().event.push("time_slots_reschedule_order", objectHashMap);
         } catch (NullPointerException npe) {
@@ -686,10 +694,36 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         }
     }
 
-    public void setCleverTapEventTimeSlotsMergeWithDeliveries(int mergeOrderId) {
-        HashMap<String, Object> objectHashMap = new HashMap<>();
-        objectHashMap.put("merge_order_id", mergeOrderId);
-        TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
+    public void setCleverTapEventTimeSlotsForMerge() {
+        try {
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            objectHashMap.put("order_is_merge", true);
+            objectHashMap.put("order_date", selectedMergeOrder.getOrderDate());
+            objectHashMap.put("order_uuid", selectedMergeOrder.getUuid());
+            objectHashMap.put("order_amount", selectedMergeOrder.getAmountToPay());
+            objectHashMap.put("order_time_slot", selectedMergeOrder.getTimeSlot());
+            objectHashMap.put("order_no_of_items", selectedMergeOrder.getNoOfItems());
+
+            TheBox.getCleverTap().event.push("time_slots_merge_with_deliveries", objectHashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setCleverTapEventTimeSlotsForOrderToPay() {
+        try {
+            HashMap<String, Object> objectHashMap = new HashMap<>();
+            objectHashMap.put("order_is_pay", true);
+            objectHashMap.put("order_date", order.getOrderDate());
+            objectHashMap.put("order_uuid", order.getUuid());
+            objectHashMap.put("order_amount", order.getAmountToPay());
+            objectHashMap.put("order_time_slot", order.getTimeSlot());
+            objectHashMap.put("order_no_of_items", order.getNoOfItems());
+
+            TheBox.getCleverTap().event.push("time_slots_pay_for_order", objectHashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Order getSelectedMergeOrder() {

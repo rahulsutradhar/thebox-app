@@ -202,17 +202,6 @@ public class AdapterRescheduleSubscribeItem extends BaseRecyclerAdapter {
         public void setCleverTapEventRescheduleDelivery(UserItem userItem, Delivery delivery) {
             try {
                 HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("user_item_id", userItem.getId());
-                hashMap.put("box_item_id", userItem.getBoxItem().getId());
-                hashMap.put("title", userItem.getBoxItem().getTitle());
-                hashMap.put("brand", userItem.getBoxItem().getBrand());
-                hashMap.put("item_config_id", userItem.getSelectedConfigId());
-                hashMap.put("quantitiy", userItem.getQuantity());
-                hashMap.put("category", userItem.getBoxItem().getCategoryId());
-                hashMap.put("reschedule_type", "merge");
-                hashMap.put("merge_order_uuid", delivery.getOrderUuid());
-                hashMap.put("delivery_date", delivery.getDeliveryDate());
-
                 TheBox.getCleverTap().event.push("reschedule_delivery", hashMap);
 
             } catch (Exception e) {

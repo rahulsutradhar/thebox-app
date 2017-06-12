@@ -59,19 +59,9 @@ public class SettingService {
                                     sendResponse(activity, true, calledFrom);
                                 }
                             } else {
-                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                                    //parse error send by the server and show message
-                                    Converter<ResponseBody, SettingsResponse> errorConverter =
-                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.setting.SettingsResponse.class,
-                                                    new Annotation[0]);
-                                    one.thebox.android.api.Responses.setting.SettingsResponse error = errorConverter.convert(
-                                            response.errorBody());
-
-                                    //display error message
-                                    if (error.getResponsecode() == 401) {
-                                        //UnAuthorised; logout and move to Splash
-                                        new AuthenticationService().logOut(context, false);
-                                    }
+                                if (response.code() == 401) {
+                                    //UnAuthorised; logout and move to Splash
+                                    new AuthenticationService().navigateToSplash(context);
                                 }
                             }
                         } catch (Exception e) {

@@ -58,7 +58,7 @@ public class AuthenticationService {
                     Crashlytics.setUserName(user.getName());
                     Crashlytics.setUserEmail(user.getEmail());
                     Crashlytics.setString("phone_number", user.getPhoneNumber());
-                    Crashlytics.setInt("user_id", user.getId());
+                    Crashlytics.setString("user_uuid", user.getUuid());
                     Crashlytics.setString("Platform", "Android");
 
                     PackageInfo pInfo = null;
@@ -107,7 +107,7 @@ public class AuthenticationService {
             }
             profileUpdate.put("Unique-Id", user.getUuid());
             profileUpdate.put("Identity", user.getPhoneNumber());
-            profileUpdate.put("User Id", user.getId());
+            profileUpdate.put("User Uuid", user.getUuid());
             profileUpdate.put("Platform", "Android");
 
             PackageInfo pInfo = null;
@@ -137,7 +137,7 @@ public class AuthenticationService {
                     Crashlytics.setUserName(user.getName());
                     Crashlytics.setUserEmail(user.getEmail());
                     Crashlytics.setString("phone_number", user.getPhoneNumber());
-                    Crashlytics.setInt("user_id", user.getId());
+                    Crashlytics.setString("user_uuid", user.getUuid());
                     Crashlytics.setString("Platform", "Android");
 
                     PackageInfo pInfo = null;
