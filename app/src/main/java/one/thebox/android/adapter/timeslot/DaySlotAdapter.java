@@ -1,4 +1,4 @@
-package one.thebox.android.adapter;
+package one.thebox.android.adapter.timeslot;
 
 import android.content.Context;
 import android.graphics.Typeface;

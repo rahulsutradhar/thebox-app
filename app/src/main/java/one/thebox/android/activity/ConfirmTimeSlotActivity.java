@@ -27,7 +27,7 @@ import one.thebox.android.Models.timeslot.TimeSlotInformation;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.TimeSlotBottomSheet;
-import one.thebox.android.adapter.MergeOrderAdapter;
+import one.thebox.android.adapter.timeslot.MergeOrderAdapter;
 import one.thebox.android.adapter.timeslot.TimeSlotAdapter;
 import one.thebox.android.api.RequestBodies.order.RescheduleOrderRequest;
 import one.thebox.android.api.Responses.TimeSlotResponse;
