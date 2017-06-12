@@ -19,11 +19,9 @@ import com.google.android.gms.iid.InstanceID;
 import java.io.IOException;
 
 import one.thebox.android.R;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
 import one.thebox.android.api.Responses.user.DeviceTokenResponse;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,16 +68,16 @@ public class RegistrationIntentService extends IntentService {
             // You should store a boolean that indicates whether the generated gcm_token has been
             // sent to your server. If the boolean is false, send the gcm_token to your server,
             // otherwise your server should have already received the gcm_token.
-            sharedPreferences.edit().putBoolean(Constants.SENT_TOKEN_TO_SERVER, true).apply();
+            sharedPreferences.edit().putBoolean(one.thebox.android.app.Constants.SENT_TOKEN_TO_SERVER, true).apply();
             // [END register_for_gcm]
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete gcm_token refresh", e);
             // If an exception happens while fetching the new gcm_token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
-            sharedPreferences.edit().putBoolean(Constants.SENT_TOKEN_TO_SERVER, false).apply();
+            sharedPreferences.edit().putBoolean(one.thebox.android.app.Constants.SENT_TOKEN_TO_SERVER, false).apply();
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(Constants.REGISTRATION_COMPLETE);
+        Intent registrationComplete = new Intent(one.thebox.android.app.Constants.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 

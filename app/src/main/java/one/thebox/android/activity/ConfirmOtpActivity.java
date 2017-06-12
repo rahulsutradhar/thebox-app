@@ -85,7 +85,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                         //save user locally
                                         saveUserProfileToLocal(response.body().getUser());
                                         PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
-                                        CartHelper.saveOrdersToRealm(response.body().getCart());
+
 
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(ConfirmOtpActivity.this, MainActivity.class));
@@ -139,7 +139,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                         if (response.body().isSuccess()) {
                                             if (response.body().getUser() != null) {
                                                 PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
-                                                CartHelper.saveOrdersToRealm(response.body().getCart());
+
 
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
@@ -148,7 +148,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                                     TheBox.getAPIService().updateProfile(
                                                             PrefUtils.getToken(ConfirmOtpActivity.this), new StoreUserInfoRequestBody(
                                                                     new StoreUserInfoRequestBody.User
-                                                                            (phoneNumber, user.getEmail(), user.getName(), PrefUtils.getUser(ConfirmOtpActivity.this).getLocalityCode())))
+                                                                            (phoneNumber, user.getEmail(), user.getName(), "400072")))
                                                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                                                 @Override
                                                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

@@ -323,10 +323,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     public void setCleverTapEventProocedFromCart(Order order) {
         HashMap<String, Object> cartItems = new HashMap<>();
-        cartItems.put("cart_id", order.getId());
-        cartItems.put("user_id", order.getUserId());
-        cartItems.put("total_price_cart", order.getTotalPrice());
-        cartItems.put("item_quantity_cart", order.getUserItems().size());
 
         TheBox.getCleverTap().event.push("proceed_from_cart", cartItems);
     }

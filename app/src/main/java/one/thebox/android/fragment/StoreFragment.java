@@ -117,7 +117,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
 
             setupAppBarObserver();
 
-            onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+            onTabEvent(new TabEvent(CartHelper.getCartSize()));
             initDataChangeListener();
         }
         return rootLayout;

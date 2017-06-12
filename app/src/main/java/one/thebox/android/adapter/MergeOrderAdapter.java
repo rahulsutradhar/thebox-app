@@ -27,40 +27,7 @@ public class MergeOrderAdapter extends BaseRecyclerAdapter {
         super(context);
         this.orders = orders;
         this.activity = activity;
-      /*  if (shouldHaveOrders()) {
-            mViewType = RECYCLER_VIEW_TYPE_HEADER;
-        } else {*/
         mViewType = RECYCLER_VIEW_TYPE_NORMAL;
-       /* }*/
-    }
-
-    public int getCurrentSelection() {
-        return currentSelection;
-    }
-
-    public void setCurrentSelection(int currentSelection) {
-        this.currentSelection = currentSelection;
-    }
-
-    public boolean isTimeSlotOrderAdapter() {
-        return isTimeSlotOrderAdapter;
-    }
-
-    public void setTimeSlotOrderAdapter(boolean timeSlotOrderAdapter) {
-        isTimeSlotOrderAdapter = timeSlotOrderAdapter;
-    }
-
-    private boolean shouldHaveOrders() {
-        for (Order order : orders) {
-            if (!order.isCart()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void addBillItem(Order order) {
-        orders.add(order);
     }
 
     public ArrayList<Order> getOrders() {

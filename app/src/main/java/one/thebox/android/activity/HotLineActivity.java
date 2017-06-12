@@ -21,12 +21,6 @@ import one.thebox.android.util.PrefUtils;
 
 public class HotLineActivity extends BaseActivity {
 
-
-    public static final String EXTRA_MESSAGE = "message";
-    public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
     @BindView(R.id.txtContactSupport)
     TextView txtContactSupport;
 
@@ -34,7 +28,6 @@ public class HotLineActivity extends BaseActivity {
     TextView txtFaq;
 
     private User user;
-    static final String TAG = "THEBOX";
 
 
     @Override
@@ -47,11 +40,11 @@ public class HotLineActivity extends BaseActivity {
         setTitle("Talk to us");
         user = PrefUtils.getUser(this);
 
-        HotlineUser hlUser=Hotline.getInstance(getApplicationContext()).getUser();
+        HotlineUser hlUser = Hotline.getInstance(getApplicationContext()).getUser();
 
         hlUser.setName(user.getName());
         hlUser.setEmail(user.getEmail());
-        hlUser.setExternalId(String.valueOf(user.getId()));
+        hlUser.setExternalId(String.valueOf(user.getUuid()));
         hlUser.setPhone("+91", user.getPhoneNumber());
 
         Hotline.getInstance(getApplicationContext()).updateUser(hlUser);
@@ -73,7 +66,7 @@ public class HotLineActivity extends BaseActivity {
                         .showContactUsOnAppBar(true)
                         .showContactUsOnFaqScreens(false)
                         .showContactUsOnFaqNotHelpful(false);
-                Hotline.showFAQs(getApplicationContext(),faqOptions);
+                Hotline.showFAQs(getApplicationContext(), faqOptions);
             }
         });
 

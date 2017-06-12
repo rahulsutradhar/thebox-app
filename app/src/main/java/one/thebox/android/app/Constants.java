@@ -7,6 +7,16 @@ package one.thebox.android.app;
 public class Constants {
 
     /**
+     * GCM Resgistration
+     */
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
+
+    /**
+     * GSM TOKEN
+     */
+    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+
+    /**
      * Fragment Number
      */
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";

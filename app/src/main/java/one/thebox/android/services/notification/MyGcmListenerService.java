@@ -2,8 +2,6 @@ package one.thebox.android.services.notification;
 
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.freshdesk.hotline.Hotline;
 import com.freshdesk.hotline.HotlineNotificationConfig;
@@ -11,13 +9,9 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.app.TheBox;
-import one.thebox.android.util.ActionExecuter;
-import one.thebox.android.util.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.NotificationHelper;
 import one.thebox.android.util.NotificationInfo;
-import one.thebox.android.util.PrefUtils;
 
 public class MyGcmListenerService extends GcmListenerService {
 

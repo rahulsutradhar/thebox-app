@@ -561,11 +561,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public HashMap getParam(BoxItem boxItem) {
             HashMap<String, Object> hashMap = new HashMap<>();
             try {
-                hashMap.put("box_item_id", boxItem.getId());
                 hashMap.put("title", boxItem.getTitle());
                 hashMap.put("brand", boxItem.getBrand());
-                hashMap.put("category_id", boxItem.getCategoryId());
-                hashMap.put("item_config_id", boxItem.getSelectedItemConfig().getId());
                 hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSizeUnit() + ", " +
                         boxItem.getSelectedItemConfig().getItemType());
                 hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
@@ -898,13 +895,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         public void setCleverTapEventCancelSubscription(UserItem userItem) {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("user_item_id", userItem.getId());
-            hashMap.put("box_item_id", userItem.getBoxItem().getId());
-            hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("brand", userItem.getBoxItem().getBrand());
-            hashMap.put("item_config_id", userItem.getSelectedConfigId());
-            hashMap.put("quantitiy", userItem.getQuantity());
-            hashMap.put("category", userItem.getBoxItem().getCategoryId());
 
             TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
         }

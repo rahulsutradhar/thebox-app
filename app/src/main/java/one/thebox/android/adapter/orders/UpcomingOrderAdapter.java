@@ -1,6 +1,5 @@
 package one.thebox.android.adapter.orders;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
@@ -8,19 +7,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.squareup.haha.perflib.Main;
-
 import java.util.ArrayList;
 
-import io.realm.RealmList;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
-import one.thebox.android.app.Constants;
 import one.thebox.android.fragment.UpComingOrderFragment;
 
 

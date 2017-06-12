@@ -475,13 +475,6 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
          */
         public void setCleverTapEventCancelSubscription(UserItem userItem) {
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("user_item_id", userItem.getId());
-            hashMap.put("box_item_id", userItem.getBoxItem().getId());
-            hashMap.put("title", userItem.getBoxItem().getTitle());
-            hashMap.put("brand", userItem.getBoxItem().getBrand());
-            hashMap.put("item_config_id", userItem.getSelectedConfigId());
-            hashMap.put("quantitiy", userItem.getQuantity());
-            hashMap.put("category", userItem.getBoxItem().getCategoryId());
 
             TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
         }
