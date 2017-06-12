@@ -142,6 +142,9 @@ public class OrderItemsActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Called from OrderItemAdapter
+     */
     public void updateView(Order order) {
         this.order = order;
         if (order.getNoOfItems() == 0) {

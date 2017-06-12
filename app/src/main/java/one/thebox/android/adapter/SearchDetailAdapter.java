@@ -360,8 +360,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 //Size of the ItemConfig selected
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                    size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                            + " " + boxItem.getSelectedItemConfig().getItemType());
+                    //show size
+                    if (boxItem.getSelectedItemConfig().getSize() == 0) {
+                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getQuantity()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                                + " " + boxItem.getSelectedItemConfig().getItemType());
+                    } else {
+                        //show number of pieces
+                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                                + " " + boxItem.getSelectedItemConfig().getItemType());
+                    }
                 }
 
                 glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())
@@ -630,7 +637,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());
 
-                config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                if (selectedItemConfig.getSize() == 0) {
+                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                } else {
+                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                }
+
                 arrivingTime.setText(subscribeItem.getArrivingAt());
 
 

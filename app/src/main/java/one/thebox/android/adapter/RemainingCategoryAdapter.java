@@ -174,9 +174,9 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(final Category category, final int position) {
             if (isSearchDetailItemFragment) {
-                categoryNameTextView.setText(category.getTitle());
+                categoryNameTextView.setText(category.getMinititle());
             } else {
-                categoryNameTextView.setText(category.getTitle());
+                categoryNameTextView.setText(category.getMinititle());
             }
 
             //Saving text display if not empty

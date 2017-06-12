@@ -291,19 +291,9 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                     setupRecyclerView();
                                 }
                             } else {
-                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                                    //parse error send by the server and show message
-                                    Converter<ResponseBody, BoxResponse> errorConverter =
-                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.boxes.BoxResponse.class,
-                                                    new Annotation[0]);
-                                    one.thebox.android.api.Responses.boxes.BoxResponse error = errorConverter.convert(
-                                            response.errorBody());
-                                    //unauthorized
-                                    if (error.getResponsecode() == 401) {
-                                        //UnAuthorised; logout and move to Splash
-                                        new AuthenticationService().logOut(getActivity(), false);
-                                    }
-
+                                //Unauthorized
+                                if (response.code() == 401) {
+                                    new AuthenticationService().navigateToSplash(getActivity());
                                 }
                             }
                         } catch (Exception e) {

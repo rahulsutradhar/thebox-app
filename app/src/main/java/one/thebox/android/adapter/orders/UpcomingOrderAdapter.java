@@ -183,20 +183,30 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                 message.setText(order.getReminderText());
                 amountTobePaidTextView.setText(order.getPaymentText());
 
+                /**
+                 * Condition for colors
+                 */
                 if (order.isPaymentComplete()) {
                     amountTobePaidTextView.setClickable(false);
                     amountTobePaidTextView.setEnabled(false);
-                    message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                    amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    if (order.isCod()) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
+                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    } else if (order.isPaid()) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
+                    }
                 } else {
                     amountTobePaidTextView.setClickable(true);
                     amountTobePaidTextView.setEnabled(true);
-                    if (order.isCod() && !order.isPaid()) {
-                        message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
+
+                    if (order.isCod() == false && order.isPaid() == false && order.isDelivered() == true) {
+                        message.setTextColor(mContext.getResources().getColor(R.color.accent));
                     } else {
-                        message.setTextColor(mContext.getResources().getColor(R.color.md_red_500));
+                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
                     }
                 }
+
                 amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

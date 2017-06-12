@@ -42,6 +42,8 @@ public class Order extends RealmObject implements Serializable {
 
     private boolean paid;
 
+    private boolean delivered;
+
     @SerializedName("amount_to_pay")
     private double amountToPay;
 
@@ -160,5 +162,13 @@ public class Order extends RealmObject implements Serializable {
 
     public void setPaymentComplete(boolean paymentComplete) {
         this.paymentComplete = paymentComplete;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
     }
 }

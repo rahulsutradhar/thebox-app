@@ -184,7 +184,12 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());
 
-                config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                //item config Size
+                if (selectedItemConfig.getSize() == 0) {
+                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                } else {
+                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
+                }
                 arrivingTime.setText(subscribeItem.getArrivingAt());
 
 
