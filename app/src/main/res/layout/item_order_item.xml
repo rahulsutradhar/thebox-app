@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
                 android:text="55ml Tube"
-                android:textColor="@color/secondary_text_color"
+                android:textColor="@color/bistre"
                 android:textSize="@dimen/text_small1" />
 
             <TextView

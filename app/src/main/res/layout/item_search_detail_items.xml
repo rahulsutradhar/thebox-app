@@ -139,7 +139,7 @@
                         android:paddingBottom="4dp"
                         android:paddingTop="4dp"
                         android:text=""
-                        android:textColor="@color/primary_text_color"
+                        android:textColor="@color/bistre"
                         android:textSize="13sp" />
 
                     <TextView

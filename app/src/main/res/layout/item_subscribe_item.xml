@@ -126,7 +126,7 @@
                         android:layout_marginRight="@dimen/margin_horizontal_between_co_element"
                         android:maxLines="1"
                         android:text="55ml Tube"
-                        android:textColor="@color/secondary_text_color"
+                        android:textColor="@color/bistre"
                         android:textSize="@dimen/text_small1" />
 
 
