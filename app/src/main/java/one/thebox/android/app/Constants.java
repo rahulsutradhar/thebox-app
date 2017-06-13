@@ -100,7 +100,7 @@ public class Constants {
     /**
      * Update Cart Polling Time
      */
-    public static final long UPDATE_CART_POLLING_TIME = 5000;
+    public static long UPDATE_CART_POLLING_TIME = 5000;
 
     /**
      * Extra Cart Is Merging
