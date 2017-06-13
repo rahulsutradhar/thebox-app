@@ -36,6 +36,7 @@ import okhttp3.ResponseBody;
 import one.thebox.android.Events.DisplayProductForBoxEvent;
 import one.thebox.android.Events.DisplayProductForCarouselEvent;
 import one.thebox.android.Events.DisplayProductForSavingsEvent;
+import one.thebox.android.Events.EventUnsubscribedSubscribedItem;
 import one.thebox.android.Events.TabEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
@@ -284,6 +285,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
+                                    boxes.clear();
                                     boxes.addAll(response.body().getBoxes());
                                     setupRecyclerView();
                                 }
@@ -509,6 +511,22 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                 @Override
                 public void run() {
                     searchCategoryForBox(displayProductForBoxEvent.getBox());
+                }
+            });
+        }
+    }
+
+    /**
+     * On Item Unsubscribed from Subscribe List
+     */
+    @Subscribe
+    public void eventUnsubscribedSubscribedItem(EventUnsubscribedSubscribedItem eventUnsubscribedSubscribedItem) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //update the list
+                    getBoxesFromServer();
                 }
             });
         }
