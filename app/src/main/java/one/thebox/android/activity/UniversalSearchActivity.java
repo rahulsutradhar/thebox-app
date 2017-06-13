@@ -117,7 +117,7 @@ public class UniversalSearchActivity extends Activity {
             public void onClick(View v) {
                 edtSearchQuery.setText("");
                 searchRecyclerView.setVisibility(View.GONE);
-                llNoResult.setVisibility(View.GONE);
+                llNoResult.setVisibility(View.VISIBLE);
             }
         });
 
@@ -195,9 +195,6 @@ public class UniversalSearchActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                    if (searchAutoCompleteAdapter.getSearchResults().size() != 0)
-//                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0));
-//                    return true;
                 }
                 return false;
             }

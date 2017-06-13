@@ -131,17 +131,23 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView searchResultText;
+        private TextView searchResultText, textViewResultType;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             searchResultText = (TextView) itemView.findViewById(R.id.text_search_result);
+            textViewResultType = (TextView) itemView.findViewById(R.id.text_result_type);
         }
 
         public void setViews(SearchResult searchResult, int position) {
             try {
                 searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
                 searchResultText.setText(Html.fromHtml(searchResult.getTitle()));
+                if (searchResult.isCategory()) {
+                    textViewResultType.setText("Category");
+                } else {
+                    textViewResultType.setText("Product");
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
