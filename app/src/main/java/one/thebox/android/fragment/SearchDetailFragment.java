@@ -92,6 +92,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                 if (temp != noOfTabs)
                     showSpecialCardEvent(new ShowSpecialCardEvent(true));
             } else {
+                showSpecialCardEvent(new ShowSpecialCardEvent(false));
             }
         }
     };
@@ -492,7 +493,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     public void showSpecialCardEvent(ShowSpecialCardEvent showSpecialCardEvent) {
         if (noOfTabs == 1) {
             itemsInCart.setText("You have " + noOfTabs + " item in your cart");
-        } else {
+        } else if (noOfTabs > 1) {
             itemsInCart.setText("You have " + noOfTabs + " items in your cart");
         }
         if (previousScrollAction != showSpecialCardEvent.isVisible()) {

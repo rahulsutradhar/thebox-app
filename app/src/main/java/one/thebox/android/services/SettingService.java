@@ -61,7 +61,7 @@ public class SettingService {
                             } else {
                                 if (response.code() == 401) {
                                     //UnAuthorised; logout and move to Splash
-                                    new AuthenticationService().navigateToSplash(context);
+                                    new AuthenticationService().navigateToLogin(context);
                                 }
                             }
                         } catch (Exception e) {

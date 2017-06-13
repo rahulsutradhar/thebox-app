@@ -179,6 +179,10 @@ public class AuthenticationService {
                                 } else {
                                     Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
+                            } else {
+                                if (response.code() == 401) {
+                                    navigateToLogin(context);
+                                }
                             }
 
                         } catch (Exception e) {
@@ -201,6 +205,11 @@ public class AuthenticationService {
     public void navigateToSplash(Context context) {
         AccountManager accountManager = new AccountManager(context);
         accountManager.deleteAccountData();
+    }
+
+    public void navigateToLogin(Context context) {
+        AccountManager accountManager = new AccountManager(context);
+        accountManager.deleteAndNavigateToLogin();
     }
 
 

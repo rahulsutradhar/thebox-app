@@ -187,7 +187,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
                     if (order != null) {
                         //all item has been removed, so refetch orders
-                        if (order.getAmountToPay() == 0) {
+                        if (order.getAmountToPay() == 0 && !order.isPaymentComplete()) {
                             getOrdersFromServer();
                         } else {
                             //partial update the order

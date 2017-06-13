@@ -38,7 +38,6 @@ import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.services.SettingService;
 import one.thebox.android.util.AppUtil;
-import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -46,11 +45,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static one.thebox.android.app.Constants.EXTRA_ADDRESS_TYPE;
-import static one.thebox.android.app.Constants.EXTRA_LIST_ORDER;
 
 public class FillUserInfoActivity extends BaseActivity implements View.OnClickListener {
 
-    private RealmList<Order> orders;
 
     private static final int REQ_CODE_GET_LOCATION = 101;
     String name, email;
@@ -59,29 +56,17 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
-    private View parentView;
 
     private boolean isMerge;
 
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
 
-    /**
-     * Refactor
-     */
     public static Intent newInstance(Context context, boolean isMerge) {
         return new Intent(context, FillUserInfoActivity.class)
                 .putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
     }
 
-
-    /**
-     * OLD
-     */
-    public static Intent newInstance(Context context, RealmList<Order> orders) {
-        return new Intent(context, FillUserInfoActivity.class)
-                .putExtra(EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
-    }
 
     private boolean locationRefreshed;
     private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
@@ -105,7 +90,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
 
 
     private void initViews() {
-        parentView = (CoordinatorLayout) findViewById(R.id.parent_layout);
         submitButton = (TextView) findViewById(R.id.button_submit);
         submitButton.setOnClickListener(this);
         nameEditText = (EditText) findViewById(R.id.edit_text_name);
@@ -119,8 +103,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private void initVariable() {
         try {
             isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
-
-            orders = CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(EXTRA_LIST_ORDER), Order.class);
         } catch (Exception e) {
 
         }

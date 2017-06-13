@@ -217,17 +217,27 @@ public class CartAdapter extends BaseRecyclerAdapter {
                         .into(productImage);
 
                 //Monthly Savings Item Config
-                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
-                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                if (boxItem.getQuantity() > 1) {
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsValue()!=0) {
                         savingsTitle.setVisibility(View.VISIBLE);
-                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
-                    } else {
+                        savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
+                    }else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }
                 } else {
-                    savingsTitle.setText("");
-                    savingsTitle.setVisibility(View.GONE);
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                        if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                            savingsTitle.setVisibility(View.VISIBLE);
+                            savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                        } else {
+                            savingsTitle.setText("");
+                            savingsTitle.setVisibility(View.GONE);
+                        }
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
                 }
 
                 //savings ItemConfig
@@ -411,6 +421,11 @@ public class CartAdapter extends BaseRecyclerAdapter {
              */
             EventBus.getDefault().post(new SyncCartItemEvent(Constants.REMOVE_ITEM_EVENT, boxItem));
 
+            /**
+             * SetCleverTapEventRemoveItem
+             */
+            setCleverTapEventItemRemoveFromCart(boxItem);
+
             CartHelper.removeItemFromCart(boxItem);
             boxItems.remove(position);
             notifyDataSetChanged();
@@ -418,11 +433,6 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
             //check for background service
             CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
-
-            /**
-             * SetCleverTapEventRemoveItem
-             */
-            setCleverTapEventItemRemoveFromCart(boxItem);
         }
 
         /**

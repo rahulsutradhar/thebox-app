@@ -77,7 +77,6 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     private ArrayList<Offer> carousel = new ArrayList<>();
     private AppBarObserver appBarObserver;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
-    private boolean mIsRestoredFromBackstack;
 
     private RealmList<Box> boxes = new RealmList<>();
 
@@ -241,14 +240,12 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.mIsRestoredFromBackstack = false;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         removeChangeListener();
-        this.mIsRestoredFromBackstack = true;
     }
 
     @Override
@@ -293,7 +290,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             } else {
                                 //Unauthorized
                                 if (response.code() == 401) {
-                                    new AuthenticationService().navigateToSplash(getActivity());
+                                    new AuthenticationService().navigateToLogin(getActivity());
                                 }
                             }
                         } catch (Exception e) {
