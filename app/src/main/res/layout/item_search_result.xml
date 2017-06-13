@@ -17,37 +17,25 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="12dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="8dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
         android:paddingTop="12dp">
 
         <TextView
             android:id="@+id/text_search_result"
             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_marginRight="8dp"
             android:layout_weight="1"
-            android:padding="4dp"
             android:text="Mach 3 Turbo"
-            android:textColor="@color/md_green_500"
+            android:textColor="@color/primary_text_color"
             android:textSize="16dp" />
 
-
-        <TextView
-            android:id="@+id/text_result_type"
-            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="4dp"
-            android:layout_weight="3.2"
-            android:gravity="center"
-            android:text="Category"
-            android:textColor="@color/davy_grey"
-            android:textSize="12dp" />
-
+            android:src="@drawable/ic_call_made" />
     </LinearLayout>
 </LinearLayout>
