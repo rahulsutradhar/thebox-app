@@ -36,6 +36,9 @@ public class Category extends RealmObject implements Serializable {
     @SerializedName("items")
     private RealmList<BoxItem> boxItems;
 
+    @SerializedName("subscribed_text")
+    private String subscribedText;
+
 
     /************************************************
      * Getter Setter
@@ -103,5 +106,13 @@ public class Category extends RealmObject implements Serializable {
 
     public void setMinititle(String minititle) {
         this.minititle = minititle;
+    }
+
+    public String getSubscribedText() {
+        return subscribedText;
+    }
+
+    public void setSubscribedText(String subscribedText) {
+        this.subscribedText = subscribedText;
     }
 }

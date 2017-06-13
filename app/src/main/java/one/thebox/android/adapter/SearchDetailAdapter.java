@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.RealmList;
+import one.thebox.android.Events.EventUnsubscribedSubscribedItem;
 import one.thebox.android.Events.UpdateSubscribeItemEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
@@ -906,6 +907,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                              * Set Clever tab Event CanCel Subscription
                                              */
                                             setCleverTapEventCancelSubscription(subscribeItem);
+
+                                            /**
+                                             * Update Box List
+                                             */
+                                            EventBus.getDefault().post(new EventUnsubscribedSubscribedItem());
 
                                         } else {
                                             //update item quantity and savings

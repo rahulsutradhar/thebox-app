@@ -179,9 +179,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     //set user information to CleverTap upon Login
                                     authenticationService.setCleverTapOnLogin();
 
-                                    /*User Login Event*/
-                                    setUserLoginEventCleverTap(response.body().getUser());
-
                                     //Setting Api Call then move to Home
                                     fetchSettingsfromServer();
 
@@ -266,31 +263,6 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
-    }
-
-    /**
-     * ClverTap Event
-     */
-    public void setUserLoginEventCleverTap(User user) {
-        try {
-            HashMap<String, Object> userLogin = new HashMap<>();
-            userLogin.put("Phone", user.getPhoneNumber());
-            userLogin.put("Unique Id", user.getUuid());
-            if (user.getEmail() != null) {
-                if (!user.getEmail().isEmpty()) {
-                    userLogin.put("Email", user.getEmail());
-                }
-            }
-            if (user.getName() != null) {
-                if (!user.getName().isEmpty()) {
-                    userLogin.put("Name", user.getName());
-                }
-            }
-
-            TheBox.getCleverTap().event.push("Login", userLogin);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**

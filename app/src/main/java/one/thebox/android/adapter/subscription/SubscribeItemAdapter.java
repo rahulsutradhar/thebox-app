@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import one.thebox.android.Events.EventUnsubscribedSubscribedItem;
 import one.thebox.android.Events.UpdateSavingsEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.items.ItemConfig;
@@ -391,6 +392,12 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                              * Set Clever tab Event CanCel Subscription
                                              */
                                             setCleverTapEventCancelSubscription(subscribeItem);
+
+                                            /**
+                                             * Update Box List
+                                             * called on Store Fragment
+                                             */
+                                            EventBus.getDefault().post(new EventUnsubscribedSubscribedItem());
 
                                         } else {
                                             //update item quantity and savings

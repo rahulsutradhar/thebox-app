@@ -107,7 +107,7 @@ public class AuthenticationService {
             }
             profileUpdate.put("Unique-Id", user.getUuid());
             profileUpdate.put("Identity", user.getPhoneNumber());
-            profileUpdate.put("User Uuid", user.getUuid());
+            profileUpdate.put("User_Uuid", user.getUuid());
             profileUpdate.put("Platform", "Android");
 
             PackageInfo pInfo = null;
@@ -121,39 +121,6 @@ public class AuthenticationService {
             e.printStackTrace();
         }
         return profileUpdate;
-    }
-
-    /**
-     * Temporary data setup for already loggedin users
-     */
-    public void setUserDataToCrashlyticsTemp() {
-        if (BuildConfig.enableCrashlytics) {
-            try {
-                User user = PrefUtils.getUser(TheBox.getAppContext());
-
-                if (Fabric.isInitialized() && user != null) {
-                    // set user info to crashlytics
-                    Crashlytics.setUserIdentifier(user.getUuid());
-                    Crashlytics.setUserName(user.getName());
-                    Crashlytics.setUserEmail(user.getEmail());
-                    Crashlytics.setString("phone_number", user.getPhoneNumber());
-                    Crashlytics.setString("user_uuid", user.getUuid());
-                    Crashlytics.setString("Platform", "Android");
-
-                    PackageInfo pInfo = null;
-                    pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
-                            TheBox.getAppContext().getPackageName(), 0);
-
-                    Crashlytics.setString("app_version_name", pInfo.versionName);
-                    Crashlytics.setInt("app_version_code", pInfo.versionCode);
-                }
-
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**

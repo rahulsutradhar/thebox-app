@@ -173,11 +173,22 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViewHolder(final Category category, final int position) {
-            if (isSearchDetailItemFragment) {
-                categoryNameTextView.setText(category.getMinititle());
-            } else {
-                categoryNameTextView.setText(category.getMinititle());
+            noOfItems.setText("");
+            noOfItems.setVisibility(View.GONE);
+
+            if (!isSearchDetailItemFragment) {
+                if (category.getSubscribedText() != null) {
+                    if (!category.getSubscribedText().isEmpty()) {
+                        noOfItems.setVisibility(View.VISIBLE);
+                        noOfItems.setText(category.getSubscribedText());
+                    } else {
+                        noOfItems.setText("");
+                        noOfItems.setVisibility(View.GONE);
+                    }
+                }
             }
+
+            categoryNameTextView.setText(category.getMinititle());
 
             //Saving text display if not empty
             if (category.getAverageSavings() != null) {
