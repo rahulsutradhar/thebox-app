@@ -43,6 +43,9 @@ public class Setting implements Serializable {
     @SerializedName("cart")
     private ArrayList<CartItem> cartItems;
 
+    @SerializedName("sink_time")
+    private long cartPollingTime;
+
 
     /***************************************
      * Methods
@@ -159,4 +162,11 @@ public class Setting implements Serializable {
         this.cartItems = cartItems;
     }
 
+    public long getCartPollingTime() {
+        return cartPollingTime;
+    }
+
+    public void setCartPollingTime(long cartPollingTime) {
+        this.cartPollingTime = cartPollingTime;
+    }
 }

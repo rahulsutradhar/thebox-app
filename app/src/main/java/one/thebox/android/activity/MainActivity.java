@@ -166,13 +166,8 @@ public class MainActivity extends BaseActivity implements
         initViews();
         setupNavigationDrawer();
 
-        if (setting.getCartItems() != null) {
-            //update Cart
-            CartHelper.updateCart(setting.getParsedCartItems());
-            //synced memory with cart
-            ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
-
-        }
+        //update app settings
+        updateAppSettings();
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
@@ -207,6 +202,26 @@ public class MainActivity extends BaseActivity implements
         checkAppUpdate();
         //check for showing message to user usign dialog
         checkForCommonDialog();
+    }
+
+    /**
+     * Update Setting Data For the APP
+     */
+    public void updateAppSettings() {
+        try {
+            if (setting.getCartItems() != null) {
+                //update Cart
+                CartHelper.updateCart(setting.getParsedCartItems());
+                //synced memory with cart
+                ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
+            }
+
+            if (setting.getCartPollingTime() != 0) {
+                Constants.UPDATE_CART_POLLING_TIME = setting.getCartPollingTime();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
