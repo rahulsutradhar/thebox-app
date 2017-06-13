@@ -25,7 +25,6 @@ import one.thebox.android.ViewHelper.Montserrat;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    boolean isLoginActivity = false;
     private Toolbar toolbar;
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;

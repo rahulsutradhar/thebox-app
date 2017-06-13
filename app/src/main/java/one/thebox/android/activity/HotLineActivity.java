@@ -36,6 +36,7 @@ public class HotLineActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_hotline);
+        setStatusBarColor(R.color.primary);
         ButterKnife.bind(this);
         setTitle("Talk to us");
         user = PrefUtils.getUser(this);

@@ -63,6 +63,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
         //request Serve and fetch Order
         getOrdersFromServer();
+        Toast.makeText(TheBox.getAppContext(), "OnCreate", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }
@@ -187,7 +188,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
                     if (order != null) {
                         //all item has been removed, so refetch orders
-                        if (order.getAmountToPay() == 0) {
+                        if (order.getAmountToPay() == 0 && !order.isPaymentComplete()) {
                             getOrdersFromServer();
                         } else {
                             //partial update the order

@@ -202,6 +202,9 @@ public class SearchDetailItemsFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy != 0) {
 
+                    /**
+                     * Specail Cart Event
+                     */
                     EventBus.getDefault().post(new ShowSpecialCardEvent(false));
                 }
             }

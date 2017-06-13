@@ -301,7 +301,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
 
             //ItemConfig with similar size to selected ItemConfig frequency
-
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
@@ -310,7 +309,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         updateItemConfigInCart(boxItem, selectedItemConfig, position);
                     } else {
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-                        notifyItemChanged(getAdapterPosition());
+                        notifyItemChanged(position);
                     }
                 }
             });
@@ -336,10 +335,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition) {
+        public void setViews(final BoxItem boxItem, final int position) {
 
             try {
-                this.position = arrayListPosition;
                 productName.setText(boxItem.getTitle());
 
                 if (!boxItem.getBrand().isEmpty()) {
@@ -377,17 +375,22 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .into(productImage);
 
                 //Monthly Savings Item Config
-                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
-                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
-                        savingsTitle.setVisibility(View.VISIBLE);
-                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                if (boxItem.getQuantity() > 1) {
+                    savingsTitle.setVisibility(View.VISIBLE);
+                    savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
+                } else {
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                        if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                            savingsTitle.setVisibility(View.VISIBLE);
+                            savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                        } else {
+                            savingsTitle.setText("");
+                            savingsTitle.setVisibility(View.GONE);
+                        }
                     } else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }
-                } else {
-                    savingsTitle.setText("");
-                    savingsTitle.setVisibility(View.GONE);
                 }
 
                 //savings ItemConfig
@@ -519,6 +522,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
+            /**
+             * SetCleverTapEventRemoveItem
+             */
+            setCleverTapEventItemRemoveFromCart(boxItem);
+
             boxItem.setQuantity(0);
             boxItem.setShowCategorySuggestion(false);
             boxItems.set(position, boxItem);
@@ -527,11 +535,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             //check for background service
             CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
-
-            /**
-             * SetCleverTapEventRemoveItem
-             */
-            setCleverTapEventItemRemoveFromCart(boxItem);
         }
 
         /**
