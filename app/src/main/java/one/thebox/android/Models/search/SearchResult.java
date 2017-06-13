@@ -22,6 +22,9 @@ public class SearchResult implements Serializable {
 
     private String title;
 
+    @SerializedName("category")
+    private boolean isCategory;
+
     public String getCategoryUuid() {
         return categoryUuid;
     }
@@ -52,5 +55,13 @@ public class SearchResult implements Serializable {
 
     public void setBoxTitle(String boxTitle) {
         this.boxTitle = boxTitle;
+    }
+
+    public boolean isCategory() {
+        return isCategory;
+    }
+
+    public void setCategory(boolean category) {
+        isCategory = category;
     }
 }

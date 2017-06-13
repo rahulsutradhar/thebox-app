@@ -37,11 +37,6 @@ public class Constants {
     public static final String EXTRA_ADDRESS_TYPE = "extra_address_type";
 
     /**
-     * Order List
-     */
-    public static final String EXTRA_LIST_ORDER = "list_order";
-
-    /**
      * Savings
      */
     public static final String SAVINGS = "savings";

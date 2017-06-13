@@ -29,12 +29,13 @@
             android:layout_marginRight="8dp"
             android:layout_weight="1"
             android:text="Mach 3 Turbo"
-            android:textColor="@color/davy_grey"
+            android:textColor="@color/primary_text_color"
             android:textSize="16dp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:src="@drawable/ic_call_made" />
     </LinearLayout>
 </LinearLayout>

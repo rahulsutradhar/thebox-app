@@ -176,7 +176,6 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
 
                 ItemConfig selectedItemConfig = orderItem.getSelectedItemConfig();
 
-                price.setText(Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
                 frequency.setText("Repeat delivery " + selectedItemConfig.getSubscriptionText().toLowerCase());
 
                 if (selectedItemConfig.getSize() == 0) {
@@ -200,6 +199,7 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                 }
 
                 if (isChangesApplicable) {
+                    price.setText(Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
                     quantityHolder.setVisibility(View.VISIBLE);
                     addButton.setVisibility(View.VISIBLE);
                     subtractButton.setVisibility(View.VISIBLE);
@@ -208,6 +208,13 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                     quantitySelectedText.setText(String.valueOf(orderItem.getQuantity()));
 
                 } else {
+                    //when not edittable
+                    if (orderItem.getQuantity() == 1) {
+                        price.setText(orderItem.getQuantity() + " piece for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
+                    } else {
+                        price.setText(orderItem.getQuantity() + " pieces for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
+                    }
+
                     quantityHolder.setVisibility(View.GONE);
                     addButton.setVisibility(View.GONE);
                     subtractButton.setVisibility(View.GONE);

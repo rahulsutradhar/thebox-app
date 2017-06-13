@@ -40,6 +40,7 @@ import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.reshedule.FragmentRescheduleSubscribeItem;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -68,6 +69,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private Dialog dialog;
     private ArrayList<RescheduleReason> rescheduleReasons = new ArrayList<>();
     private RescheduleReason rescheduleReason;
+    private int requestCount = 0;
 
     public DelayDeliveryBottomSheetFragment() {
 
@@ -122,7 +124,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     }
 
     public void getRescheduleOption() {
-
+        requestCount++;
         loader.setVisibility(View.VISIBLE);
         TheBox.getAPIService().getRescheduleOption(PrefUtils.getToken(getActivity()), subscribeItem.getUuid())
                 .enqueue(new Callback<RescheduleResponse>() {
@@ -135,6 +137,10 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
                                     //parse response data
                                     parseData(response.body());
                                 }
+                            } else {
+                                if (response.code() == 401) {
+                                    new AuthenticationService().navigateToLogin(getActivity());
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -145,9 +151,13 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
 
                     @Override
                     public void onFailure(Call<RescheduleResponse> call, Throwable t) {
-                        loader.setVisibility(View.GONE);
-                        setUIDataWhenFailed();
-                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        if (requestCount == 1) {
+                            getRescheduleOption();
+                        } else {
+                            loader.setVisibility(View.GONE);
+                            setUIDataWhenFailed();
+                            Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 

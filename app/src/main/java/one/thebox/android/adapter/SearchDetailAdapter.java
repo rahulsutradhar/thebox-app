@@ -64,8 +64,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private List<BoxItem> boxItems = new ArrayList<>();
     private Context mContext;
-    private int positionInViewPager = -1;
     private RealmList<Category> suggestedCategories = new RealmList<>();
+    private int previouslySubscribedPosition = -1;
 
     /**
      * GLide Request Manager
@@ -93,15 +93,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.mContext = context;
         this.glideRequestManager = glideRequestManager;
     }
-
-    public int getPositionInViewPager() {
-        return positionInViewPager;
-    }
-
-    public void setPositionInViewPager(int positionInViewPager) {
-        this.positionInViewPager = positionInViewPager;
-    }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -190,7 +181,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private FrequencyAndPriceAdapter frequencyAndPriceAdapter;
         private LinearLayout updateQuantityViewHolder;
         private RelativeLayout holderSubscribeButton;
-        private int position;
         private TextView savingsTitle, savingsItemConfig, mrp;
 
         private SearchedItemViewHolder(View itemView) {
@@ -259,17 +249,18 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (boxItem.isShowCategorySuggestion()) {
                     if (suggestedCategories != null) {
                         if (suggestedCategories.size() > 0) {
-                            savingHolder.setVisibility(View.VISIBLE);
-                            setupRecyclerViewSuggestedCategories(suggestedCategories);
+                            if (savingHolder.getVisibility() != View.VISIBLE) {
+                                savingHolder.setVisibility(View.VISIBLE);
+                                setupRecyclerViewSuggestedCategories(suggestedCategories);
+                            }
                         } else {
                             savingHolder.setVisibility(View.GONE);
                         }
                     } else {
                         savingHolder.setVisibility(View.GONE);
                     }
-                    boxItem.setShowCategorySuggestion(false);
                 } else {
-
+                    savingHolder.setVisibility(View.GONE);
                 }
             }
         }
@@ -301,7 +292,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             WrapContentLinearLayoutManager linearLayoutManager = new WrapContentLinearLayoutManager(TheBox.getInstance(), LinearLayoutManager.HORIZONTAL, false);
 
             //ItemConfig with similar size to selected ItemConfig frequency
-
             recyclerViewFrequency.setLayoutManager(linearLayoutManager);
             frequencyAndPriceAdapter = new FrequencyAndPriceAdapter(TheBox.getInstance(), selectedPosition, new FrequencyAndPriceAdapter.OnItemConfigChange() {
                 @Override
@@ -310,7 +300,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         updateItemConfigInCart(boxItem, selectedItemConfig, position);
                     } else {
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-                        notifyItemChanged(getAdapterPosition());
+                        notifyItemChanged(position);
                     }
                 }
             });
@@ -325,6 +315,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
+        /**
+         * Remaing Category for Suggestion
+         *
+         * @param suggestedCategories
+         */
         private void setupRecyclerViewSuggestedCategories(RealmList<Category> suggestedCategories) {
 
             remainingCategoryAdapter = new RemainingCategoryAdapter(
@@ -336,10 +331,15 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         }
 
-        public void setViews(final BoxItem boxItem, int arrayListPosition) {
+        /**
+         * Display View with data
+         *
+         * @param boxItem
+         * @param position
+         */
+        public void setViews(final BoxItem boxItem, final int position) {
 
             try {
-                this.position = arrayListPosition;
                 productName.setText(boxItem.getTitle());
 
                 if (!boxItem.getBrand().isEmpty()) {
@@ -377,17 +377,27 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .into(productImage);
 
                 //Monthly Savings Item Config
-                if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
-                    if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                if (boxItem.getQuantity() > 1) {
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsValue() != 0) {
                         savingsTitle.setVisibility(View.VISIBLE);
-                        savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                        savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
                     } else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }
                 } else {
-                    savingsTitle.setText("");
-                    savingsTitle.setVisibility(View.GONE);
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
+                        if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {
+                            savingsTitle.setVisibility(View.VISIBLE);
+                            savingsTitle.setText(boxItem.getSelectedItemConfig().getMonthlySavingsText());
+                        } else {
+                            savingsTitle.setText("");
+                            savingsTitle.setVisibility(View.GONE);
+                        }
+                    } else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
                 }
 
                 //savings ItemConfig
@@ -513,14 +523,24 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
              * SetCleverTapEventAddItemToCart
              */
             setCleverTapEventItemAddedToCart(boxItem);
+
+            // SHow Suggestion Category
+            updateViewForSuggestionIfPreviouslyShown(position, false);
         }
 
         /**
          * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
+            /**
+             * SetCleverTapEventRemoveItem
+             */
+            setCleverTapEventItemRemoveFromCart(boxItem);
+
             boxItem.setQuantity(0);
-            boxItem.setShowCategorySuggestion(false);
+            if (boxItem.isShowCategorySuggestion()) {
+                boxItem.setShowCategorySuggestion(false);
+            }
             boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.removeItemFromCart(boxItem);
@@ -528,10 +548,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             //check for background service
             CartHelperService.checkServiceRunningWhenRemoved(mContext, true);
 
-            /**
-             * SetCleverTapEventRemoveItem
-             */
-            setCleverTapEventItemRemoveFromCart(boxItem);
+            updateViewForSuggestionIfPreviouslyShown(position, true);
         }
 
         /**
@@ -539,13 +556,17 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             boxItem.setQuantity(quantity);
-            boxItem.setShowCategorySuggestion(false);
+            if (!boxItem.isShowCategorySuggestion()) {
+                boxItem.setShowCategorySuggestion(true);
+            }
             boxItems.set(position, boxItem);
             notifyItemChanged(position);
             CartHelper.updateQuantityInCart(boxItem, quantity);
 
             //check for background service
             CartHelperService.checkServiceRunningWhenAdded(mContext);
+            // SHow Suggestion Category
+            updateViewForSuggestionIfPreviouslyShown(position, false);
         }
 
         /**
@@ -554,12 +575,53 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
             CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
             boxItem.setSelectedItemConfig(selectedItemConfig);
-            boxItem.setShowCategorySuggestion(false);
             boxItems.set(position, boxItem);
             notifyItemChanged(position);
 
             //check for background service
             CartHelperService.checkServiceRunningWhenAdded(mContext);
+        }
+
+        /**
+         * OnClicking other item;or update quantity;or remove quantity
+         * Show catgeory suggestion
+         *
+         * @param position
+         */
+        private void updateViewForSuggestionIfPreviouslyShown(int position, boolean isRemove) {
+            if (!isRemove) {
+                if (previouslySubscribedPosition != -1) {
+                    if (previouslySubscribedPosition != position) {
+                        if (previouslySubscribedPosition < getItemCount()) {
+                            if (boxItems.get(previouslySubscribedPosition).isShowCategorySuggestion()) {
+                                boxItems.get(previouslySubscribedPosition).setShowCategorySuggestion(false);
+                                notifyItemChanged(previouslySubscribedPosition);
+                                previouslySubscribedPosition = position;
+                            }
+                        }
+                    } //updating quantity
+                    else if (previouslySubscribedPosition == position) {
+                        previouslySubscribedPosition = position;
+                    }
+                } else {
+                    previouslySubscribedPosition = position;
+                }
+            } else {
+                if (previouslySubscribedPosition != -1) {
+                    if (previouslySubscribedPosition != position) {
+                        if (previouslySubscribedPosition < getItemCount()) {
+                            if (boxItems.get(previouslySubscribedPosition).isShowCategorySuggestion()) {
+                                boxItems.get(previouslySubscribedPosition).setShowCategorySuggestion(false);
+                                notifyItemChanged(previouslySubscribedPosition);
+                                previouslySubscribedPosition = -1;
+                            }
+                        }
+                    } //updating quantity
+                    else if (previouslySubscribedPosition == position) {
+                        previouslySubscribedPosition = -1;
+                    }
+                }
+            }
         }
 
         /**
@@ -949,6 +1011,20 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     }
 
+    /**
+     * On Scrolling List, when we have previously suggestion list
+     */
+    public void onScrollingListUpdateView() {
+        if (previouslySubscribedPosition != -1) {
+            if (previouslySubscribedPosition >= 0 && previouslySubscribedPosition < getItemCount()) {
+                if (boxItems.get(previouslySubscribedPosition).isShowCategorySuggestion()) {
+                    boxItems.get(previouslySubscribedPosition).setShowCategorySuggestion(false);
+                    notifyItemChanged(previouslySubscribedPosition);
+                    previouslySubscribedPosition = -1;
+                }
+            }
+        }
+    }
 
     /**
      * Update on Event Passed from Cart

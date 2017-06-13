@@ -140,8 +140,13 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
         public void setViews(SearchResult searchResult, int position) {
             try {
-                searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
-                searchResultText.setText(Html.fromHtml(searchResult.getTitle()));
+                if (searchResult.isCategory()) {
+                    searchResultText.setText(Html.fromHtml("<font color=\"#979797\">" + "See All " + "</font>" +
+                            "<font color=\"#4CAF50\">" + searchResult.getTitle() + "</font>"));
+                } else {
+                    searchResultText.setTextColor(context.getResources().getColor(R.color.davy_grey));
+                    searchResultText.setText(Html.fromHtml(searchResult.getTitle()));
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
