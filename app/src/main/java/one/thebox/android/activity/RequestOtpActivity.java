@@ -115,51 +115,6 @@ public class RequestOtpActivity extends BaseActivity implements View.OnClickList
         requestOTP();
     }
 
-   /* public void requestSignin() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService()
-                .signIn(new CreateUserRequestBody(new CreateUserRequestBody.User(countryCode + phoneNumber)))
-                .enqueue(new Callback<UserSignInSignUpResponse>() {
-                    @Override
-                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.isSuccessful()) {
-                                if (response.body().isSuccess()) {
-                                    //request successful
-                                    startActivity(OtpVerificationActivity.getInstance(RequestOtpActivity.this, phoneNumber, false));
-                                } else {
-                                    mobileNumberEditText.setError(response.body().getInfo());
-                                }
-                            } else {
-                                if (response != null && !response.isSuccessful() && response.errorBody() != null) {
-                                    //parse error send by the server and show message
-                                    Converter<ResponseBody, UserSignInSignUpResponse> errorConverter =
-                                            TheBox.getRetrofit().responseBodyConverter(one.thebox.android.api.Responses.UserSignInSignUpResponse.class,
-                                                    new Annotation[0]);
-                                    one.thebox.android.api.Responses.UserSignInSignUpResponse error = errorConverter.convert(
-                                            response.errorBody());
-                                    //display error message
-                                    mobileNumberEditText.setError(error.getInfo());
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        Toast.makeText(RequestOtpActivity.this, "Something went wrong. Please try again", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-    }
-
-*/
-
     /**
      * Request Otp for the Phone Number
      */

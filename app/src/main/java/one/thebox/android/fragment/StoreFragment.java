@@ -290,7 +290,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                             } else {
                                 //Unauthorized
                                 if (response.code() == 401) {
-                                    new AuthenticationService().navigateToSplash(getActivity());
+                                    new AuthenticationService().navigateToLogin(getActivity());
                                 }
                             }
                         } catch (Exception e) {

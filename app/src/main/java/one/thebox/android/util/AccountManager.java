@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import one.thebox.android.Helpers.RealmController;
+import one.thebox.android.activity.RequestOtpActivity;
 import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.app.TheBox;
 
@@ -25,5 +26,13 @@ public class AccountManager {
 
         //<TODO> Move this to a central class
         context.startActivity(new Intent(context, SplashActivity.class));
+    }
+
+    public void deleteAndNavigateToLogin() {
+        PrefUtils.removeAll(TheBox.getInstance());
+        RealmController.clean_db();
+
+        //<TODO> Move this to a central class
+        context.startActivity(new Intent(context, RequestOtpActivity.class));
     }
 }

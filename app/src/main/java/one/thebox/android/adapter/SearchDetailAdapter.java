@@ -1017,9 +1017,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onScrollingListUpdateView() {
         if (previouslySubscribedPosition != -1) {
             if (previouslySubscribedPosition >= 0 && previouslySubscribedPosition < getItemCount()) {
-                boxItems.get(previouslySubscribedPosition).setShowCategorySuggestion(false);
-                notifyItemChanged(previouslySubscribedPosition);
-                previouslySubscribedPosition = -1;
+                if (boxItems.get(previouslySubscribedPosition).isShowCategorySuggestion()) {
+                    boxItems.get(previouslySubscribedPosition).setShowCategorySuggestion(false);
+                    notifyItemChanged(previouslySubscribedPosition);
+                    previouslySubscribedPosition = -1;
+                }
             }
         }
     }
