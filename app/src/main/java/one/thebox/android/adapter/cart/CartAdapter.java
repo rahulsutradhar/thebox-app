@@ -218,8 +218,13 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
                 //Monthly Savings Item Config
                 if (boxItem.getQuantity() > 1) {
-                    savingsTitle.setVisibility(View.VISIBLE);
-                    savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsValue()!=0) {
+                        savingsTitle.setVisibility(View.VISIBLE);
+                        savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
+                    }else {
+                        savingsTitle.setText("");
+                        savingsTitle.setVisibility(View.GONE);
+                    }
                 } else {
                     if (boxItem.getSelectedItemConfig().getMonthlySavingsText() != null) {
                         if (!boxItem.getSelectedItemConfig().getMonthlySavingsText().isEmpty()) {

@@ -63,7 +63,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
         //request Serve and fetch Order
         getOrdersFromServer();
-        Toast.makeText(TheBox.getAppContext(), "OnCreate", Toast.LENGTH_SHORT).show();
 
         return rootView;
     }

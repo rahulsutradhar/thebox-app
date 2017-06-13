@@ -206,6 +206,10 @@ public class SearchDetailItemsFragment extends Fragment {
                      * Specail Cart Event
                      */
                     EventBus.getDefault().post(new ShowSpecialCardEvent(false));
+
+                    if (searchDetailAdapter != null) {
+                        searchDetailAdapter.onScrollingListUpdateView();
+                    }
                 }
             }
         });
@@ -222,7 +226,6 @@ public class SearchDetailItemsFragment extends Fragment {
 
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
-            searchDetailAdapter.setPositionInViewPager(positionInViewPager);
             searchDetailAdapter.setSuggestedCategories(suggestedCategories);
             //check with cart item and evaluate data
             setData();
