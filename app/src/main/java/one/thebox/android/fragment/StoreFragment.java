@@ -291,7 +291,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
                                 }
                             } else {
                                 //Unauthorized
-                                if (response.code() == 401) {
+                                if (response.code() == Constants.UNAUTHORIZED) {
                                     new AuthenticationService().navigateToLogin(getActivity());
                                 }
                             }

@@ -11,6 +11,7 @@ import one.thebox.android.Models.update.Setting;
 import one.thebox.android.activity.OtpVerificationActivity;
 import one.thebox.android.activity.SplashActivity;
 import one.thebox.android.api.Responses.setting.SettingsResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
@@ -59,7 +60,7 @@ public class SettingService {
                                     sendResponse(activity, true, calledFrom);
                                 }
                             } else {
-                                if (response.code() == 401) {
+                                if (response.code() == Constants.UNAUTHORIZED) {
                                     //UnAuthorised; logout and move to Splash
                                     new AuthenticationService().navigateToLogin(context);
                                 }

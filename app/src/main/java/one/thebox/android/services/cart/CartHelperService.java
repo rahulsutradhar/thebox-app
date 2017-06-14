@@ -11,8 +11,10 @@ import android.util.Log;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.api.RequestBodies.cart.CartItemRequest;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.CartFragment;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +33,7 @@ public class CartHelperService implements ServiceConnection {
 
     }
 
-    public static void updateCartToServer(Context context, final Fragment fragment) {
+    public static void updateCartToServer(final Context context, final Fragment fragment) {
         TheBox.getAPIService()
                 .syncCart(PrefUtils.getToken(context), new CartItemRequest(ProductQuantity.getProductQuantities()))
                 .enqueue(new Callback<CartItemResponse>() {
@@ -42,6 +44,11 @@ public class CartHelperService implements ServiceConnection {
                             if (response.isSuccessful()) {
                                 if (fragment != null) {
                                     ((CartFragment) fragment).setCartUpdateServerResponse(true, response.body());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(context);
                                 }
                             }
 

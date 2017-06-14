@@ -14,6 +14,7 @@ import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.Responses.authentication.LogoutResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.AccountManager;
@@ -147,7 +148,7 @@ public class AuthenticationService {
                                     Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                if (response.code() == 401) {
+                                if (response.code() == Constants.UNAUTHORIZED) {
                                     navigateToLogin(context);
                                 }
                             }
