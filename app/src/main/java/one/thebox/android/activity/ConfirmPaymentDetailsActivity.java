@@ -21,6 +21,7 @@ import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
 import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -133,6 +134,11 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                     payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
                                     setUpData(response.body().getPurchaseDatas());
                                 }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmPaymentDetailsActivity.this);
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -166,6 +172,11 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                                     amountToPay = response.body().getAmountToPay();
                                     payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
                                     setUpData(response.body().getPurchaseDatas());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmPaymentDetailsActivity.this);
                                 }
                             }
                         } catch (Exception e) {

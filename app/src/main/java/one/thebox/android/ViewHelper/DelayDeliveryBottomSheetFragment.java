@@ -138,7 +138,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
                                     parseData(response.body());
                                 }
                             } else {
-                                if (response.code() == 401) {
+                                if (response.code() == Constants.UNAUTHORIZED) {
                                     new AuthenticationService().navigateToLogin(getActivity());
                                 }
                             }

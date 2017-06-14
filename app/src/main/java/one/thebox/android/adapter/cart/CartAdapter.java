@@ -207,8 +207,13 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
                 //Size of the ItemConfig selected
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                    size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                            + " " + boxItem.getSelectedItemConfig().getItemType());
+                    if (boxItem.getSelectedItemConfig().getSize() == 0) {
+                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getQuantity()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                                + " " + boxItem.getSelectedItemConfig().getItemType());
+                    } else {
+                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
+                                + " " + boxItem.getSelectedItemConfig().getItemType());
+                    }
                 }
 
                 glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())
@@ -218,10 +223,10 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
                 //Monthly Savings Item Config
                 if (boxItem.getQuantity() > 1) {
-                    if (boxItem.getSelectedItemConfig().getMonthlySavingsValue()!=0) {
+                    if (boxItem.getSelectedItemConfig().getMonthlySavingsValue() != 0) {
                         savingsTitle.setVisibility(View.VISIBLE);
                         savingsTitle.setText("Save " + Constants.RUPEE_SYMBOL + " " + String.valueOf(boxItem.getSelectedItemConfig().getMonthlySavingsValue() * boxItem.getQuantity()) + " every month");
-                    }else {
+                    } else {
                         savingsTitle.setText("");
                         savingsTitle.setVisibility(View.GONE);
                     }

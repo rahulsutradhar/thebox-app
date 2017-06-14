@@ -53,6 +53,7 @@ import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -928,6 +929,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         }
                                         updateHomeTabs();
                                     }
+                                } else {
+                                    if (response.code() == Constants.UNAUTHORIZED) {
+                                        //unauthorized user navigate to login
+                                        new AuthenticationService().navigateToLogin(mContext);
+                                    }
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -969,6 +975,11 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         notifyItemChanged(position);
 
                                         updateHomeTabs();
+                                    }
+                                } else {
+                                    if (response.code() == Constants.UNAUTHORIZED) {
+                                        //unauthorized user navigate to login
+                                        new AuthenticationService().navigateToLogin(mContext);
                                     }
                                 }
 

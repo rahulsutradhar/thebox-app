@@ -25,6 +25,7 @@ import one.thebox.android.adapter.orders.OrderItemAdapter;
 import one.thebox.android.api.Responses.order.OrderItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -194,6 +195,11 @@ public class OrderItemsActivity extends BaseActivity {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     setupRecyclerView(response.body().getOrderItems(), response.body().isChangesApplicable());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(OrderItemsActivity.this);
                                 }
                             }
 
