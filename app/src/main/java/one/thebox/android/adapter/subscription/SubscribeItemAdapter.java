@@ -37,6 +37,7 @@ import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.EditItemFragment;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -422,7 +423,13 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                         //fetch orders to update the list
                                         EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                     }
+                                } else {
+                                    //Check if UnAuthorized
+                                    if (response.code() == Constants.UNAUTHORIZED) {
+                                        new AuthenticationService().navigateToLogin(context);
+                                    }
                                 }
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
@@ -471,6 +478,11 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                         //fetch orders to update the list
                                         EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
 
+                                    }
+                                }else {
+                                    if (response.code() == Constants.UNAUTHORIZED){
+                                        //unauthorized user navigate to login
+                                        new AuthenticationService().navigateToLogin(context);
                                     }
                                 }
 

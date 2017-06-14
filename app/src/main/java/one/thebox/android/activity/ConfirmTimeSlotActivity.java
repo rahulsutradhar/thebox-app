@@ -34,6 +34,7 @@ import one.thebox.android.api.Responses.TimeSlotResponse;
 import one.thebox.android.api.Responses.order.RescheduleOrderResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -222,6 +223,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                         setupMergeDeliveryRecyclerView(orders);
                                     }
                                 }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmTimeSlotActivity.this);
+                                }
                             }
 
                         } catch (Exception e) {
@@ -354,6 +360,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                     //set the initial data for time slot
                                     setInitialSlotData(response.body().getData());
                                     setTimeSlotInformation();
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmTimeSlotActivity.this);
                                 }
                             }
                         } catch (Exception e) {
@@ -495,6 +506,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                     setInitialSlotData(response.body().getData());
                                     setTimeSlotInformation();
                                 }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmTimeSlotActivity.this);
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -530,8 +546,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                     setResult(4, intent);
                                     finish();
 
-                                } else {
-                                    Toast.makeText(ConfirmTimeSlotActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmTimeSlotActivity.this);
                                 }
                             }
                         } catch (Exception e) {
@@ -568,6 +587,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                                     setInitialSlotDataForOrder(response.body().getDate(), response.body().getSlots());
 
                                     setTimeSlotInformation();
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmTimeSlotActivity.this);
                                 }
                             }
                         } catch (Exception e) {
