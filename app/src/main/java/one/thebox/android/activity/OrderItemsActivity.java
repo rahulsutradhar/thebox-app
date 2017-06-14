@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -132,28 +133,51 @@ public class OrderItemsActivity extends BaseActivity {
             payTextView.setEnabled(false);
         } else {
             payTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + order.getAmountToPay());
-            payTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(ConfirmTimeSlotActivity.newInstance(OrderItemsActivity.this, order, true, false));
-                }
-            });
+            setClickEvent();
             payTextView.setClickable(true);
             payTextView.setEnabled(true);
         }
     }
 
+    public void setClickEvent() {
+        payTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ConfirmTimeSlotActivity.newInstance(OrderItemsActivity.this, order, true, false));
+            }
+        });
+    }
+
     /**
      * Called from OrderItemAdapter
      */
-    public void updateView(Order order) {
-        this.order = order;
-        if (order.getNoOfItems() == 0) {
-            emptyState.setVisibility(View.VISIBLE);
-            payTextView.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            payTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + order.getAmountToPay());
+    public void updateView(final Order order) {
+        try {
+            this.order = order;
+            if (order.getNoOfItems() == 0) {
+                emptyState.setVisibility(View.VISIBLE);
+                payTextView.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                if (order.isPaymentComplete()) {
+                    payTextView.setText("Payment Complete");
+                } else {
+                    payTextView.setText("Pay " + Constants.RUPEE_SYMBOL + " " + order.getAmountToPay());
+                }
+            }
+
+            if (order.isPaymentComplete()) {
+                payTextView.setBackgroundColor(Color.LTGRAY);
+                payTextView.setClickable(false);
+                payTextView.setEnabled(false);
+            } else {
+                payTextView.setBackgroundColor(getResources().getColor(R.color.primary));
+                payTextView.setClickable(true);
+                payTextView.setEnabled(true);
+                setClickEvent();
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
     }
 

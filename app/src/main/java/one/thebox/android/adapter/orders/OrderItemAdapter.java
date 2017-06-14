@@ -140,7 +140,7 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
         private TextView productName, brand,
                 config, addButton, subtractButton, quantitySelectedText, frequency, price, monthlySavings;
         private ImageView productImageView;
-        private LinearLayout quantityHolder;
+        private LinearLayout quantityHolder, layoutPaid;
 
 
         public OrderItemViewHolder(View itemView) {
@@ -152,10 +152,12 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
             addButton = (TextView) itemView.findViewById(R.id.button_add);
             subtractButton = (TextView) itemView.findViewById(R.id.button_subtract);
             quantitySelectedText = (TextView) itemView.findViewById(R.id.no_of_item_selected);
-            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
             price = (TextView) itemView.findViewById(R.id.price);
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
+
+            quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
+            layoutPaid = (LinearLayout) itemView.findViewById(R.id.layout_item_paid);
         }
 
         public void setView(final OrderItem orderItem, final int position) {
@@ -199,13 +201,30 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                 }
 
                 if (isChangesApplicable) {
-                    price.setText(Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
-                    quantityHolder.setVisibility(View.VISIBLE);
-                    addButton.setVisibility(View.VISIBLE);
-                    subtractButton.setVisibility(View.VISIBLE);
-                    quantitySelectedText.setVisibility(View.VISIBLE);
 
-                    quantitySelectedText.setText(String.valueOf(orderItem.getQuantity()));
+                    // check if item is paid or not
+                    if (orderItem.isPaid()) {
+                        layoutPaid.setVisibility(View.VISIBLE);
+                        quantityHolder.setVisibility(View.GONE);
+                        addButton.setVisibility(View.GONE);
+                        subtractButton.setVisibility(View.GONE);
+                        quantitySelectedText.setVisibility(View.GONE);
+                        
+                        //when not edittable or paid
+                        if (orderItem.getQuantity() == 1) {
+                            price.setText(orderItem.getQuantity() + " piece for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
+                        } else {
+                            price.setText(orderItem.getQuantity() + " pieces for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
+                        }
+                    } else {
+                        price.setText(Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
+                        quantityHolder.setVisibility(View.VISIBLE);
+                        addButton.setVisibility(View.VISIBLE);
+                        subtractButton.setVisibility(View.VISIBLE);
+                        quantitySelectedText.setVisibility(View.VISIBLE);
+                        layoutPaid.setVisibility(View.GONE);
+                        quantitySelectedText.setText(String.valueOf(orderItem.getQuantity()));
+                    }
 
                 } else {
                     //when not edittable
@@ -216,6 +235,7 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                     }
 
                     quantityHolder.setVisibility(View.GONE);
+                    layoutPaid.setVisibility(View.GONE);
                     addButton.setVisibility(View.GONE);
                     subtractButton.setVisibility(View.GONE);
                     quantitySelectedText.setVisibility(View.GONE);
