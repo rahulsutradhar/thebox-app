@@ -87,10 +87,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             numberOfItems.setText(mFragmentCategoryList.get(position).getNumberOfItem() + " Items");
         }
 
-        if (mFragmentCategoryList.get(position).getAverageSavings() != null) {
-            if (!mFragmentCategoryList.get(position).getAverageSavings().isEmpty()) {
+        if (mFragmentCategoryList.get(position).getSavingsText() != null) {
+            if (!mFragmentCategoryList.get(position).getSavingsText().isEmpty()) {
                 savings.setVisibility(View.VISIBLE);
-                savings.setText(mFragmentCategoryList.get(position).getAverageSavings());
+                savings.setText(mFragmentCategoryList.get(position).getSavingsText());
             } else {
                 savings.setText("");
                 savings.setVisibility(View.INVISIBLE);

@@ -13,11 +13,9 @@ import com.bumptech.glide.RequestManager;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 import io.realm.RealmList;
 import one.thebox.android.Events.OnCategorySelectEvent;
-import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
@@ -191,10 +189,10 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
             categoryNameTextView.setText(category.getMinititle());
 
             //Saving text display if not empty
-            if (category.getAverageSavings() != null) {
-                if (!category.getAverageSavings().isEmpty()) {
+            if (category.getSavingsText() != null) {
+                if (!category.getSavingsText().isEmpty()) {
                     savingTextView.setVisibility(View.VISIBLE);
-                    savingTextView.setText(category.getAverageSavings());
+                    savingTextView.setText(category.getSavingsText());
                 } else {
                     savingTextView.setVisibility(View.GONE);
                     savingTextView.setText("");

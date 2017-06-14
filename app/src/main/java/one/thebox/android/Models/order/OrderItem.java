@@ -21,6 +21,8 @@ public class OrderItem implements Serializable {
 
     private int mrp;
 
+    private boolean paid;
+
     @SerializedName("savings_text")
     private String savingsText;
 
@@ -88,5 +90,13 @@ public class OrderItem implements Serializable {
 
     public void setSavingsText(String savingsText) {
         this.savingsText = savingsText;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 }

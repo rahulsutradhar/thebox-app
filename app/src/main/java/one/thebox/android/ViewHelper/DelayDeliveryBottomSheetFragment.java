@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,7 +62,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private ViewPager viewPager;
     private ViewPagerAdapterReschedule pagerAdapterReschedule;
 
-    private TextView header, arrivingAtText, deliveryDate;
+    private TextView header, arrivingAtText, deliveryDate, skipText;
     private Reschedule rescheduleSkip;
     private View rootView;
     private SubscribeItem subscribeItem;
@@ -113,11 +114,17 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         skipLayout = (RelativeLayout) rootView.findViewById(R.id.holder_skip_button);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
+        skipText = (TextView) rootView.findViewById(R.id.skip);
 
 
         skipLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /**
+                 * Set Clevertap Event Reschedule Delivery
+                 */
+                setCleverTapEventRescheduleDelivery();
+                //open skip dailog
                 openSkipDeliveryDailog();
             }
         });
@@ -186,6 +193,28 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public void setUIData(RescheduleResponse rescheduleResponse) {
         try {
 
+            final int sdk = android.os.Build.VERSION.SDK_INT;
+            if (rescheduleSkip.isVisible()) {
+                skipLayout.setClickable(true);
+                skipLayout.setEnabled(true);
+                if (sdk < 16) {
+                    skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.green_background));
+                } else {
+                    skipLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.green_background));
+                }
+                skipText.setTextColor(getActivity().getResources().getColor(R.color.white));
+
+            } else {
+                skipLayout.setClickable(false);
+                skipLayout.setEnabled(false);
+                if (sdk < 16) {
+                    skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.grey_background));
+                } else {
+                    skipLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.grey_background));
+                }
+                skipText.setTextColor(getActivity().getResources().getColor(R.color.divide_color));
+            }
+
             if (rescheduleResponse.getTitle() != null) {
                 if (!rescheduleResponse.getTitle().isEmpty()) {
                     header.setText(rescheduleResponse.getTitle());
@@ -203,6 +232,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
                     deliveryDate.setText(rescheduleResponse.getNextDeliveryAt());
                 }
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -412,7 +442,7 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     /**
      * Clever Tap Event
      */
-    public void setCleverTapEventRescheduleDelivery(UserItem userItem) {
+    public void setCleverTapEventRescheduleDelivery() {
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("reschedule_type", "skip");
