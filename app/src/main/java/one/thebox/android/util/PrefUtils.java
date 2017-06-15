@@ -9,7 +9,8 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
+import one.thebox.android.Models.update.Setting;
 
 
 /**
@@ -18,6 +19,7 @@ import one.thebox.android.Models.User;
 public class PrefUtils {
 
     public static final String PREF_USER = "PREF_USER";
+    public static final String PREF_SETTING = "PREF_SETTING";
     final static String KEY_TOKEN = "token";
     private static final String FILE_NAME = "TROVO_PREFERENCES";
     public static final String KEY_SETTING_CACHE = "SettingCache";
@@ -215,55 +217,19 @@ public class PrefUtils {
         return getObjectFromPrefs(PREF_USER, User.class, context);
     }
 
+    /**
+     * User Settings
+     */
+    public static void saveSettings(Context context, Setting setting) {
+        saveObjectToPrefs(PREF_SETTING, setting, context);
+    }
+
+    public static Setting getSettings(Context context) {
+        return getObjectFromPrefs(PREF_SETTING, Setting.class, context);
+    }
+
     public static boolean removeAll(Context context) {
         return getSharedPreferences(context).edit().clear().commit();
     }
-
-
-    //*Behaviour Keys*
-    //Orders
-    //key_id=0
-    //Constants.PREF_IS_ORDER_IS_LOADING(Whether orders are being updated on server)
-    //Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP
-    //
-    //Useritems
-
-    public static void set_model_being_updated_on_server_details(Context context,String boolean_key,String timestamp_key,long timestamp){
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
-        editor.putBoolean(boolean_key, true);
-        editor.putLong(timestamp_key, timestamp);
-        editor.apply();
-    }
-
-    public static void clean_model_being_updated_on_server_details(Context context,int key_id){
-        SharedPreferences.Editor editor = getSharedPreferences(context).edit();
-
-        switch(key_id){
-            case 0: {
-                editor.putBoolean(Constants.PREF_IS_ORDER_IS_LOADING, false);
-                editor.putLong(Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP, 0);
-            }
-        }
-
-        editor.apply();
-    }
-
-    public static boolean should_i_fetch_model_data_from_server(Context context,int key_id){
-
-        switch(key_id){
-            case 0: {
-                return DateTimeUtil.should_i_fetch_model_data_from_server(
-                            getSharedPreferences(context).getLong(Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP, 0)
-                        );
-            }
-
-            default:{
-                return false;
-            }
-        }
-
-    }
-
-
 
 }

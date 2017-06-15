@@ -6,33 +6,36 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Address;
-import one.thebox.android.Models.Locality;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.address.Locality;
+import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.user.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.MontserratEditText;
 import one.thebox.android.ViewHelper.SimpleTextWatcher;
-import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.address.AddressActivity;
-import one.thebox.android.api.RequestBodies.AddAddressRequestBody;
-import one.thebox.android.api.RequestBodies.UpdateAddressRequestBody;
-import one.thebox.android.api.Responses.AddressesApiResponse;
+import one.thebox.android.adapter.address.LocalitySpinnerAdapter;
+import one.thebox.android.api.RequestBodies.address.AddressRequest;
+import one.thebox.android.api.Responses.LocalityResponse;
+import one.thebox.android.api.Responses.address.AddressResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
-import one.thebox.android.util.Constants;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
+import one.thebox.android.util.CustomSnackBar;
 import one.thebox.android.util.PrefUtils;
 import one.thebox.android.viewmodel.base.BaseViewModel;
 import retrofit2.Call;
@@ -72,6 +75,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     private int calledFrom;
     private int type;
+    private boolean isMerge;
 
     /**
      * TextInputLayout
@@ -79,11 +83,22 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
     private TextInputLayout textInputLayoutFlat;
     private TextInputLayout textInputLayoutSociety;
     private TextInputLayout textInputLayoutStreet;
+    private TextView localityErrorMessage;
 
     /**
      * Radio Group
      */
     private RadioGroup radioGroup;
+
+    /**
+     * Locality
+     */
+    private ArrayList<Locality> localities;
+    private String localityUid;
+    private LocalitySpinnerAdapter spinnerAdapter;
+    private Spinner spinner;
+    private int localityFetchCount = 0;
+
 
     /**
      * Constructor
@@ -96,27 +111,28 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.view = view;
         this.addressLabel = 0;
         this.address = new Address();
-        Locality locality = Constants.POWAI_LOCALITY;
-        this.address.setLocality(locality);
+        this.localities = new ArrayList<>();
     }
 
     /**
      * Called from Cart to Save Address
+     * type=1
+     * calledFrom =2
      */
-    public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment, RealmList<Order> orders, int calledFrom, int type, View view) {
+    public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment, boolean isMerge, int calledFrom, int type, View view) {
         this.addAddressFragment = addAddressFragment;
-        this.orders = orders;
+        this.isMerge = isMerge;
         this.calledFrom = calledFrom;
         this.type = type;
         this.view = view;
         this.addressLabel = 0;
         this.address = new Address();
-        Locality locality = Constants.POWAI_LOCALITY;
-        this.address.setLocality(locality);
+        this.localities = new ArrayList<>();
     }
 
     /**
      * Called when user edit addres
+     * type = 2
      */
     public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment, Address address, int calledFrom, int type, View view) {
         this.addAddressFragment = addAddressFragment;
@@ -124,7 +140,9 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         this.type = type;
         this.view = view;
         this.address = address;
+
         setAddressLabel(address.getLabel());
+        this.localities = new ArrayList<>();
         notifyChange();
     }
 
@@ -134,15 +152,16 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
      * calledFrom = 3; type = 3;
      */
     public AddAddressFragmentViewModel(AddAddressFragment addAddressFragment,
-                                       Address address, RealmList<Order> orders, int calledFrom, int type, View view) {
+                                       Address address, boolean isMerge, int calledFrom, int type, View view) {
         this.addAddressFragment = addAddressFragment;
         this.address = address;
-        this.orders = orders;
+        this.isMerge = isMerge;
         this.calledFrom = calledFrom;
         this.type = type;
         this.view = view;
 
         setAddressLabel(address.getLabel());
+        this.localities = new ArrayList<>();
         notifyChange();
     }
 
@@ -173,8 +192,49 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
             }
         });
+        localityErrorMessage = (TextView) view.findViewById(R.id.error_message_locality);
+        spinner = (Spinner) view.findViewById(R.id.spinnerLocality);
 
+        //fetch from server
+        fetchAllLocality();
 
+    }
+
+    public void setUpSpinner() {
+        try {
+            if (localities.size() > 0) {
+                spinnerAdapter = new LocalitySpinnerAdapter(addAddressFragment.getActivity(), localities);
+                spinner.setAdapter(spinnerAdapter);
+
+                //check if address is editting
+                if (type == 2 || type == 3) {
+                    for (int i = 0; i < localities.size(); i++) {
+                        Locality locality = localities.get(i);
+                        if (locality.getUuid().equalsIgnoreCase(address.getLocalityUuid())) {
+                            localityUid = locality.getUuid();
+                            spinner.setSelection(i);
+                            break;
+                        }
+                    }
+                }
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        localityUid = localities.get(position).getUuid();
+                        spinner.setSelection(position);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     public TextWatcher getAddressLineFlatWatcher() {
@@ -221,16 +281,18 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 if (checkSocietyValidation()) {
                     //check street validation
                     if (checkStreetValidation()) {
-                        //request server to save addres
-                        //type == 2,3 edit address
-                        if (type == 2 || type == 3) {
-                            updateAddress(address);
+                        //check if user has entered localityUid
+                        if (checkPinCodeSelected()) {
+                            //request server to save addres
+                            //type == 2,3 edit address
+                            if (type == 2 || type == 3) {
+                                updateAddress(address);
+                            }
+                            //type == 1 save address
+                            else if (type == 1) {
+                                createNewAddress(address);
+                            }
                         }
-                        //type == 1 save address
-                        else if (type == 1) {
-                            addAddress(address);
-                        }
-
                     }
 
                 }
@@ -247,6 +309,20 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         } else {
             //invalide input
             flag = false;
+        }
+        return flag;
+    }
+
+    public boolean checkPinCodeSelected() {
+        boolean flag = false;
+        if (localityUid.equals("")) {
+            flag = false;
+            localityErrorMessage.setVisibility(View.VISIBLE);
+            localityErrorMessage.setText("Please select your Locality");
+        } else {
+            localityErrorMessage.setText("");
+            localityErrorMessage.setVisibility(View.GONE);
+            flag = true;
         }
         return flag;
     }
@@ -339,95 +415,106 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
         return address.getStreet();
     }
 
-
     /**
-     * Add New address to server
+     * Fetch All Locality
      */
-    private void addAddress(final Address address) {
-        final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
-        TheBox.getAPIService().addAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
-                new AddAddressRequestBody(
-                        new AddAddressRequestBody.Address(
-                                address.getLocality().getCode(),
-                                address.getLabel(),
-                                address.getFlat(),
-                                address.getSociety(),
-                                address.getStreet())))
-                .enqueue(new Callback<AddressesApiResponse>() {
+    public void fetchAllLocality() {
+        localityFetchCount++;
+        TheBox.getAPIService().getLocality(PrefUtils.getToken(addAddressFragment.getActivity()))
+                .enqueue(new Callback<LocalityResponse>() {
                     @Override
-                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.isSuccessful()) {
-                                if (response.body() != null) {
-                                    if (response.body().isSuccess()) {
-                                        updateAddressLocally(response.body().getAddress());
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
+                    public void onResponse(Call<LocalityResponse> call, Response<LocalityResponse> response) {
 
-                                    } else {
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                }
+                        if (response.isSuccessful()) {
+                            if (response.body() != null) {
+                                localities.addAll(response.body().getLocalities());
+                                setUpSpinner();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        Toast.makeText(addAddressFragment.getActivity(), "Failed", Toast.LENGTH_SHORT).show();
+                    public void onFailure(Call<LocalityResponse> call, Throwable t) {
+                        CustomSnackBar.showLongSnackBar(view, "Please check your Internet connection");
+                        if (localityFetchCount < 2) {
+                            fetchAllLocality();
+                        }
                     }
                 });
+
     }
 
-
     /**
-     * Edit Addres or Update Addres to Server
+     * Create New address
      */
-    public void updateAddress(final Address address) {
+    private void createNewAddress(Address address) {
+
+        address.setLocalityUuid(localityUid);
+
         final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
-        TheBox.getAPIService().updateAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
-                new UpdateAddressRequestBody(
-                        new UpdateAddressRequestBody.Address(
-                                address.getId(),
-                                address.getLocality().getCode(),
-                                address.getLabel(),
-                                address.getFlat(),
-                                address.getSociety(),
-                                address.getStreet())))
-                .enqueue(new Callback<AddressesApiResponse>() {
+        TheBox.getAPIService()
+                .createAddress(PrefUtils.getToken(addAddressFragment.getActivity()), new AddressRequest(address))
+                .enqueue(new Callback<AddressResponse>() {
                     @Override
-                    public void onResponse(Call<AddressesApiResponse> call, Response<AddressesApiResponse> response) {
+                    public void onResponse(Call<AddressResponse> call, Response<AddressResponse> response) {
                         dialog.dismiss();
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-                                    if (response.body().isSuccess()) {
-                                        updateAddressLocally(response.body().getAddress());
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                    } else {
-                                        Toast.makeText(addAddressFragment.getActivity(), response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                    }
-
+                                    Toast.makeText(addAddressFragment.getActivity(), "Success", Toast.LENGTH_SHORT).show();
+                                    updateAddressLocally(response.body().getAddress());
                                 }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                         }
-
                     }
 
                     @Override
-                    public void onFailure(Call<AddressesApiResponse> call, Throwable t) {
+                    public void onFailure(Call<AddressResponse> call, Throwable t) {
                         dialog.dismiss();
+                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
+    /**
+     * Update Address
+     */
+    private void updateAddress(Address address) {
+        final BoxLoader dialog = new BoxLoader(addAddressFragment.getActivity()).show();
+        TheBox.getAPIService()
+                .updateAddress(PrefUtils.getToken(addAddressFragment.getActivity()),
+                        address.getUuid(), new AddressRequest(address))
+                .enqueue(new Callback<AddressResponse>() {
+                    @Override
+                    public void onResponse(Call<AddressResponse> call, Response<AddressResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    updateAddressLocally(response.body().getAddress());
+
+                                } else {
+                                    Toast.makeText(addAddressFragment.getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AddressResponse> call, Throwable t) {
+                        dialog.dismiss();
+                        Toast.makeText(addAddressFragment.getActivity(), "Something went wrong.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+    }
 
     public void updateAddressLocally(Address address) {
         try {
@@ -437,6 +524,14 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
             addresses.add(address);
             user.setAddresses(addresses);
             PrefUtils.saveUser(addAddressFragment.getActivity(), user);
+
+            //update locally
+            //updating setting data locally
+            SettingService settingService = new SettingService();
+            Setting setting = settingService.getSettings(addAddressFragment.getActivity());
+            setting.setAddressAvailable(true);
+            settingService.setSettings(addAddressFragment.getActivity(), setting);
+
 
             //MyAccountFragment
             if (calledFrom == 1) {
@@ -466,7 +561,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     public void transactToDeliveryAddressFragment(Address address) {
         DeliveryAddressFragment deliveryAddressFragment = new
-                DeliveryAddressFragment(address, orders);
+                DeliveryAddressFragment(address, isMerge);
         FragmentManager fragmentManager = addAddressFragment.getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.container, deliveryAddressFragment, "Delivery_Address");
@@ -494,7 +589,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
      */
     public void setCleverTapEventSaveAddress(Address address) {
         HashMap<String, Object> saveAddress = new HashMap<>();
-        saveAddress.put("delivery_address", address);
+        saveAddress.put("address_uuid", address.getUuid());
 
         TheBox.getCleverTap().event.push("save_address", saveAddress);
 

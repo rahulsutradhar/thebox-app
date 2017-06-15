@@ -1,18 +1,12 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,61 +17,48 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
-import org.greenrobot.eventbus.Subscribe;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import one.thebox.android.Events.UpdateCartEvent;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.Address;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.items.Box;
+import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.user.User;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
+import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.SearchDetailAdapter;
+import one.thebox.android.adapter.cart.CartAdapter;
+import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.SettingService;
+import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
+import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
-    private Order order;
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
-    private SearchDetailAdapter userItemRecyclerAdapter;
+    private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
+    private ArrayList<BoxItem> boxItems = new ArrayList<>();
+    private int requestCounter = 0;
+    private GifImageView progressBar;
 
     /**
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    initVariables();
-                }
-            });
-
-        }
-    };
 
     public CartFragment() {
     }
@@ -87,19 +68,25 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         return fragment;
     }
 
-    private void initVariables() {
-        int cartId = PrefUtils.getUser(getActivity()).getCartId();
-        Realm realm = TheBox.getRealm();
-        Order order = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, 0)
-                .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if (order != null) {
-            this.order = realm.copyFromRealm(order);
+    public void initVariables(boolean isUpdateRecyclerview) {
+        boxItems = CartHelper.getCart();
+        if (boxItems != null) {
+            if (boxItems.size() > 0) {
+                if (isUpdateRecyclerview) {
+                    setupRecyclerView();
+
+                }
+                setCartPrice(CartHelper.getCartPrice());
+
+            } else {
+                //cart is Empty
+                setCartEmpty();
+            }
         } else {
-            this.order = null;
+            //cart is Empty
+            setCartEmpty();
         }
 
-        doCartHasItems();
     }
 
     @Override
@@ -113,39 +100,36 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         initViews();
-        initVariables();
+        initVariables(true);
         setupAppBarObserver();
-        setupRecyclerView();
         return rootView;
     }
 
-    public boolean doCartHasItems() {
+    public void setCartEmpty() {
+        emptyCartLayout.setVisibility(View.VISIBLE);
+        proceedToPayment.setText("");
+        proceedToPayment.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+    }
 
-        if (order == null || order.getUserItems() == null || order.getUserItems().isEmpty()) {
-            emptyCartLayout.setVisibility(View.VISIBLE);
-            proceedToPayment.setVisibility(View.GONE);
-            return false;
-        } else {
-            // Toast.makeText(TheBox.getAppContext(), "Cart Has Item ELSEEE " + order.getTotalPrice(), Toast.LENGTH_SHORT).show();
-            emptyCartLayout.setVisibility(View.GONE);
-            proceedToPayment.setVisibility(View.VISIBLE);
-            proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + order.getTotalPrice() + "\n" + "Proceed to Payment");
-            return true;
-        }
+    public void setCartPrice(float price) {
+        proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
     }
 
     private void setupRecyclerView() {
-        if (doCartHasItems()) {
-            if (userItemRecyclerAdapter == null) {
-                userItemRecyclerAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
-                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-                userItemRecyclerAdapter.setShouldRemoveBoxItemOnEmptyQuantity(true);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                recyclerView.setAdapter(userItemRecyclerAdapter);
-            } else {
-                userItemRecyclerAdapter.setBoxItems(order.getBoxItemsObjectFromUserItem(), null);
-                userItemRecyclerAdapter.notifyDataSetChanged();
-            }
+        emptyCartLayout.setVisibility(View.GONE);
+        proceedToPayment.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+
+        if (adapter == null) {
+            adapter = new CartAdapter(getActivity(), glideRequestManager, this);
+            adapter.setBoxItems(boxItems);
+
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.setBoxItems(boxItems);
+            adapter.notifyDataSetChanged();
         }
 
     }
@@ -156,16 +140,30 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        this.progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
         proceedToPayment = (TextView) rootView.findViewById(R.id.button_proceed_to_payment);
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //request server to set cart
+                if (ProductQuantity.getCartSize() > 0) {
+                    requestServerConfirmCart();
+                    // set celver tap even when proceed from cart
+                    setCleverTapEventProocedFromCart();
 
-                checkAddressAndProceedPayment();
-
+                } else {
+                    Toast.makeText(getActivity(), "Your cart seems empty, please add items", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
+
+        /**
+         * Save CleverTap Event; OpenCart
+         */
+        setCleverTapEventOpenCart();
+
+
     }
 
 
@@ -174,19 +172,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         proceedToPayment.setTranslationY(-offset);
     }
 
-
-    @Subscribe
-    public void onUpdateCart(UpdateCartEvent UpdateCartEvent) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    initVariables();
-                }
-            });
-        }
-    }
 
     private void setupAppBarObserver() {
         AppBarObserver appBarObserver;
@@ -219,63 +204,95 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
             }
         });
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                new IntentFilter(BROADCAST_EVENT_TAB));
+    }
 
-        onUpdateCart(new UpdateCartEvent(3));
 
-        /**
-         * Save CleverTap Event; OpenCart
-         */
-        setCleverTapEventOpenCart();
+    /**
+     * Request Server for Network Call
+     */
+    public void requestServerConfirmCart() {
+        CartHelperService.stopCartService(getActivity(), false);
+        requestCounter++;
+        progressBar.setVisibility(View.VISIBLE);
+        CartHelperService.updateCartToServer(getActivity(), this);
+    }
+
+    public void setCartUpdateServerResponse(boolean isSuccess, CartItemResponse response) {
+
+        if (isSuccess) {
+            progressBar.setVisibility(View.GONE);
+            //Proceed
+            doesUserExist(response.isMerge());
+
+        } else {
+            if (requestCounter > 1) {
+                requestServerConfirmCart();
+            } else {
+                //if the call fails start background service again; if cart size is greater then 0
+                CartHelperService.checkServiceRunningWhenAdded(getActivity());
+                progressBar.setVisibility(View.GONE);
+                requestCounter = 0;
+                //show a error message about failed called
+                Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /**
-     * Logic to navigate users from cart
+     * Does User Detials Exist
      */
-    public void checkAddressAndProceedPayment() {
-        try {
-
-            /**
-             * set Clevertap Event Proceed from cart
-             */
-            setCleverTapEventProocedFromCart(order);
-
-            User user = PrefUtils.getUser(getActivity());
-            RealmList<Order> orders = new RealmList<>();
-            orders.add(order);
-
-            if (user.getAddresses() != null) {
-                if (user.getAddresses().size() > 0) {
-
-                    //if order exist move to slots else take to delivery address
-                    if (OrderHelper.isOrderExist()) {
-                        //move to slots
-                        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(),
-                                OrderHelper.getAddressAndOrder(orders), false));
+    public void doesUserExist(boolean isMerge) {
+        Setting setting = new SettingService().getSettings(getActivity());
+        if (setting != null) {
+            if (setting.isUserDataAvailable()) {
+                //available check for Address
+                if (setting.isAddressAvailable()) {
+                    //check if it is first order or not
+                    if (!isMerge) {
+                        //first order; navigate to display Address
+                        displayDeliveryAddress(isMerge);
                     } else {
-                        //open Delivery Address Fragment
-                        displayDeliveryAddress(user, orders);
+                        //navigate to Time Slot
+                        proceedToSlots(isMerge);
                     }
-
                 } else {
-                    //open Add Address Activity
-                    addDeliverAddress(orders);
+                    //open Add address activity
+                    openAddressActivty(isMerge);
                 }
             } else {
-                //open Add Address Activity
-                addDeliverAddress(orders);
+                //open Fill User Info Activity
+                openUserInfoActivity(isMerge);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+    }
+
+    /**
+     * Fill User Info Activity
+     */
+    public void openUserInfoActivity(boolean isMerge) {
+        startActivity(FillUserInfoActivity.newInstance(getActivity(), isMerge));
+    }
+
+    /**
+     * Add Address Activity
+     */
+    public void openAddressActivty(boolean isMerge) {
+        addDeliverAddress(isMerge);
+    }
+
+    /**
+     * Proceed To Slot Activity
+     * When you have User Details and Address
+     */
+    public void proceedToSlots(boolean isMerge) {
+        startActivity(ConfirmTimeSlotActivity.newInstance(getActivity(), isMerge));
     }
 
     /**
      * Open Add Address Form
      */
-    public void addDeliverAddress(RealmList<Order> orders) {
+    public void addDeliverAddress(boolean isMerge) {
         //open add address fragment blank
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         /**
@@ -288,39 +305,49 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
          * 2- edit address
          */
         intent.putExtra(Constants.EXTRA_ADDRESS_TYPE, 1);
-        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         startActivity(intent);
     }
 
     /**
      * Show Delivery Address
      */
-    public void displayDeliveryAddress(User user, RealmList<Order> orders) {
-        Address address = user.getAddresses().first();
+    public void displayDeliveryAddress(boolean isMerge) {
+        User user = PrefUtils.getUser(getActivity());
+        Address address = null;
+        if (user.getAddresses() != null) {
+            if (user.getAddresses().size() > 0) {
+                address = user.getAddresses().first();
+            }
+        }
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         intent.putExtra("called_from", 2);
-        intent.putExtra(Constants.EXTRA_LIST_ORDER, CoreGsonUtils.toJson(orders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
         startActivity(intent);
     }
 
-    public void setCleverTapEventProocedFromCart(Order order) {
+    /**
+     * When proceed from Cart
+     */
+    public void setCleverTapEventProocedFromCart() {
         HashMap<String, Object> cartItems = new HashMap<>();
-        cartItems.put("cart_id", order.getId());
-        cartItems.put("user_id", order.getUserId());
-        cartItems.put("total_price_cart", order.getTotalPrice());
-        cartItems.put("item_quantity_cart", order.getUserItems().size());
+        cartItems.put("user_uuid", PrefUtils.getUser(getActivity()).getUuid());
+        cartItems.put("item_quantity_cart", ProductQuantity.getCartSize());
+        cartItems.put("total_price_cart", CartHelper.getCartPrice());
 
         TheBox.getCleverTap().event.push("proceed_from_cart", cartItems);
     }
 
+    /**
+     * Clevertap event for cart Items
+     */
     public void setCleverTapEventOpenCart() {
         try {
             HashMap<String, Object> cartItems = new HashMap<>();
-            cartItems.put("cart_id", order.getId());
-            cartItems.put("user_id", order.getUserId());
-            cartItems.put("total_price_cart", order.getTotalPrice());
-            cartItems.put("item_quantity_cart", order.getUserItems().size());
+            cartItems.put("user_uuid", PrefUtils.getUser(getActivity()).getUuid());
+            cartItems.put("item_quantity_cart", ProductQuantity.getCartSize());
+            cartItems.put("total_price_cart", CartHelper.getCartPrice());
 
             TheBox.getCleverTap().event.push("open_cart", cartItems);
         } catch (Exception e) {

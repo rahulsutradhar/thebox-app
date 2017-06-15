@@ -2,7 +2,7 @@ package one.thebox.android.api.Responses;
 
 import java.util.List;
 
-import one.thebox.android.Models.Locality;
+import one.thebox.android.Models.address.Locality;
 import one.thebox.android.api.ApiResponse;
 
 /**

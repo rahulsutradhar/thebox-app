@@ -1,8 +1,10 @@
 package one.thebox.android.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.widget.Toast;
 
 import com.clevertap.android.sdk.ActivityLifecycleCallback;
 import com.clevertap.android.sdk.CleverTapAPI;
@@ -36,6 +38,7 @@ import one.thebox.android.R;
 import one.thebox.android.ViewHelper.FontsOverride;
 import one.thebox.android.api.APIService;
 import one.thebox.android.api.RestClient;
+import one.thebox.android.util.PrefUtils;
 import retrofit2.Retrofit;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -78,8 +81,8 @@ public class TheBox extends MultiDexApplication {
     }
 
     public static RealmConfiguration getRealmConfiguration() {
-        realmConfiguration = new RealmConfiguration.Builder(getInstance()).name("thebox.realm")
-                .deleteRealmIfMigrationNeeded().schemaVersion(8).build();
+        realmConfiguration = new RealmConfiguration.Builder().name("thebox.realm")
+                .deleteRealmIfMigrationNeeded().schemaVersion(10).build();
         return realmConfiguration;
     }
 
@@ -92,12 +95,17 @@ public class TheBox extends MultiDexApplication {
             HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
             logger.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
             okHttpClient = new OkHttpClient.Builder().cache(getCache(4)).retryOnConnectionFailure(true).readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-                    .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).addInterceptor(logger).addInterceptor(new Interceptor() {
+                    .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .addInterceptor(logger)
+                    .addInterceptor(new Interceptor() {
                         @Override
                         public okhttp3.Response intercept(Chain chain) throws IOException {
-                            okhttp3.Request request = chain.request().newBuilder()
+
+                            okhttp3.Request request;
+                            request = chain.request().newBuilder()
                                     .addHeader("Accept", "application/json")
                                     .addHeader("Content-type", "application/json").build();
+
                             return chain.proceed(request);
                         }
                     }).addNetworkInterceptor(new StethoInterceptor()).build();
@@ -128,6 +136,7 @@ public class TheBox extends MultiDexApplication {
             FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Montserrat-Regular.otf");
 
             /*Local database*/
+            Realm.init(this);
             getRealm();
             RealmChangeManager.getInstance();
 
@@ -135,13 +144,14 @@ public class TheBox extends MultiDexApplication {
             Branch.getAutoInstance(this);
 
             /*debuger tools*/
-            if (BuildConfig.enableStetho) {
+           /* if (BuildConfig.enableStetho) {*/
                 Stetho.initialize(
                         Stetho.newInitializerBuilder(this)
                                 .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                                 .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                                 .build());
-            }
+           // }
 
              /* initialize Calligraphy*/
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
@@ -176,6 +186,7 @@ public class TheBox extends MultiDexApplication {
         }
 
     }
+
 
     @Override
     protected void attachBaseContext(Context base) {

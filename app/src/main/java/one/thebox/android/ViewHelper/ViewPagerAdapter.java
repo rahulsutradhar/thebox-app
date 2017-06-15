@@ -1,7 +1,6 @@
 package one.thebox.android.ViewHelper;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -17,7 +16,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-import one.thebox.android.Models.Category;
+import one.thebox.android.Models.items.Category;
 import one.thebox.android.R;
 import one.thebox.android.util.DisplayUtil;
 
@@ -78,19 +77,20 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         TextView savings = (TextView) view.findViewById(R.id.savings_title);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
+
         title.setText(mFragmentCategoryList.get(position).getTitle());
 
 
-        if (mFragmentCategoryList.get(position).getNoOfItems() == 1) {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Item");
+        if (mFragmentCategoryList.get(position).getNumberOfItem() == 1) {
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNumberOfItem() + " Item");
         } else {
-            numberOfItems.setText(mFragmentCategoryList.get(position).getNoOfItems() + " Items");
+            numberOfItems.setText(mFragmentCategoryList.get(position).getNumberOfItem() + " Items");
         }
 
-        if (mFragmentCategoryList.get(position).getAverageSavings() != null) {
-            if (!mFragmentCategoryList.get(position).getAverageSavings().isEmpty()) {
+        if (mFragmentCategoryList.get(position).getSavingsText() != null) {
+            if (!mFragmentCategoryList.get(position).getSavingsText().isEmpty()) {
                 savings.setVisibility(View.VISIBLE);
-                savings.setText(mFragmentCategoryList.get(position).getAverageSavings());
+                savings.setText(mFragmentCategoryList.get(position).getSavingsText());
             } else {
                 savings.setText("");
                 savings.setVisibility(View.INVISIBLE);
@@ -107,7 +107,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         } else {
 
             Glide.with(context)
-                    .load(mFragmentCategoryList.get(position).getIconUrl())
+                    .load(mFragmentCategoryList.get(position).getCategoryImage())
                     .centerCrop()
                     .crossFade()
                     .into(icon);

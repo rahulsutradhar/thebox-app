@@ -1,7 +1,6 @@
 package one.thebox.android.fragment.address;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.realm.RealmList;
-import one.thebox.android.Models.Address;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.databinding.DeliveryAddressFragmentBinding;
@@ -35,9 +32,9 @@ public class DeliveryAddressFragment extends FragmentBase {
     private Address address;
 
     /**
-     * List Orders
+     * Is Merge
      */
-    private RealmList<Order> orders;
+    private boolean isMerge;
 
     /**
      * Constructor
@@ -46,10 +43,13 @@ public class DeliveryAddressFragment extends FragmentBase {
 
     }
 
+    /**
+     * Called from Add Address Fragment
+     */
     @SuppressLint("ValidFragment")
-    public DeliveryAddressFragment(Address address, RealmList<Order> orders) {
+    public DeliveryAddressFragment(Address address, boolean isMerge) {
         this.address = address;
-        this.orders = orders;
+        this.isMerge = isMerge;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class DeliveryAddressFragment extends FragmentBase {
         View view = inflater.inflate(R.layout.fragment_delivery_address, container, false);
 
         DeliveryAddressFragmentBinding binding = DataBindingUtil.bind(view);
-        deliveryAddressFragmentViewModel = new DeliveryAddressFragmentViewModel(this, address, orders);
+        deliveryAddressFragmentViewModel = new DeliveryAddressFragmentViewModel(this, address, isMerge);
         binding.setViewModel(deliveryAddressFragmentViewModel);
 
         return binding.getRoot();

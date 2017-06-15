@@ -102,14 +102,6 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Between "
-                            android:textColor="@color/davy_grey"
-                            android:textSize="@dimen/text_small1" />
-
-                        <TextView
                             android:id="@+id/time_slot"
                             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
@@ -209,6 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="@drawable/green_borders"
+                    android:clickable="true"
                     android:gravity="center"
                     android:paddingBottom="@dimen/padding_medium_button_vertical"
                     android:paddingLeft="@dimen/padding_medium_button_horizontal"

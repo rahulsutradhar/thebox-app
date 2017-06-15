@@ -25,3 +25,5 @@
 }
 -dontnote **ILicensingService
 
+-keep class io.realm.exceptions.* { *; }
+

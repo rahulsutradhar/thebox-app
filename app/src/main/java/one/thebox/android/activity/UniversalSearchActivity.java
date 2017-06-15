@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import one.thebox.android.Events.SearchEvent;
-import one.thebox.android.Models.SearchResult;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 
-import one.thebox.android.ViewHelper.ShowcaseHelper;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
-import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
-import one.thebox.android.api.RestClient;
+import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -67,7 +65,6 @@ public class UniversalSearchActivity extends Activity {
     private Call<SearchAutoCompleteResponse> call;
     private SearchAutoCompleteAdapter searchAutoCompleteAdapter;
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
-    private int tempScroll;
     @BindView(R.id.progress_bar)
     GifImageView progressBar;
 
@@ -79,9 +76,19 @@ public class UniversalSearchActivity extends Activity {
             progressBar.setVisibility(View.GONE);
             progress_bar_text.setVisibility(View.GONE);
             callHasBeenCompleted = true;
-            if (response.body() != null) {
-                onSearchEvent(new SearchEvent(query, response.body()));
+            try {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        onSearchEvent(new SearchEvent(query, response.body().getSearchResults()));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                progressBar.setVisibility(View.GONE);
+                progress_bar_text.setVisibility(View.GONE);
+                callHasBeenCompleted = true;
             }
+
         }
 
         @Override
@@ -110,7 +117,7 @@ public class UniversalSearchActivity extends Activity {
             public void onClick(View v) {
                 edtSearchQuery.setText("");
                 searchRecyclerView.setVisibility(View.GONE);
-                llNoResult.setVisibility(View.GONE);
+                llNoResult.setVisibility(View.VISIBLE);
             }
         });
 
@@ -129,7 +136,6 @@ public class UniversalSearchActivity extends Activity {
             @Override
             public void afterTextChanged(Editable s) {
                 query = s.toString();
-//                attachSearchResultFragment();
                 if (s.length() > 0) {
                     imgSearchCancel.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
@@ -162,19 +168,6 @@ public class UniversalSearchActivity extends Activity {
             }
         });
 
-
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "search_bar_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowcaseHelper(this, 0)
-                    .show("Search", "Search for an item, brand or category", headerSearch)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-                            PrefUtils.putBoolean(TheBox.getInstance(), "search_bar_tutorial", false);
-                        }
-                    });
-
-
-        }
     }
 
 
@@ -202,9 +195,6 @@ public class UniversalSearchActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                    if (searchAutoCompleteAdapter.getSearchResults().size() != 0)
-//                        ((MainActivity) getActivity()).attachSearchDetailFragment(searchAutoCompleteAdapter.getSearchResults().get(0));
-//                    return true;
                 }
                 return false;
             }
@@ -214,26 +204,29 @@ public class UniversalSearchActivity extends Activity {
 
     public void onSearchEvent(SearchEvent searchEvent) {
         searchResults.clear();
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getCategories().size(); i++) {
-            String categoryName = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getTitle();
-            int categoryId = searchEvent.getSearchAutoCompleteResponse().getCategories().get(i).getId();
-            SearchResult searchResult = new SearchResult(categoryId, categoryName);
-            searchResults.add(searchResult);
-        }
-        for (int i = 0; i < searchEvent.getSearchAutoCompleteResponse().getItems().size(); i++) {
-            String itemName = searchEvent.getSearchAutoCompleteResponse().getItems().get(i);
-            SearchResult searchResult = new SearchResult(itemName);
-            searchResults.add(searchResult);
-        }
-        if (searchResults.size() == 0) {
+
+        if (searchEvent.getSearchResults() != null) {
+            if (searchEvent.getSearchResults().size() > 0) {
+                searchResults = searchEvent.getSearchResults();
+                //results available
+                llNoResult.setVisibility(View.GONE);
+                searchRecyclerView.setVisibility(View.VISIBLE);
+                if (searchAutoCompleteAdapter != null) {
+                    searchAutoCompleteAdapter.setSearchResults(searchResults);
+                    searchAutoCompleteAdapter.setSearchQuery(query);
+                    searchRecyclerView.setAdapter(searchAutoCompleteAdapter);
+                }
+            } else {
+                //empty state
+                llNoResult.setVisibility(View.VISIBLE);
+                searchRecyclerView.setVisibility(View.GONE);
+            }
+        } else {
+            //empty state
             llNoResult.setVisibility(View.VISIBLE);
             searchRecyclerView.setVisibility(View.GONE);
-        } else {
-            llNoResult.setVisibility(View.GONE);
-            searchRecyclerView.setVisibility(View.VISIBLE);
         }
-        searchAutoCompleteAdapter.setSearchResults(searchResults);
-        searchRecyclerView.setAdapter(searchAutoCompleteAdapter);
+
     }
 
 

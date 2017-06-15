@@ -74,7 +74,7 @@ public class MobileNumberActivity extends BaseActivity implements View.OnClickLi
 
     @NeedsPermission({Manifest.permission.READ_SMS, Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS})
     public void submitMobileNumber() {
-        final BoxLoader dialog =   new BoxLoader(this).show();
+        final BoxLoader dialog = new BoxLoader(this).show();
         TheBox.getAPIService().createNewUser(new CreateUserRequestBody(new CreateUserRequestBody.User("+91" + phoneNumber)))
                 .enqueue(new Callback<UserSignInSignUpResponse>() {
                     @Override
@@ -82,7 +82,7 @@ public class MobileNumberActivity extends BaseActivity implements View.OnClickLi
                         dialog.dismiss();
                         if (response.body() != null) {
                             if (response.body().isSuccess()) {
-                                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this, phoneNumber, true));
+                                startActivity(OtpVerificationActivity.getInstance(MobileNumberActivity.this, phoneNumber, ""));
                             } else {
                                 Toast.makeText(MobileNumberActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
                             }

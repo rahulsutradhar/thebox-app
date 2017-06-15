@@ -1,12 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context=".fragment.MyBoxesFragment">
+    android:fitsSystemWindows="true">
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -27,13 +25,15 @@
         android:id="@+id/select_date_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/light_white"
-        android:paddingBottom="16dp"
+        android:layout_below="@+id/toolbar"
         android:layout_marginBottom="8dp"
-        android:orientation="vertical">
+        android:background="@color/light_white"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
 
-         <one.thebox.android.ViewHelper.MontserratTextView
+        <TextView
             android:id="@+id/text_view_select_date"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -51,19 +51,20 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:background="@drawable/grey_borders"
+            android:background="@drawable/green_borders"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-             <one.thebox.android.ViewHelper.MontserratTextView
+            <TextView
                 android:id="@+id/time_slot_text_view"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:padding="16dp"
-                android:text="7:30 - 9:00, 13 Feb, Wednesday "
-                android:textColor="@color/primary_text_color"
+                android:text=" loading... "
+                android:textColor="@color/black"
                 android:textSize="@dimen/text_medium1" />
 
             <ImageView
@@ -78,37 +79,100 @@
 
     </LinearLayout>
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/textView4"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/select_date_holder"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:text="Select Delivery Time Slot:"
         android:textColor="@color/primary_text_color"
         android:textSize="@dimen/text_medium1" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_time_slots"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom__container"
+        android:layout_below="@id/textView4">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_time_slots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
 
 
-     <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/button_proceed_to_payment"
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/bottom__container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:text="Proceed to Payment"
-        android:textColor="@color/white"
-        android:visibility="visible" />
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <!-- Information-->
+        <RelativeLayout
+            android:id="@+id/information"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_proceed_to_payment"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/background_timeslot_information"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <ImageView
+                    android:id="@+id/icon_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:src="@drawable/ic_info_outline_black_24px" />
+
+                <TextView
+                    android:id="@+id/timeslotInformationText"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_toRightOf="@+id/icon_info"
+                    android:text="Why not early morning slots?"
+                    android:textColor="@color/primary_text_color"
+                    android:textSize="@dimen/text_small3" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/button_proceed_to_payment"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="Proceed to Payment"
+            android:textColor="@color/white"
+            android:visibility="visible" />
+
+    </LinearLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

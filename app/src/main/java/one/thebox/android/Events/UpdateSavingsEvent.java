@@ -1,5 +1,7 @@
 package one.thebox.android.Events;
 
+import java.util.ArrayList;
+
 import io.realm.RealmList;
 import one.thebox.android.Models.saving.Saving;
 
@@ -9,17 +11,17 @@ import one.thebox.android.Models.saving.Saving;
 
 public class UpdateSavingsEvent {
 
-    private RealmList<Saving> savings;
+    private boolean emptyState;
 
-    public UpdateSavingsEvent(RealmList<Saving> savings) {
-        this.savings = savings;
+    public UpdateSavingsEvent() {
+
     }
 
-    public RealmList<Saving> getSavings() {
-        return savings;
+    public boolean isEmptyState() {
+        return emptyState;
     }
 
-    public void setSavings(RealmList<Saving> savings) {
-        this.savings = savings;
+    public void setEmptyState(boolean emptyState) {
+        this.emptyState = emptyState;
     }
 }

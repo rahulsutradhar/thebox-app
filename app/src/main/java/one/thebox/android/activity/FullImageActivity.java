@@ -3,18 +3,14 @@ package one.thebox.android.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.squareup.picasso.Picasso;
 
 import one.thebox.android.R;
-import one.thebox.android.app.AppConstants;
-import one.thebox.android.util.Constants;
 import ooo.oxo.library.widget.TouchImageView;
 
 public class FullImageActivity extends BaseActivity {

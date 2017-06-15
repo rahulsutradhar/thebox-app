@@ -12,16 +12,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import one.thebox.android.Events.SmsEvent;
-import one.thebox.android.Helpers.CartHelper;
-import one.thebox.android.Models.User;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
-import one.thebox.android.api.RequestBodies.OtpRequestBody;
+import one.thebox.android.api.RequestBodies.authentication.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,8 +70,8 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
 
     @Subscribe
     public void onSmsEvent(SmsEvent smsEvent) {
-        if (smsEvent.getMessage().contains("awesome")) {
-            otp = smsEvent.getMessage().substring(smsEvent.getMessage().length() - 6, smsEvent.getMessage().length());
+        if (smsEvent.getOtp() != null) {
+            otp = smsEvent.getOtp();
             final BoxLoader dialog = new BoxLoader(this).show();
             TheBox.getAPIService()
                     .verifyOtp(new OtpRequestBody(new OtpRequestBody.User(phoneNumber, otp)))
@@ -85,8 +84,8 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                     if (response.body().getUser() != null) {
                                         //save user locally
                                         saveUserProfileToLocal(response.body().getUser());
-                                        PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
-                                        CartHelper.saveOrdersToRealm(response.body().getCart());
+                                        PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
+
 
                                         if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                             startActivity(new Intent(ConfirmOtpActivity.this, MainActivity.class));
@@ -139,8 +138,8 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                     if (response.body() != null) {
                                         if (response.body().isSuccess()) {
                                             if (response.body().getUser() != null) {
-                                                PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAuthToken());
-                                                CartHelper.saveOrdersToRealm(response.body().getCart());
+                                                PrefUtils.saveToken(ConfirmOtpActivity.this, response.body().getUser().getAccessToken());
+
 
                                                 if (response.body().getUser().getEmail() != null && !response.body().getUser().getEmail().isEmpty()) {
                                                     User user = PrefUtils.getUser(ConfirmOtpActivity.this);
@@ -149,7 +148,7 @@ public class ConfirmOtpActivity extends BaseActivity implements View.OnClickList
                                                     TheBox.getAPIService().updateProfile(
                                                             PrefUtils.getToken(ConfirmOtpActivity.this), new StoreUserInfoRequestBody(
                                                                     new StoreUserInfoRequestBody.User
-                                                                            (phoneNumber, user.getEmail(), user.getName(), PrefUtils.getUser(ConfirmOtpActivity.this).getLocalityCode())))
+                                                                            (phoneNumber, user.getEmail(), user.getName(), "400072")))
                                                             .enqueue(new Callback<UserSignInSignUpResponse>() {
                                                                 @Override
                                                                 public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

@@ -10,6 +10,7 @@
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="divide_color">#B6B6B6</color>
+    <color name="warm_grey">#727272</color>
     <color name="dark_grey_30_opacity">#4D4a4a4a</color>
     <color name="primary_text_main">#de000000</color>
     <color name="dark_grey">#4a4a4a</color>

@@ -25,7 +25,6 @@ import one.thebox.android.ViewHelper.Montserrat;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    boolean isLoginActivity = false;
     private Toolbar toolbar;
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;
@@ -34,6 +33,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void closeActivityOnBackPress(boolean shouldCloseActivityOnBackPress) {
         this.shouldCloseActivityOnBackPress = true;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setVisible(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setVisible(false);
     }
 
     @Override
@@ -169,4 +181,5 @@ public abstract class BaseActivity extends AppCompatActivity {
             inputManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
 }

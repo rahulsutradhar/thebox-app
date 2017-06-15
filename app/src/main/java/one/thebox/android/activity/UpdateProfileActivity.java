@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
@@ -86,7 +86,7 @@ public class UpdateProfileActivity extends BaseActivity implements View.OnClickL
             final BoxLoader dialog = new BoxLoader(this).show();
             TheBox.getAPIService().updateProfile(
                     PrefUtils.getToken(this), new StoreUserInfoRequestBody(new StoreUserInfoRequestBody.User
-                            (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getLocalityCode())))
+                            (mobile, email, name, PrefUtils.getUser(UpdateProfileActivity.this).getAddresses().get(0).getLocalityUuid())))
                     .enqueue(new Callback<UserSignInSignUpResponse>() {
                         @Override
                         public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {

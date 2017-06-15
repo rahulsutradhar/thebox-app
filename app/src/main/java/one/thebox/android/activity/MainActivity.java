@@ -1,5 +1,6 @@
 package one.thebox.android.activity;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,16 +17,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,30 +42,25 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
-import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.CartHelper;
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.SearchResult;
-import one.thebox.android.Models.User;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.items.Box;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.search.SearchResult;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.notifications.Params;
-import one.thebox.android.Models.update.SettingsResponse;
+import one.thebox.android.Models.update.CommonPopupDetails;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.app.Keys;
-import one.thebox.android.services.MyInstanceIDListenerService;
-import one.thebox.android.services.MyTaskService;
-import one.thebox.android.services.RegistrationIntentService;
-import one.thebox.android.ViewHelper.BoxLoader;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.api.Responses.GetAllAddressResponse;
-import one.thebox.android.api.Responses.SearchAutoCompleteResponse;
-import one.thebox.android.api.RestClient;
+import one.thebox.android.fragment.dialog.UpdateDialogFragment;
+import one.thebox.android.services.SettingService;
+import one.thebox.android.services.notification.MyInstanceIDListenerService;
+import one.thebox.android.services.notification.MyTaskService;
+import one.thebox.android.services.notification.RegistrationIntentService;
+import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.AutoCompleteFragment;
@@ -69,7 +68,6 @@ import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxTabFragment;
 import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
@@ -82,6 +80,8 @@ import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_T
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
+ * <p>
+ * Modified by Developers on07/06/2017.
  */
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener
@@ -98,7 +98,6 @@ public class MainActivity extends BaseActivity implements
 
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
-    private static final String PREF_IS_FIRST_LOGIN = "is_first_login";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -108,11 +107,12 @@ public class MainActivity extends BaseActivity implements
     private ImageView buttonSpecialAction, searchAction, btn_search, chatbutton;
     private EditText searchView;
     private String query;
-    private ArrayList<ExploreItem> exploreItems = new ArrayList<>();
     private boolean callHasBeenCompleted = true;
     private GifImageView progressBar;
     private Menu menu;
     private int numberOfItemIncart = -1;
+    private TextView userNameTextView;
+    private Setting setting = new Setting();
 
     Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
         @Override
@@ -121,8 +121,12 @@ public class MainActivity extends BaseActivity implements
             callHasBeenCompleted = true;
             try {
                 if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        EventBus.getDefault().post(new SearchEvent(query, response.body()));
+                    if (response.body().isStatus()) {
+                        if (response.body() != null) {
+                            EventBus.getDefault().post(new SearchEvent(query, response.body().getSearchResults()));
+                        }
+                    } else {
+                        //SHow an error message
                     }
                 } else {
                     //handle error
@@ -156,16 +160,17 @@ public class MainActivity extends BaseActivity implements
         mGcmNetworkManager = GcmNetworkManager.getInstance(this);
 
         user = PrefUtils.getUser(this);
+        setting = new SettingService().getSettings(this);
         fragmentManager = getSupportFragmentManager();
         shouldHandleDrawer();
         initViews();
         setupNavigationDrawer();
 
+        //update app settings
+        updateAppSettings();
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        if (PrefUtils.getBoolean(this, PREF_IS_FIRST_LOGIN, true)) {
-            getAllAddresses();
-        }
 
         // Doing it for notification so "My Deliveries" fragment can be attached by default
         Bundle extras = getIntent().getExtras();
@@ -178,13 +183,6 @@ public class MainActivity extends BaseActivity implements
 
         }
 
-        initCart();
-
-        if (!RestClient.is_in_development) {
-            ShowcaseHelper.removeAllTutorial();
-        }
-
-
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,31 +190,49 @@ public class MainActivity extends BaseActivity implements
                 startActivityForResult(intent, 1);
             }
         });
-        getSettingsData();
 
-        setCartOnToolBar();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_EVENT_TAB));
 
-        //Tutorial
-        // new ShowcaseHelper(this, 0).show("Search", "Search for an item, brand or category", searchViewHolder);
-
-        //Preference to load OrderedUserItem when user open the app
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, true);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
+        //Preference to load Subscription when user open the app
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
+
+        setCartOnToolBar();
+        //Check for App Update
+        checkAppUpdate();
+        //check for showing message to user usign dialog
+        checkForCommonDialog();
+    }
+
+    /**
+     * Update Setting Data For the APP
+     */
+    public void updateAppSettings() {
+        try {
+            if (setting.getCartItems() != null) {
+                //update Cart
+                CartHelper.updateCart(setting.getParsedCartItems());
+                //synced memory with cart
+                ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
+            }
+
+            if (setting.getCartPollingTime() != 0) {
+                Constants.UPDATE_CART_POLLING_TIME = setting.getCartPollingTime();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        //Preference to load OrderedUserItem when user open the app be false
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_USER_ITEM, false);
-        PrefUtils.putBoolean(this, Keys.LOAD_ORDERED_MY_DELIVERIES, false);
+        //Preference to load Subscription when user open the app be false
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, false);
 
     }
+
 
     @Subscribe
     public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
@@ -228,9 +244,6 @@ public class MainActivity extends BaseActivity implements
         });
     }
 
-    private void initCart() {
-        CartHelper.saveCartItemsIfRequire();
-    }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -255,7 +268,7 @@ public class MainActivity extends BaseActivity implements
         TextView noOfItemsInCart = (TextView) findViewById(R.id.no_of_items_in_cart);
         int numberOfItems;
         if (numberOfItemIncart == -1) {
-            numberOfItems = CartHelper.getNumberOfItemsInCart();
+            numberOfItems = ProductQuantity.getCartSize();
         } else {
             numberOfItems = numberOfItemIncart;
         }
@@ -301,16 +314,13 @@ public class MainActivity extends BaseActivity implements
         this.menu = navigationView.getMenu();
         addBoxesToMenu();
         View headerView = navigationView.getHeaderView(0);
-        TextView userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
+        userNameTextView = (TextView) headerView.findViewById(R.id.user_name_text_view);
         userNameTextView.setText(user.getName());
         setToolbar((Toolbar) findViewById(R.id.toolbar));
         setSupportActionBar(getToolbar());
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         putToggleListener();
-/*
-        navigationView.setCheckedItem(R.id.explore_boxes);
-*/
     }
 
     public void putToggleListener() {
@@ -343,6 +353,10 @@ public class MainActivity extends BaseActivity implements
         progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
         searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
+
+        /**
+         * Search Text Change Listener
+         */
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -410,10 +424,6 @@ public class MainActivity extends BaseActivity implements
             case R.id.view_bill:
                 attachOrderFragment();
                 return true;
-           /* case R.id.explore_boxes: {
-                attachExploreBoxes();
-                return true;
-            }*/
             default: {
                 String menuName = (String) menuItem.getTitle();
                 openBoxByName(menuName);
@@ -422,32 +432,22 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-    private void getSettingsData() {
-        TheBox.getAPIService().getSettings(PrefUtils.getToken(this), BuildConfig.VERSION_CODE + "")
-                .enqueue(new Callback<SettingsResponse>() {
-                    @Override
-                    public void onResponse(Call<SettingsResponse> call, Response<SettingsResponse> response) {
-                        if (response != null && response.body() != null) {
-                            checkAppUpdate(response.body());
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<SettingsResponse> call, Throwable t) {
-                    }
-                });
-    }
-
-    private void checkAppUpdate(SettingsResponse response) {
+    /**
+     * Check for App Update Option
+     */
+    private void checkAppUpdate() {
         try {
-            if (null != response.getData() && response.getData().isNew_version_available()) {
-                if (isPopupRequiredToDisplay() || response.getData().isForce_update()) {
-                    if (null != response.getData().getUpdatePopupDetails()) {
-                        UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(response.getData().getUpdatePopupDetails(),
-                                response.getData().isForce_update());
-                        dialogFragment.show(fragmentManager, "Update");
-                        if (!response.getData().isForce_update()) {
-                            saveCacheTime();
+            if (setting != null) {
+                if (setting.isNew_version_available()) {
+                    if (isPopupRequiredToDisplay() || setting.isForce_update()) {
+                        if (null != setting.getUpdatePopupDetails()) {
+                            UpdateDialogFragment dialogFragment = UpdateDialogFragment.getInstance(setting.getUpdatePopupDetails(),
+                                    setting.isForce_update());
+                            dialogFragment.show(fragmentManager, "Update");
+                            if (!setting.isForce_update()) {
+                                saveCacheTime();
+                            }
                         }
                     }
                 }
@@ -455,6 +455,69 @@ public class MainActivity extends BaseActivity implements
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Check for Common Dialog
+     */
+    private void checkForCommonDialog() {
+        try {
+            if (setting != null) {
+                if (setting.getCommonPopupDetails() != null) {
+                    //if false then display popup
+                    if (!PrefUtils.getBoolean(this, Keys.COMMON_DIALOG_POPUP)) {
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //show the popup or dialog
+                                displayCommonDialog(setting.getCommonPopupDetails());
+                            }
+                        }, 2000);
+
+
+                    }
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
+
+    private void displayCommonDialog(CommonPopupDetails commonPopupDetails) {
+        try {
+
+            final Dialog dialog = new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setContentView(R.layout.dialog_common_details);
+            dialog.getWindow().getAttributes().width = LinearLayout.LayoutParams.FILL_PARENT;
+            dialog.show();
+
+            TextView header = (TextView) dialog.findViewById(R.id.header_title);
+            TextView content = (TextView) dialog.findViewById(R.id.text_content);
+            TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
+            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+
+            header.setText(Html.fromHtml(commonPopupDetails.getTitle()));
+            content.setText(Html.fromHtml(commonPopupDetails.getContent()));
+            okayButtonText.setText(commonPopupDetails.getButtonText());
+
+            okayButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    //set in the prefferences, popup shown
+                    PrefUtils.putBoolean(MainActivity.this, Keys.COMMON_DIALOG_POPUP, true);
+
+                    dialog.dismiss();
+                }
+            });
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -470,21 +533,19 @@ public class MainActivity extends BaseActivity implements
         return prevTime <= currentTime;
     }
 
-
+    /**
+     * Called when we click on Navigation Drawer Item
+     */
     private void openBoxByName(String name) {
         if (name.equals("FAQs")) {
-            startActivity(TermsOfUserActivity.getIntent(this, true));
+            Intent intent = new Intent(MainActivity.this, HotLineActivity.class);
+            intent.putExtra(Constants.EXTRA_NAVIGATE_TO_HOTLINE_FAQ, true);
+            startActivity(intent);
         } else if (name.equals("Terms of Use")) {
             startActivity(new Intent(MainActivity.this, TermsOfUserActivity.class));
         } else {
-            ExploreItem selectedExploreItem = null;
-            for (ExploreItem exploreItem : exploreItems) {
-                if (exploreItem.getTitle().equals(name)) {
-                    selectedExploreItem = exploreItem;
-                    break;
-                }
-            }
-            attachExploreItemDetailFragment(selectedExploreItem);
+            //search from setting Box List
+            searchBoxUuidForBoxTitle(name);
         }
     }
 
@@ -547,7 +608,10 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    public void attachSearchDetailFragment(SearchResult query) {
+    /**
+     * Called from Search
+     */
+    public void attachSearchDetailFragment(SearchResult searchResult) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
@@ -563,7 +627,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(query);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(searchResult);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -573,11 +637,10 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachExploreItemDetailFragment(ExploreItem exploreItem) {
+    private void attachSearchDetailFragmentForCategory(String boxUuid, String boxTitle) {
         getToolbar().setSubtitle(null);
 
         searchView.getText().clear();
-//        searchViewHolder.setVisibility(View.VISIBLE);
         searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
@@ -590,7 +653,7 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(exploreItem);
+        SearchDetailFragment fragment = SearchDetailFragment.getInstance(boxUuid, boxTitle);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
         fragmentTransaction.commit();
@@ -661,38 +724,21 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public void getAllAddresses() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService().getAllAddresses(PrefUtils.getToken(this))
-                .enqueue(new Callback<GetAllAddressResponse>() {
-                    @Override
-                    public void onResponse(Call<GetAllAddressResponse> call, Response<GetAllAddressResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-                                PrefUtils.putBoolean(MainActivity.this, PREF_IS_FIRST_LOGIN, false);
-                                User user = PrefUtils.getUser(MainActivity.this);
-                                if (response.body().getUserAddresses() != null && !response.body().getUserAddresses().isEmpty()) {
-                                    response.body().getUserAddresses().get(0).setCurrentAddress(true);
-                                }
-                                user.setAddresses(response.body().getUserAddresses());
-                                PrefUtils.saveUser(MainActivity.this, user);
-                            } else {
-                                Toast.makeText(MainActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<GetAllAddressResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            if (userNameTextView.getText().toString().isEmpty()) {
+                user = PrefUtils.getUser(this);
+                if (user.getName() != null && !user.getName().isEmpty()) {
+                    userNameTextView.setText(user.getName());
+                }
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
         startPeriodicTask();
     }
 
@@ -716,6 +762,7 @@ public class MainActivity extends BaseActivity implements
 
         switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
+                attachMyBoxesFragment(1, true);
                 break;
             }
 
@@ -737,14 +784,13 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 4: {
-                attachSearchDetailFragment
-                        (CoreGsonUtils.fromJson
-                                (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), SearchResult.class));
+                //Search Results
+                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
                 break;
             }
             case 5: {
-                attachExploreItemDetailFragment(CoreGsonUtils.fromJson
-                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));
+               /* attachSearchDetailFragmentForCategory(CoreGsonUtils.fromJson
+                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));*/
                 break;
             }
             case 6: {
@@ -757,12 +803,16 @@ public class MainActivity extends BaseActivity implements
             }
             //carosuel
             case 8:
-                attachCategoryFragmentForCarousel(intent);
+                //attachCategoryFragmentForCarousel(intent);
                 break;
 
             /**
              * Notifications Action Handiling
              */
+            case 9: {
+                attachMyBoxesFragment(2, false);
+                break;
+            }
             case 10: {
                 attachMyBoxesFragment(1, false);
                 break;
@@ -796,6 +846,9 @@ public class MainActivity extends BaseActivity implements
 
     }
 
+    /**
+     * Display Category Tab with Products
+     */
     private void attachCategoriesFragment(Intent intent) {
         getToolbar().setSubtitle(null);
 
@@ -811,21 +864,22 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        ArrayList<Integer> catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID), Integer.class);
-        ArrayList<Integer> user_catIds = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID), Integer.class);
 
-        int selectedPosition = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, 0);
-        String boxName = intent.getStringExtra(SearchDetailFragment.BOX_NAME);
-        int clickedCategoryId = intent.getIntExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, -1);
+        if (intent.getExtras() != null) {
+            ArrayList<Category> categories = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(Constants.EXTRA_BOX_CATEGORY), Category.class);
+            int clickedPosition = intent.getIntExtra(Constants.EXTRA_CLICK_POSITION, 0);
+            String boxName = intent.getStringExtra(Constants.EXTRA_BOX_NAME);
+            String clickedCategoryUid = intent.getStringExtra(Constants.EXTRA_CLICKED_CATEGORY_UID);
 
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(catIds, user_catIds, selectedPosition, boxName,clickedCategoryId);
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
-        fragmentTransaction.commit();
+            SearchDetailFragment fragment = SearchDetailFragment.getInstance(categories, clickedCategoryUid, clickedPosition, boxName);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
+            fragmentTransaction.commit();
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        appBarLayout.setExpanded(true, true);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
+            appBarLayout.setExpanded(true, true);
+        }
     }
 
     /**
@@ -863,7 +917,7 @@ public class MainActivity extends BaseActivity implements
      */
     public void attachCategoryFragmentForCarousel(Intent intent) {
 
-        int categoryId = intent.getIntExtra(Constants.CATEGORY_ID, 0);
+        int categoryId = intent.getIntExtra(Constants.CATEGORY_UUID, 0);
 
         getToolbar().setSubtitle(null);
         searchView.getText().clear();
@@ -889,13 +943,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void showDrawerToggle(boolean showDrawerToggle) {
-     /*   ActionBar actionBar = getSupportActionBar();
-        actionBarDrawerToggle.setDrawerIndicatorEnabled(showDrawerToggle);
-        actionBarDrawerToggle.syncState();
-       *//* if (!showDrawerToggle) {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }*/
+
     }
 
     @Override
@@ -963,31 +1011,17 @@ public class MainActivity extends BaseActivity implements
         this.searchAction = searchAction;
     }
 
-    public ArrayList<ExploreItem> getAllExploreItems() {
-        ArrayList<ExploreItem> exploreItems = new ArrayList<>();
-        Realm realm = TheBox.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        for (Box box : boxes) {
-            exploreItems.add(new ExploreItem(box.getBoxId(), box.getBoxDetail().getTitle()));
-        }
-        return exploreItems;
-    }
 
     public void addBoxesToMenu() {
-        if (exploreItems == null || exploreItems.isEmpty()) {
-            exploreItems = getAllExploreItems();
-            for (ExploreItem exploreItem : exploreItems) {
-                menu.add(exploreItem.getTitle());
-            }
-            if (exploreItems != null && !exploreItems.isEmpty()) {
-                menu.add("FAQs");
-                menu.add("Terms of Use");
-            }
 
+        if (setting.getBoxes() != null) {
+            for (Box box : setting.getBoxes()) {
+                menu.add(box.getTitle());
+            }
         }
+        menu.add("FAQs");
+        menu.add("Terms of Use");
+
         navigationView.invalidate();
     }
 
@@ -1028,11 +1062,37 @@ public class MainActivity extends BaseActivity implements
                         myAccountFragment.onActivityResult(requestCode, resultCode, data);
                     }
                 }
-            }//
-
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Search Box Uuid for Box Title
+     */
+    public void searchBoxUuidForBoxTitle(String title) {
+        if (setting.getBoxes() != null) {
+            if (setting.getBoxes().size() > 0) {
+                for (Box box : setting.getBoxes()) {
+                    if (box.getTitle().equalsIgnoreCase(title)) {
+                        navigateToSearchDetailFragment(box.getUuid(), box.getTitle());
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+    /**
+     * Move to Search Detail Fragment
+     * fetch category and Display product
+     */
+    public void navigateToSearchDetailFragment(String boxUuid, String boxTitle) {
+        attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
+    }
+
+
 }
 

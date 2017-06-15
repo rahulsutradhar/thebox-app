@@ -11,55 +11,47 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.realm.Realm;
-import one.thebox.android.Models.AddressAndOrder;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
+import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.checkout.PurchaseData;
 import one.thebox.android.R;
-import one.thebox.android.adapter.PaymentDetailAdapter;
+import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
+import one.thebox.android.api.RequestBodies.cart.PaymentSummaryRequest;
+import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmPaymentDetailsActivity extends BaseActivity {
-    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
-    private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
-    private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
-    private static final String EXTRA_IS_MERGING = "is_merging_order";
-    public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
-
-
-    private Order cart;
-    private Context context;
     private RecyclerView recyclerViewPaymentDetail;
-    private PaymentDetailAdapter paymentDetailAdapter;
-    private ArrayList<AddressAndOrder> addressAndOrders;
+    private PaymentDetailsAdapter adapter;
     private TextView payButton;
-    private User user;
-    private int mergeOrderId;
-    private float amount_to_pay;
-    private float totalAmountToPay;
-    private boolean isMerging;
+    private String amountToPay;
+    private Address address;
+    private long timeSlotTimeStamp;
+    private boolean isMerge;
+    private String orderUuid;
 
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders) {
+
+    public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+        intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+        intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
         return intent;
     }
 
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId) {
+    public static Intent getInstance(Context context, boolean isMerge, Address address, String orderUuid) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
-        return intent;
-    }
-
-    public static Intent getInstance(Context context, ArrayList<AddressAndOrder> addressAndOrders, int mergeOrderId, boolean isMerging) {
-        Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
-        intent.putExtra(EXTRA_ARRAY_LIST_ORDER, CoreGsonUtils.toJson(addressAndOrders));
-        intent.putExtra(EXTRA_MERGE_ORDER_ID, mergeOrderId);
-        intent.putExtra(EXTRA_IS_MERGING, isMerging);
+        intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+        intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+        intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
         return intent;
     }
 
@@ -67,47 +59,29 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_details);
-        user = PrefUtils.getUser(this);
-        setTitle("Payment Details");
+        setTitle("Payment Summary");
         initViews();
         initVariables();
-        setupRecyclerAdapter();
     }
 
     private void initVariables() {
-        String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
-        addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
-        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
-        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
+        try {
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+            timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
+            orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
 
-        int cartId = PrefUtils.getUser(this).getCartId();
-        Realm realm = TheBox.getRealm();
-        Order cart = realm.where(Order.class)
-                .notEqualTo(Order.FIELD_ID, 0)
-                .equalTo(Order.FIELD_ID, cartId).findFirst();
-        if (cart != null) {
-            this.cart = realm.copyFromRealm(cart);
+            if (!isMerge) {
+                //API Request for 1st order; When there is no previous order
+                fetchPaymentSummaryForCart(true);
+            } else {
+                fetchPaymentForMergeDeliveries();
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private void setupRecyclerAdapter() {
-
-        ArrayList<Order> orders = new ArrayList<>();
-        for (AddressAndOrder addressAndOrder : addressAndOrders) {
-            orders.add(addressAndOrder.getOrder());
-        }
-        paymentDetailAdapter = new PaymentDetailAdapter(this);
-        paymentDetailAdapter.setOrders(orders);
-        recyclerViewPaymentDetail.setItemViewCacheSize(paymentDetailAdapter.getItemsCount());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);
-        recyclerViewPaymentDetail.setAdapter(paymentDetailAdapter);
-        paymentDetailAdapter.setViewType(RECYCLER_VIEW_TYPE_FOOTER);
-
-        //show the final price
-        amount_to_pay = paymentDetailAdapter.getFinalPaymentAmount();
-        payButton.setText("Pay: " + Constants.RUPEE_SYMBOL + " " + amount_to_pay);
 
     }
 
@@ -124,23 +98,133 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
                 setCleverTapEventPaymentDetailActivity();
 
                 Intent intent = new Intent(ConfirmPaymentDetailsActivity.this, PaymentOptionActivity.class);
-                intent.putExtra(EXTRA_TOTAL_CART_AMOUNT, String.valueOf(amount_to_pay));
-                intent.putExtra(EXTRA_ARRAY_LIST_ORDER, getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER));
-                intent.putExtra(EXTRA_MERGE_ORDER_ID, getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0));
-                intent.putExtra(EXTRA_IS_MERGING, isMerging);
+                intent.putExtra(Constants.EXTRA_AMOUNT_TO_PAY, amountToPay);
+                intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
+                intent.putExtra(Constants.EXTRA_SELECTED_ADDRESS, CoreGsonUtils.toJson(address));
+                intent.putExtra(Constants.EXTRA_TIMESLOT_SELECTED, timeSlotTimeStamp);
+                intent.putExtra(Constants.EXTRA_SELECTED_ORDER_UUID, orderUuid);
                 startActivity(intent);
 
             }
         });
 
-        recyclerViewPaymentDetail.setItemViewCacheSize(20);
+        recyclerViewPaymentDetail.setItemViewCacheSize(3);
         recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
         recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
     }
 
+
+    /**
+     * API call for Payment Summary For 1st order; if previous order doesnot exist
+     */
+    public void fetchPaymentSummaryForCart(boolean isCart) {
+        final BoxLoader dialog = new BoxLoader(this).show();
+        TheBox.getAPIService()
+                .getPaymentSummaryForCart(PrefUtils.getToken(this), isCart,
+                        new PaymentSummaryRequest(ProductQuantity.getProductQuantities()))
+                .enqueue(new Callback<PaymentSummaryResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentSummaryResponse> call, Response<PaymentSummaryResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+
+                                    amountToPay = response.body().getAmountToPay();
+                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
+                                    setUpData(response.body().getPurchaseDatas());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmPaymentDetailsActivity.this);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentSummaryResponse> call, Throwable t) {
+
+                    }
+                });
+    }
+
+
+    /**
+     * Api Call for Payment Summary For Merge Orders
+     */
+    public void fetchPaymentForMergeDeliveries() {
+        final BoxLoader dialog = new BoxLoader(this).show();
+
+        TheBox.getAPIService()
+                .getPaymentSummaryForMergeDeliveries(PrefUtils.getToken(this), orderUuid,
+                        new PaymentSummaryRequest(ProductQuantity.getProductQuantities()))
+                .enqueue(new Callback<PaymentSummaryResponse>() {
+                    @Override
+                    public void onResponse(Call<PaymentSummaryResponse> call, Response<PaymentSummaryResponse> response) {
+                        dialog.dismiss();
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    amountToPay = response.body().getAmountToPay();
+                                    payButton.setText("Amount to pay " + Constants.RUPEE_SYMBOL + " " + amountToPay);
+                                    setUpData(response.body().getPurchaseDatas());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(ConfirmPaymentDetailsActivity.this);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaymentSummaryResponse> call, Throwable t) {
+
+                    }
+                });
+
+    }
+
+    /**
+     * Set the list by removing the null values
+     */
+    public void setUpData(ArrayList<PurchaseData> purchaseDatas) {
+        ArrayList<PurchaseData> updatePurchaseData = new ArrayList<>();
+
+        for (PurchaseData purchaseData : purchaseDatas) {
+            if (purchaseData.getProductDetails() != null) {
+                if (purchaseData.getProductDetails().size() > 0) {
+                    updatePurchaseData.add(purchaseData);
+                }
+            }
+        }
+
+        setUpRecyclerView(updatePurchaseData);
+    }
+
+    public void setUpRecyclerView(ArrayList<PurchaseData> purchaseDatas) {
+
+        if (recyclerViewPaymentDetail != null) {
+            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerViewPaymentDetail.setLayoutManager(linearLayoutManager);
+            adapter = new PaymentDetailsAdapter(this, purchaseDatas);
+            recyclerViewPaymentDetail.setAdapter(adapter);
+        }
+
+
+    }
+
     public void setCleverTapEventPaymentDetailActivity() {
         HashMap<String, Object> objectHashMap = new HashMap<>();
-        objectHashMap.put("amount_to_pay", amount_to_pay);
+        objectHashMap.put("amount_to_pay", amountToPay);
 
         TheBox.getCleverTap().event.push("payment_details_activity", objectHashMap);
     }

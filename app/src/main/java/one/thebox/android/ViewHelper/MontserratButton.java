@@ -3,24 +3,15 @@ package one.thebox.android.ViewHelper;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.Tracker;
-
-
-import java.util.HashMap;
 
 import one.thebox.android.R;
 
 
-public class MontserratButton extends Button {
+public class MontserratButton extends AppCompatButton {
 
     private Context context;
-    private Tracker tracker;
 
     public MontserratButton(Context context) {
         super(context);

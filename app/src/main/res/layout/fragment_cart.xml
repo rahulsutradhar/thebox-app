@@ -14,12 +14,22 @@
         android:layout_marginBottom="70dp"
         android:clipToPadding="false" />
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/progress_bar"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:padding="8dp"
+        android:src="@drawable/loader" />
+
 
     <RelativeLayout
         android:id="@+id/empty_cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_white">
+        android:background="@color/light_white"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -6,13 +6,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 
-class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
+public class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
     private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private int currentSelectedPosition = 0;
@@ -37,7 +37,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return itemConfigs;
     }
 
-    protected void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs = itemConfigs;
     }
 
@@ -66,7 +66,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         ItemFrequencyViewHolder itemFrequencyViewHolder = (ItemFrequencyViewHolder) holder;
         itemFrequencyViewHolder.setView(itemConfigs.get(position));
 
-        if (itemConfigs.get(position).is_in_stock()) {
+        if (itemConfigs.get(position).isInStock()) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -115,7 +115,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    interface OnItemConfigChange {
+    public interface OnItemConfigChange {
         void onItemConfigItemChange(ItemConfig selectedItemConfig);
     }
 

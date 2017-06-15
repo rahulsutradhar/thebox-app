@@ -37,7 +37,7 @@
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scrollbars="none">
+                    android:scrollbars="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -52,18 +52,19 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <one.thebox.android.ViewHelper.MontserratTextView
+                            <android.support.v7.widget.AppCompatTextView
                                 android:id="@+id/textAddressType"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Address Type"
-                                android:textColor="@color/show_case_color"
-                                android:textSize="14sp" />
+                                android:textColor="@color/manatee"
+                                android:textSize="12sp" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
+                                android:layout_marginTop="10dp"
                                 android:orientation="horizontal">
 
                                 <RadioGroup
@@ -119,11 +120,56 @@
                             </LinearLayout>
                         </LinearLayout>
 
+                        <!-- Locality Spinner Pincodes -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Choose your Locality"
+                                android:textColor="@color/manatee"
+                                android:textSize="@dimen/text_small1" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:background="@drawable/light_grey_border"
+                                android:paddingLeft="5dp">
+
+                                <android.support.v7.widget.AppCompatSpinner
+                                    android:id="@+id/spinnerLocality"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="?attr/actionBarSize"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="5dp"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ThemeOverlay.AppCompat.Light" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/error_message_locality"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text=""
+                                android:textColor="@color/accent"
+                                android:textSize="@dimen/text_small1"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+
                         <!-- Flat Number-->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="10dp"
                             android:orientation="vertical">
 
                             <android.support.design.widget.TextInputLayout
@@ -155,7 +201,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="10dp"
                             android:orientation="vertical">
 
 
@@ -189,7 +235,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="10dp"
                             android:orientation="vertical">
 
                             <android.support.design.widget.TextInputLayout
@@ -217,23 +263,14 @@
 
                         </LinearLayout>
 
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
-                            android:gravity="center_horizontal"
-                            android:text="We deliver only in Powai"
-                            android:textColor="@color/md_pink_300"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
                     </LinearLayout>
                 </ScrollView>
 
             </RelativeLayout>
 
-            <one.thebox.android.ViewHelper.MontserratTextView
+            <TextView
                 android:id="@+id/button_save_address"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -245,7 +282,6 @@
                 android:text="Save Address"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 android:visibility="visible" />
 
         </RelativeLayout>
