@@ -6,9 +6,7 @@ import java.io.Serializable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
-import one.thebox.android.Models.items.BoxItem;
 
 /**
  * Created by Ajeet Kumar Meena on 21-04-2016.
@@ -30,8 +28,8 @@ public class Category extends RealmObject implements Serializable {
 
     private int priority;
 
-    @SerializedName("avg_savings")
-    private String averageSavings;
+    @SerializedName("savings_text")
+    private String savingsText;
 
     @SerializedName("items")
     private RealmList<BoxItem> boxItems;
@@ -84,12 +82,12 @@ public class Category extends RealmObject implements Serializable {
         this.priority = priority;
     }
 
-    public String getAverageSavings() {
-        return averageSavings;
+    public String getSavingsText() {
+        return savingsText;
     }
 
-    public void setAverageSavings(String averageSavings) {
-        this.averageSavings = averageSavings;
+    public void setSavingsText(String savingsText) {
+        this.savingsText = savingsText;
     }
 
     public RealmList<BoxItem> getBoxItems() {

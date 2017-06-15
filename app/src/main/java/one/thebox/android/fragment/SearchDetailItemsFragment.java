@@ -206,13 +206,6 @@ public class SearchDetailItemsFragment extends Fragment {
                      * Specail Cart Event
                      */
                     EventBus.getDefault().post(new ShowSpecialCardEvent(false));
-
-                    if (dy > 60) {
-                        if (searchDetailAdapter != null) {
-                            searchDetailAdapter.onScrollingListUpdateView();
-                        }
-                    }
-
                 }
             }
         });

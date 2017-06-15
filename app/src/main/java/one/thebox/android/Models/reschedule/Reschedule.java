@@ -23,6 +23,8 @@ public class Reschedule implements Serializable {
     @SerializedName("merge_description")
     private String mergeDescription;
 
+    private boolean visible;
+
     /*******************************
      * Getter Setter
      *******************************/
@@ -64,5 +66,13 @@ public class Reschedule implements Serializable {
 
     public void setMergeDescription(String mergeDescription) {
         this.mergeDescription = mergeDescription;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }
