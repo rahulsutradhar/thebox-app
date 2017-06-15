@@ -1,9 +1,11 @@
 package one.thebox.android.adapter.orders;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -117,7 +119,7 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_order_item;
+        return R.layout.card_order_item;
     }
 
     @Override
@@ -140,7 +142,9 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
         private TextView productName, brand,
                 config, addButton, subtractButton, quantitySelectedText, frequency, price, monthlySavings;
         private ImageView productImageView;
-        private LinearLayout quantityHolder, layoutPaid;
+        private LinearLayout quantityHolder;
+        private RelativeLayout holderTitle;
+        private CardView cardViewPaid;
 
 
         public OrderItemViewHolder(View itemView) {
@@ -156,8 +160,9 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             monthlySavings = (TextView) itemView.findViewById(R.id.savings_monthly);
 
+            holderTitle = (RelativeLayout) itemView.findViewById(R.id.holder_title);
             quantityHolder = (LinearLayout) itemView.findViewById(R.id.layout_quantity_holder);
-            layoutPaid = (LinearLayout) itemView.findViewById(R.id.layout_item_paid);
+            cardViewPaid = (CardView) itemView.findViewById(R.id.layout_item_paid);
         }
 
         public void setView(final OrderItem orderItem, final int position) {
@@ -204,12 +209,12 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
 
                     // check if item is paid or not
                     if (orderItem.isPaid()) {
-                        layoutPaid.setVisibility(View.VISIBLE);
+                        cardViewPaid.setVisibility(View.VISIBLE);
                         quantityHolder.setVisibility(View.GONE);
                         addButton.setVisibility(View.GONE);
                         subtractButton.setVisibility(View.GONE);
                         quantitySelectedText.setVisibility(View.GONE);
-                        
+
                         //when not edittable or paid
                         if (orderItem.getQuantity() == 1) {
                             price.setText(orderItem.getQuantity() + " piece for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
@@ -222,8 +227,12 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                         addButton.setVisibility(View.VISIBLE);
                         subtractButton.setVisibility(View.VISIBLE);
                         quantitySelectedText.setVisibility(View.VISIBLE);
-                        layoutPaid.setVisibility(View.GONE);
+                        cardViewPaid.setVisibility(View.GONE);
                         quantitySelectedText.setText(String.valueOf(orderItem.getQuantity()));
+
+                        LinearLayout.LayoutParams params = new
+                                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        holderTitle.setLayoutParams(params);
                     }
 
                 } else {
@@ -235,10 +244,13 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                     }
 
                     quantityHolder.setVisibility(View.GONE);
-                    layoutPaid.setVisibility(View.GONE);
+                    cardViewPaid.setVisibility(View.GONE);
                     addButton.setVisibility(View.GONE);
                     subtractButton.setVisibility(View.GONE);
                     quantitySelectedText.setVisibility(View.GONE);
+                    LinearLayout.LayoutParams params = new
+                            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    holderTitle.setLayoutParams(params);
                 }
 
 
