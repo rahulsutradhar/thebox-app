@@ -41,7 +41,7 @@ android {
         multiDexEnabled true
         targetSdkVersion 25
         versionCode 19
-        versionName "1.2.1"
+        versionName "2.0.0"
     }
 
     dataBinding {

@@ -205,6 +205,7 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                     monthlySavings.setVisibility(View.GONE);
                 }
 
+                //Used for Not allowing to update on previous day after 12am
                 if (isChangesApplicable) {
 
                     // check if item is paid or not
@@ -243,14 +244,19 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                         price.setText(orderItem.getQuantity() + " pieces for " + Constants.RUPEE_SYMBOL + " " + orderItem.getPrice());
                     }
 
+                    if (orderItem.isPaid()) {
+                        cardViewPaid.setVisibility(View.VISIBLE);
+                    } else {
+                        cardViewPaid.setVisibility(View.GONE);
+                        LinearLayout.LayoutParams params = new
+                                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        holderTitle.setLayoutParams(params);
+                    }
+
                     quantityHolder.setVisibility(View.GONE);
-                    cardViewPaid.setVisibility(View.GONE);
                     addButton.setVisibility(View.GONE);
                     subtractButton.setVisibility(View.GONE);
                     quantitySelectedText.setVisibility(View.GONE);
-                    LinearLayout.LayoutParams params = new
-                            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    holderTitle.setLayoutParams(params);
                 }
 
 
