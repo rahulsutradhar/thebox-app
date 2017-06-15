@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -402,7 +403,7 @@ public class SearchDetailItemsFragment extends Fragment {
                                 searchDetailAdapter.updateQuantityEvent(syncCartItemEvent.getBoxItem());
                             }
                             break;
-                        case Constants.REMOVE_ITEM_EVENT://remove qunatity
+                        case Constants.REMOVE_ITEM_EVENT://remove quantity
                             if (searchDetailAdapter != null) {
                                 searchDetailAdapter.removeQuantityEvent(syncCartItemEvent.getBoxItem());
                             }

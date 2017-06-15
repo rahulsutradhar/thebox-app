@@ -268,6 +268,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             }
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
+            //viewPager.setOffscreenPageLimit(6);
             int length = tabLayout.getTabCount();
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
