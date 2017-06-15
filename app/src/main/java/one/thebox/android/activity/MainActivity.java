@@ -803,7 +803,7 @@ public class MainActivity extends BaseActivity implements
             }
             //carosuel
             case 8:
-                attachCategoryFragmentForCarousel(intent);
+                //attachCategoryFragmentForCarousel(intent);
                 break;
 
             /**
@@ -866,7 +866,6 @@ public class MainActivity extends BaseActivity implements
 
 
         if (intent.getExtras() != null) {
-
             ArrayList<Category> categories = CoreGsonUtils.fromJsontoArrayList(intent.getStringExtra(Constants.EXTRA_BOX_CATEGORY), Category.class);
             int clickedPosition = intent.getIntExtra(Constants.EXTRA_CLICK_POSITION, 0);
             String boxName = intent.getStringExtra(Constants.EXTRA_BOX_NAME);

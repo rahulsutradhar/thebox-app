@@ -1027,7 +1027,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
     }
-    
+
     /**
      * Update on Event Passed from Cart
      * <p>

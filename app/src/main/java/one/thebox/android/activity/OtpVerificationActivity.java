@@ -15,11 +15,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 
 import okhttp3.ResponseBody;
 import one.thebox.android.Events.SmsEvent;
-import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
@@ -111,6 +109,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
     public void onSmsEvent(SmsEvent smsEvent) {
         String otpString = smsEvent.getOtp();
         if (otpString != null || !otpString.isEmpty()) {
+            otp = smsEvent.getOtp();
             otpVerificationEditText.setText(otpString);
         }
         //verfiy otp authentication
@@ -125,8 +124,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     @Override
     public void onStop() {
-        EventBus.getDefault().unregister(this);
         super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

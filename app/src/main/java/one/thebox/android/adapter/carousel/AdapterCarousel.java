@@ -129,32 +129,33 @@ public class AdapterCarousel extends BaseRecyclerAdapter {
         }
 
         public void setView(final Offer offer, int position) {
-
-            if (offer.getImageUrl() != null) {
-                if (!offer.getImageUrl().isEmpty()) {
-                    glideRequestManager.load(offer.getImageUrl())
-                            .centerCrop()
-                            .crossFade()
-                            .into(imageView);
-                }
-
-                imageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty() && !offer.getBoxUuid().isEmpty()) {
-                            /**
-                             * Set Clever Tab Event Fro Carousel Click
-                             */
-                            setCleverTapEventForCarousel(offer);
-
-                            //send request to StoreFragment to show products
-                            EventBus.getDefault().post(new DisplayProductForCarouselEvent(offer));
-                        }
+            try {
+                if (offer.getImageUrl() != null) {
+                    if (!offer.getImageUrl().isEmpty()) {
+                        glideRequestManager.load(offer.getImageUrl())
+                                .centerCrop()
+                                .crossFade()
+                                .into(imageView);
                     }
-                });
 
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (offer.isOpenLink() && !offer.getCategoryUuid().isEmpty() && !offer.getBoxUuid().isEmpty()) {
+                                /**
+                                 * Set Clever Tab Event Fro Carousel Click
+                                 */
+                                setCleverTapEventForCarousel(offer);
+
+                                //send request to StoreFragment to show products
+                                EventBus.getDefault().post(new DisplayProductForCarouselEvent(offer));
+                            }
+                        }
+                    });
+                }
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
             }
-
         }
 
         /**
