@@ -221,7 +221,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
      */
     private void updateUserInfoToServer() {
         final BoxLoader dialog = new BoxLoader(this).show();
-        UpdateUserInforRequest updateUserInforRequest = new UpdateUserInforRequest(name, email, String.valueOf(latLng), String.valueOf(longitude));
+        UpdateUserInforRequest updateUserInforRequest = new UpdateUserInforRequest(name, email, String.valueOf(latitude), String.valueOf(longitude));
         TheBox.getAPIService()
                 .updateUserInfo(PrefUtils.getToken(this), updateUserInforRequest)
                 .enqueue(new Callback<UpdateUserInfoResponse>() {
@@ -232,6 +232,10 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     updateUserDetailsLocally(response.body().getUser());
+                                }
+                            } else {
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    new AuthenticationService().navigateToLogin(FillUserInfoActivity.this);
                                 }
                             }
 
@@ -249,53 +253,6 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
                 });
     }
 
-
-    private void fillUserInfo() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        TheBox.getAPIService()
-                .storeUserInfo(PrefUtils.getToken(this)
-                        , new StoreUserInfoRequestBody(new StoreUserInfoRequestBody
-                                .User(PrefUtils.getUser(this).getPhoneNumber(), email, name, latitude, longitude)))
-                .enqueue(new Callback<UserSignInSignUpResponse>() {
-                    @Override
-                    public void onResponse(Call<UserSignInSignUpResponse> call, Response<UserSignInSignUpResponse> response) {
-                        dialog.dismiss();
-                        try {
-                            if (response.body() != null) {
-                                if (response.body().isSuccess()) {
-                                    if (response.body().getUser() != null) {
-                                        //restore address
-                                        User user = PrefUtils.getUser(FillUserInfoActivity.this);
-                                        if (user.getAddresses() != null) {
-                                            response.body().getUser().setAddresses(user.getAddresses());
-                                        }
-                                        PrefUtils.saveUser(FillUserInfoActivity.this, response.body().getUser());
-                                        PrefUtils.saveToken(FillUserInfoActivity.this, response.body().getUser().getAccessToken());
-
-                                        //update crashlytics data when user fills details
-                                        authenticationService.setUserDataToCrashlytics();
-                                        //update clevertap data when user fills details
-                                        authenticationService.setCleverTapUserProfile();
-
-                                        //when user fills form move to Address Activity
-                                        addDeliverAddress();
-                                    }
-                                } else {
-                                    Toast.makeText(FillUserInfoActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<UserSignInSignUpResponse> call, Throwable t) {
-                        dialog.dismiss();
-                    }
-                });
-    }
 
     /**
      * Update User Details Locally

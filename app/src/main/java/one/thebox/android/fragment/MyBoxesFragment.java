@@ -300,6 +300,12 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                                     setupRecyclerView();
 
                                 }
+                            } else {
+                                if (response.code() == 404) {
+                                    recyclerView.setVisibility(View.GONE);
+                                    no_item_subscribed_view_holder.setVisibility(View.GONE);
+                                    connectionErrorViewHelper.isVisible(true);
+                                }
                             }
 
 
