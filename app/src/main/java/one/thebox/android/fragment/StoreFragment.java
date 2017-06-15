@@ -202,6 +202,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
             setRecycelerViewData();
             recyclerView.setAdapter(storeRecyclerAdapter);
         } else {
+            recyclerView.getRecycledViewPool().clear();
             setRecycelerViewData();
         }
     }
