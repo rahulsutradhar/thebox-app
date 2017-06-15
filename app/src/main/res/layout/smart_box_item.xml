@@ -48,11 +48,12 @@
                 android:background="@drawable/my_categories_background"
                 android:gravity="center"
                 android:maxLines="2"
+                android:padding="2dp"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp"
                 android:text="10 items subscribed"
                 android:textColor="@color/md_black_1000"
-                android:textSize="@dimen/text_extra_small4"
+                android:textSize="@dimen/text_extra_small3"
                 android:visibility="invisible" />
 
         </FrameLayout>

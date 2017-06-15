@@ -3,9 +3,19 @@ package one.thebox.android.Models.update;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import io.realm.RealmList;
+import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.user.User;
+import one.thebox.android.Models.items.Box;
+import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.cart.CartItem;
 
 /**
  * Created by nbansal2211 on 03/01/17.
+ * <p>
+ * Modified by Developers on 02/06/17.
  */
 
 public class Setting implements Serializable {
@@ -22,6 +32,58 @@ public class Setting implements Serializable {
 
     @SerializedName("user_data_available")
     private boolean userDataAvailable;
+
+    @SerializedName("address_available")
+    private boolean addressAvailable;
+
+    private User user;
+
+    private ArrayList<Box> boxes;
+
+    @SerializedName("cart")
+    private ArrayList<CartItem> cartItems;
+
+    @SerializedName("sink_time")
+    private long cartPollingTime;
+
+
+    /***************************************
+     * Methods
+     ***************************************/
+
+    /**
+     * For Realm Database, sync
+     *
+     * @return
+     */
+    public RealmList<BoxItem> getParsedCartItems() {
+        RealmList<BoxItem> boxItems = new RealmList<>();
+
+        for (CartItem cartItem : getCartItems()) {
+            BoxItem boxItem = cartItem.getBoxItem();
+            boxItem.setQuantity(cartItem.getQuantity());
+            boxItem.setSelectedItemConfig(cartItem.getSelectedItemconfig());
+            boxItems.add(boxItem);
+        }
+
+        return boxItems;
+    }
+
+    /**
+     * For Product Quantitites; sync
+     *
+     * @return
+     */
+    public ArrayList<Cart> getParsedCartUuids() {
+        ArrayList<Cart> carts = new ArrayList<>();
+
+        for (CartItem cartItem : getCartItems()) {
+            Cart cart = new Cart(cartItem.getBoxUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
+            carts.add(cart);
+        }
+
+        return carts;
+    }
 
 
     /***************************************
@@ -66,5 +128,45 @@ public class Setting implements Serializable {
 
     public void setCommonPopupDetails(CommonPopupDetails commonPopupDetails) {
         this.commonPopupDetails = commonPopupDetails;
+    }
+
+    public boolean isAddressAvailable() {
+        return addressAvailable;
+    }
+
+    public void setAddressAvailable(boolean addressAvailable) {
+        this.addressAvailable = addressAvailable;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ArrayList<Box> getBoxes() {
+        return boxes;
+    }
+
+    public void setBoxes(ArrayList<Box> boxes) {
+        this.boxes = boxes;
+    }
+
+    public ArrayList<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(ArrayList<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public long getCartPollingTime() {
+        return cartPollingTime;
+    }
+
+    public void setCartPollingTime(long cartPollingTime) {
+        this.cartPollingTime = cartPollingTime;
     }
 }

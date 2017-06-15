@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import one.thebox.android.Models.reschedule.Reschedule;
+import one.thebox.android.Models.reschedule.RescheduleReason;
 import one.thebox.android.api.ApiResponse;
 
 /**
@@ -24,6 +25,9 @@ public class RescheduleResponse extends ApiResponse implements Serializable {
 
     @SerializedName("data")
     private ArrayList<Reschedule> reschedules;
+
+    @SerializedName("reasons")
+    private ArrayList<RescheduleReason> rescheduleReasons;
 
     /*******************************
      * Getter Setter
@@ -58,5 +62,13 @@ public class RescheduleResponse extends ApiResponse implements Serializable {
 
     public void setReschedules(ArrayList<Reschedule> reschedules) {
         this.reschedules = reschedules;
+    }
+
+    public ArrayList<RescheduleReason> getRescheduleReasons() {
+        return rescheduleReasons;
+    }
+
+    public void setRescheduleReasons(ArrayList<RescheduleReason> rescheduleReasons) {
+        this.rescheduleReasons = rescheduleReasons;
     }
 }

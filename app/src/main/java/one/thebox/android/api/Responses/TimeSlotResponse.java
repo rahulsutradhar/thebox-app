@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.timeslot.Slot;
 import one.thebox.android.Models.timeslot.TimeSlot;
 import one.thebox.android.Models.timeslot.TimeSlotInformation;
@@ -23,6 +24,10 @@ public class TimeSlotResponse extends ApiResponse {
 
     @SerializedName("instructions")
     private TimeSlotInformation timeSlotInformation;
+
+    private boolean isMerge;
+
+    private ArrayList<Order> orders;
 
     public TimeSlotResponse() {
 
@@ -58,5 +63,21 @@ public class TimeSlotResponse extends ApiResponse {
 
     public void setTimeSlotInformation(TimeSlotInformation timeSlotInformation) {
         this.timeSlotInformation = timeSlotInformation;
+    }
+
+    public boolean isMerge() {
+        return isMerge;
+    }
+
+    public void setMerge(boolean merge) {
+        isMerge = merge;
+    }
+
+    public ArrayList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(ArrayList<Order> orders) {
+        this.orders = orders;
     }
 }

@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-import io.realm.RealmObject;
-
 /**
  * Created by developers on 22/03/17.
  */
@@ -20,6 +18,9 @@ public class Saving implements Serializable {
 
     @SerializedName("suggestion_box_id")
     private int suggestionBoxId;
+
+    @SerializedName("suggestion_box_uuid")
+    private String suggestionBoxUuid;
 
     @SerializedName("suggestion_box_name")
     private String suggestionBoxName;
@@ -41,6 +42,18 @@ public class Saving implements Serializable {
 
     public Saving() {
 
+    }
+
+    /************************************
+     * Getter Setter
+     ************************************/
+
+    public String getSuggestionBoxUuid() {
+        return suggestionBoxUuid;
+    }
+
+    public void setSuggestionBoxUuid(String suggestionBoxUuid) {
+        this.suggestionBoxUuid = suggestionBoxUuid;
     }
 
     public String getType() {

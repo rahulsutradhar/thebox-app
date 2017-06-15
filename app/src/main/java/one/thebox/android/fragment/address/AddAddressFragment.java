@@ -8,11 +8,10 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.databinding.AddAddressFragmentBinding;
@@ -32,6 +31,7 @@ public class AddAddressFragment extends FragmentBase {
 
     private int calledFrom;
     private int type;
+    private boolean isMerge;
 
     /**
      * Address
@@ -63,11 +63,12 @@ public class AddAddressFragment extends FragmentBase {
         this.address = address;
     }
 
+    //from Cart to add Address
     @SuppressLint("ValidFragment")
-    public AddAddressFragment(int calledFrom, int type, RealmList<Order> orders) {
+    public AddAddressFragment(int calledFrom, int type, boolean isMerge) {
         this.calledFrom = calledFrom;
         this.type = type;
-        this.orders = orders;
+        this.isMerge = isMerge;
     }
 
     /**
@@ -75,9 +76,9 @@ public class AddAddressFragment extends FragmentBase {
      * calledFrom = 3; type = 3
      */
     @SuppressLint("ValidFragment")
-    public AddAddressFragment(int calledFrom, int type, RealmList<Order> orders, Address address) {
+    public AddAddressFragment(int calledFrom, int type, boolean isMerge, Address address) {
         this.calledFrom = calledFrom;
-        this.orders = orders;
+        this.isMerge = isMerge;
         this.address = address;
         this.type = type;
     }
@@ -99,16 +100,16 @@ public class AddAddressFragment extends FragmentBase {
             //Called from My Fargment
             if (calledFrom == 1) {
                 addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, calledFrom, type, view);
-            } //called from cart fragment
+            } //called from cart fragment create Address
             else if (calledFrom == 2) {
-                addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, orders, calledFrom, type, view);
+                addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, isMerge, calledFrom, type, view);
             }
         }// Edit Address
         else if (type == 2) {
             addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, address, calledFrom, type, view);
         }//edit address from AddAddressFragment
         else if (type == 3 && calledFrom == 3) {
-            addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, address, orders, calledFrom, type, view);
+            addAddressFragmentViewModel = new AddAddressFragmentViewModel(this, address, isMerge, calledFrom, type, view);
         }
         binding.setViewModel(addAddressFragmentViewModel);
 

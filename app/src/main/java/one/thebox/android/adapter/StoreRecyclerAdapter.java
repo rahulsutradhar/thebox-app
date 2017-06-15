@@ -1,15 +1,11 @@
 package one.thebox.android.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,25 +14,14 @@ import com.bumptech.glide.RequestManager;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.RealmList;
-import one.thebox.android.Events.OnCategorySelectEvent;
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.Category;
-import one.thebox.android.Models.ExploreItem;
-import one.thebox.android.Models.UserCategory;
+import one.thebox.android.Events.DisplayProductForBoxEvent;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.carousel.Offer;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.ShowcaseHelper;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.adapter.carousel.AdapterCarousel;
-import one.thebox.android.api.RestClient;
-import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.SearchDetailFragment;
-import one.thebox.android.util.CoreGsonUtils;
-import one.thebox.android.util.PrefUtils;
 
 /**
  * Created by vaibhav on 17/08/16.
@@ -60,9 +45,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         this.glideRequestManager = glideRequestManager;
     }
 
-    public void addBox(Box box) {
-        boxes.add(box);
-    }
 
     public RealmList<Box> getBoxes() {
         return boxes;
@@ -113,19 +95,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(final BaseRecyclerAdapter.ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
         itemViewHolder.setViews(boxes.get(position), position);
-
-        if (PrefUtils.getBoolean(TheBox.getInstance(), "home_tutorial", true) && (!RestClient.is_in_development)) {
-            new ShowcaseHelper((Activity) mContext, 3)
-                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView)
-                    .setOnCompleteListener(new ShowcaseHelper.OnCompleteListener() {
-                        @Override
-                        public void onComplete() {
-                            PrefUtils.putBoolean(TheBox.getInstance(), "home_tutorial", false);
-                            new ShowcaseHelper((Activity) mContext, 3)
-                                    .show("My Boxes", "Edit and keep track of all items being delivered to you regularly", holder.itemView);
-                        }
-                    });
-        }
     }
 
     @Override
@@ -165,253 +134,6 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    public static class RemainingCategoryAdapter extends BaseRecyclerAdapter {
-
-        private List<Category> categories;
-        private boolean isSearchDetailItemFragment;
-        private RealmList<UserCategory> my_catIds;
-        private Box box;
-        private Context context;
-        private RequestManager mRequestManager;
-
-        public RemainingCategoryAdapter(Context context, List<Category> categories, RealmList<UserCategory> my_catIds, RequestManager mRequestManager) {
-            super(context);
-            this.categories = categories;
-            this.my_catIds = my_catIds;
-            this.context = context;
-            this.mRequestManager = mRequestManager;
-        }
-
-        public RemainingCategoryAdapter(Context context, List<Category> categories, RequestManager mRequestManager) {
-            super(context);
-            this.categories = categories;
-            this.context = context;
-            this.mRequestManager = mRequestManager;
-        }
-
-        public void setBox(Box box) {
-            this.box = box;
-        }
-
-        public boolean isSearchDetailItemFragment() {
-            return isSearchDetailItemFragment;
-        }
-
-        public void setSearchDetailItemFragment(boolean searchDetailItemFragment) {
-            isSearchDetailItemFragment = searchDetailItemFragment;
-        }
-
-        public List<Category> getCategories() {
-            return categories;
-        }
-
-        public void setCategories(RealmList<Category> categories) {
-            this.categories = categories;
-        }
-
-        @Override
-        protected ItemHolder getItemHolder(View view) {
-            return new ItemViewHolder(view);
-        }
-
-        @Override
-        protected ItemHolder getItemHolder(View view, int position) {
-            return null;
-        }
-
-        @Override
-        protected HeaderHolder getHeaderHolder(View view) {
-            return null;
-        }
-
-        @Override
-        protected FooterHolder getFooterHolder(View view) {
-            return null;
-        }
-
-        @Override
-        public void onBindViewItemHolder(ItemHolder holder, final int position) {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-
-            if (position < categories.size()) {
-                itemViewHolder.setViewHolder(categories.get(position), position);
-            } else {
-                itemViewHolder.setViewHolder(my_catIds.get(position - categories.size()), position);
-            }
-
-            // When used in Search Detail Fragment
-            if (isSearchDetailItemFragment) {
-                setAnimation(itemViewHolder.itemView);
-            }
-        }
-
-        @Override
-        public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
-        }
-
-        @Override
-        public void onBindViewFooterHolder(FooterHolder holder, int position) {
-        }
-
-        // Animations
-        private void setAnimation(View viewToAnimate) {
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right);
-            viewToAnimate.startAnimation(animation);
-        }
-
-        @Override
-        public int getItemsCount() {
-            if (my_catIds == null) {
-                return categories.size();
-            } else {
-                return (categories.size() + my_catIds.size());
-            }
-        }
-
-        @Override
-        protected int getItemLayoutId() {
-            return R.layout.smart_box_item;
-        }
-
-        @Override
-        protected int getHeaderLayoutId() {
-            return R.layout.empty_space_header;
-        }
-
-        @Override
-        protected int getItemLayoutId(int position) {
-            return 0;
-        }
-
-        @Override
-        protected int getFooterLayoutId() {
-            return 0;
-        }
-
-        public class ItemViewHolder extends ItemHolder {
-            private TextView categoryNameTextView, noOfItems, savingTextView;
-            private ImageView categoryIcon;
-            private View itemView;
-
-            public ItemViewHolder(View itemView) {
-                super(itemView);
-                this.itemView = itemView;
-                categoryNameTextView = (TextView) itemView.findViewById(R.id.text_view_category_name);
-                savingTextView = (TextView) itemView.findViewById(R.id.text_view_savings);
-                noOfItems = (TextView) itemView.findViewById(R.id.number_of_item);
-                categoryIcon = (ImageView) itemView.findViewById(R.id.icon);
-            }
-
-            public void setViewHolder(final Category category, final int position) {
-                if (isSearchDetailItemFragment) {
-                    categoryNameTextView.setText(category.getMinititle());
-                } else {
-                    categoryNameTextView.setText(category.getMinititle());
-                }
-
-                //Saving text display if not empty
-                if (category.getAverageSavings() != null) {
-                    if (!category.getAverageSavings().isEmpty()) {
-                        savingTextView.setVisibility(View.VISIBLE);
-                        savingTextView.setText(category.getAverageSavings());
-                    } else {
-                        savingTextView.setVisibility(View.GONE);
-                        savingTextView.setText("");
-                    }
-                } else {
-                    savingTextView.setVisibility(View.GONE);
-                    savingTextView.setText("");
-                }
-
-                //clickevent
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handleCLickEvent(category, position);
-                    }
-                });
-
-
-                mRequestManager.load(category.getIconUrl())
-                        .centerCrop()
-                        .crossFade()
-                        .into(categoryIcon);
-
-            }
-
-            public void setViewHolder(final UserCategory userCategory, final int position) {
-                categoryNameTextView.setText(userCategory.getCategory().getMinititle());
-
-                noOfItems.setVisibility(View.VISIBLE);
-
-                if (userCategory.getNo_of_items() == 1) {
-                    noOfItems.setText("1 item subscribed");
-                } else {
-                    noOfItems.setText(userCategory.getNo_of_items() + " items subscribed");
-                }
-
-                categoryIcon.setMaxWidth(noOfItems.getWidth());
-
-                //Saving text display if not empty
-                if (userCategory.getCategory().getAverageSavings() != null) {
-                    if (!userCategory.getCategory().getAverageSavings().isEmpty()) {
-                        savingTextView.setVisibility(View.VISIBLE);
-                        savingTextView.setText(userCategory.getCategory().getAverageSavings());
-                    } else {
-                        savingTextView.setVisibility(View.GONE);
-                        savingTextView.setText("");
-                    }
-                } else {
-                    savingTextView.setVisibility(View.GONE);
-                    savingTextView.setText("");
-                }
-
-                //clickevent
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        handleCLickEvent(userCategory.getCategory(), position);
-                    }
-                });
-
-
-                mRequestManager.load(userCategory.getCategory().getIconUrl())
-                        .centerCrop()
-                        .crossFade()
-                        .into(categoryIcon);
-
-            }
-
-            public void handleCLickEvent(Category category, int position) {
-                if (isSearchDetailItemFragment) {
-                    EventBus.getDefault().post(new OnCategorySelectEvent(categories.get(position)));
-                } else {
-                    ArrayList<Integer> catIds = new ArrayList<>();
-                    for (Category category1 : categories) {
-                        catIds.add(category1.getId());
-                    }
-                    ArrayList<Integer> user_catIds = new ArrayList<>();
-                    if (!my_catIds.isEmpty()) {
-                        for (UserCategory usercategory : my_catIds) {
-                            user_catIds.add(usercategory.getCategory().getId());
-                        }
-                    }
-                    Intent intent = new Intent(mContext, MainActivity.class)
-                            .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
-                            .putExtra(SearchDetailFragment.EXTRA_MY_BOX_CATEGORIES_ID, CoreGsonUtils.toJson(
-                                    catIds))
-                            .putExtra(SearchDetailFragment.EXTRA_MY_BOX_USER_CATEGORIES_ID, CoreGsonUtils.toJson(
-                                    user_catIds))
-                            .putExtra(SearchDetailFragment.EXTRA_CLICK_POSITION, position)
-                            .putExtra(SearchDetailFragment.EXTRA_CLICKED_CATEGORY_ID, category.getId())
-                            .putExtra(SearchDetailFragment.BOX_NAME, box.getBoxDetail().getTitle());
-
-                    mContext.startActivity(intent);
-                }
-            }
-        }
-    }
-
     public class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
 
         private RecyclerView recyclerView;
@@ -446,29 +168,20 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
 
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
         private RemainingCategoryAdapter remainingCategoryAdapter;
-        private SearchDetailAdapter userItemRecyclerAdapter;
         private RecyclerView recyclerViewCategories;
         private TextView title, add_more_items, savingsTitle;
         private ImageView boxImageView;
         private LinearLayoutManager horizontalLinearLayoutManager;
         private LinearLayoutManager verticalLinearLayoutManager;
+        private Box box;
+
         private View.OnClickListener openBoxListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String exploreItemString = CoreGsonUtils.toJson(new ExploreItem(boxes.get(getAdapterPosition()).getBoxId(), boxes.get(getAdapterPosition()).getBoxDetail().getTitle()));
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, exploreItemString)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 5));
+                EventBus.getDefault().post(new DisplayProductForBoxEvent(box));
             }
         };
 
-        private View.OnClickListener viewItemsListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notifyItemChanged(getAdapterPosition());
-            }
-        };
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -489,16 +202,17 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
         }
 
         public void setViews(Box box, int position) {
-            this.title.setText(box.getBoxDetail().getTitle().substring(4));
+            this.box = box;
+            this.title.setText(box.getTitle());
             this.title.setOnClickListener(openBoxListener);
             this.boxImageView.setOnClickListener(openBoxListener);
             this.add_more_items.setOnClickListener(openBoxListener);
 
             //savings
-            if (box.getBoxDetail().getSaving() != null) {
-                if (!box.getBoxDetail().getSaving().isEmpty()) {
+            if (box.getSavingTitle() != null) {
+                if (!box.getSavingTitle().isEmpty()) {
                     this.savingsTitle.setVisibility(View.VISIBLE);
-                    this.savingsTitle.setText(box.getBoxDetail().getSaving());
+                    this.savingsTitle.setText(box.getSavingTitle());
                 } else {
                     this.savingsTitle.setText("");
                     this.savingsTitle.setVisibility(View.GONE);
@@ -508,18 +222,18 @@ public class StoreRecyclerAdapter extends BaseRecyclerAdapter {
                 this.savingsTitle.setVisibility(View.GONE);
             }
 
-            glideRequestManager.load(box.getBoxDetail().getPhotoUrl())
+            glideRequestManager.load(box.getBoxImage())
                     .centerCrop()
                     .crossFade()
                     .into(boxImageView);
 
             this.recyclerViewCategories.setVisibility(View.VISIBLE);
             this.recyclerViewCategories.setLayoutManager(horizontalLinearLayoutManager);
-            RealmList<Category> categories = new RealmList<>();
-            categories.addAll(box.getRemainingCategories());
-            this.remainingCategoryAdapter = new RemainingCategoryAdapter(mContext, categories, box.getUserCategories(), glideRequestManager);
-            this.remainingCategoryAdapter.setBox(boxes.get(position));
-            this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
+            if (box.getCategories() != null) {
+                this.remainingCategoryAdapter = new RemainingCategoryAdapter(
+                        mContext, box.getCategories(), box.getUuid(), box.getTitle(), glideRequestManager);
+                this.recyclerViewCategories.setAdapter(remainingCategoryAdapter);
+            }
 
         }
     }

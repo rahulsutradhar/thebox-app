@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,12 +14,13 @@ import org.json.JSONObject;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MutedVideoView;
 import one.thebox.android.app.Constants;
 import one.thebox.android.services.AuthenticationService;
-import one.thebox.android.util.PrefUtils;
+import one.thebox.android.services.SettingService;
+import one.thebox.android.util.CoreGsonUtils;
 
 /**
  * Created by Ajeet Kumar Meena on 8/10/15.
@@ -30,6 +30,9 @@ public class SplashActivity extends Activity {
     private static final int DELAY = 0;
     private MutedVideoView vidHolder;
     private AuthenticationService authenticationService;
+    private int requestCounter = 0;
+    private int attachmentNumber = 0;
+    private Params params;
 
 
     @Override
@@ -37,7 +40,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        initVariable();
         try {
             setContentView(R.layout.video_splash);
             authenticationService = new AuthenticationService();
@@ -66,51 +69,66 @@ public class SplashActivity extends Activity {
 
     }
 
-    private void jump() {
+    public void initVariable() {
         try {
-            String token = PrefUtils.getToken(SplashActivity.this);
-            User user = PrefUtils.getUser(SplashActivity.this);
-
-            if (authenticationService.isAuthenticated()) {
-
-                if (authenticationService.isUserInfoExist()) {
-                    /**
-                     * Update user information to clevertap and crashlytics everytime users opens the app
-                     */
-                    authenticationService.setUserDataToCrashlytics();
-                    authenticationService.setCleverTapUserProfile();
-                }
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-
-            } else {
-                //From next version it should open OnBoardActivity
-                //startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-
-                /**
-                 * if the key returns false means the key don't exist
-                 * so repeat old methord of navigation
-                 */
-                if ((user == null || user.getName() == null || user.getName().isEmpty()) && token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
-                } else if ((user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                } else if (!(user == null || user.getName() == null || user.getName().isEmpty()) && !token.isEmpty()) {
-
-                    /**
-                     * Already user loggedin need to push data to crashlytics and clever tap
-                     *
-                     * Temporarry functions
-                     */
-                    authenticationService.setUserDataToCrashlyticsTemp();
-                    authenticationService.setCleverTapUserProfile();
-
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                }
-            }
-            finish();
+            attachmentNumber = getIntent().getIntExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 0);
+            params = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_NOTIFICATION_PARAMETER), Params.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void jump() {
+        try {
+            if (authenticationService.isAuthenticated()) {
+                fetchSettingFromServer();
+            } else {
+                /**
+                 * Not Authenticated Move to OnBoard Activity
+                 */
+                startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+                finish();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Fetch setting from server
+     */
+    public void fetchSettingFromServer() {
+        requestCounter++;
+        new SettingService().fetchSettingsFromServer(this, this, 2);
+    }
+
+    /**
+     * Get Settings Call response From Server
+     */
+    public void setServerResponseForSettingsCall(boolean isSuccess) {
+        if (isSuccess) {
+            navigateToHome();
+        } else {
+            if (requestCounter > 1) {
+                Toast.makeText(this, "Something went wrong, please check your internet connection.", Toast.LENGTH_SHORT).show();
+            } else {
+                fetchSettingFromServer();
+            }
+        }
+    }
+
+    /**
+     * Authenticated navigate to Home
+     */
+    public void navigateToHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, attachmentNumber);
+        intent.putExtra(Constants.EXTRA_NOTIFICATION_PARAMETER, CoreGsonUtils.toJson(params));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 

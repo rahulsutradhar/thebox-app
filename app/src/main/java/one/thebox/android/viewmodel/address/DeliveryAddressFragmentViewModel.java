@@ -20,19 +20,14 @@ import android.widget.PopupWindow;
 import java.util.HashMap;
 
 import io.realm.RealmList;
-import one.thebox.android.Helpers.OrderHelper;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
-import one.thebox.android.Models.update.Setting;
+import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
-import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
-import one.thebox.android.util.PrefUtils;
 import one.thebox.android.viewmodel.base.BaseViewModel;
 
 /**
@@ -45,6 +40,8 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
      * Address
      */
     private Address address;
+
+    private boolean isMerge;
 
     /**
      * List Orders
@@ -68,12 +65,12 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
     private int addressTypeIcon;
 
     /**
-     * Constrcutor
+     * Constructor
      */
-    public DeliveryAddressFragmentViewModel(DeliveryAddressFragment deliveryAddressFragment, Address address, RealmList<Order> orders) {
+    public DeliveryAddressFragmentViewModel(DeliveryAddressFragment deliveryAddressFragment, Address address, boolean isMerge) {
         this.deliveryAddressFragment = deliveryAddressFragment;
         this.address = address;
-        this.orders = orders;
+        this.isMerge = isMerge;
         checkAddressType();
         notifyChange();
     }
@@ -93,7 +90,7 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         //save CleverTap Event; Display Address Proceed
         saveCleverTapEventDisplayAddressProceed();
         deliveryAddressFragment.getActivity().startActivity(ConfirmTimeSlotActivity.newInstance(deliveryAddressFragment.getActivity(),
-                OrderHelper.getAddressAndOrder(orders), false));
+                isMerge, address));
     }
 
 
@@ -185,7 +182,7 @@ public class DeliveryAddressFragmentViewModel extends BaseViewModel {
         /**
          * calledFrom = 3; Type = 3
          */
-        AddAddressFragment addAddressFragment = new AddAddressFragment(3, 3, orders, address);
+        AddAddressFragment addAddressFragment = new AddAddressFragment(3, 3, isMerge, address);
 
         FragmentManager fragmentManager = deliveryAddressFragment.getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

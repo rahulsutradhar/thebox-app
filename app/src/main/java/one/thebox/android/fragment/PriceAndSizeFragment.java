@@ -1,5 +1,6 @@
 package one.thebox.android.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,31 +10,30 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.SizeAndFrequencyAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 
 
 public class PriceAndSizeFragment extends BottomSheetDialogFragment {
 
-    private final static String EXTRA_ITEM_CONFIG_ARRAY_LIST = "item_config_array_list";
+
     private View rootView;
-    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private RecyclerView recyclerView;
     private ItemConfig selectedItemConfig;
     private SizeAndFrequencyAdapter sizeAndFrequencyAdapter;
     private SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected onSizeAndFrequencySelected;
+    private RealmList<ItemConfig> itemConfigs = new RealmList<>();
 
-    public PriceAndSizeFragment() {
+
+    @SuppressLint("ValidFragment")
+    public PriceAndSizeFragment(RealmList<ItemConfig> itemConfigs) {
+        this.itemConfigs = itemConfigs;
     }
 
-    public static PriceAndSizeFragment newInstance(RealmList<ItemConfig> itemConfigs) {
-        PriceAndSizeFragment fragment = new PriceAndSizeFragment();
-        Bundle args = new Bundle();
-        args.putString(EXTRA_ITEM_CONFIG_ARRAY_LIST, CoreGsonUtils.toJson(itemConfigs));
-        fragment.setArguments(args);
-        return fragment;
+    public PriceAndSizeFragment() {
     }
 
     public void setSelectedItemConfig(ItemConfig itemConfig) {
@@ -54,17 +54,10 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_price_and_size, container, false);
-            initVariable();
             initViews();
             setupRecyclerView();
         }
         return rootView;
-    }
-
-    private void initVariable() {
-        itemConfigs = CoreGsonUtils.fromJsontoRealmList(
-                getArguments().getString(EXTRA_ITEM_CONFIG_ARRAY_LIST), ItemConfig.class
-        );
     }
 
     private void setupRecyclerView() {
@@ -72,7 +65,7 @@ public class PriceAndSizeFragment extends BottomSheetDialogFragment {
         sizeAndFrequencyAdapter.setItemConfigs(itemConfigs);
         if (selectedItemConfig != null) {
             for (int i = 0; i < itemConfigs.size(); i++) {
-                if(itemConfigs.get(i).equals(selectedItemConfig)) {
+                if (itemConfigs.get(i).equals(selectedItemConfig)) {
                     sizeAndFrequencyAdapter.setCurrentItemSelected(i);
                     break;
                 }

@@ -13,22 +13,17 @@ import java.util.HashMap;
 
 import io.realm.RealmList;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.User;
+import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.activity.OrderDetailActivity;
 import one.thebox.android.activity.UpdateProfileActivity;
-import one.thebox.android.api.ApiResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
-import one.thebox.android.util.AccountManager;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class MyAccountFragment extends Fragment implements View.OnClickListener {
@@ -90,6 +85,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             userName.setText(user.getName());
             email.setText(user.getEmail());
             phoneNumber.setText(user.getPhoneNumber());
+
             if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
                 editAddressButton.setVisibility(View.GONE);
                 showAllAddressesButton.setVisibility(View.VISIBLE);
@@ -178,36 +174,13 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-           /* case R.id.button_show_all_address: {
-                startActivity(new Intent(getActivity(), AddressActivity.class));
-                break;
-            }*/
             case R.id.button_show_all_orders: {
                 startActivity(new Intent(getActivity(), OrderDetailActivity.class));
                 break;
             }
             case R.id.button_sign_out: {
-                final BoxLoader dialog = new BoxLoader(getActivity()).show();
-                TheBox.getAPIService().signOut(PrefUtils.getToken(getActivity()))
-                        .enqueue(new Callback<ApiResponse>() {
-                            @Override
-                            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                                dialog.dismiss();
-
-                                /**
-                                 * Save CleverTap Event; Logout
-                                 */
-                                setCleverTapEventLogout(PrefUtils.getUser(getActivity()));
-
-                                (new AccountManager(getActivity())).delete_account_data();
-                                getActivity().finish();
-                            }
-
-                            @Override
-                            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                                dialog.dismiss();
-                            }
-                        });
+                new AuthenticationService().logOut(getContext(), true);
+                break;
             }
         }
     }
@@ -218,7 +191,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSpecialAction().setImageResource(R.drawable.ic_edit);
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,8 +243,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("Phone", user.getPhoneNumber());
-            hashMap.put("User_id", user.getUserId());
-            hashMap.put("Unique_id", user.getUserUniqueId());
+            hashMap.put("User_uuid", user.getUuid());
+            hashMap.put("Unique_id", user.getUuid());
             hashMap.put("Email", user.getEmail());
             hashMap.put("Name", user.getName());
 

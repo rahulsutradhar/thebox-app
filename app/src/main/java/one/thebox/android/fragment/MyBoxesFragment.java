@@ -1,26 +1,17 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -33,25 +24,22 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
-import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Events.UpdateSavingsEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Events.UpdateSubscribeItemEvent;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.UserItem;
 import one.thebox.android.Models.saving.Saving;
-import one.thebox.android.Models.user.OrderedUserItem;
-import one.thebox.android.api.Responses.UserItemResponse;
+import one.thebox.android.Models.items.Subscription;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.MyBoxRecyclerAdapter;
+import one.thebox.android.adapter.subscription.SubscriptionAdapter;
+import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
+import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
 import one.thebox.android.app.Constants;
-import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
@@ -60,64 +48,31 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
-
 /**
  * Created by vaibhav on 17/08/16.
+ * <p>
+ * Modified by Developers on 07/06/2017.
  */
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     private RecyclerView recyclerView;
-    private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
+    private SubscriptionAdapter subscriptionAdapter;
     private View rootLayout;
     private GifImageView progressBar;
-    private FloatingActionButton floatingActionButton;
-    private TextView noOfItemsInCart;
     private AppBarObserver appBarObserver;
-    private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private LinearLayout no_item_subscribed_view_holder;
-    private String monthly_bill;
-    private String total_no_of_items;
     private boolean show_loader_and_call = false;
     private boolean isRegistered;
     private Saving saving;
+    ArrayList<Subscription> subscriptions = new ArrayList<>();
 
     /**
      * GLide Request Manager
      */
     private RequestManager glideRequestManager;
-
-
-    private boolean isLocallyUpdated;
-    private boolean has_one_or_more_subscribed_items = false;
-    private boolean show_loader = false;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
-                    if (noOfTabs > 0) {
-                        noOfItemsInCart.setVisibility(View.VISIBLE);
-                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
-                    } else {
-                        noOfItemsInCart.setVisibility(View.GONE);
-                    }
-                }
-            });
-
-        }
-    };
-
 
     public MyBoxesFragment() {
 
@@ -155,20 +110,17 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         RealmChangeManager.getInstance();
 
         initViews();
-        initVariables();
 
         //Fetching arguments- silent notification for my items
         show_loader_and_call = getArguments().getBoolean("show_loader");
 
-        if (PrefUtils.getBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false)) {
-            fetchOrderedUserItem(show_loader_and_call);
-            PrefUtils.putBoolean(getActivity(), Keys.LOAD_ORDERED_USER_ITEM, false);
-        }
+        //fetch subscription from server
+        fetchSubscription(show_loader_and_call);
 
         setupAppBarObserver();
         initDataChangeListener();
 
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
+        onTabEvent(new TabEvent(CartHelper.getCartSize()));
 
         return rootLayout;
     }
@@ -177,55 +129,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void onDestroyView() {
         super.onDestroyView();
 
-    }
-
-    private synchronized void initVariables() {
-        ArrayList<OrderedUserItem> orderedUserItems = new ArrayList<>();
-
-        //Fetch OrderedUserItem if stored in local database
-        Realm realm = TheBox.getRealm();
-        RealmResults<OrderedUserItem> realmResults1 = realm.where(OrderedUserItem.class).findAll();
-
-        RealmList<OrderedUserItem> itemRealmList = new RealmList<>();
-        itemRealmList.addAll(realm.copyFromRealm(realmResults1.subList(0, realmResults1.size())));
-
-        if (itemRealmList.size() > 0) {
-            orderedUserItems.clear();
-            for (OrderedUserItem orderedUserItem : itemRealmList) {
-                if (getUserItems(orderedUserItem).size() > 0) {
-                    orderedUserItem.setUserItems(getUserItems(orderedUserItem));
-                    orderedUserItems.add(orderedUserItem);
-                }
-            }
-        }
-
-        //get savings from the preferances
-        saving = CoreGsonUtils.fromJson(PrefUtils.getString(getActivity(), Constants.SAVINGS), Saving.class);
-
-        if (orderedUserItems.size() > 0) {
-            setupRecyclerView(orderedUserItems);
-        } else {
-            setupEmptyStateView();
-        }
-
-    }
-
-
-    private RealmList<UserItem> getUserItems(OrderedUserItem orderedUserItem) {
-        Realm realm = TheBox.getRealm();
-        RealmList<UserItem> list = new RealmList<>();
-
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", orderedUserItem.getBoxId()).findAll()
-                .where().notEqualTo("stillSubscribed", false).findAll()
-                .where().isNotNull("nextDeliveryScheduledAt").findAll();
-
-        if (items.isLoaded()) {
-            list = new RealmList<>();
-            list.addAll(realm.copyFromRealm(items.subList(0, items.size())));
-            return list;
-        }
-
-        return list;
     }
 
     private void setupAppBarObserver() {
@@ -239,58 +142,59 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
 
-    private void setupRecyclerView(ArrayList<OrderedUserItem> orderedUserItems) {
-        //One or more items are subscribed
-        no_item_subscribed_view_holder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        fabHolder.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.VISIBLE);
+    private void setupRecyclerView() {
+        if (subscriptions.size() > 0) {
+            //One or more items are subscribed
+            no_item_subscribed_view_holder.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
 
-        if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
-            final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity(), glideRequestManager);
-            myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
+            if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
+                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
 
-            //This view will display the saving card as header and rest of the items
-            setDataToRecyclerView(orderedUserItems);
-            recyclerView.setAdapter(myBoxRecyclerAdapter);
+                //This view will display the saving card as header and rest of the items
+                setDataToRecyclerView(subscriptions);
+                recyclerView.setAdapter(subscriptionAdapter);
+            } else {
+                setDataToRecyclerView(subscriptions);
+            }
         } else {
-            setDataToRecyclerView(orderedUserItems);
+            setupEmptyStateView();
         }
     }
 
     /**
      * Check and set the view type in recyclerview
      */
-    public void setDataToRecyclerView(ArrayList<OrderedUserItem> orderedUserItems) {
+    public void setDataToRecyclerView(ArrayList<Subscription> subscriptions) {
 
-        myBoxRecyclerAdapter.setOrderedUserItems(orderedUserItems);
-        myBoxRecyclerAdapter.setSaving(saving);
+        subscriptionAdapter.setSubscriptions(subscriptions);
+        subscriptionAdapter.setSaving(saving);
         /**
          * Show Header savings ;if savings is true
          * and user items
          */
-        if (orderedUserItems.size() > 0 && saving != null) {
+        if (subscriptions.size() > 0 && saving != null) {
             if (saving.isSaving()) {
-                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+                subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
             } else {
-                myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+                subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
             }
         }
         /**
          * Show only user items
          */
-        else if (orderedUserItems.size() > 0 && saving == null) {
-            myBoxRecyclerAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+        else if (subscriptions.size() > 0 && saving == null) {
+            subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
         }
     }
 
     public void setupEmptyStateView() {
         // No items are subscribed
         no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
-        fabHolder.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
 
@@ -312,15 +216,11 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(fabClickListener);
-        noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
-        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
         no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fetchOrderedUserItem(true);
+                fetchSubscription(true);
             }
         });
     }
@@ -348,8 +248,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public void onResume() {
         super.onResume();
         initDataChangeListener();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                new IntentFilter(BROADCAST_EVENT_TAB));
     }
 
     @Override
@@ -363,118 +261,128 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
     /**
-     * Fetch User Item
+     * Fetch Subscriptions from server
      */
-    public synchronized void fetchOrderedUserItem(boolean showLoader) {
-
+    public void fetchSubscription(boolean showLoader) {
         connectionErrorViewHelper.isVisible(false);
         if (showLoader) {
             progressBar.setVisibility(View.VISIBLE);
         }
 
-        String token = PrefUtils.getToken(getActivity());
-        TheBox.getAPIService().getMyItems(token).enqueue(new Callback<UserItemResponse>() {
-            @Override
-            public void onResponse(Call<UserItemResponse> call, Response<UserItemResponse> response) {
+        TheBox.getAPIService()
+                .getSubscription(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<SubscriptionResponse>() {
+                    @Override
+                    public void onResponse(Call<SubscriptionResponse> call, Response<SubscriptionResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
+                        progressBar.setVisibility(View.GONE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
 
-                connectionErrorViewHelper.isVisible(false);
-                progressBar.setVisibility(View.GONE);
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
 
-                try {
-                    if (response.isSuccessful() && response.body() != null) {
+                                    //show recyclerview
+                                    subscriptions.clear();
+                                    if (response.body().getSubscriptions() != null) {
+                                        if (!response.body().getSubscriptions().isEmpty()) {
+                                            subscriptions.addAll(response.body().getSubscriptions());
+                                        }
+                                    }
+                                    setupRecyclerView();
 
-                        //get savings
-                        if (response.body().getSavings() != null) {
-                            if (response.body().getSavings().size() > 0) {
-                                if (response.body().getSavings().get(0).getType().equals("current")) {
-                                    saving = response.body().getSavings().get(0);
                                 }
                             }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            no_item_subscribed_view_holder.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
                         }
-
-                        //save saving in the preferance
-                        PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
-
-                        //get the OrderedUserItem
-                        //store to local database
-                        storeToRealm(response.body().getOrderedUserItems());
-
-                    } else {
-                        //Parse Error
-                        Toast.makeText(getActivity(), "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
 
-                } catch (Exception e) {
-                    Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.GONE);
-                    no_item_subscribed_view_holder.setVisibility(View.GONE);
-                    connectionErrorViewHelper.isVisible(true);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserItemResponse> call, Throwable t) {
-                Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.GONE);
-                no_item_subscribed_view_holder.setVisibility(View.GONE);
-                connectionErrorViewHelper.isVisible(true);
-            }
-        });
-
-
+                    @Override
+                    public void onFailure(Call<SubscriptionResponse> call, Throwable t) {
+                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        no_item_subscribed_view_holder.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
+                    }
+                });
     }
 
-    private synchronized void storeToRealm(final ArrayList<OrderedUserItem> list) {
 
-        final Realm superRealm1 = TheBox.getRealm();
-        superRealm1.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(list);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                if (null != getActivity()) {
+    /**
+     * Fetch Savings on Subscribe Item
+     */
+    public void fetchSavings() {
 
-                    initVariables();
-                    ((MainActivity) getActivity()).addBoxesToMenu();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-            }
-        });
+        TheBox.getAPIService()
+                .getSavings(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<SavingsResponse>() {
+                    @Override
+                    public void onResponse(Call<SavingsResponse> call, Response<SavingsResponse> response) {
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
+                                    updateSavingsUI(saving);
 
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<SavingsResponse> call, Throwable t) {
+                    }
+                });
     }
+
+    public void updateSavingsUI(Saving saving) {
+        if (saving != null) {
+            //save saving in the preferance
+            PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
+
+            if (subscriptionAdapter != null) {
+                subscriptionAdapter.setSaving(saving);
+            }
+        }
+    }
+
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        fabHolder.setTranslationY(-offset);
     }
 
     public void onTabEvent(TabEvent tabEvent) {
         if (getActivity() == null) {
             return;
         }
-        fabHolder.setVisibility(View.GONE);
-        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
-        if (tabEvent.getNumberOfItemsInCart() > 0) {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
-            mFab.setOnClickListener(fabClickListener);
-            noOfItemsInCart.setVisibility(View.VISIBLE);
-            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
-        } else {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
-            mFab.setOnClickListener(null);
-            noOfItemsInCart.setVisibility(View.GONE);
-        }
     }
-
 
     @Override
     public void onStart() {
@@ -495,45 +403,41 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     }
 
 
+    /**
+     * Called from Updating Subscription Item
+     */
     @Subscribe
-    public synchronized void onUpdateOrderItemEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+    public void onUpdateSavingsEvent(UpdateSavingsEvent updateSavingsEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //fetch data from server and update the list
-                    initVariables();
+                    if (subscriptionAdapter != null) {
+                        //check id all items have been removed from the subscribed items list
+                        if (subscriptionAdapter.getItemsCount() == 0) {
+
+                            setupEmptyStateView();
+                        } else {
+                            //fetch savings to update
+                            fetchSavings();
+                        }
+                    }
                 }
             });
         }
+
     }
 
+    /**
+     * Called from Updating Subscription Item
+     */
     @Subscribe
-    public void onUpdateSavingsEvent(final UpdateSavingsEvent updateSavingsEvent) {
+    public void onUpdateSubscribeItemEvent(UpdateSubscribeItemEvent updateSubscribeItemEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        //update the saving card
-                        if (updateSavingsEvent.getSavings() != null) {
-                            if (updateSavingsEvent.getSavings().size() > 0) {
-
-                                //save saving in the preferance
-                                PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(updateSavingsEvent.getSavings().get(0)));
-
-                                //update savings data in Adapter
-                                if (recyclerView != null && null != myBoxRecyclerAdapter) {
-                                    myBoxRecyclerAdapter.setSaving(updateSavingsEvent.getSavings().get(0));
-
-                                }
-
-                            }
-                        }
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
+                    fetchSubscription(false);
                 }
             });
         }

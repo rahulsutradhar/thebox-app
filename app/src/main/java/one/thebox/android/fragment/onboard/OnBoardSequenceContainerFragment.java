@@ -7,15 +7,13 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.PageIndicator;
 
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.MontserratTextView;
-import one.thebox.android.activity.SignInActivity;
+import one.thebox.android.activity.RequestOtpActivity;
 import one.thebox.android.adapter.onboard.OnBoardSequenceFragmentAdapter;
 import one.thebox.android.fragment.base.FragmentBase;
 
@@ -64,7 +62,7 @@ public class OnBoardSequenceContainerFragment extends FragmentBase {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                Intent intent = new Intent(getActivity(), RequestOtpActivity.class);
                 startActivity(intent);
 
             }

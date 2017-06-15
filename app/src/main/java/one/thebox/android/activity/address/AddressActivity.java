@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.Order;
 import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.app.Constants;
@@ -18,6 +17,7 @@ public class AddressActivity extends BaseActivity {
 
     private int type;
     private int calledFrom;
+    private boolean isMerge;
 
     /**
      * AddAddressFragment
@@ -44,15 +44,15 @@ public class AddressActivity extends BaseActivity {
         if (extras != null) {
             type = getIntent().getIntExtra(Constants.EXTRA_ADDRESS_TYPE, 0);
             calledFrom = getIntent().getIntExtra("called_from", 0);
+            isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
         }
 
         if (type == 1) {
             if (calledFrom == 1) {
                 addAddressFragment = new AddAddressFragment(calledFrom, type);
             } else if (calledFrom == 2) {
-                //take orders list
-                addAddressFragment = new AddAddressFragment(calledFrom, type,
-                        CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(Constants.EXTRA_LIST_ORDER), Order.class));
+                //called from cart Create Address
+                addAddressFragment = new AddAddressFragment(calledFrom, type, isMerge);
             }
             transactToFragment(addAddressFragment);
             getSupportActionBar().setTitle("Add Delivery Address");
@@ -64,9 +64,8 @@ public class AddressActivity extends BaseActivity {
         }
         //Address is saved so transact to Delivery Address Fragment
         else if (calledFrom == 2) {
-            deliveryAddressFragment = new DeliveryAddressFragment(
-                    CoreGsonUtils.fromJson(getIntent().getStringExtra("delivery_address"), Address.class),
-                    CoreGsonUtils.fromJsontoRealmList(getIntent().getStringExtra(Constants.EXTRA_LIST_ORDER), Order.class));
+           deliveryAddressFragment = new DeliveryAddressFragment(
+                    CoreGsonUtils.fromJson(getIntent().getStringExtra("delivery_address"), Address.class),isMerge );
 
             transactToFragment(deliveryAddressFragment);
             getSupportActionBar().setTitle("Delivery Address");

@@ -76,17 +76,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:background="@drawable/green_background"
-                    android:paddingBottom="6dp"
-                    android:paddingLeft="32dp"
-                    android:paddingRight="32dp"
-                    android:paddingTop="6dp">
+                    android:background="@drawable/green_background">
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/skip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginBottom="6dp"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginTop="6dp"
                         android:padding="0dp"
                         android:text="@string/skip"
                         android:textColor="@color/white"

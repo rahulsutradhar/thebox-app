@@ -3,11 +3,12 @@ package one.thebox.android.adapter;
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.app.Constants;
@@ -83,7 +84,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (itemConfigs.get(position).is_in_stock()) {
+                if (itemConfigs.get(position).isInStock()) {
                     prevItemSelected = currentItemSelected;
                     currentItemSelected = position;
                     notifyItemChanged(prevItemSelected);
@@ -152,11 +153,13 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
 
         public void setViewHolder(ItemConfig itemConfig) {
 
-            if (itemConfig.getCorrectQuantity().equals("NA")) {
-                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            if (itemConfig.getSize() == 0) {
+                sizeTextView.setText(itemConfig.getQuantity() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
             } else {
-                sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
             }
+
+
             costTextView.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
 
             //savings text
@@ -187,7 +190,7 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                 mrpTextView.setVisibility(View.GONE);
             }
 
-            if (itemConfig.is_in_stock()) {
+            if (itemConfig.isInStock()) {
                 if (getAdapterPosition() == currentItemSelected) {
                     sizeTextView.setTextColor(colorRose);
                     costTextView.setTextColor(colorRose);

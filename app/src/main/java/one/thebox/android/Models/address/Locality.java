@@ -10,26 +10,18 @@ import io.realm.annotations.PrimaryKey;
  * Created by Ajeet Kumar Meena on 21-04-2016.
  */
 public class Locality extends RealmObject implements Serializable {
-    @Ignore
-    public static final String FIELD_CODE = "code";
-
-    @Ignore
-    public static final String FIELD_NAME = "name";
-
-
-    private int code;
 
     @PrimaryKey
-    private int id;
+    private String uuid;
+
     private String name;
+
     private int pincode;
 
+    /**
+     * Constructor
+     */
     public Locality() {
-    }
-
-    public Locality(int code, String name) {
-        this.code = code;
-        this.name = name;
     }
 
     public Locality(String name, int pincode) {
@@ -37,20 +29,12 @@ public class Locality extends RealmObject implements Serializable {
         this.pincode = pincode;
     }
 
-    public int getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {

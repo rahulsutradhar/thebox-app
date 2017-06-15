@@ -1,61 +1,45 @@
 package one.thebox.android.activity;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 import com.razorpay.Checkout;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.RealmList;
 import one.thebox.android.BuildConfig;
-import one.thebox.android.Helpers.CartHelper;
-import one.thebox.android.Helpers.OrderHelper;
-import one.thebox.android.Models.AddressAndOrder;
-import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.User;
-import one.thebox.android.Models.timeslot.Slot;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.user.User;
+import one.thebox.android.Models.address.Address;
 import one.thebox.android.R;
 import one.thebox.android.R2;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.ViewHelper.ViewPagerAdapter;
-import one.thebox.android.api.RequestBodies.MergeCartToOrderRequestBody;
-import one.thebox.android.api.RequestBodies.OnlinePaymentRequest;
-import one.thebox.android.api.RequestBodies.PaymentRequestBody;
-import one.thebox.android.api.Responses.PaymentResponse;
+import one.thebox.android.api.RequestBodies.payment.MakePaymentRequest;
+import one.thebox.android.api.Responses.payment.MakePaymentResponse;
+import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
-import one.thebox.android.util.AppUtil;
-import one.thebox.android.util.Constants;
+import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
@@ -63,20 +47,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 /**
  * Created by Ruchit on 9/26/2016.
+ * <p>
+ * Modified by Developers on 06/04/2017.
  */
 public class PaymentOptionActivity extends AppCompatActivity {
-
-    private static final String EXTRA_ARRAY_LIST_ORDER = "array_list_order";
-    private static final String EXTRA_MERGE_ORDER_ID = "merge_order_id";
-    private static final String EXTRA_TOTAL_CART_AMOUNT = "total_cart_amount";
-    private static final String EXTRA_IS_MERGING = "is_merging_order";
-    private static final int REQ_CODE_GET_LOCATION = 101;
-    private ArrayList<AddressAndOrder> addressAndOrders;
-    private boolean isMerging;
-    private String latitude = "0.0", longitude = "0.0";
-    private int locationPermisionCounter = 0;
 
     @BindView(R2.id.tabsPaymentOption)
     TabLayout tabsPaymentOption;
@@ -94,23 +71,26 @@ public class PaymentOptionActivity extends AppCompatActivity {
     int POSITION_OF_VIEW_PAGER;
     String totalPayment = "";
     private User user;
-    private int mergeOrderId;
-    private boolean locationRefreshed;
-    private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
-    private String razorpayPaymentID;
-    private int cleverTapOrderId;
 
+    private FusedLocationService.MyLocation latLng = new FusedLocationService.MyLocation("0.0", "0.0");
+
+    private boolean isMerge;
+    private Address address;
+    private long timeSlotTimeStamp;
+    private String orderUuid;
+    private Order order;
+    private boolean isPayFromOrder = false;
+    private String razorpayId = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_options);
         ButterKnife.bind(this);
-        if (getIntent().hasExtra(EXTRA_TOTAL_CART_AMOUNT)) {
-            totalPayment = getIntent().getStringExtra(EXTRA_TOTAL_CART_AMOUNT);
+        if (getIntent().hasExtra(Constants.EXTRA_AMOUNT_TO_PAY)) {
+            totalPayment = getIntent().getStringExtra(Constants.EXTRA_AMOUNT_TO_PAY);
             txtTotalAmount.setText(fmt(Double.parseDouble(totalPayment)));
         }
-        user = PrefUtils.getUser(this);
         initVariables();
         setupViewPagerAndTabsMyBox();
         imgPaymentBack.setOnClickListener(new View.OnClickListener() {
@@ -120,14 +100,17 @@ public class PaymentOptionActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void initVariables() {
-        String ordersString = getIntent().getStringExtra(EXTRA_ARRAY_LIST_ORDER);
-        addressAndOrders = CoreGsonUtils.fromJsontoArrayList(ordersString, AddressAndOrder.class);
-        mergeOrderId = getIntent().getIntExtra(EXTRA_MERGE_ORDER_ID, 0);
-        isMerging = getIntent().getBooleanExtra(EXTRA_IS_MERGING, false);
+        user = PrefUtils.getUser(this);
+        address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
+        isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+        timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
+        orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
+        order = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_ORDER), Order.class);
+        isPayFromOrder = getIntent().getBooleanExtra(Constants.EXTRA_IS_FROM_ORDER, false);
+
     }
 
 
@@ -199,8 +182,51 @@ public class PaymentOptionActivity extends AppCompatActivity {
             startPayment(String.valueOf(Double.parseDouble(totalPayment) * 100), "Subscribe and Forget", user.getEmail(), user.getPhoneNumber(), user.getName());
 
         } else if (POSITION_OF_VIEW_PAGER == 1) {
-            getUserLocation();
+            /**
+             * Set Data for COD
+             */
+            setRequestDataForCod();
         }
+    }
+
+    /**
+     * Request Data for COD
+     */
+    public void setRequestDataForCod() {
+        MakePaymentRequest makePaymentRequest;
+        if (isPayFromOrder) {
+            //paying from order
+            makePaymentRequest = new MakePaymentRequest(true, order.getUuid(), timeSlotTimeStamp, order.getAmountToPay());
+        } else {
+            if (isMerge) {
+                //merge orders
+                makePaymentRequest = new MakePaymentRequest(true, true, address.getUuid(), orderUuid, ProductQuantity.getProductQuantities());
+            } else {
+                //cart
+                makePaymentRequest = new MakePaymentRequest(true, false, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
+            }
+        }
+        makePayment(makePaymentRequest);
+    }
+
+    /**
+     * Request Data for ONLINE
+     */
+    public void setRequestDataForOnline(String razorpayID) {
+        MakePaymentRequest makePaymentRequest;
+        if (isPayFromOrder) {
+            //pay from order
+            makePaymentRequest = new MakePaymentRequest(false, razorpayID, order.getUuid(), timeSlotTimeStamp, order.getAmountToPay());
+        } else {
+            if (isMerge) {
+                //merge order
+                makePaymentRequest = new MakePaymentRequest(false, true, razorpayID, address.getUuid(), orderUuid, ProductQuantity.getProductQuantities());
+            } else {
+                //cart
+                makePaymentRequest = new MakePaymentRequest(false, false, razorpayID, address.getUuid(), timeSlotTimeStamp, ProductQuantity.getProductQuantities());
+            }
+        }
+        makePayment(makePaymentRequest);
     }
 
     public static String fmt(double d) {
@@ -211,238 +237,80 @@ public class PaymentOptionActivity extends AppCompatActivity {
     }
 
 
-    private void merge_cart_to_order_and_pay_offline() {
+    /**
+     * Make Payment COD: Cart
+     */
+    private void makePayment(MakePaymentRequest makePaymentRequest) {
         final BoxLoader dialog = new BoxLoader(this).show();
-        cleverTapOrderId = mergeOrderId;
-
-        TheBox.getAPIService().merge_cart_items_to_order_payment_offline(PrefUtils.getToken(this), new MergeCartToOrderRequestBody(mergeOrderId, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude())))
-                .enqueue(new Callback<PaymentResponse>() {
+        TheBox.getAPIService()
+                .makePayment(PrefUtils.getToken(this), makePaymentRequest)
+                .enqueue(new Callback<MakePaymentResponse>() {
                     @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
+                    public void onResponse(Call<MakePaymentResponse> call, Response<MakePaymentResponse> response) {
                         dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body().isStatus()) {
+                                    /**
+                                     * SetCelver tap Event
+                                     * Success
+                                     */
+                                    setCleverTapEventPayments(true, 0);
 
-                                /**
-                                 * Save CleverTap Event; PaymentMode
-                                 */
-                                setCleverTapEventPaymentModeSuccess();
+                                    //payment Successfull
+                                    paymentCompleteClearCartAndMoveToHome();
+                                } else {
+                                    /**
+                                     * Failed
+                                     * Set Celver tap Event
+                                     * Response
+                                     */
+                                    setCleverTapEventPayments(false, 3);
 
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
-
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-
-                                //clear cart items
-                                CartHelper.clearCart();
-
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                //payment complete move to home
-                                paymentCompleteMoveToHome();
-
+                                    Toast.makeText(PaymentOptionActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             } else {
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                setCleverTapEventPaymentModeFailure(3);
+                                if (response.code() == Constants.UNAUTHORIZED) {
+                                    //unauthorized user navigate to login
+                                    new AuthenticationService().navigateToLogin(PaymentOptionActivity.this);
+                                }
                             }
+                        } catch (Exception e) {
+                            Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                            /**
+                             * Failed
+                             * Set Celver tap Event
+                             * Response
+                             */
+                            setCleverTapEventPayments(false, 3);
+
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        setCleverTapEventPaymentModeFailure(2);
+                    public void onFailure(Call<MakePaymentResponse> call, Throwable t) {
+                        Toast.makeText(PaymentOptionActivity.this, "Something went wrong, please try again.", Toast.LENGTH_SHORT).show();
+                        /**
+                         * Failed
+                         * Set Celver tap Event
+                         * Server
+                         */
+                        setCleverTapEventPayments(false, 2);
+
                     }
                 });
     }
 
-    private void merge_cart_to_order_and_pay_online(String razorpayPaymentID) {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        cleverTapOrderId = mergeOrderId;
 
-        TheBox.getAPIService().merge_cart_items_to_order_payment_online(PrefUtils.getToken(this),
-                new OnlinePaymentRequest(mergeOrderId, razorpayPaymentID, totalPayment, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), isMerging))
-                .enqueue(new Callback<PaymentResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-
-                                /**
-                                 * Save CleverTap Event; Payment Mode
-                                 */
-                                setCleverTapEventPaymentModeSuccess();
-
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
-
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-
-                                //clear cart items
-                                CartHelper.clearCart();
-
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                //payment complete move to home
-                                paymentCompleteMoveToHome();
-
-                            } else {
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                setCleverTapEventPaymentModeFailure(3);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        setCleverTapEventPaymentModeFailure(2);
-                    }
-                });
-    }
-
-    private void pay_offline() {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        cleverTapOrderId = addressAndOrders.get(0).getOrderId();
-        Slot slot = addressAndOrders.get(0).getSlot();
-        if (slot == null) {
-            slot = new Slot();
-            slot.setTimestamp(0);
+    public void paymentCompleteClearCartAndMoveToHome() {
+        if (!isPayFromOrder) {
+            //clear Cart
+            CartHelper.clearCart(true);
+            ProductQuantity.trash();
         }
 
-        TheBox.getAPIService().payOrders(PrefUtils.getToken(this), new PaymentRequestBody(addressAndOrders, String.valueOf(latLng.getLatitude()), String.valueOf(latLng.getLongitude()), slot.getTimestamp()))
-                .enqueue(new Callback<PaymentResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-
-                                /**
-                                 * Save CleverTap Event; PaymentMode
-                                 */
-                                setCleverTapEventPaymentModeSuccess();
-
-
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
-
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-
-                                //clear cart items
-                                CartHelper.clearCart();
-
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                //payment complete move to home
-                                paymentCompleteMoveToHome();
-
-                            } else {
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                setCleverTapEventPaymentModeFailure(3);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        setCleverTapEventPaymentModeFailure(2);
-                    }
-                });
-    }
-
-
-    private void pay_online(String razorpayPaymentID) {
-        final BoxLoader dialog = new BoxLoader(this).show();
-        int orderId = 0;
-        Slot slot;
-        if (isMerging) {
-            orderId = mergeOrderId;
-        } else {
-            orderId = addressAndOrders.get(0).getOrderId();
-        }
-        slot = addressAndOrders.get(0).getSlot();
-        if (slot == null) {
-            slot = new Slot();
-            slot.setTimestamp(0);
-        }
-        cleverTapOrderId = orderId;
-
-        TheBox.getAPIService().payOrderOnline(PrefUtils.getToken(this), new OnlinePaymentRequest(orderId, razorpayPaymentID, totalPayment, addressAndOrders.get(0).getOderDate().toString(),
-                latitude, longitude, isMerging, slot.getTimestamp()))
-                .enqueue(new Callback<PaymentResponse>() {
-                    @Override
-                    public void onResponse(Call<PaymentResponse> call, Response<PaymentResponse> response) {
-                        dialog.dismiss();
-                        if (response.body() != null) {
-                            if (response.body().isSuccess()) {
-
-                                /**
-                                 * Save CleverTap Event; PaymentMode
-                                 */
-                                setCleverTapEventPaymentModeSuccess();
-
-                                // Updating "Behaviour Keys" Linked to Order Model
-                                PrefUtils.set_model_being_updated_on_server_details(
-                                        TheBox.getInstance(),
-                                        Constants.PREF_IS_ORDER_IS_LOADING,
-                                        Constants.ORDERS_UPDATE_ON_SERVER_STARTED_TIMESTAMP,
-                                        (new Date(System.currentTimeMillis())).getTime()
-                                );
-
-
-                                RealmList<Order> orders = new RealmList<>();
-                                orders.add(response.body().getOrders());
-                                OrderHelper.addAndNotify(orders);
-                                //clear cart items
-                                CartHelper.clearCart();
-
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-
-                                //payment complete move to home
-                                paymentCompleteMoveToHome();
-
-                            } else {
-                                Toast.makeText(PaymentOptionActivity.this, response.body().getInfo(), Toast.LENGTH_SHORT).show();
-                                setCleverTapEventPaymentModeFailure(3);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<PaymentResponse> call, Throwable t) {
-                        dialog.dismiss();
-                        setCleverTapEventPaymentModeFailure(2);
-                    }
-                });
-    }
-
-    public void paymentCompleteMoveToHome() {
-        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_MY_DELIVERIES, true);
-        PrefUtils.putBoolean(PaymentOptionActivity.this, Keys.LOAD_ORDERED_USER_ITEM, true);
+        //set the flags
+        PrefUtils.putBoolean(PaymentOptionActivity.this, Constants.SUBSCRIPTION_UPDATED, false);
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
         Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
@@ -497,191 +365,78 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     public void onPaymentSuccess(String razorpayPaymentID) {
-        this.razorpayPaymentID = razorpayPaymentID;
-        getUserLocation();
+        razorpayId = razorpayPaymentID;
+        setRequestDataForOnline(razorpayPaymentID);
     }
 
     private void payOnLine(String razorpayPaymentID) {
-        if (mergeOrderId == 0) {
-            pay_online(razorpayPaymentID);
-        } else {
-            merge_cart_to_order_and_pay_online(razorpayPaymentID);
-        }
+        razorpayId = razorpayPaymentID;
+        setRequestDataForOnline(razorpayPaymentID);
     }
 
 
     public void onPaymentError(int code, String response) {
         try {
             Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
-            setCleverTapEventPaymentModeFailure(1);
+            /**
+             * Set Celver tap Event; failed- razorpay
+             */
+            setCleverTapEventPayments(false, 1);
         } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
         }
     }
 
-    private void getUserLocation() {
-        checkGPSenable();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_CODE_GET_LOCATION) {
-            checkGPSenable();
-            return;
-        }
-    }
-
-    // Location Marking Issue
-    private void checkGPSenable() {
-        locationPermisionCounter++;
-        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            getLocationPermission();
-        } else {
-            if (locationPermisionCounter > 1) {
-                proceedAndCompletePayment();
-            } else {
-                buildAlertMessageNoGps();
-            }
-        }
-    }
-
-
-    private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.gps_error)
-                .setCancelable(false)
-                .setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQ_CODE_GET_LOCATION);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        //if location not provides allow to pay users
-                        dialog.cancel();
-                        proceedAndCompletePayment();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void getLocationPermission() {
-        if (AppUtil.checkPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            setLocation();
-            return;
-        }
-        new TedPermission(this).setPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
-                .setPermissionListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted() {
-                        setLocation();
-                    }
-
-                    @Override
-                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-                        //permission denied but complete the payment
-                        proceedAndCompletePayment();
-                    }
-                }).check();
-    }
-
-    private void setLocation() {
-        new FusedLocationService(this) {
-            @Override
-            protected void onSuccess(MyLocation mLastKnownLocation) {
-                if (mLastKnownLocation != null) {
-                    if (!locationRefreshed) {
-                        locationRefreshed = true;
-                        setLocation();
-                        return;
-                    }
-                    latLng = new MyLocation(mLastKnownLocation.getLongitude(), mLastKnownLocation.getLatitude());
-                    if (latLng != null) {
-                        latitude = String.valueOf(latLng.getLatitude());
-                        longitude = String.valueOf(latLng.getLongitude());
-                    }
-                    proceedAndCompletePayment();
-                }
-            }
-
-            @Override
-            protected void onFailed(ConnectionResult connectionResult) {
-                latLng = new MyLocation("0.0", "0.0");
-                locationRefreshed = false;
-                proceedAndCompletePayment();
-            }
-        };
-    }
-
-    private void proceedAndCompletePayment() {
-        if (TextUtils.isEmpty(razorpayPaymentID)) {
-            fillUserInfo();
-        } else {
-            pay_online(razorpayPaymentID);
-        }
-    }
-
-    private void fillUserInfo() {
-        if (mergeOrderId == 0) {
-            pay_offline();
-        } else {
-            merge_cart_to_order_and_pay_offline();
-        }
-
-    }
 
     /**
-     * Clever Tap Event
-     * Success
+     * Set Clever Tap Event For Payments
      */
-    public void setCleverTapEventPaymentModeSuccess() {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        if (POSITION_OF_VIEW_PAGER == 0) {
-            hashMap.put("mode", "razorpay");
-        } else if (POSITION_OF_VIEW_PAGER == 1) {
-            hashMap.put("mode", "cod");
+    public void setCleverTapEventPayments(boolean paymentStatus, int failedMode) {
+        try {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            if (POSITION_OF_VIEW_PAGER == 0) {
+                hashMap.put("mode", "razorpay");
+            } else if (POSITION_OF_VIEW_PAGER == 1) {
+                hashMap.put("mode", "cod");
+            }
+            hashMap.put("amount", totalPayment);
+
+            //payment status
+            if (paymentStatus) {
+                hashMap.put("payment_status", "success");
+            } else {
+                hashMap.put("payment_status", "failed");
+            }
+
+            hashMap.put("razorpay_id", razorpayId);
+            /**
+             * if failed; failed mode;
+             * 0- not failed
+             * 1- razorpay
+             * 2-server
+             * 3-response
+             */
+            if (failedMode != 0) {
+                switch (failedMode) {
+                    case 1:
+                        hashMap.put("failed_mode", "razorpay");
+                        break;
+                    case 2:
+                        hashMap.put("failed_mode", "server");
+                        break;
+                    case 3:
+                        hashMap.put("failed_mode", "response");
+                        break;
+                }
+            } else {
+                hashMap.put("failed_mode", "");
+            }
+
+            TheBox.getCleverTap().event.push("payment_mode", hashMap);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        hashMap.put("amount", totalPayment);
-        hashMap.put("payment_status", "success");
-        hashMap.put("order_id", cleverTapOrderId);
 
-        TheBox.getCleverTap().event.push("payment_mode", hashMap);
-    }
-
-    public void setCleverTapEventPaymentModeFailure(int failedMode) {
-        HashMap<String, Object> hashMap = new HashMap<>();
-        if (POSITION_OF_VIEW_PAGER == 0) {
-            hashMap.put("mode", "razorpay");
-        } else if (POSITION_OF_VIEW_PAGER == 1) {
-            hashMap.put("mode", "cod");
-        }
-        hashMap.put("amount", totalPayment);
-        hashMap.put("payment_status", "failed");
-        hashMap.put("order_id", cleverTapOrderId);
-
-        /**
-         * 1- razorpay
-         * 2- server failed or bad request
-         * 3- response returns failed
-         */
-        switch (failedMode) {
-            case 1:
-                hashMap.put("failed_mode", "razorpay");
-                break;
-            case 2:
-                hashMap.put("failed_mode", "server");
-                break;
-            case 3:
-                hashMap.put("failed_mode", "response");
-                break;
-        }
-
-
-        TheBox.getCleverTap().event.push("payment_mode", hashMap);
     }
 
 
