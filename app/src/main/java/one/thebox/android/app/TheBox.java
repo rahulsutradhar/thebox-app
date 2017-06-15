@@ -144,14 +144,14 @@ public class TheBox extends MultiDexApplication {
             Branch.getAutoInstance(this);
 
             /*debuger tools*/
-            if (BuildConfig.enableStetho) {
+           /* if (BuildConfig.enableStetho) {*/
                 Stetho.initialize(
                         Stetho.newInitializerBuilder(this)
                                 .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                                 .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                                 .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                                 .build());
-            }
+           // }
 
              /* initialize Calligraphy*/
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()

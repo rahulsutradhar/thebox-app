@@ -85,7 +85,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         if (orders.size() > 0) {
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
-
             upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);

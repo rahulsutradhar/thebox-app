@@ -141,6 +141,23 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
+    public void filterSubscriptionData() {
+        if (subscriptions.size() > 0) {
+            ArrayList<Subscription> filteredItem = new ArrayList<>();
+            for (Subscription subscription : subscriptions) {
+                if (subscription.getSubscribeItems() != null) {
+                    if (subscription.getSubscribeItems().size() > 0) {
+                        filteredItem.add(subscription);
+                    }
+                }
+            }
+            subscriptions.clear();
+            subscriptions.addAll(filteredItem);
+            setupRecyclerView();
+        } else {
+            setupEmptyStateView();
+        }
+    }
 
     private void setupRecyclerView() {
         if (subscriptions.size() > 0) {
@@ -297,7 +314,10 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                                             subscriptions.addAll(response.body().getSubscriptions());
                                         }
                                     }
-                                    setupRecyclerView();
+                                    /**
+                                     * Filter Subscription Data
+                                     */
+                                    filterSubscriptionData();
 
                                 }
                             } else {
