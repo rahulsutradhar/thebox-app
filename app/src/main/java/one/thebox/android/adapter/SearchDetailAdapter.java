@@ -68,6 +68,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context mContext;
     private RealmList<Category> suggestedCategories = new RealmList<>();
     private int previouslySubscribedPosition = -1;
+    private int loadPosition = 0;
 
     /**
      * GLide Request Manager
@@ -87,8 +88,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void setBoxItems(List<BoxItem> boxItems) {
-        this.boxItems = boxItems;
-        notifyDataSetChanged();
+        this.boxItems.addAll(boxItems);
+        notifyItemRangeChanged(loadPosition, this.boxItems.size());
+        loadPosition = this.boxItems.size();
     }
 
     public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {

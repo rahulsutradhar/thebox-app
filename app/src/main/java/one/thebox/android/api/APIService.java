@@ -138,7 +138,8 @@ public interface APIService {
      */
     @GET("/consumer/api/v1/categories")
     Call<BoxCategoryItemResponse> getCategoryItem(@Header("Authorization") String accessToken,
-                                                  @Query("uuid") String uuid, @Query("query") String searchQuery);
+                                                  @Query("uuid") String uuid, @Query("query") String searchQuery,
+                                                  @Query("page") int pageNumber, @Query("per_page") int perPage);
 
     /**
      * Get All Category for Box UUID
