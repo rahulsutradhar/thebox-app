@@ -103,6 +103,11 @@ public class Constants {
     public static long UPDATE_CART_POLLING_TIME = 5000;
 
     /**
+     * Load Per Page; Pagination
+     */
+    public static final int LOAD_PER_PAGE = 10;
+
+    /**
      * UnAuthroized COde
      */
     public static final int UNAUTHORIZED = 401;
