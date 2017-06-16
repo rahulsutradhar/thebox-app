@@ -28,6 +28,7 @@ import io.realm.RealmList;
 import one.thebox.android.Events.ShowSpecialCardEvent;
 import one.thebox.android.Events.SyncCartItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Models.Meta;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.items.ItemConfig;
@@ -50,25 +51,31 @@ import retrofit2.Response;
 
 public class SearchDetailItemsFragment extends Fragment {
 
-    private int pageNumber = 1;
     private View rootView;
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
     private LinearLayout linearLayoutHolder;
     private GifImageView progressBar;
-    private List<SubscribeItem> subscribeItems = new ArrayList<>();
-    private List<BoxItem> boxItems = new ArrayList<>();
     private TextView emptyText;
 
     private ConnectionErrorViewHelper connectionErrorViewHelper;
-    private int totalItems;
-    private int maxPageNumber;
     private boolean isRegistered;
 
     private Category category;
     private int positionInViewPager;
     private RealmList<Category> suggestedCategories = new RealmList<>();
     private String searchQuery = "";
+
+    /**
+     * Pagination
+     */
+    private int queryPage = 1;
+    private int queryPerPage = Constants.LOAD_PER_PAGE;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+    private Meta meta;
 
     private List<BoxItem> cartItems;
 
@@ -113,7 +120,7 @@ public class SearchDetailItemsFragment extends Fragment {
             initViews();
 
             //request Server to get the Boc Catgeory Items
-            getBoxCategoryItems();
+            getBoxCategoryItems(true);
 
         }
         return rootView;
@@ -135,20 +142,6 @@ public class SearchDetailItemsFragment extends Fragment {
                     public void run() {
                     }
                 });
-            }
-        }
-    };
-
-    private boolean isLoading;
-    EndlessRecyclerViewScrollListener listener = new EndlessRecyclerViewScrollListener() {
-        @Override
-        public void onLoadMore(int page, int totalItemsCount) {
-            if (boxItems != null) {
-                int boxItemCount = boxItems.size();
-                if (boxItemCount < totalItems && !isLoading && pageNumber < maxPageNumber) {
-                    pageNumber++;
-                    //do somthing
-                }
             }
         }
     };
@@ -194,50 +187,94 @@ public class SearchDetailItemsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //get box category item
-                getBoxCategoryItems();
-            }
-        });
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy != 0) {
-
-                    /**
-                     * Specail Cart Event
-                     */
-                    EventBus.getDefault().post(new ShowSpecialCardEvent(false));
-                }
+                getBoxCategoryItems(true);
             }
         });
     }
 
-    private void setupRecyclerView() {
-        linearLayoutHolder.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
-        if (boxItems.isEmpty() && subscribeItems.isEmpty()) {
-            emptyText.setVisibility(View.VISIBLE);
-        } else {
-            emptyText.setVisibility(View.GONE);
+    /**
+     * Set Up RecyclerView
+     *
+     * @param boxItems
+     */
+    private void setupRecyclerView(List<BoxItem> boxItems, boolean isFirstTimeLoad) {
+        if (isFirstTimeLoad) {
+            linearLayoutHolder.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            if (boxItems.isEmpty()) {
+                emptyText.setVisibility(View.VISIBLE);
+            } else {
+                emptyText.setVisibility(View.GONE);
+            }
         }
 
         if (searchDetailAdapter == null) {
             searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
             searchDetailAdapter.setSuggestedCategories(suggestedCategories);
             //check with cart item and evaluate data
-            setData();
-            LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+            setData(boxItems);
+            final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
-            listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
-            recyclerView.addOnScrollListener(listener);
+
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy != 0) {
+
+                        /**
+                         * Specail Cart Event
+                         */
+                        EventBus.getDefault().post(new ShowSpecialCardEvent(false));
+
+                        /**
+                         * Pagination Logic
+                         */
+
+                        visibleItemCount = recyclerView.getChildCount();
+                        totalItemCount = manager.getItemCount();
+                        firstVisibleItem = manager.findFirstVisibleItemPosition();
+
+                        if (loading) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount)
+                                <= (firstVisibleItem + visibleThreshold)) {
+                            // End has been reached
+                            Log.i("PAGINATION", "END HAS REACHED");
+                            // Logic for pagination
+                            if (meta != null) {
+                                if ((meta.getTotalItems() - (meta.getCurrentPage() * meta.getPerPage())) > 0) {
+                                    /**
+                                     * condition full fills more items are there
+                                     * so paginate to next page
+                                     */
+                                    queryPage = meta.getCurrentPage() + 1;
+                                    //Load Next Page data from Server
+                                    getBoxCategoryItems(false);
+                                    //next loading
+                                    loading = true;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            });
+
+        } else {
+            setData(boxItems);
         }
     }
 
     /**
      * Set the refined list after matching with cart data
      */
-    public void setData() {
+    public void setData(List<BoxItem> boxItems) {
         if (cartItems.size() > 0) {
             for (int i = 0; i < boxItems.size(); i++) {
                 BoxItem boxItem = boxItems.get(i);
@@ -328,29 +365,44 @@ public class SearchDetailItemsFragment extends Fragment {
     /**
      * Request Server to get Box Category Items
      */
-    private void getBoxCategoryItems() {
-        isLoading = true;
-        linearLayoutHolder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        connectionErrorViewHelper.isVisible(false);
+    private void getBoxCategoryItems(final boolean isFirstTimeLoad) {
+        if (isFirstTimeLoad) {
+            linearLayoutHolder.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            connectionErrorViewHelper.isVisible(false);
+        }
         TheBox.getAPIService()
-                .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid(), searchQuery)
+                .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid(), searchQuery, queryPage, queryPerPage)
                 .enqueue(new Callback<BoxCategoryItemResponse>() {
                     @Override
                     public void onResponse(Call<BoxCategoryItemResponse> call, Response<BoxCategoryItemResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        progressBar.setVisibility(View.GONE);
-                        isLoading = false;
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
                         try {
+                            if (isFirstTimeLoad) {
+                                connectionErrorViewHelper.isVisible(false);
+                                progressBar.setVisibility(View.GONE);
+                                linearLayoutHolder.setVisibility(View.VISIBLE);
+                            }
+
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
 
                                     if (response.body().getCategory() != null) {
-                                        boxItems = response.body().getCategory().getBoxItems();
-                                        setupRecyclerView();
+                                        //set Meta Data for pagination
+                                        meta = response.body().getMeta();
+                                        if (response.body().getCategory().getBoxItems() != null) {
+                                            if (isFirstTimeLoad) {
+                                                setupRecyclerView(response.body().getCategory().getBoxItems(), isFirstTimeLoad);
+                                            } else {
+                                                //don't pass data if is empty
+                                                if (response.body().getCategory().getBoxItems().size() > 0) {
+                                                    setupRecyclerView(response.body().getCategory().getBoxItems(), isFirstTimeLoad);
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                            } else {
+                                //parse error codes here
                             }
 
                         } catch (Exception e) {
@@ -360,10 +412,11 @@ public class SearchDetailItemsFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<BoxCategoryItemResponse> call, Throwable t) {
-                        isLoading = false;
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
+                        if (isFirstTimeLoad) {
+                            linearLayoutHolder.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
+                        }
                     }
                 });
 
