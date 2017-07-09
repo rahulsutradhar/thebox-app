@@ -109,7 +109,8 @@ public class BoxItem extends RealmObject implements Serializable {
         for (int i = 0; i < itemConfigs.size(); i++) {
             if (itemConfigs.get(i).getSize() == selectedItemConfig.getSize()
                     && itemConfigs.get(i).getSizeUnit().equalsIgnoreCase(selectedItemConfig.getSizeUnit())
-                    && itemConfigs.get(i).getItemType().equalsIgnoreCase(selectedItemConfig.getItemType())) {
+                    && itemConfigs.get(i).getItemType().equalsIgnoreCase(selectedItemConfig.getItemType())
+                    && itemConfigs.get(i).getQuantity() == selectedItemConfig.getQuantity()) {
                 tempItemConfigs.add(itemConfigs.get(i));
             }
         }
