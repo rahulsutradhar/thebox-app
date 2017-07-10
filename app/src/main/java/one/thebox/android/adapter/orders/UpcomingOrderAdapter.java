@@ -15,6 +15,7 @@ import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.fragment.UpComingOrderFragment;
+import one.thebox.android.fragment.order.OrderHistoryFragment;
 
 
 /**
@@ -27,11 +28,21 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
     private Context context;
     private ArrayList<Order> orders = new ArrayList<>();
     private UpComingOrderFragment upComingOrderFragment;
+    private OrderHistoryFragment orderHistoryFragment;
 
     public UpcomingOrderAdapter(Context context, UpComingOrderFragment upComingOrderFragment, ArrayList<Order> orders) {
         super(context);
         this.context = context;
         this.upComingOrderFragment = upComingOrderFragment;
+        this.orders = orders;
+        mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+
+    }
+
+    public UpcomingOrderAdapter(Context context, ArrayList<Order> orders, OrderHistoryFragment orderHistoryFragment) {
+        super(context);
+        this.context = context;
+        this.orderHistoryFragment = orderHistoryFragment;
         this.orders = orders;
         mViewType = RECYCLER_VIEW_TYPE_NORMAL;
 

@@ -208,5 +208,15 @@ public class Constants {
      */
     public final static String EXTRA_NAVIGATE_TO_HOTLINE_FAQ = "extra_navigate_to_hotline_faq";
 
+    /**
+     * Calender
+     */
+    public final static String EXTRA_CALENDER = "extra_calender";
+
+    /**
+     * Position in View Pager
+     */
+    public final static String EXTRA_VIEWPAGER_POSITION = "extra_viewpager_position";
+
 
 }

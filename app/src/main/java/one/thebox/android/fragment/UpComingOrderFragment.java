@@ -3,6 +3,7 @@ package one.thebox.android.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +17,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
 import one.thebox.android.app.Constants;
@@ -41,6 +44,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
     private GifImageView progress_bar;
+    private FloatingActionButton floatingActionButton;
 
     public UpComingOrderFragment() {
     }
@@ -68,6 +72,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews() {
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
@@ -78,17 +83,28 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
             }
         });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //do something
+                Intent intent = new Intent(getActivity(), OrderCalenderActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
     private void setupRecyclerView(ArrayList<Order> orders) {
         if (orders.size() > 0) {
+            floatingActionButton.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
             upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
+            floatingActionButton.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
@@ -132,8 +148,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
      */
     public void getOrdersFromServer() {
         progress_bar.setVisibility(View.VISIBLE);
+        HashMap<String, Object> params = new HashMap<>();
         TheBox.getAPIService()
-                .getOrders(PrefUtils.getToken(getActivity()))
+                .getOrders(PrefUtils.getToken(getActivity()), params)
                 .enqueue(new Callback<OrdersResponse>() {
                     @Override
                     public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
