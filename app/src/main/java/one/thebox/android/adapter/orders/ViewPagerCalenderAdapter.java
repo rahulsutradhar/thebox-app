@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import java.util.Vector;
 
-import one.thebox.android.Models.order.Calender;
+import one.thebox.android.Models.order.CalenderMonth;
 import one.thebox.android.R;
 import one.thebox.android.util.DisplayUtil;
 
@@ -23,7 +23,7 @@ import one.thebox.android.util.DisplayUtil;
 
 public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
     private Vector<Fragment> mFragmentList = new Vector<>();
-    private Vector<Calender> mCalenders = new Vector<>();
+    private Vector<CalenderMonth> mCalenderMonths = new Vector<>();
 
     private Context context;
 
@@ -42,9 +42,9 @@ public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
         return mFragmentList.size();
     }
 
-    public void addFragment(Fragment fragment, Calender calender) {
+    public void addFragment(Fragment fragment, CalenderMonth calenderMonth) {
         mFragmentList.add(fragment);
-        mCalenders.add(calender);
+        mCalenderMonths.add(calenderMonth);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
         TextView title = (TextView) view.findViewById(R.id.text_view_category_name);
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
 
-        if (mCalenders.size() > 0) {
-            Log.d("TAB", mCalenders.get(position).getName());
-            title.setText(mCalenders.get(position).getName());
+        if (mCalenderMonths.size() > 0) {
+            Log.d("TAB", mCalenderMonths.get(position).getName());
+            title.setText(mCalenderMonths.get(position).getName());
         } else {
             Log.d("TAB", " SIZE + ZERO");
         }

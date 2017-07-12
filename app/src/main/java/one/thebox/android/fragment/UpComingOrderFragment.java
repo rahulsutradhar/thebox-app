@@ -45,6 +45,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private LinearLayout no_orders_subscribed_view_holder;
     private GifImageView progress_bar;
     private FloatingActionButton floatingActionButton;
+    private int currentYear, currentMonth;
 
     public UpComingOrderFragment() {
     }
@@ -89,6 +90,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             public void onClick(View v) {
                 //do something
                 Intent intent = new Intent(getActivity(), OrderCalenderActivity.class);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
                 startActivity(intent);
             }
         });
@@ -159,6 +162,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     setupRecyclerView(response.body().getOrders());
+                                    currentYear = response.body().getCurrentYear();
+                                    currentMonth = response.body().getCurrentMonth();
                                 }
                             }
                         } catch (Exception e) {

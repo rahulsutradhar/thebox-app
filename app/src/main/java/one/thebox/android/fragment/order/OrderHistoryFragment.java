@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import one.thebox.android.Models.order.Calender;
+import one.thebox.android.Models.order.CalenderMonth;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
@@ -33,15 +33,15 @@ import retrofit2.Response;
 public class OrderHistoryFragment extends Fragment {
 
     private View rootView;
-    private Calender calender;
+    private CalenderMonth calenderMonth;
     private int positionInViewPager;
     private RecyclerView recyclerView;
     private UpcomingOrderAdapter adapter;
     private TextView emptyState;
 
-    public static OrderHistoryFragment getInstance(Calender calender, int position) {
+    public static OrderHistoryFragment getInstance(CalenderMonth calenderMonth, int position) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.EXTRA_CALENDER, CoreGsonUtils.toJson(calender));
+        bundle.putString(Constants.EXTRA_CALENDER, CoreGsonUtils.toJson(calenderMonth));
         bundle.putInt(Constants.EXTRA_VIEWPAGER_POSITION, position);
         OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
         orderHistoryFragment.setArguments(bundle);
@@ -74,16 +74,16 @@ public class OrderHistoryFragment extends Fragment {
     }
 
     public void initVariable() {
-        calender = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CALENDER), Calender.class);
+        calenderMonth = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CALENDER), CalenderMonth.class);
         positionInViewPager = getArguments().getInt(Constants.EXTRA_VIEWPAGER_POSITION);
     }
 
     /**
-     * Fetch Calender from Server
+     * Fetch CalenderMonth from Server
      */
     public void fetchDataFromServer() {
         HashMap<String, Object> params = new HashMap<>();
-        params.put("month", calender.getPriority());
+        params.put("month", calenderMonth.getPriority());
         params.put("year", "2017");
 
         TheBox.getAPIService()

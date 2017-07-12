@@ -8,7 +8,8 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -23,13 +24,51 @@
             app:contentInsetEnd="6dp"
             app:contentInsetLeft="6dp"
             app:contentInsetRight="6dp"
-            app:contentInsetStart="6dp" />
+            app:contentInsetStart="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Calender"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_medium2" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3">
+
+                    <TextView
+                        android:id="@+id/selected_year"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="5dp"
+                        android:text="2017"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_large1" />
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+        </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:background="@color/white"
+            android:background="@color/md_grey_200"
             app:tabGravity="fill"
             app:tabIndicatorHeight="0dp"
             app:tabMode="scrollable">

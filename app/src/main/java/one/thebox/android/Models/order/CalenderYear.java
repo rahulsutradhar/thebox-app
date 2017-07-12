@@ -8,14 +8,14 @@ import java.io.Serializable;
  * Created by developers on 10/07/17.
  */
 
-public class Calender implements Serializable {
+public class CalenderYear implements Serializable {
 
     private String name;
 
     private int priority;
 
-    @SerializedName("current_month")
-    private boolean currentMonth;
+    @SerializedName("current_year")
+    private boolean currentYear;
 
     public String getName() {
         return name;
@@ -33,11 +33,11 @@ public class Calender implements Serializable {
         this.priority = priority;
     }
 
-    public boolean isCurrentMonth() {
-        return currentMonth;
+    public boolean isCurrentYear() {
+        return currentYear;
     }
 
-    public void setCurrentMonth(boolean currentMonth) {
-        this.currentMonth = currentMonth;
+    public void setCurrentYear(boolean currentYear) {
+        this.currentYear = currentYear;
     }
 }

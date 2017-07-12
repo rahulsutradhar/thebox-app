@@ -209,7 +209,7 @@ public class Constants {
     public final static String EXTRA_NAVIGATE_TO_HOTLINE_FAQ = "extra_navigate_to_hotline_faq";
 
     /**
-     * Calender
+     * CalenderMonth
      */
     public final static String EXTRA_CALENDER = "extra_calender";
 
@@ -218,5 +218,14 @@ public class Constants {
      */
     public final static String EXTRA_VIEWPAGER_POSITION = "extra_viewpager_position";
 
+    /**
+     * Selected Year
+     */
+    public final static String EXTRA_CALENDER_SELECTED_YEAR = "extra_calender_selected_year";
+
+    /**
+     * Selected Month
+     */
+    public final static String EXTRA_CALENDER_SELECTED_MONTH = "extra_calender_selected_month";
 
 }
