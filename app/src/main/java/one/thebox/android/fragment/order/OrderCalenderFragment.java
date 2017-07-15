@@ -98,7 +98,7 @@ public class OrderCalenderFragment extends Fragment {
      */
     public void openYearBottomSheet() {
 
-        SelectYearBottomSheetDialogFragment fragmentSheet = new
+        final SelectYearBottomSheetDialogFragment fragmentSheet = new
                 SelectYearBottomSheetDialogFragment(calenderYears, String.valueOf(currentYear));
         fragmentSheet.show(((AppCompatActivity) getActivity()).getSupportFragmentManager()
                 , SelectYearBottomSheetDialogFragment.TAG);
@@ -107,11 +107,13 @@ public class OrderCalenderFragment extends Fragment {
             public void onYearSelected(CalenderYear calenderYear) {
                 //TODO get the selected Year
                 if (!calenderYear.getName().equalsIgnoreCase(String.valueOf(currentYear))) {
+                    destroyTabs();
                     setYear(calenderYear.getName());
                     currentMonth = 1;
                     currentYear = Integer.parseInt(calenderYear.getName());
                     fetchDataFromServer();
                 }
+                fragmentSheet.dismiss();
             }
         });
 
@@ -205,6 +207,11 @@ public class OrderCalenderFragment extends Fragment {
             });
 
         }
+    }
+
+    public void destroyTabs() {
+        tabLayout.removeAllTabs();
+
     }
 
     public void setYear(String year) {
