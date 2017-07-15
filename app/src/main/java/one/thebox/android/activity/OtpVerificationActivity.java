@@ -175,8 +175,10 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
                                     //set user information to crashlytics
                                     authenticationService.setUserDataToCrashlytics();
-                                    //set user information to CleverTap upon Login
+                                    
+                                    //set user information to CleverTap upon Login and set profile
                                     authenticationService.setCleverTapOnLogin();
+                                    authenticationService.setCleverTapUserProfile();
 
                                     //Setting Api Call then move to Home
                                     fetchSettingsfromServer();
