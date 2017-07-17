@@ -41,6 +41,7 @@ public class OrderCalenderFragment extends Fragment {
     private TextView selectedYearText;
     private int currentYear, currentMonth;
     private Vector<CalenderYear> calenderYears;
+    private ViewPagerCalenderAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,7 +156,7 @@ public class OrderCalenderFragment extends Fragment {
 
     public void setUpViewPagerAndTab(Vector<CalenderMonth> calenderMonths) {
         if (calenderMonths.size() > 0) {
-            final ViewPagerCalenderAdapter adapter = new ViewPagerCalenderAdapter(getChildFragmentManager(), getActivity());
+            adapter = new ViewPagerCalenderAdapter(getChildFragmentManager(), getActivity());
             for (int i = 0; i < calenderMonths.size(); i++) {
                 Fragment fragment = OrderHistoryFragment.getInstance(calenderMonths.get(i), i);
                 adapter.addFragment(fragment, calenderMonths.get(i));
@@ -211,7 +212,7 @@ public class OrderCalenderFragment extends Fragment {
 
     public void destroyTabs() {
         tabLayout.removeAllTabs();
-
+        adapter.removeAll();
     }
 
     public void setYear(String year) {

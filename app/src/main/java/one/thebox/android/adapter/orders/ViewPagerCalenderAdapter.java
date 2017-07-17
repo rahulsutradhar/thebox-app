@@ -68,10 +68,7 @@ public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
         RelativeLayout layout = (RelativeLayout) view.findViewById(R.id.holder);
 
         if (mCalenderMonths.size() > 0) {
-            Log.d("TAB", mCalenderMonths.get(position).getName());
             title.setText(mCalenderMonths.get(position).getName());
-        } else {
-            Log.d("TAB", " SIZE + ZERO");
         }
 
         if (isSelected) {
@@ -88,5 +85,16 @@ public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
             layout.requestLayout();
         }
         return view;
+    }
+
+    /**
+     * Remove ALL View
+     */
+    public void removeAll() {
+        for (int i = 0; i < mFragmentList.size(); i++) {
+            mFragmentList.set(i, null);
+        }
+        mFragmentList.clear();
+        mCalenderMonths.clear();
     }
 }
