@@ -1,5 +1,6 @@
 package one.thebox.android.fragment.order;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,13 +19,20 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.HashMap;
 import java.util.Vector;
 
+import one.thebox.android.Events.SetResultForActivityEvent;
 import one.thebox.android.Models.order.CalenderMonth;
 import one.thebox.android.Models.order.CalenderYear;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
+import one.thebox.android.activity.MainActivity;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.ViewPagerCalenderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
 import one.thebox.android.app.Constants;
@@ -173,7 +181,7 @@ public class OrderCalenderFragment extends Fragment {
     }
 
     public void transactToContainerFragment(Vector<CalenderMonth> calenderMonths) {
-        Fragment fragment = new CalenderContainerFragment(calenderMonths, currentMonth,currentYear);
+        Fragment fragment = new CalenderContainerFragment(calenderMonths, currentMonth, currentYear);
         FragmentTransaction transaction = this.getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.container_pager, fragment, "container_order_calender_fragment").commit();
     }
@@ -187,6 +195,4 @@ public class OrderCalenderFragment extends Fragment {
         frameLayout.removeAllViewsInLayout();
 
     }
-
-
 }

@@ -541,9 +541,8 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                             if (response.isSuccessful()) {
                                 if (response.body().isStatus()) {
                                     Intent intent = new Intent(ConfirmTimeSlotActivity.this, MainActivity.class);
-                                    intent.putExtra(Constants.EXTRA_ORDER, CoreGsonUtils.toJson(response.body().getOrder()));
-                                    intent.putExtra(Constants.EXTRA_CLICK_POSITION, 0);
-                                    setResult(4, intent);
+                                    intent.putExtra(Constants.EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE, true);
+                                    setResult(5, intent);
                                     finish();
 
                                 }

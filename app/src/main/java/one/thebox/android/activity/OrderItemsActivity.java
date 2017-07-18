@@ -43,6 +43,7 @@ public class OrderItemsActivity extends BaseActivity {
     private Toolbar toolbar;
     private Order order = null;
     private int position;
+    private boolean calledFromCalender;
     /**
      * GLide Request Manager
      */
@@ -51,27 +52,18 @@ public class OrderItemsActivity extends BaseActivity {
     /**
      * Refactor
      */
-    public static Intent newInstance(Context context, Order order, int position) {
+    public static Intent newInstance(Context context, Order order, int position, boolean calledFromCalender) {
         return new Intent(context, OrderItemsActivity.class)
                 .putExtra(Constants.EXTRA_ORDER, CoreGsonUtils.toJson(order))
-                .putExtra(Constants.EXTRA_CLICK_POSITION, position);
-    }
-
-
-    /**
-     * Old
-     */
-
-    public static Intent newInstance(Context context, int orderId, String orderDate) {
-        return new Intent(context, OrderItemsActivity.class)
-                .putExtra(EXTRA_USER_ITEM_ARRAY_LIST, orderId)
-                .putExtra(EXTRA_ORDER_DATE, orderDate);
+                .putExtra(Constants.EXTRA_CLICK_POSITION, position)
+                .putExtra(Constants.EXTRA_IS_CALENDER, calledFromCalender);
     }
 
     private void initVariables() {
         try {
             order = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_ORDER), Order.class);
             position = getIntent().getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
+            calledFromCalender = getIntent().getBooleanExtra(Constants.EXTRA_IS_CALENDER, false);
             setPayButton();
         } catch (Exception e) {
             e.printStackTrace();
@@ -190,7 +182,7 @@ public class OrderItemsActivity extends BaseActivity {
             recyclerView.setVisibility(View.VISIBLE);
 
             if (orderItemAdapter == null) {
-                orderItemAdapter = new OrderItemAdapter(this, this, glideRequestManager, orderItems, isChangesApplicable);
+                orderItemAdapter = new OrderItemAdapter(this, this, glideRequestManager, orderItems, isChangesApplicable,calledFromCalender);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 recyclerView.setAdapter(orderItemAdapter);
             }

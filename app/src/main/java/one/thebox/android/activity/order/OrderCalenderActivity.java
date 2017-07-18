@@ -3,14 +3,12 @@ package one.thebox.android.activity.order;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.Toast;
 
 import java.util.Calendar;
 
 import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.app.Constants;
-import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.order.OrderCalenderFragment;
 
 /**

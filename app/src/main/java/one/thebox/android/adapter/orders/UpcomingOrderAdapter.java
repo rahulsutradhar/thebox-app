@@ -119,6 +119,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     /**
      * Called from Upcoming Order Fragment
+     * and Order History Fragment
      *
      * @param order
      * @param position
@@ -165,7 +166,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                         reschedule_order_button.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 4);
+                                upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 5);
                             }
                         });
                     } else {
@@ -197,9 +198,9 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                         @Override
                         public void onClick(View v) {
                             if (upComingOrderFragment != null) {
-                                upComingOrderFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position), 4);
+                                upComingOrderFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position, false), 4);
                             } else {
-                                orderHistoryFragment.startActivity(OrderItemsActivity.newInstance(context, order, position));
+                                orderHistoryFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position, true), 4);
                             }
                         }
                     });

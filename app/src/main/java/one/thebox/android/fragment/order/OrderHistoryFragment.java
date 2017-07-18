@@ -1,5 +1,6 @@
 package one.thebox.android.fragment.order;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,14 +12,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import one.thebox.android.Events.SetResultForActivityEvent;
+import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.CalenderMonth;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
 import one.thebox.android.app.Constants;
@@ -146,7 +150,36 @@ public class OrderHistoryFragment extends Fragment {
         } else {
             emptyState.setVisibility(View.VISIBLE);
         }
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        try {
+            //Order Item Activtiy or Confirm TimeSlot Activity
+            if (requestCode == 4) {
+                if (data.getExtras() != null) {
+                    //post event Bus
+                    Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDER), Order.class);
+                    int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
+
+                    if (order != null) {
+                        //all item has been removed, so refetch orders
+                        if (order.getAmountToPay() == 0 && !order.isPaymentComplete()) {
+                            fetchDataFromServer();
+                        } else {
+                            //partial update the order
+                            if (adapter != null) {
+                                //updates order list item if you update the items
+                                adapter.updateOrder(order, position);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

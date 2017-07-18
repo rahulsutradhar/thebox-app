@@ -88,11 +88,14 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //do something
+                /**
+                 * Open OrderCalenderFragment
+                 * Update this list if any change occur in Calender
+                 */
                 Intent intent = new Intent(getActivity(), OrderCalenderActivity.class);
                 intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
                 intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
-                startActivity(intent);
+                startActivityForResult(intent, 5);
             }
         });
     }
@@ -144,6 +147,13 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+        /**
+         * Keys set on Updating from Calender
+         */
+        if (PrefUtils.getBoolean(getActivity(), Keys.UPDATE_DELIVERY_FOR_CALENDER_UPDATE)) {
+            getOrdersFromServer();
+            PrefUtils.putBoolean(getActivity(), Keys.UPDATE_DELIVERY_FOR_CALENDER_UPDATE, false);
+        }
     }
 
     /**
@@ -188,7 +198,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //update orders as SUbscribe Item has been unsubscribed
+                    //update orders as Subscribe Item has been unsubscribed
                     getOrdersFromServer();
                 }
             });
@@ -202,7 +212,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             //Order Item Activtiy or Confirm TimeSlot Activity
             if (requestCode == 4) {
                 if (data.getExtras() != null) {
-                    //post event Bus
                     Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDER), Order.class);
                     int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
 
@@ -219,6 +228,15 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                         }
                     }
                 }
+            }//Reschedule Order
+            if (requestCode == 5) {
+                if (data.getExtras() != null) {
+                    boolean updateDeliveries = data.getBooleanExtra(Constants.EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE, false);
+                    if (updateDeliveries) {
+                        getOrdersFromServer();
+                    }
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

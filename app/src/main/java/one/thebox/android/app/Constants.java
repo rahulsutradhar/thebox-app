@@ -229,9 +229,12 @@ public class Constants {
     public final static String EXTRA_CALENDER_SELECTED_MONTH = "extra_calender_selected_month";
 
     /**
-     * SeletedYear
+     * Update Current Order List
      */
-    public final static String EXTRA_CALENDER_SECLECTED_YEAR = "extra_calender_selected_year";
+    public final static String EXTRA_IS_CALENDER = "extra_is_calender";
 
-
+    /**
+     * Update Deliveries For Reschedule
+     */
+    public final static String EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE = "extra_update_deliveries_for_reschedule";
 }
