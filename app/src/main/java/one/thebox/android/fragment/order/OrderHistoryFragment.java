@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,12 +41,15 @@ public class OrderHistoryFragment extends Fragment {
     private int positionInViewPager;
     private RecyclerView recyclerView;
     private UpcomingOrderAdapter adapter;
-    private TextView emptyState;
+    private TextView emptyState, noInternet;
+    private int currentYear;
+    private GifImageView loader;
 
-    public static OrderHistoryFragment getInstance(CalenderMonth calenderMonth, int position) {
+    public static OrderHistoryFragment getInstance(CalenderMonth calenderMonth, int currentYear, int position) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EXTRA_CALENDER, CoreGsonUtils.toJson(calenderMonth));
         bundle.putInt(Constants.EXTRA_VIEWPAGER_POSITION, position);
+        bundle.putInt(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
         OrderHistoryFragment orderHistoryFragment = new OrderHistoryFragment();
         orderHistoryFragment.setArguments(bundle);
         return orderHistoryFragment;
@@ -70,12 +77,23 @@ public class OrderHistoryFragment extends Fragment {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         emptyState = (TextView) rootView.findViewById(R.id.empty_state);
+        loader = (GifImageView) rootView.findViewById(R.id.loader_gif);
+        noInternet = (TextView) rootView.findViewById(R.id.no_internet);
+
+        noInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                noInternet.setVisibility(View.GONE);
+                fetchDataFromServer();
+            }
+        });
 
     }
 
     public void initVariable() {
         calenderMonth = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CALENDER), CalenderMonth.class);
         positionInViewPager = getArguments().getInt(Constants.EXTRA_VIEWPAGER_POSITION);
+        currentYear = getArguments().getInt(Constants.EXTRA_CALENDER_SELECTED_YEAR);
     }
 
     /**
@@ -84,13 +102,15 @@ public class OrderHistoryFragment extends Fragment {
     public void fetchDataFromServer() {
         HashMap<String, Object> params = new HashMap<>();
         params.put("month", calenderMonth.getPriority());
-        params.put("year", "2017");
+        params.put("year", String.valueOf(currentYear));
 
+        loader.setVisibility(View.VISIBLE);
         TheBox.getAPIService()
                 .getOrders(PrefUtils.getToken(getActivity()), params)
                 .enqueue(new Callback<OrdersResponse>() {
                     @Override
                     public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
+                        loader.setVisibility(View.GONE);
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
@@ -99,6 +119,8 @@ public class OrderHistoryFragment extends Fragment {
                                     } else {
                                         emptyState.setVisibility(View.VISIBLE);
                                     }
+                                } else {
+                                    emptyState.setVisibility(View.VISIBLE);
                                 }
                             }
                         } catch (Exception e) {
@@ -108,6 +130,8 @@ public class OrderHistoryFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<OrdersResponse> call, Throwable t) {
+                        loader.setVisibility(View.GONE);
+                        noInternet.setVisibility(View.VISIBLE);
                     }
                 });
     }

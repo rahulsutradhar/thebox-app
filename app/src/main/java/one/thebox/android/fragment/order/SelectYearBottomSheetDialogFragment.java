@@ -30,6 +30,7 @@ public class SelectYearBottomSheetDialogFragment extends BottomSheetDialogFragme
     private RecyclerView recyclerView;
     private SelectYearAdapter adapter;
     private String selectedYear;
+    private int scrollPosition = 0;
 
     public SelectYearBottomSheetDialogFragment() {
 
@@ -58,6 +59,15 @@ public class SelectYearBottomSheetDialogFragment extends BottomSheetDialogFragme
 
     public void initView() {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.list_year);
+        try {
+            for (int i = 0; i < calenderYears.size(); i++) {
+                if (calenderYears.get(i).getName().equalsIgnoreCase(selectedYear.toString().trim())) {
+                    scrollPosition = i;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void attachListener(OnYearSelected onYearSelected) {
@@ -78,6 +88,7 @@ public class SelectYearBottomSheetDialogFragment extends BottomSheetDialogFragme
                 onYearSelected.onYearSelected(calenderYear);
             }
         });
+        recyclerView.scrollToPosition(scrollPosition);
 
     }
 

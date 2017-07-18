@@ -117,6 +117,12 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
     }
 
 
+    /**
+     * Called from Upcoming Order Fragment
+     *
+     * @param order
+     * @param position
+     */
     public void updateOrder(Order order, int position) {
         if (position != -1 && position < orders.size()) {
             orders.set(position, order);
