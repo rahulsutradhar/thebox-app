@@ -153,14 +153,18 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
             try {
                 // Rescheduling the order
-                if (position == 0) {
-                    reschedule_order_button.setVisibility(View.VISIBLE);
-                    reschedule_order_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 4);
-                        }
-                    });
+                if (upComingOrderFragment != null) {
+                    if (position == 0) {
+                        reschedule_order_button.setVisibility(View.VISIBLE);
+                        reschedule_order_button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 4);
+                            }
+                        });
+                    } else {
+                        reschedule_order_button.setVisibility(View.GONE);
+                    }
                 } else {
                     reschedule_order_button.setVisibility(View.GONE);
                 }
@@ -188,6 +192,8 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                         public void onClick(View v) {
                             if (upComingOrderFragment != null) {
                                 upComingOrderFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position), 4);
+                            } else {
+                                orderHistoryFragment.startActivity(OrderItemsActivity.newInstance(context, order, position));
                             }
                         }
                     });

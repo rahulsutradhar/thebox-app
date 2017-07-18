@@ -5,13 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -60,8 +63,9 @@ public class OrderCalenderFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetchDataFromServer();
+        fetchDataFromServer(true);
         setYear(String.valueOf(currentYear));
+
     }
 
     public void initVariable() {
@@ -76,6 +80,9 @@ public class OrderCalenderFragment extends Fragment {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              /*  if (getActivity().getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getActivity().getSupportFragmentManager().popBackStackImmediate();
+                }*/
                 getActivity().onBackPressed();
             }
         });
@@ -92,6 +99,7 @@ public class OrderCalenderFragment extends Fragment {
                 openYearBottomSheet();
             }
         });
+
     }
 
     /**
@@ -110,9 +118,8 @@ public class OrderCalenderFragment extends Fragment {
                 if (!calenderYear.getName().equalsIgnoreCase(String.valueOf(currentYear))) {
                     destroyTabs();
                     setYear(calenderYear.getName());
-                    currentMonth = 1;
                     currentYear = Integer.parseInt(calenderYear.getName());
-                    fetchDataFromServer();
+                    fetchDataFromServer(false);
                 }
                 fragmentSheet.dismiss();
             }
@@ -123,7 +130,7 @@ public class OrderCalenderFragment extends Fragment {
     /**
      * Fetch CalenderMonth from Server
      */
-    public void fetchDataFromServer() {
+    public void fetchDataFromServer(final boolean isFirst) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("month", currentMonth);
         params.put("year", currentYear);
@@ -138,8 +145,13 @@ public class OrderCalenderFragment extends Fragment {
                                 if (response.body() != null) {
 
                                     if (response.body().getCalenderMonths() != null) {
-                                        setUpViewPagerAndTab(response.body().getCalenderMonths());
-                                        calenderYears = response.body().getCalenderYears();
+                                        if (isFirst) {
+                                            setUpViewPagerAndTab(response.body().getCalenderMonths());
+                                            calenderYears = response.body().getCalenderYears();
+                                        } else {
+                                            //update the list
+                                            updateViewPagerAndTab(response.body().getCalenderMonths());
+                                        }
                                     }
                                 }
                             }
@@ -156,15 +168,18 @@ public class OrderCalenderFragment extends Fragment {
 
     public void setUpViewPagerAndTab(Vector<CalenderMonth> calenderMonths) {
         if (calenderMonths.size() > 0) {
+            int position = 0;
             adapter = new ViewPagerCalenderAdapter(getChildFragmentManager(), getActivity());
             for (int i = 0; i < calenderMonths.size(); i++) {
                 Fragment fragment = OrderHistoryFragment.getInstance(calenderMonths.get(i), i);
                 adapter.addFragment(fragment, calenderMonths.get(i));
+                if (currentMonth == calenderMonths.get(i).getPriority()) {
+                    position = i;
+                }
             }
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
             viewPager.setOffscreenPageLimit(6);
-            int length = tabLayout.getTabCount();
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -182,14 +197,14 @@ public class OrderCalenderFragment extends Fragment {
 
                 }
             });
-            for (int i = 0; i < length; i++) {
-                if (i == 0) {
+            for (int i = 0; i < calenderMonths.size(); i++) {
+                if (i == position) {
                     tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
                 } else {
                     tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
                 }
             }
-            viewPager.setCurrentItem(0);
+            viewPager.setCurrentItem(position);
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -210,9 +225,55 @@ public class OrderCalenderFragment extends Fragment {
         }
     }
 
+    public void updateViewPagerAndTab(Vector<CalenderMonth> calenderMonths) {
+        if (calenderMonths.size() > 0) {
+            int position = 0;
+            adapter = new ViewPagerCalenderAdapter(getChildFragmentManager(), getActivity());
+            for (int i = 0; i < calenderMonths.size(); i++) {
+                Fragment fragment = OrderHistoryFragment.getInstance(calenderMonths.get(i), i);
+                adapter.addFragment(fragment, calenderMonths.get(i));
+
+                if (currentMonth == calenderMonths.get(i).getPriority()) {
+                    position = i;
+                }
+            }
+            tabLayout.setupWithViewPager(viewPager);
+            viewPager.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
+            for (int i = 0; i < calenderMonths.size(); i++) {
+                if (i == position) {
+                    tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, true));
+                } else {
+                    tabLayout.getTabAt(i).setCustomView(adapter.getTabView(i, false));
+                }
+            }
+            viewPager.setCurrentItem(position);
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
+
+        }
+    }
+
     public void destroyTabs() {
-        tabLayout.removeAllTabs();
+        //tabLayout.removeAllTabs();
         adapter.removeAll();
+        adapter = null;
     }
 
     public void setYear(String year) {
@@ -220,4 +281,6 @@ public class OrderCalenderFragment extends Fragment {
         selectedYearText.setPaintFlags(selectedYearText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
     }
+
+
 }
