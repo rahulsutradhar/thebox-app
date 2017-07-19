@@ -1,5 +1,8 @@
 package one.thebox.android.api;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 import one.thebox.android.api.RequestBodies.address.AddressRequest;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
 import one.thebox.android.api.RequestBodies.authentication.SmsOtpRequestBody;
@@ -253,7 +256,7 @@ public interface APIService {
      * Orders
      */
     @GET("/consumer/api/v1/orders")
-    Call<OrdersResponse> getOrders(@Header("Authorization") String accessToken);
+    Call<OrdersResponse> getOrders(@Header("Authorization") String accessToken,@QueryMap HashMap<String, Object> params);
 
     /**
      * Ordered Items

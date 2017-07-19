@@ -21,4 +21,9 @@ public class Keys {
      */
     public static final String COMMON_DIALOG_POPUP = "COMMON_DIALOG_POPUP";
 
+    /**
+     * Keys Shall Update Deliveries
+     */
+    public static final String UPDATE_DELIVERY_FOR_CALENDER_UPDATE = "UPDATE_DELIVERY_FOR_CALENDER_UPDATE";
+
 }

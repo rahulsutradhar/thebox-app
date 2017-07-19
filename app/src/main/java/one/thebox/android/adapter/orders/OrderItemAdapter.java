@@ -23,6 +23,7 @@ import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.api.RequestBodies.order.UpdateQuantityOrderItemRequest;
 import one.thebox.android.api.Responses.order.UpdateQuantityOrderItemResponse;
 import one.thebox.android.app.Constants;
+import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -36,6 +37,7 @@ import retrofit2.Response;
 public class OrderItemAdapter extends BaseRecyclerAdapter {
 
     private Context context;
+    private boolean calledFromCalender;
     /**
      * Parent Acitvity
      */
@@ -50,13 +52,14 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
     private boolean isChangesApplicable;
 
     public OrderItemAdapter(Context context, OrderItemsActivity orderItemsActivity, RequestManager glideRequestManager,
-                            ArrayList<OrderItem> orderItems, boolean isChangesApplicable) {
+                            ArrayList<OrderItem> orderItems, boolean isChangesApplicable, boolean calledFromCalender) {
         super(context);
         this.context = context;
         this.orderItemsActivity = orderItemsActivity;
         this.glideRequestManager = glideRequestManager;
         this.orderItems = orderItems;
         this.isChangesApplicable = isChangesApplicable;
+        this.calledFromCalender = calledFromCalender;
     }
 
     public RequestManager getGlideRequestManager() {
@@ -354,6 +357,12 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
                                             }
                                             orderItems.set(position, orderItem);
                                             notifyItemChanged(position);
+                                        }
+                                        if (calledFromCalender) {
+                                            /**
+                                             * Set Preference to update the Current Deliveries
+                                             */
+                                            PrefUtils.putBoolean(context, Keys.UPDATE_DELIVERY_FOR_CALENDER_UPDATE, true);
                                         }
 
                                         if (orderItemsActivity != null) {

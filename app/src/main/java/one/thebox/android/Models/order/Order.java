@@ -56,6 +56,9 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("payment_complete")
     private boolean paymentComplete;
 
+    @SerializedName("scheduled_text")
+    private String scheduledText;
+
 
     /****************************************
      * Getter Setter
@@ -170,5 +173,13 @@ public class Order extends RealmObject implements Serializable {
 
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
+    }
+
+    public String getScheduledText() {
+        return scheduledText;
+    }
+
+    public void setScheduledText(String scheduledText) {
+        this.scheduledText = scheduledText;
     }
 }

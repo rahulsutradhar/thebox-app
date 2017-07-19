@@ -3,6 +3,7 @@ package one.thebox.android.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +17,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
 import one.thebox.android.app.Constants;
@@ -41,6 +44,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
     private GifImageView progress_bar;
+    private FloatingActionButton floatingActionButton;
+    private int currentYear, currentMonth;
 
     public UpComingOrderFragment() {
     }
@@ -68,6 +73,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews() {
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
@@ -78,17 +84,33 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
             }
         });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * Open OrderCalenderFragment
+                 * Update this list if any change occur in Calender
+                 */
+                Intent intent = new Intent(getActivity(), OrderCalenderActivity.class);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
+                startActivityForResult(intent, 5);
+            }
+        });
     }
 
 
     private void setupRecyclerView(ArrayList<Order> orders) {
         if (orders.size() > 0) {
+            floatingActionButton.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
             upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
+            floatingActionButton.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
@@ -125,6 +147,13 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     @Override
     public void onResume() {
         super.onResume();
+        /**
+         * Keys set on Updating from Calender
+         */
+        if (PrefUtils.getBoolean(getActivity(), Keys.UPDATE_DELIVERY_FOR_CALENDER_UPDATE)) {
+            getOrdersFromServer();
+            PrefUtils.putBoolean(getActivity(), Keys.UPDATE_DELIVERY_FOR_CALENDER_UPDATE, false);
+        }
     }
 
     /**
@@ -132,8 +161,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
      */
     public void getOrdersFromServer() {
         progress_bar.setVisibility(View.VISIBLE);
+        HashMap<String, Object> params = new HashMap<>();
         TheBox.getAPIService()
-                .getOrders(PrefUtils.getToken(getActivity()))
+                .getOrders(PrefUtils.getToken(getActivity()), params)
                 .enqueue(new Callback<OrdersResponse>() {
                     @Override
                     public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
@@ -142,6 +172,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     setupRecyclerView(response.body().getOrders());
+                                    currentYear = response.body().getCurrentYear();
+                                    currentMonth = response.body().getCurrentMonth();
                                 }
                             }
                         } catch (Exception e) {
@@ -166,7 +198,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //update orders as SUbscribe Item has been unsubscribed
+                    //update orders as Subscribe Item has been unsubscribed
                     getOrdersFromServer();
                 }
             });
@@ -180,7 +212,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             //Order Item Activtiy or Confirm TimeSlot Activity
             if (requestCode == 4) {
                 if (data.getExtras() != null) {
-                    //post event Bus
                     Order order = CoreGsonUtils.fromJson(data.getStringExtra(Constants.EXTRA_ORDER), Order.class);
                     int position = data.getIntExtra(Constants.EXTRA_CLICK_POSITION, -1);
 
@@ -197,6 +228,15 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                         }
                     }
                 }
+            }//Reschedule Order
+            if (requestCode == 5) {
+                if (data.getExtras() != null) {
+                    boolean updateDeliveries = data.getBooleanExtra(Constants.EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE, false);
+                    if (updateDeliveries) {
+                        getOrdersFromServer();
+                    }
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

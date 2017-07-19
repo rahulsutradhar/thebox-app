@@ -654,8 +654,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             try {
                 hashMap.put("title", boxItem.getTitle());
                 hashMap.put("brand", boxItem.getBrand());
-                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSize() + " " +
-                        boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
+                if (boxItem.getSelectedItemConfig().getSize() == 0) {
+                    hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getQuantity() + " " +
+                            boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
+                } else {
+                    hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSize() + " " +
+                            boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
+                }
                 hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
                 hashMap.put("item_config_uuid", boxItem.getSelectedItemConfig().getUuid());
             } catch (Exception e) {
@@ -1017,8 +1022,13 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 hashMap.put("title", subscribeItem.getBoxItem().getTitle());
                 hashMap.put("box_item_uuid", subscribeItem.getBoxItem().getUuid());
                 hashMap.put("item_config_uuid", subscribeItem.getSelectedItemConfig().getUuid());
-                hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
-                        subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                if (subscribeItem.getSelectedItemConfig().getSize() == 0) {
+                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getQuantity() + " " +
+                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                } else {
+                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
+                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                }
                 hashMap.put("item_config_subscription", subscribeItem.getSelectedItemConfig().getSubscriptionText());
 
 

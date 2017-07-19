@@ -208,5 +208,33 @@ public class Constants {
      */
     public final static String EXTRA_NAVIGATE_TO_HOTLINE_FAQ = "extra_navigate_to_hotline_faq";
 
+    /**
+     * CalenderMonth
+     */
+    public final static String EXTRA_CALENDER = "extra_calender";
 
+    /**
+     * Position in View Pager
+     */
+    public final static String EXTRA_VIEWPAGER_POSITION = "extra_viewpager_position";
+
+    /**
+     * Selected Year
+     */
+    public final static String EXTRA_CALENDER_SELECTED_YEAR = "extra_calender_selected_year";
+
+    /**
+     * Selected Month
+     */
+    public final static String EXTRA_CALENDER_SELECTED_MONTH = "extra_calender_selected_month";
+
+    /**
+     * Update Current Order List
+     */
+    public final static String EXTRA_IS_CALENDER = "extra_is_calender";
+
+    /**
+     * Update Deliveries For Reschedule
+     */
+    public final static String EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE = "extra_update_deliveries_for_reschedule";
 }

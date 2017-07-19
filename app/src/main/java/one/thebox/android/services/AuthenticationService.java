@@ -103,11 +103,15 @@ public class AuthenticationService {
             }
             if (user.getEmail() != null) {
                 if (!user.getEmail().isEmpty()) {
-                    profileUpdate.put("Email", user.getPhoneNumber());
+                    profileUpdate.put("Email", user.getEmail());
+                }
+            }
+            if (user.getPhoneNumber() != null) {
+                if (!user.getPhoneNumber().isEmpty()) {
+                    profileUpdate.put("Identity", user.getPhoneNumber());
                 }
             }
             profileUpdate.put("Unique-Id", user.getUuid());
-            profileUpdate.put("Identity", user.getPhoneNumber());
             profileUpdate.put("User_Uuid", user.getUuid());
             profileUpdate.put("Platform", "Android");
 

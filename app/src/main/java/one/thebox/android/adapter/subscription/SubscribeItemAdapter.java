@@ -479,8 +479,8 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                                         EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
 
                                     }
-                                }else {
-                                    if (response.code() == Constants.UNAUTHORIZED){
+                                } else {
+                                    if (response.code() == Constants.UNAUTHORIZED) {
                                         //unauthorized user navigate to login
                                         new AuthenticationService().navigateToLogin(context);
                                     }
@@ -510,8 +510,13 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                 hashMap.put("title", subscribeItem.getBoxItem().getTitle());
                 hashMap.put("box_item_uuid", subscribeItem.getBoxItem().getUuid());
                 hashMap.put("item_config_uuid", subscribeItem.getSelectedItemConfig().getUuid());
-                hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
-                        subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                if (subscribeItem.getSelectedItemConfig().getSize() == 0) {
+                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getQuantity() + " " +
+                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                } else {
+                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
+                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
+                }
                 hashMap.put("item_config_subscription", subscribeItem.getSelectedItemConfig().getSubscriptionText());
 
 
