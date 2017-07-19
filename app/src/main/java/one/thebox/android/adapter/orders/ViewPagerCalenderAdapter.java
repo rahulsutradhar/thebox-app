@@ -72,29 +72,17 @@ public class ViewPagerCalenderAdapter extends FragmentStatePagerAdapter {
 
         if (isSelected) {
             title.setTextColor(context.getResources().getColor(R.color.black));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
             layout.setBackgroundResource(R.drawable.tab_layout_selected);
-            layout.setPadding(DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 6));
+            layout.setPadding(DisplayUtil.dpToPx(context, 12), DisplayUtil.dpToPx(context, 6), DisplayUtil.dpToPx(context, 12), DisplayUtil.dpToPx(context, 6));
             layout.requestLayout();
         } else {
             title.setTextColor(context.getResources().getColor(R.color.md_grey_800));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             layout.setBackgroundResource(R.drawable.tab_layout);
-            layout.setPadding(DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 2));
+            layout.setPadding(DisplayUtil.dpToPx(context, 4), DisplayUtil.dpToPx(context, 2), DisplayUtil.dpToPx(context, 4), DisplayUtil.dpToPx(context, 2));
             layout.requestLayout();
         }
         return view;
-    }
-
-    /**
-     * Remove ALL View
-     */
-    public void removeAll() {
-        for (int i = 0; i < mFragmentList.size(); i++) {
-            mFragmentList.set(i, null);
-        }
-        mFragmentList.clear();
-        mCalenderMonths.clear();
-        notifyDataSetChanged();
     }
 }

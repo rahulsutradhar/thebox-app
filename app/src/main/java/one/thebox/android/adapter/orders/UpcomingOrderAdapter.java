@@ -134,7 +134,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, text_order_state, itemsNameTextView, amountTobePaidTextView,
+        private TextView dateTextView, scheduleText, itemsNameTextView, amountTobePaidTextView,
                 viewItemsTextView, timeSlot, month, message, reschedule_order_button, completeOrderButton;
         private LinearLayout linearLayout, holderViewItem;
         private CardView cardView;
@@ -142,7 +142,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
         public ItemViewHolder(View itemView) {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
-            text_order_state = (TextView) itemView.findViewById(R.id.text_order_state);
+            scheduleText = (TextView) itemView.findViewById(R.id.schedule_text);
             reschedule_order_button = (TextView) itemView.findViewById(R.id.reschdule_order_button);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
@@ -176,6 +176,17 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     reschedule_order_button.setVisibility(View.GONE);
                 }
 
+                if (order.getScheduledText() != null) {
+                    if (!order.getScheduledText().isEmpty()) {
+                        scheduleText.setText(order.getScheduledText());
+                        if (order.getScheduledText().contains("Delivered on")) {
+                            scheduleText.setTextColor(mContext.getResources().getColor(R.color.manatee));
+                        } else {
+                            scheduleText.setTextColor(mContext.getResources().getColor(R.color.black));
+                        }
+                    }
+                }
+
                 if (order.getOrderDate() != null) {
                     dateTextView.setText(order.getOrderDate());
                 } else {
@@ -188,10 +199,15 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     timeSlot.setText("");
                 }
 
+
                 //set the month value
                 month.setVisibility(View.GONE);
 
-                itemsNameTextView.setText(order.getNoOfItems() + " items");
+                if (order.getNoOfItems() == 1) {
+                    itemsNameTextView.setText(order.getNoOfItems() + " item");
+                } else {
+                    itemsNameTextView.setText(order.getNoOfItems() + " items");
+                }
 
                 if (order.getNoOfItems() > 0) {
                     holderViewItem.setOnClickListener(new View.OnClickListener() {

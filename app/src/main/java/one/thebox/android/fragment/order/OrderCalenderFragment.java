@@ -50,7 +50,7 @@ public class OrderCalenderFragment extends Fragment {
 
     private Toolbar toolbar;
     private View rootView;
-    private TextView selectedYearText;
+    private TextView selectedYearText, noInternet;
     private int currentYear, currentMonth;
     private Vector<CalenderYear> calenderYears;
     private FrameLayout frameLayout;
@@ -105,7 +105,14 @@ public class OrderCalenderFragment extends Fragment {
                 openYearBottomSheet();
             }
         });
-
+        noInternet = (TextView) rootView.findViewById(R.id.no_internet);
+        noInternet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                noInternet.setVisibility(View.GONE);
+                fetchDataFromServer(true);
+            }
+        });
     }
 
     /**
@@ -169,6 +176,7 @@ public class OrderCalenderFragment extends Fragment {
                     @Override
                     public void onFailure(Call<OrdersResponse> call, Throwable t) {
                         dialog.dismiss();
+                        noInternet.setVisibility(View.VISIBLE);
                     }
                 });
     }
