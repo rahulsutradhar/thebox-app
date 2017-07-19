@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +8,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:src="@drawable/loader"
@@ -19,6 +19,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/md_grey_200" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="76dp"
+        android:layout_marginRight="20dp"
+        app:backgroundTint="@color/primary"
+        app:elevation="2dp"
+        app:fabSize="normal"
+        app:rippleColor="@color/primary_transparent" />
 
     <LinearLayout
         android:id="@+id/no_orders_subscribed_view_holder"
@@ -97,4 +110,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</RelativeLayout>

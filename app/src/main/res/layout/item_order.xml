@@ -68,18 +68,17 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
                         android:orientation="vertical">
 
 
                         <TextView
-                            android:id="@+id/text_order_state"
+                            android:id="@+id/schedule_text"
                             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
-                            android:text="Arriving on: "
-                            android:textColor="@color/davy_grey"
+                            android:layout_marginBottom="0dp"
+                            android:text="Delivered on: "
+                            android:textColor="@color/black"
                             android:textSize="@dimen/text_small1" />
 
                         <TextView
@@ -87,10 +86,10 @@
                             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
+                            android:layout_marginBottom="0dp"
                             android:text="@string/sample_date"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_small3" />
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_extra_small3" />
 
                     </LinearLayout>
 
@@ -98,7 +97,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
+                        android:layout_marginBottom="@dimen/margin_horizontal_between_co_element"
                         android:orientation="horizontal">
 
                         <TextView
@@ -107,8 +106,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/sample_slot"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_small1" />
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_extra_small3" />
 
 
                     </LinearLayout>
@@ -125,8 +124,8 @@
                         android:paddingRight="@dimen/padding_medium_button_horizontal"
                         android:paddingTop="@dimen/padding_medium_button_vertical"
                         android:text="@string/adjust"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_small3"
+                        android:textColor="@color/manatee"
+                        android:textSize="@dimen/text_extra_small4"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -136,7 +135,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.3"
+                    android:layout_weight="0.25"
                     android:background="@drawable/green_borders"
                     android:gravity="center"
                     android:orientation="vertical"
@@ -151,8 +150,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/view_items"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_small3" />
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_extra_small4" />
 
                     <TextView
                         android:id="@+id/text_items_name"
@@ -161,8 +160,8 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text=""
-                        android:textColor="@color/secondary_text_color"
-                        android:textSize="@dimen/text_small1" />
+                        android:textColor="@color/manatee"
+                        android:textSize="@dimen/text_extra_small3" />
 
 
                 </LinearLayout>
@@ -171,16 +170,32 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="@color/md_green_500" />
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@color/manatee" />
 
             <LinearLayout
                 android:id="@+id/holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                android:layout_marginTop="@dimen/margin_horizontal_between_co_element"
                 android:background="@color/white"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="0dp">
+
+                <TextView
+                    android:id="@+id/text_amount_to_be_paid"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center"
+                    android:text="Total amount Rs. 2000"
+                    android:textColor="@color/warm_grey"
+                    android:textSize="@dimen/text_small1" />
+
 
                 <TextView
                     android:id="@+id/message"
@@ -192,24 +207,23 @@
                     android:gravity="center"
                     android:text="Please confirm the payment to confirm delivery"
                     android:textColor="@color/accent"
-                    android:textSize="@dimen/text_small3" />
+                    android:textSize="@dimen/text_extra_small3" />
 
-                <TextView
-                    android:id="@+id/text_amount_to_be_paid"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:id="@+id/button_payment_complete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/green_borders"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:paddingBottom="@dimen/padding_medium_button_vertical"
-                    android:paddingLeft="@dimen/padding_medium_button_horizontal"
-                    android:paddingRight="@dimen/padding_medium_button_horizontal"
-                    android:paddingTop="@dimen/padding_medium_button_vertical"
-                    android:text="Pay Rs. 200"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_small3" />
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/green_filled_button"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="7dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="7dp"
+                    android:text="Complete Payment"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small1" />
+
 
             </LinearLayout>
 

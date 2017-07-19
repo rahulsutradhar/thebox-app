@@ -15,6 +15,7 @@ import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.activity.OrderItemsActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
 import one.thebox.android.fragment.UpComingOrderFragment;
+import one.thebox.android.fragment.order.OrderHistoryFragment;
 
 
 /**
@@ -27,11 +28,21 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
     private Context context;
     private ArrayList<Order> orders = new ArrayList<>();
     private UpComingOrderFragment upComingOrderFragment;
+    private OrderHistoryFragment orderHistoryFragment;
 
     public UpcomingOrderAdapter(Context context, UpComingOrderFragment upComingOrderFragment, ArrayList<Order> orders) {
         super(context);
         this.context = context;
         this.upComingOrderFragment = upComingOrderFragment;
+        this.orders = orders;
+        mViewType = RECYCLER_VIEW_TYPE_NORMAL;
+
+    }
+
+    public UpcomingOrderAdapter(Context context, ArrayList<Order> orders, OrderHistoryFragment orderHistoryFragment) {
+        super(context);
+        this.context = context;
+        this.orderHistoryFragment = orderHistoryFragment;
         this.orders = orders;
         mViewType = RECYCLER_VIEW_TYPE_NORMAL;
 
@@ -106,6 +117,13 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
     }
 
 
+    /**
+     * Called from Upcoming Order Fragment
+     * and Order History Fragment
+     *
+     * @param order
+     * @param position
+     */
     public void updateOrder(Order order, int position) {
         if (position != -1 && position < orders.size()) {
             orders.set(position, order);
@@ -116,14 +134,15 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     class ItemViewHolder extends ItemHolder {
 
-        private TextView dateTextView, text_order_state, itemsNameTextView, amountTobePaidTextView, viewItemsTextView, timeSlot, month, message, reschedule_order_button;
+        private TextView dateTextView, scheduleText, itemsNameTextView, amountTobePaidTextView,
+                viewItemsTextView, timeSlot, month, message, reschedule_order_button, completeOrderButton;
         private LinearLayout linearLayout, holderViewItem;
         private CardView cardView;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             dateTextView = (TextView) itemView.findViewById(R.id.text_date);
-            text_order_state = (TextView) itemView.findViewById(R.id.text_order_state);
+            scheduleText = (TextView) itemView.findViewById(R.id.schedule_text);
             reschedule_order_button = (TextView) itemView.findViewById(R.id.reschdule_order_button);
             itemsNameTextView = (TextView) itemView.findViewById(R.id.text_items_name);
             amountTobePaidTextView = (TextView) itemView.findViewById(R.id.text_amount_to_be_paid);
@@ -134,22 +153,38 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
             month = (TextView) itemView.findViewById(R.id.month);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
             message = (TextView) itemView.findViewById(R.id.message);
+            completeOrderButton = (TextView) itemView.findViewById(R.id.button_payment_complete);
         }
 
         public void setViewHolder(final Order order, final int position) {
 
             try {
                 // Rescheduling the order
-                if (position == 0) {
-                    reschedule_order_button.setVisibility(View.VISIBLE);
-                    reschedule_order_button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 4);
-                        }
-                    });
+                if (upComingOrderFragment != null) {
+                    if (position == 0) {
+                        reschedule_order_button.setVisibility(View.VISIBLE);
+                        reschedule_order_button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                upComingOrderFragment.startActivityForResult(ConfirmTimeSlotActivity.newInstance(mContext, order, true, true), 5);
+                            }
+                        });
+                    } else {
+                        reschedule_order_button.setVisibility(View.GONE);
+                    }
                 } else {
                     reschedule_order_button.setVisibility(View.GONE);
+                }
+
+                if (order.getScheduledText() != null) {
+                    if (!order.getScheduledText().isEmpty()) {
+                        scheduleText.setText(order.getScheduledText());
+                        if (order.getScheduledText().contains("Delivered on")) {
+                            scheduleText.setTextColor(mContext.getResources().getColor(R.color.manatee));
+                        } else {
+                            scheduleText.setTextColor(mContext.getResources().getColor(R.color.black));
+                        }
+                    }
                 }
 
                 if (order.getOrderDate() != null) {
@@ -164,17 +199,24 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                     timeSlot.setText("");
                 }
 
+
                 //set the month value
                 month.setVisibility(View.GONE);
 
-                itemsNameTextView.setText(order.getNoOfItems() + " items");
+                if (order.getNoOfItems() == 1) {
+                    itemsNameTextView.setText(order.getNoOfItems() + " item");
+                } else {
+                    itemsNameTextView.setText(order.getNoOfItems() + " items");
+                }
 
                 if (order.getNoOfItems() > 0) {
                     holderViewItem.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (upComingOrderFragment != null) {
-                                upComingOrderFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position), 4);
+                                upComingOrderFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position, false), 4);
+                            } else {
+                                orderHistoryFragment.startActivityForResult(OrderItemsActivity.newInstance(context, order, position, true), 4);
                             }
                         }
                     });
@@ -187,33 +229,30 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                  * Condition for colors
                  */
                 if (order.isPaymentComplete()) {
-                    amountTobePaidTextView.setClickable(false);
-                    amountTobePaidTextView.setEnabled(false);
+
+                    completeOrderButton.setVisibility(View.GONE);
                     if (order.isCod()) {
                         message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
-                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
                     } else if (order.isPaid()) {
                         message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                        amountTobePaidTextView.setBackgroundColor(Color.WHITE);
                     }
                 } else {
-                    amountTobePaidTextView.setClickable(true);
-                    amountTobePaidTextView.setEnabled(true);
+
+                    completeOrderButton.setVisibility(View.VISIBLE);
 
                     if (order.isCod() == false && order.isPaid() == false && order.isDelivered() == true) {
                         message.setTextColor(mContext.getResources().getColor(R.color.accent));
                     } else {
                         message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
                     }
+                    completeOrderButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //move to payment
+                            context.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, order, true, false));
+                        }
+                    });
                 }
-
-                amountTobePaidTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //move to payment
-                        context.startActivity(ConfirmTimeSlotActivity.newInstance(mContext, order, true, false));
-                    }
-                });
 
             } catch (IndexOutOfBoundsException i) {
                 i.printStackTrace();
