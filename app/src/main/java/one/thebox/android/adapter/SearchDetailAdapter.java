@@ -679,7 +679,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView productName, arrivingTime, config, addButton,
                 subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
         private ImageView productImageView;
-        private RelativeLayout quantityHolder;
+        private RelativeLayout quantityHolder, loader;
 
         public SubscribeItemViewHolder(View itemView) {
             super(itemView);
@@ -695,6 +695,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             editSubscription = (TextView) itemView.findViewById(R.id.user_item_edit_button);
             savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
+            loader = (RelativeLayout) itemView.findViewById(R.id.loader);
         }
 
         private void setViews(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position) {
@@ -885,15 +886,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param quantity
          */
         private void updateQuantity(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position, final int quantity) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-
+            loader.setVisibility(View.VISIBLE);
             TheBox.getAPIService()
                     .updateQuantitySubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
                             subscribeItem.getUuid(), new UpdateQuantitySubscribeItemRequest(quantity))
                     .enqueue(new Callback<UpdateQuantitySubscribeItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateQuantitySubscribeItemResponse> call, Response<UpdateQuantitySubscribeItemResponse> response) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
@@ -950,7 +950,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                         @Override
                         public void onFailure(Call<UpdateQuantitySubscribeItemResponse> call, Throwable t) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -964,15 +964,14 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * @param selectedItemConfig
          */
         private void updateItemConfig(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position, final ItemConfig selectedItemConfig) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-
+            loader.setVisibility(View.VISIBLE);
             TheBox.getAPIService()
                     .updateItemConfigSubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
                             subscribeItem.getUuid(), new UpdateItemConfigSubscribeItemRequest(selectedItemConfig.getUuid()))
                     .enqueue(new Callback<UpdateItemConfigSubscribeItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigSubscribeItemResponse> call, Response<UpdateItemConfigSubscribeItemResponse> response) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body().isStatus()) {
@@ -998,7 +997,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                         @Override
                         public void onFailure(Call<UpdateItemConfigSubscribeItemResponse> call, Throwable t) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });

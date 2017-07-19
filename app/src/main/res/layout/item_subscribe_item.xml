@@ -220,4 +220,20 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/transparent_background"
+        android:visibility="gone">
+
+        <pl.droidsonroids.gif.GifImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:alpha="1.0"
+            android:background="@color/transparent"
+            android:src="@drawable/loader" />
+    </RelativeLayout>
+
 </android.support.v7.widget.CardView>

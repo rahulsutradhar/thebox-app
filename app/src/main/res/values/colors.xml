@@ -26,6 +26,8 @@
     <color name="primary_inverse_text_color">#B7FFFFFF</color>
     <color name="secondary_text_color">#8C000000</color>
 
+    <color name="translucent_black">#80000000</color>
+
     <color name="brilliant_rose">#F44336</color>
     <color name="neon_carrot">#ffa64d</color>
     <color name="bistre">#323030</color>
