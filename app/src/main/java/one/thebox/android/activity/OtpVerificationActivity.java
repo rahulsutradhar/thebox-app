@@ -65,7 +65,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
         setContentView(R.layout.activity_verify_otp);
         initVariables();
         initViews();
-        setStatusBarColor(getResources().getColor(R.color.black));
+        setStatusBarColor(getResources().getColor(R.color.white));
     }
 
     private void initVariables() {
@@ -175,7 +175,7 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
                                     //set user information to crashlytics
                                     authenticationService.setUserDataToCrashlytics();
-                                    
+
                                     //set user information to CleverTap upon Login and set profile
                                     authenticationService.setCleverTapOnLogin();
                                     authenticationService.setCleverTapUserProfile();
