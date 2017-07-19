@@ -45,7 +45,7 @@ public class RequestOtpActivity extends BaseActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_otp);
         initViews();
-        setStatusBarColor(getResources().getColor(R.color.black));
+        setStatusBarColor(getResources().getColor(R.color.white));
     }
 
     private void initViews() {

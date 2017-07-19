@@ -157,7 +157,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
         private TextView productName, arrivingTime, config, addButton,
                 subtractButton, noOfItemSelected, frequency, price, editSubscription, savingtextView;
         private ImageView productImageView;
-        private RelativeLayout quantityHolder;
+        private RelativeLayout quantityHolder, loader;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -173,6 +173,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
             frequency = (TextView) itemView.findViewById(R.id.frequency);
             editSubscription = (TextView) itemView.findViewById(R.id.user_item_edit_button);
             savingtextView = (TextView) itemView.findViewById(R.id.text_view_savings);
+            loader = (RelativeLayout) itemView.findViewById(R.id.loader);
         }
 
         private void setViews(final SubscribeItem subscribeItem, final int position) {
@@ -364,15 +365,14 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
          * @param quantity
          */
         private void updateQuantity(final SubscribeItem subscribeItem, final int position, final int quantity) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-
+            loader.setVisibility(View.VISIBLE);
             TheBox.getAPIService()
                     .updateQuantitySubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
                             subscribeItem.getUuid(), new UpdateQuantitySubscribeItemRequest(quantity))
                     .enqueue(new Callback<UpdateQuantitySubscribeItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateQuantitySubscribeItemResponse> call, Response<UpdateQuantitySubscribeItemResponse> response) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body() != null) {
@@ -438,7 +438,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
 
                         @Override
                         public void onFailure(Call<UpdateQuantitySubscribeItemResponse> call, Throwable t) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -452,15 +452,14 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
          * @param selectedItemConfig
          */
         private void updateItemConfig(final SubscribeItem subscribeItem, final int position, final ItemConfig selectedItemConfig) {
-            final BoxLoader dialog = new BoxLoader(mContext).show();
-
+            loader.setVisibility(View.VISIBLE);
             TheBox.getAPIService()
                     .updateItemConfigSubscribeItem(PrefUtils.getToken(TheBox.getAppContext()),
                             subscribeItem.getUuid(), new UpdateItemConfigSubscribeItemRequest(selectedItemConfig.getUuid()))
                     .enqueue(new Callback<UpdateItemConfigSubscribeItemResponse>() {
                         @Override
                         public void onResponse(Call<UpdateItemConfigSubscribeItemResponse> call, Response<UpdateItemConfigSubscribeItemResponse> response) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             try {
                                 if (response.isSuccessful()) {
                                     if (response.body().isStatus()) {
@@ -494,7 +493,7 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
 
                         @Override
                         public void onFailure(Call<UpdateItemConfigSubscribeItemResponse> call, Throwable t) {
-                            dialog.dismiss();
+                            loader.setVisibility(View.GONE);
                             Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
