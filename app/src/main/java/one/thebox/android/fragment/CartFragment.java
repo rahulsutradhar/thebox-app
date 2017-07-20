@@ -7,6 +7,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 
-public class CartFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
+public class CartFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private TextView proceedToPayment;
@@ -54,6 +55,7 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
     private int requestCounter = 0;
     private GifImageView progressBar;
+    private Toolbar toolbar;
 
     /**
      * GLide Request Manager
@@ -101,7 +103,6 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
         rootView = inflater.inflate(R.layout.fragment_cart, container, false);
         initViews();
         initVariables(true);
-        setupAppBarObserver();
         return rootView;
     }
 
@@ -157,6 +158,15 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
                 }
             }
         });
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
 
         /**
          * Save CleverTap Event; OpenCart
@@ -166,43 +176,9 @@ public class CartFragment extends Fragment implements AppBarObserver.OnOffsetCha
 
     }
 
-
-    @Override
-    public void onOffsetChange(int offset, int dOffset) {
-        proceedToPayment.setTranslationY(-offset);
-    }
-
-
-    private void setupAppBarObserver() {
-        AppBarObserver appBarObserver;
-        Activity activity = getActivity();
-        AppBarLayout appBarLayout = (AppBarLayout) activity
-                .findViewById(R.id.app_bar_layout);
-        if (appBarLayout != null) {
-            appBarObserver = AppBarObserver.observe(appBarLayout);
-            appBarObserver.addOffsetChangeListener(this);
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-
-        ((MainActivity) getActivity()).getToolbar().setTitle("Cart");
-        ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.GONE);
-        ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
-
-        ((MainActivity) getActivity()).getButtonSpecialAction().setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).getButtonSpecialAction().setImageDrawable(getResources().getDrawable(R.drawable.ic_thebox_identity_mono));
-        ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
-            }
-        });
 
     }
 

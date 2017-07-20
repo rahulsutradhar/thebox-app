@@ -49,7 +49,7 @@ public class MyBoxTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
+        ((MainActivity) getActivity()).getToolbar().setTitle("The Box");
 
         default_position = getArguments().getInt("default_position");
         show_loader = getArguments().getBoolean("show_loader");
@@ -164,7 +164,7 @@ public class MyBoxTabFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).getToolbar().setTitle("My Box");
+        ((MainActivity) getActivity()).getToolbar().setTitle("The Box");
         ((MainActivity) getActivity()).getToolbar().setSubtitle(null);
 
         ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);

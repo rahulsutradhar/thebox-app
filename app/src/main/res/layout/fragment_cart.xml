@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,28 +7,149 @@
     android:fitsSystemWindows="true"
     tools:context="one.thebox.android.fragment.CartFragment">
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="5dp">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="top"
+            android:background="@color/primary"
+            android:backgroundTint="@color/primary"
+            android:elevation="6dp"
+            android:gravity="center_vertical"
+            app:contentInsetEnd="6dp"
+            app:contentInsetLeft="6dp"
+            app:contentInsetRight="6dp"
+            app:contentInsetStart="6dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:id="@+id/title"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Cart"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_medium1" />
+
+                    <LinearLayout
+                        android:id="@+id/progress_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/title"
+                        android:layout_marginTop="3dp"
+                        android:orientation="vertical"
+                        android:paddingBottom="2dp">
+
+                        <TextView
+                            android:id="@+id/progress_Step_text"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="2 step remaining"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_extra_small3" />
+
+                        <LinearLayout
+                            android:layout_width="180dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:id="@+id/progress_step1"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/md_green_500" />
+
+                            <View
+                                android:id="@+id/progress_step2"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step3"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- Cart Items -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="70dp"
-        android:clipToPadding="false" />
+        android:layout_above="@+id/bottom_card"
+        android:layout_below="@+id/app_bar_layout" />
 
+    <!-- Bottom Cart Details-->
+    <RelativeLayout
+        android:id="@+id/bottom_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <one.thebox.android.ViewHelper.MontserratTextView
+            android:id="@+id/button_proceed_to_payment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text=""
+            android:textColor="@color/white"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+    <!-- Loader -->
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/progress_bar"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_centerInParent="true"
-        android:visibility="gone"
         android:padding="8dp"
-        android:src="@drawable/loader" />
+        android:src="@drawable/loader"
+        android:visibility="gone" />
 
-
+    <!-- Empty State -->
     <RelativeLayout
         android:id="@+id/empty_cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/app_bar_layout"
         android:background="@color/light_white"
         android:visibility="gone">
 
@@ -56,20 +178,6 @@
 
         </LinearLayout>
     </RelativeLayout>
-
-
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/button_proceed_to_payment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="56dp"
-        android:background="@color/primary"
-        android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:text=""
-        android:textColor="@color/white"
-        android:visibility="visible" />
 
 
 </RelativeLayout>

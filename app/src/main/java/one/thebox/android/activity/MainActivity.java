@@ -97,7 +97,6 @@ public class MainActivity extends BaseActivity implements
     private GcmNetworkManager mGcmNetworkManager;
 
     public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
-    public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -283,7 +282,7 @@ public class MainActivity extends BaseActivity implements
 
                     try {
                         //check if cart fragment is visible or not
-                        CartFragment cartFragment = (CartFragment) fragmentManager.findFragmentByTag("Bills");
+                        CartFragment cartFragment = (CartFragment) fragmentManager.findFragmentByTag("cart_fragment");
                         if (cartFragment != null && cartFragment.isVisible()) {
                             //blank
                         } else {
@@ -422,7 +421,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                attachOrderFragment();
+                attachCartFragment();
                 return true;
             default: {
                 String menuName = (String) menuItem.getTitle();
@@ -549,14 +548,11 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void attachOrderFragment() {
-
-
+    private void attachCartFragment() {
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
+        fragmentTransaction.replace(R.id.frame_container, fragment, "cart_fragment").addToBackStack("cart_fragment");
         fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
     }
 
     private void attachMyAccountFragment() {
@@ -780,7 +776,7 @@ public class MainActivity extends BaseActivity implements
             }
 
             case 3: {
-                attachOrderFragment();
+                attachCartFragment();
                 break;
             }
             case 4: {

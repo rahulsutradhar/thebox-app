@@ -204,6 +204,9 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         specialCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                specialCardView.setVisibility(View.GONE);
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
+                previousScrollAction = false;
                 startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
             }
         });
