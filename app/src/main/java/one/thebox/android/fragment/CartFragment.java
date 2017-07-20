@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +49,7 @@ import pl.droidsonroids.gif.GifImageView;
 public class CartFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private TextView proceedToPayment;
+    private LinearLayout proceedForward;
     private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
@@ -108,18 +109,17 @@ public class CartFragment extends Fragment {
 
     public void setCartEmpty() {
         emptyCartLayout.setVisibility(View.VISIBLE);
-        proceedToPayment.setText("");
-        proceedToPayment.setVisibility(View.GONE);
+        proceedForward.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
     }
 
     public void setCartPrice(float price) {
-        proceedToPayment.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
+//        proceedForward.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
     }
 
     private void setupRecyclerView() {
         emptyCartLayout.setVisibility(View.GONE);
-        proceedToPayment.setVisibility(View.VISIBLE);
+        proceedForward.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
         if (adapter == null) {
@@ -143,8 +143,8 @@ public class CartFragment extends Fragment {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         this.progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
         emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
-        proceedToPayment = (TextView) rootView.findViewById(R.id.button_proceed_to_payment);
-        proceedToPayment.setOnClickListener(new View.OnClickListener() {
+        proceedForward = (LinearLayout) rootView.findViewById(R.id.button_proceed_forward);
+        proceedForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //request server to set cart
