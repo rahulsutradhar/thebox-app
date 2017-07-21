@@ -57,15 +57,6 @@ public class Constants {
     public static final String CATEGORY_UUID = "extra_category_uuid";
 
     /**
-     * Constants to Notify Boradcast
-     */
-    public static final int DELIVERIES = 2;
-    public static final int SUBSCRIPTION = 1;
-    public static final int CART = 3;
-
-    public static final int BROADCAST_SUBSCRIPTION_AND_DELIVERIES = 4;
-
-    /**
      * Extra Category; to display category tabs
      */
     public static final String EXTRA_BOX_CATEGORY = "extra_box_category";
@@ -111,6 +102,11 @@ public class Constants {
      * UnAuthroized COde
      */
     public static final int UNAUTHORIZED = 401;
+
+    /**
+     * First Order Or not
+     */
+    public static boolean IS_ORDER_MERGE = false;
 
     /**
      * Extra Cart Is Merging

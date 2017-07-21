@@ -45,6 +45,7 @@ public class CartHelperService implements ServiceConnection {
                                 if (fragment != null) {
                                     ((CartFragment) fragment).setCartUpdateServerResponse(true, response.body());
                                 }
+                                Constants.IS_ORDER_MERGE = response.body().isMerge();
                             } else {
                                 if (response.code() == Constants.UNAUTHORIZED) {
                                     //unauthorized user navigate to login

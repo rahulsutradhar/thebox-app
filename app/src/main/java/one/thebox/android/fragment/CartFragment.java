@@ -1,10 +1,9 @@
 package one.thebox.android.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,18 +23,14 @@ import java.util.HashMap;
 
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
-import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
-import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
-import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.cart.CartAdapter;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
@@ -57,6 +52,12 @@ public class CartFragment extends Fragment {
     private int requestCounter = 0;
     private GifImageView progressBar;
     private Toolbar toolbar;
+    private TextView totalPriceCart, totalSavingsCart, totalPriceBottomStrip, deliveryCharges,
+            forwardMessage, progressToCheckoutText, cartQuantityText;
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private Setting setting;
+    private CardView bottomCard;
 
     /**
      * GLide Request Manager
@@ -77,9 +78,8 @@ public class CartFragment extends Fragment {
             if (boxItems.size() > 0) {
                 if (isUpdateRecyclerview) {
                     setupRecyclerView();
-
                 }
-                setCartPrice(CartHelper.getCartPrice());
+                setCartPrices(CartHelper.getCartPrice(), CartHelper.getTotalSavings(), CartHelper.getCartSize());
 
             } else {
                 //cart is Empty
@@ -107,19 +107,37 @@ public class CartFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Empty State
+     */
     public void setCartEmpty() {
         emptyCartLayout.setVisibility(View.VISIBLE);
-        proceedForward.setVisibility(View.GONE);
+        bottomCard.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
+        progressIndicatorLayout.setVisibility(View.GONE);
+        cartQuantityText.setVisibility(View.GONE);
     }
 
-    public void setCartPrice(float price) {
-//        proceedForward.setText("Total Cost: " + Constants.RUPEE_SYMBOL + " " + price + "\n" + "Proceed to Payment");
+    /**
+     * Prices Details
+     *
+     * @param totalPrice
+     * @param totalSavings
+     * @param cartQuantity
+     */
+    public void setCartPrices(float totalPrice, float totalSavings, int cartQuantity) {
+        totalPriceCart.setText(Constants.RUPEE_SYMBOL + totalPrice);
+        totalPriceBottomStrip.setText(Constants.RUPEE_SYMBOL + totalPrice);
+        totalSavingsCart.setText(Constants.RUPEE_SYMBOL + totalSavings);
+        cartQuantityText.setText("(" + cartQuantity + ")");
     }
 
+    /**
+     * Set List of items
+     */
     private void setupRecyclerView() {
         emptyCartLayout.setVisibility(View.GONE);
-        proceedForward.setVisibility(View.VISIBLE);
+        bottomCard.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
         if (adapter == null) {
@@ -158,6 +176,8 @@ public class CartFragment extends Fragment {
                 }
             }
         });
+
+        //Tootalbar
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -167,6 +187,24 @@ public class CartFragment extends Fragment {
             }
         });
 
+        cartQuantityText = (TextView) rootView.findViewById(R.id.cart_quantity);
+        progressIndicatorLayout = (LinearLayout) rootView.findViewById(R.id.progress_indicator);
+        progressToCheckoutText = (TextView) rootView.findViewById(R.id.progress_step_text);
+        progressStep1 = (View) rootView.findViewById(R.id.progress_step1);
+        progressStep2 = (View) rootView.findViewById(R.id.progress_step2);
+        progressStep3 = (View) rootView.findViewById(R.id.progress_step3);
+        progressStep4 = (View) rootView.findViewById(R.id.progress_step4);
+        progressStep5 = (View) rootView.findViewById(R.id.progress_step5);
+
+
+        //Bottom Card
+        totalPriceCart = (TextView) rootView.findViewById(R.id.total_price_cart);
+        totalSavingsCart = (TextView) rootView.findViewById(R.id.total_savings_cart);
+        deliveryCharges = (TextView) rootView.findViewById(R.id.delivery_charges);
+        totalPriceBottomStrip = (TextView) rootView.findViewById(R.id.cart_price_bottom_strip);
+        forwardMessage = (TextView) rootView.findViewById(R.id.forward_message);
+
+        bottomCard = (CardView) rootView.findViewById(R.id.bottom_card);
 
         /**
          * Save CleverTap Event; OpenCart
@@ -179,7 +217,8 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        setting = new SettingService().getSettings(getActivity());
+        setForwardMessageWithIndicator();
     }
 
 
@@ -218,7 +257,6 @@ public class CartFragment extends Fragment {
      * Does User Detials Exist
      */
     public void doesUserExist(boolean isMerge) {
-        Setting setting = new SettingService().getSettings(getActivity());
         if (setting != null) {
             if (setting.isUserDataAvailable()) {
                 //available check for Address
@@ -301,6 +339,40 @@ public class CartFragment extends Fragment {
         intent.putExtra(Constants.EXTRA_IS_CART_MERGING, isMerge);
         intent.putExtra("delivery_address", CoreGsonUtils.toJson(address));
         startActivity(intent);
+    }
+
+
+    /**
+     * Detemine the forward message and Toolbar Indicator
+     */
+    public void setForwardMessageWithIndicator() {
+        if (setting != null) {
+            if (setting.isUserDataAvailable()) {
+                if (setting.isAddressAvailable()) {
+
+                    if (!Constants.IS_ORDER_MERGE) {
+                        progressIndicatorLayout.setVisibility(View.VISIBLE);
+                        forwardMessage.setText("Select Address to Checkout");
+                    } else {
+                        progressIndicatorLayout.setVisibility(View.GONE);
+                        forwardMessage.setText("Select Timeslot to Checkout");
+                    }
+                } else {
+                    //Proceed to Address
+                    progressIndicatorLayout.setVisibility(View.VISIBLE);
+                    forwardMessage.setText("Add Address to Checkout");
+                }
+
+            } else {
+                //Proceed to User Data
+                progressIndicatorLayout.setVisibility(View.VISIBLE);
+                forwardMessage.setText("Add User Details to Checkout");
+            }
+
+        } else {
+            progressIndicatorLayout.setVisibility(View.GONE);
+            forwardMessage.setText("Proceed to Payments");
+        }
     }
 
     /**
