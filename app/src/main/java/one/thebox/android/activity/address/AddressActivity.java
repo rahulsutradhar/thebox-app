@@ -9,11 +9,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.app.Constants;
 import one.thebox.android.fragment.address.AddAddressFragment;
 import one.thebox.android.fragment.address.DeliveryAddressFragment;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
 
 public class AddressActivity extends BaseActivity {
@@ -23,9 +25,10 @@ public class AddressActivity extends BaseActivity {
     private boolean isMerge;
     private Toolbar toolbar;
     private LinearLayout progressIndicatorLayout;
-    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
     private TextView progressStepToCheckoutText;
     private TextView toolbarTitle;
+    private Setting setting;
 
     /**
      * AddAddressFragment
@@ -58,6 +61,7 @@ public class AddressActivity extends BaseActivity {
         progressStep3 = (View) findViewById(R.id.progress_step3);
         progressStep4 = (View) findViewById(R.id.progress_step4);
         progressStep5 = (View) findViewById(R.id.progress_step5);
+        progressStep6 = (View) findViewById(R.id.progress_step6);
 
         toolbarTitle = (TextView) findViewById(R.id.title);
     }
@@ -70,8 +74,18 @@ public class AddressActivity extends BaseActivity {
             isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
         }
 
+        setting = new SettingService().getSettings(this);
+
+        if (setting.isFirstOrder()) {
+            progressIndicatorLayout.setVisibility(View.VISIBLE);
+        } else {
+            progressIndicatorLayout.setVisibility(View.GONE);
+        }
+
         if (type == 1) {
             if (calledFrom == 1) {
+                //called from My Account
+                progressIndicatorLayout.setVisibility(View.GONE);
                 addAddressFragment = new AddAddressFragment(calledFrom, type);
             } else if (calledFrom == 2) {
                 //called from cart Create Address
@@ -79,13 +93,11 @@ public class AddressActivity extends BaseActivity {
             }
             transactToFragment(addAddressFragment);
             toolbarTitle.setText("Add Delivery Address");
-            // getSupportActionBar().setTitle("Add Delivery Address");
         } else if (type == 2) {
             addAddressFragment = new AddAddressFragment(calledFrom, type,
                     CoreGsonUtils.fromJson(getIntent().getStringExtra("edit_delivery_address"), Address.class));
             transactToFragment(addAddressFragment);
             toolbarTitle.setText("Edit Delivery Address");
-            //getSupportActionBar().setTitle("Edit Delivery Address");
         }
         //Address is saved so transact to Delivery Address Fragment
         else if (calledFrom == 2) {
@@ -94,7 +106,6 @@ public class AddressActivity extends BaseActivity {
 
             transactToFragment(deliveryAddressFragment);
             toolbarTitle.setText("Delivery Address");
-            // getSupportActionBar().setTitle("Delivery Address");
         }
 
     }

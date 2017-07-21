@@ -3,6 +3,7 @@ package one.thebox.android.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,9 +56,10 @@ public class CartFragment extends Fragment {
     private TextView totalPriceCart, totalSavingsCart, totalPriceBottomStrip, deliveryCharges,
             forwardMessage, progressStepToCheckoutText, cartQuantityText;
     private LinearLayout progressIndicatorLayout;
-    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
     private Setting setting;
     private CardView bottomCard;
+    private boolean isCartEmpty = false;
 
     /**
      * GLide Request Manager
@@ -76,6 +78,7 @@ public class CartFragment extends Fragment {
         boxItems = CartHelper.getCart();
         if (boxItems != null) {
             if (boxItems.size() > 0) {
+                isCartEmpty = false;
                 if (isUpdateRecyclerview) {
                     setupRecyclerView();
                 }
@@ -83,10 +86,12 @@ public class CartFragment extends Fragment {
 
             } else {
                 //cart is Empty
+                isCartEmpty = true;
                 setCartEmpty();
             }
         } else {
             //cart is Empty
+            isCartEmpty = true;
             setCartEmpty();
         }
 
@@ -195,6 +200,7 @@ public class CartFragment extends Fragment {
         progressStep3 = (View) rootView.findViewById(R.id.progress_step3);
         progressStep4 = (View) rootView.findViewById(R.id.progress_step4);
         progressStep5 = (View) rootView.findViewById(R.id.progress_step5);
+        progressStep6 = (View) rootView.findViewById(R.id.progress_step6);
 
 
         //Bottom Card
@@ -347,28 +353,42 @@ public class CartFragment extends Fragment {
      */
     public void setForwardMessageWithIndicator() {
         if (setting != null) {
-            if (setting.isUserDataAvailable()) {
-                if (setting.isAddressAvailable()) {
+            //check if cart is empty
+            if (!isCartEmpty) {
+                //check if its first order then display progress
+                if (setting.isFirstOrder()) {
+                    if (setting.isUserDataAvailable()) {
+                        if (setting.isAddressAvailable()) {
 
-                    if (!Constants.IS_ORDER_MERGE) {
-                        progressIndicatorLayout.setVisibility(View.VISIBLE);
-                        forwardMessage.setText("Select Address to Checkout");
+                            progressIndicatorLayout.setVisibility(View.VISIBLE);
+                            forwardMessage.setText("Select Address to Checkout");
+                            progressStepToCheckoutText.setText("3 step remaining");
+                            progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+                            progressStep2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+                            progressStep3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+
+                        } else {
+                            //Proceed to Address
+                            progressIndicatorLayout.setVisibility(View.VISIBLE);
+                            forwardMessage.setText("Add Address to Checkout");
+                            progressStepToCheckoutText.setText("4 step remaining");
+                            progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+                            progressStep2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+                        }
+
                     } else {
-                        progressIndicatorLayout.setVisibility(View.GONE);
-                        forwardMessage.setText("Select Timeslot to Checkout");
+                        //Proceed to User Data
+                        progressIndicatorLayout.setVisibility(View.VISIBLE);
+                        forwardMessage.setText("Add User Details to Checkout");
+                        progressStepToCheckoutText.setText("5 step remaining");
+                        progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
+
                     }
                 } else {
-                    //Proceed to Address
-                    progressIndicatorLayout.setVisibility(View.VISIBLE);
-                    forwardMessage.setText("Add Address to Checkout");
+                    progressIndicatorLayout.setVisibility(View.GONE);
+                    forwardMessage.setText("Select Timeslot to Checkout");
                 }
-
-            } else {
-                //Proceed to User Data
-                progressIndicatorLayout.setVisibility(View.VISIBLE);
-                forwardMessage.setText("Add User Details to Checkout");
             }
-
         } else {
             progressIndicatorLayout.setVisibility(View.GONE);
             forwardMessage.setText("Proceed to Payments");

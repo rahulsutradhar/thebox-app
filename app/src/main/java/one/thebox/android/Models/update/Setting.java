@@ -46,6 +46,9 @@ public class Setting implements Serializable {
     @SerializedName("sink_time")
     private long cartPollingTime;
 
+    @SerializedName("first_order")
+    private boolean firstOrder;
+
 
     /***************************************
      * Methods
@@ -168,5 +171,13 @@ public class Setting implements Serializable {
 
     public void setCartPollingTime(long cartPollingTime) {
         this.cartPollingTime = cartPollingTime;
+    }
+
+    public boolean isFirstOrder() {
+        return firstOrder;
+    }
+
+    public void setFirstOrder(boolean firstOrder) {
+        this.firstOrder = firstOrder;
     }
 }

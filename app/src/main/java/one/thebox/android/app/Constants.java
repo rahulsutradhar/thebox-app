@@ -104,11 +104,6 @@ public class Constants {
     public static final int UNAUTHORIZED = 401;
 
     /**
-     * First Order Or not
-     */
-    public static boolean IS_ORDER_MERGE = false;
-
-    /**
      * Extra Cart Is Merging
      */
     public static final String EXTRA_IS_CART_MERGING = "extra_is_cart_merging";

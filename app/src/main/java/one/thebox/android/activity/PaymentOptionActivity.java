@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.R;
@@ -40,6 +42,7 @@ import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.PaymentSelectorFragment;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.FusedLocationService;
 import one.thebox.android.util.PrefUtils;
@@ -64,9 +67,6 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     @BindView(R2.id.txtPlaceOrder)
     TextView txtPlaceOrder;
-    @BindView(R2.id.imgPaymentBack)
-    ImageView imgPaymentBack;
-
 
     int POSITION_OF_VIEW_PAGER;
     String totalPayment = "";
@@ -81,6 +81,8 @@ public class PaymentOptionActivity extends AppCompatActivity {
     private Order order;
     private boolean isPayFromOrder = false;
     private String razorpayId = "";
+    private Toolbar toolbar;
+    private TextView toolbarTextview;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,16 +91,23 @@ public class PaymentOptionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         if (getIntent().hasExtra(Constants.EXTRA_AMOUNT_TO_PAY)) {
             totalPayment = getIntent().getStringExtra(Constants.EXTRA_AMOUNT_TO_PAY);
-            txtTotalAmount.setText(fmt(Double.parseDouble(totalPayment)));
+            txtTotalAmount.setText(Constants.RUPEE_SYMBOL + " " + fmt(Double.parseDouble(totalPayment)));
         }
-        initVariables();
-        setupViewPagerAndTabsMyBox();
-        imgPaymentBack.setOnClickListener(new View.OnClickListener() {
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbarTextview = (TextView) findViewById(R.id.title);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+        toolbarTextview.setText("Select Payment Option");
+
+        initVariables();
+        setupViewPagerAndTabsMyBox();
 
     }
 
@@ -307,6 +316,12 @@ public class PaymentOptionActivity extends AppCompatActivity {
             //clear Cart
             CartHelper.clearCart(true);
             ProductQuantity.trash();
+
+            Setting setting = new SettingService().getSettings(this);
+            if (setting.isFirstOrder()) {
+                setting.setFirstOrder(false);
+                new SettingService().setSettings(this, setting);
+            }
         }
 
         //set the flags

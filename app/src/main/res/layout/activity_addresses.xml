@@ -52,7 +52,8 @@
                         android:layout_below="@+id/title"
                         android:layout_marginTop="3dp"
                         android:orientation="vertical"
-                        android:paddingBottom="2dp">
+                        android:paddingBottom="2dp"
+                        android:visibility="gone">
 
                         <TextView
                             android:id="@+id/progress_step_text"
@@ -61,12 +62,12 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="2 step remaining"
+                            android:text="3 step remaining"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_extra_small3" />
 
                         <LinearLayout
-                            android:layout_width="180dp"
+                            android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:orientation="horizontal">
@@ -83,14 +84,14 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="5dp"
                                 android:layout_weight="1"
-                                android:background="@color/white" />
+                                android:background="@color/md_green_500" />
 
                             <View
                                 android:id="@+id/progress_step3"
                                 android:layout_width="match_parent"
                                 android:layout_height="5dp"
                                 android:layout_weight="1"
-                                android:background="@color/white" />
+                                android:background="@color/md_green_500" />
 
                             <View
                                 android:id="@+id/progress_step4"
@@ -101,6 +102,13 @@
 
                             <View
                                 android:id="@+id/progress_step5"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step6"
                                 android:layout_width="match_parent"
                                 android:layout_height="5dp"
                                 android:layout_weight="1"

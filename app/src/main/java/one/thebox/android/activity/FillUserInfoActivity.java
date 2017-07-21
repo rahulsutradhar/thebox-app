@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -61,11 +62,13 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private boolean isMerge;
 
     private LinearLayout progressIndicatorLayout;
-    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
     private TextView progressStepToCheckoutText;
 
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
+
+    private Setting setting;
 
     public static Intent newInstance(Context context, boolean isMerge) {
         return new Intent(context, FillUserInfoActivity.class)
@@ -114,6 +117,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         progressStep3 = (View) findViewById(R.id.progress_step3);
         progressStep4 = (View) findViewById(R.id.progress_step4);
         progressStep5 = (View) findViewById(R.id.progress_step5);
+        progressStep6 = (View) findViewById(R.id.progress_step6);
 
 
         authenticationService = new AuthenticationService();
@@ -122,8 +126,18 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private void initVariable() {
         try {
             isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            setting = new SettingService().getSettings(this);
+            showProgressIndicatorToolbar();
         } catch (Exception e) {
 
+        }
+    }
+
+    public void showProgressIndicatorToolbar() {
+        if (setting.isFirstOrder()) {
+            progressIndicatorLayout.setVisibility(View.VISIBLE);
+        } else {
+            progressIndicatorLayout.setVisibility(View.GONE);
         }
     }
 

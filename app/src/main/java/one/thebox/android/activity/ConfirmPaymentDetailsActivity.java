@@ -16,6 +16,7 @@ import java.util.HashMap;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
@@ -24,6 +25,7 @@ import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -41,9 +43,10 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private String orderUuid;
 
     private LinearLayout progressIndicatorLayout;
-    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
     private TextView progressStepToCheckoutText;
     private Toolbar toolbar;
+    private Setting setting;
 
 
     public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
@@ -87,6 +90,13 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
             timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
             orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
+
+            setting = new SettingService().getSettings(this);
+            if (setting.isFirstOrder()) {
+                progressIndicatorLayout.setVisibility(View.VISIBLE);
+            } else {
+                progressIndicatorLayout.setVisibility(View.GONE);
+            }
 
             if (!isMerge) {
                 //API Request for 1st order; When there is no previous order
@@ -137,6 +147,7 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         progressStep3 = (View) findViewById(R.id.progress_step3);
         progressStep4 = (View) findViewById(R.id.progress_step4);
         progressStep5 = (View) findViewById(R.id.progress_step5);
+        progressStep5 = (View) findViewById(R.id.progress_step6);
 
     }
 
