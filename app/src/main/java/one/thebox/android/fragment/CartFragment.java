@@ -53,7 +53,7 @@ public class CartFragment extends Fragment {
     private GifImageView progressBar;
     private Toolbar toolbar;
     private TextView totalPriceCart, totalSavingsCart, totalPriceBottomStrip, deliveryCharges,
-            forwardMessage, progressToCheckoutText, cartQuantityText;
+            forwardMessage, progressStepToCheckoutText, cartQuantityText;
     private LinearLayout progressIndicatorLayout;
     private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
     private Setting setting;
@@ -189,7 +189,7 @@ public class CartFragment extends Fragment {
 
         cartQuantityText = (TextView) rootView.findViewById(R.id.cart_quantity);
         progressIndicatorLayout = (LinearLayout) rootView.findViewById(R.id.progress_indicator);
-        progressToCheckoutText = (TextView) rootView.findViewById(R.id.progress_step_text);
+        progressStepToCheckoutText = (TextView) rootView.findViewById(R.id.progress_step_text);
         progressStep1 = (View) rootView.findViewById(R.id.progress_step1);
         progressStep2 = (View) rootView.findViewById(R.id.progress_step2);
         progressStep3 = (View) rootView.findViewById(R.id.progress_step3);

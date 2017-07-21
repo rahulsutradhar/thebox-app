@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,6 +40,11 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private boolean isMerge;
     private String orderUuid;
 
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private TextView progressStepToCheckoutText;
+    private Toolbar toolbar;
+
 
     public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
         Intent intent = new Intent(context, ConfirmPaymentDetailsActivity.class);
@@ -59,7 +66,17 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_details);
-        setTitle("Payment Summary");
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         initViews();
         initVariables();
     }
@@ -111,6 +128,16 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         recyclerViewPaymentDetail.setItemViewCacheSize(3);
         recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
         recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
+
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressStepToCheckoutText = (TextView) findViewById(R.id.progress_step_text);
+        progressStep1 = (View) findViewById(R.id.progress_step1);
+        progressStep2 = (View) findViewById(R.id.progress_step2);
+        progressStep3 = (View) findViewById(R.id.progress_step3);
+        progressStep4 = (View) findViewById(R.id.progress_step4);
+        progressStep5 = (View) findViewById(R.id.progress_step5);
+
     }
 
 

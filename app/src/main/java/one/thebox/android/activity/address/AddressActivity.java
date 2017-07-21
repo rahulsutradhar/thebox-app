@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.R;
@@ -18,6 +21,11 @@ public class AddressActivity extends BaseActivity {
     private int type;
     private int calledFrom;
     private boolean isMerge;
+    private Toolbar toolbar;
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private TextView progressStepToCheckoutText;
+    private TextView toolbarTitle;
 
     /**
      * AddAddressFragment
@@ -34,12 +42,27 @@ public class AddressActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addresses);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        setSupportActionBar(getToolbar());
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initView();
+        initVariable();
+    }
 
+    public void initView() {
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressStepToCheckoutText = (TextView) findViewById(R.id.progress_step_text);
+        progressStep1 = (View) findViewById(R.id.progress_step1);
+        progressStep2 = (View) findViewById(R.id.progress_step2);
+        progressStep3 = (View) findViewById(R.id.progress_step3);
+        progressStep4 = (View) findViewById(R.id.progress_step4);
+        progressStep5 = (View) findViewById(R.id.progress_step5);
+
+        toolbarTitle = (TextView) findViewById(R.id.title);
+    }
+
+    public void initVariable() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             type = getIntent().getIntExtra(Constants.EXTRA_ADDRESS_TYPE, 0);
@@ -55,20 +78,23 @@ public class AddressActivity extends BaseActivity {
                 addAddressFragment = new AddAddressFragment(calledFrom, type, isMerge);
             }
             transactToFragment(addAddressFragment);
-            getSupportActionBar().setTitle("Add Delivery Address");
+            toolbarTitle.setText("Add Delivery Address");
+            // getSupportActionBar().setTitle("Add Delivery Address");
         } else if (type == 2) {
             addAddressFragment = new AddAddressFragment(calledFrom, type,
                     CoreGsonUtils.fromJson(getIntent().getStringExtra("edit_delivery_address"), Address.class));
             transactToFragment(addAddressFragment);
-            getSupportActionBar().setTitle("Edit Delivery Address");
+            toolbarTitle.setText("Edit Delivery Address");
+            //getSupportActionBar().setTitle("Edit Delivery Address");
         }
         //Address is saved so transact to Delivery Address Fragment
         else if (calledFrom == 2) {
-           deliveryAddressFragment = new DeliveryAddressFragment(
-                    CoreGsonUtils.fromJson(getIntent().getStringExtra("delivery_address"), Address.class),isMerge );
+            deliveryAddressFragment = new DeliveryAddressFragment(
+                    CoreGsonUtils.fromJson(getIntent().getStringExtra("delivery_address"), Address.class), isMerge);
 
             transactToFragment(deliveryAddressFragment);
-            getSupportActionBar().setTitle("Delivery Address");
+            toolbarTitle.setText("Delivery Address");
+            // getSupportActionBar().setTitle("Delivery Address");
         }
 
     }
@@ -89,4 +115,22 @@ public class AddressActivity extends BaseActivity {
         fragmentTransaction.commit();
     }
 
+    @Override
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
+
+    @Override
+    public void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
+    @Override
+    public TextView getToolbarTitle() {
+        return toolbarTitle;
+    }
+
+    public void setToolbarTitle(TextView toolbarTitle) {
+        this.toolbarTitle = toolbarTitle;
+    }
 }

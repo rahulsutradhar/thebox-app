@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.View;
 import android.view.Window;
@@ -68,6 +69,11 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private Order selectedMergeOrder;
     private ArrayList<Order> orders;
 
+    private TextView toolbarTitle;
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5;
+    private TextView progressStepToCheckoutText;
+    private Toolbar toolbar;
 
     /**
      * Cart
@@ -106,12 +112,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             //reschedule order
             if (isReschedule) {
                 setContentView(R.layout.activity_confirm_time_slot);
-                setTitle("Reschedule Order");
                 initViewCaseRescheduleOrder();
             } else {
                 //pay from orders; Arriving on
                 setContentView(R.layout.activity_confirm_time_slot);
-                setTitle("Select Time Slot");
                 initViewsCasePayForOrder();
             }
         } else {
@@ -134,6 +138,17 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * Order placing First time; Or Pay from cart
      */
     public void initViewCaseFirstOrder() {
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        toolbarTitle = (TextView) findViewById(R.id.title);
+        toolbarTitle.setText("Select Time Slot");
+        progressStepToCheckoutText = (TextView) findViewById(R.id.progress_step_text);
+        progressStep1 = (View) findViewById(R.id.progress_step1);
+        progressStep2 = (View) findViewById(R.id.progress_step2);
+        progressStep3 = (View) findViewById(R.id.progress_step3);
+        progressStep4 = (View) findViewById(R.id.progress_step4);
+        progressStep5 = (View) findViewById(R.id.progress_step5);
+
         layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
@@ -168,6 +183,17 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
             }
         });
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
 
     }
 
@@ -257,6 +283,12 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
      * Case: Pay from Order
      */
     public void initViewsCasePayForOrder() {
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressIndicatorLayout.setVisibility(View.GONE);
+        toolbarTitle = (TextView) findViewById(R.id.title);
+        toolbarTitle.setText("Select Time Slot");
+
         layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
@@ -297,12 +329,29 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
             }
         });
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
     }
 
     /**
      * Case; Reschedule Order
      */
     public void initViewCaseRescheduleOrder() {
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressIndicatorLayout.setVisibility(View.GONE);
+        toolbarTitle = (TextView) findViewById(R.id.title);
+        toolbarTitle.setText("Reschedule Order");
+
         layoutInformation = (RelativeLayout) findViewById(R.id.information);
         textViewSelectDate = (TextView) findViewById(R.id.text_view_select_date);
         dropDownIcon = (ImageView) findViewById(R.id.drop_down_icon);
@@ -340,6 +389,18 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
                 }
             }
         });
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+
     }
 
     /**
