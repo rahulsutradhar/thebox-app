@@ -49,6 +49,9 @@ public class Setting implements Serializable {
     @SerializedName("first_order")
     private boolean firstOrder;
 
+    @SerializedName("suggested_boxes")
+    private ArrayList<Box> suggestedBoxes;
+
 
     /***************************************
      * Methods
@@ -179,5 +182,13 @@ public class Setting implements Serializable {
 
     public void setFirstOrder(boolean firstOrder) {
         this.firstOrder = firstOrder;
+    }
+
+    public ArrayList<Box> getSuggestedBoxes() {
+        return suggestedBoxes;
+    }
+
+    public void setSuggestedBoxes(ArrayList<Box> suggestedBoxes) {
+        this.suggestedBoxes = suggestedBoxes;
     }
 }

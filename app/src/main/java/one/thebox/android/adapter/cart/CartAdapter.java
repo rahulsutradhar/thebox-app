@@ -2,7 +2,9 @@ package one.thebox.android.adapter.cart;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.R;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
@@ -24,6 +27,7 @@ import one.thebox.android.fragment.CartFragment;
 public class CartAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<Cart> carts = new ArrayList<>();
+    private ArrayList<Box> suggestedBoxes = new ArrayList<>();
     /**
      * GLide Request Manager
      */
@@ -47,6 +51,14 @@ public class CartAdapter extends BaseRecyclerAdapter {
         this.carts.clear();
         this.carts.addAll(carts);
         notifyDataSetChanged();
+    }
+
+    public ArrayList<Box> getSuggestedBoxes() {
+        return suggestedBoxes;
+    }
+
+    public void setSuggestedBoxes(ArrayList<Box> suggestedBoxes) {
+        this.suggestedBoxes = suggestedBoxes;
     }
 
     @Override
@@ -77,6 +89,8 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewHeaderHolder(HeaderHolder holder, int position) {
+        HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+        headerViewHolder.setViews(suggestedBoxes);
 
     }
 
@@ -102,7 +116,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getHeaderLayoutId() {
-        return 0;
+        return R.layout.card_suggested_boxes_cart;
     }
 
     @Override
@@ -111,8 +125,30 @@ public class CartAdapter extends BaseRecyclerAdapter {
     }
 
     private class HeaderViewHolder extends BaseRecyclerAdapter.HeaderHolder {
+
+        private RecyclerView recyclerViewSuggestedBox;
+        private SuggestedBoxAdapter suggestedBoxAdapter;
+        private LinearLayoutManager horizontalLinearLayoutManager;
+
         public HeaderViewHolder(View itemView) {
             super(itemView);
+            recyclerViewSuggestedBox = (RecyclerView) itemView.findViewById(R.id.suggested_box_list);
+            this.horizontalLinearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        }
+
+        public void setViews(ArrayList<Box> suggestedBoxes) {
+            if (suggestedBoxAdapter == null || null == recyclerViewSuggestedBox.getAdapter()) {
+                suggestedBoxAdapter = new SuggestedBoxAdapter(context, glideRequestManager,cartFragment);
+                recyclerViewSuggestedBox.setLayoutManager(horizontalLinearLayoutManager);
+                suggestedBoxAdapter.setSuggestedBoxes(suggestedBoxes);
+                suggestedBoxAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+                recyclerViewSuggestedBox.setAdapter(suggestedBoxAdapter);
+                SnapHelper snapHelper = new PagerSnapHelper();
+                snapHelper.attachToRecyclerView(recyclerViewSuggestedBox);
+            } else {
+                suggestedBoxAdapter.setSuggestedBoxes(suggestedBoxes);
+                suggestedBoxAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
         }
     }
 

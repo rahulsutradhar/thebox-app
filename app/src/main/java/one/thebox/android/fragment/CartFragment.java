@@ -49,6 +49,8 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment {
 
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
+    public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     private RecyclerView recyclerView;
     private LinearLayout proceedForward;
     private CartAdapter adapter;
@@ -153,7 +155,7 @@ public class CartFragment extends Fragment {
 
         cartHashMap.clear();
         //setup recyclerview
-        setupRecyclerView(carts);
+        setupRecyclerView(carts, setting);
 
     }
 
@@ -186,7 +188,7 @@ public class CartFragment extends Fragment {
     /**
      * Set List of items
      */
-    private void setupRecyclerView(ArrayList<Cart> carts) {
+    private void setupRecyclerView(ArrayList<Cart> carts, Setting setting) {
         emptyCartLayout.setVisibility(View.GONE);
         bottomCard.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
@@ -194,6 +196,17 @@ public class CartFragment extends Fragment {
         if (adapter == null) {
             adapter = new CartAdapter(getActivity(), glideRequestManager, this);
             adapter.setCarts(carts);
+            //check if suggestion is available or not
+            if (setting.getSuggestedBoxes() != null) {
+                if (!setting.getSuggestedBoxes().isEmpty()) {
+                    adapter.setSuggestedBoxes(setting.getSuggestedBoxes());
+                    adapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+                } else {
+                    adapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+                }
+            } else {
+                adapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
 
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
