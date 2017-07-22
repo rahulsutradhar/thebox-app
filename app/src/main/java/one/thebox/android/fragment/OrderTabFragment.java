@@ -70,7 +70,7 @@ public class OrderTabFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         holder.setVisibility(View.VISIBLE);
         ViewPagerAdapter adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager(), getActivity());
-        adapter.addFragment(CartFragment.newInstance(), "Cart");
+        adapter.addFragment(CartFragment.newInstance(), "CartProduct");
         adapter.addFragment(UpComingOrderFragment.newInstance(), "Upcoming Deliveries");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);

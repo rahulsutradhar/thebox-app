@@ -1,50 +1,49 @@
 package one.thebox.android.Models.cart;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import one.thebox.android.Models.items.BoxItem;
 
 /**
- * Created by developers on 01/06/17.
+ * Created by developers on 22/07/17.
  */
 
 public class Cart implements Serializable {
 
-    @SerializedName("item_uuid")
-    private String boxItemUuid;
+    private String boxUuid;
+    private String boxTitle;
 
-    private int quantity;
+    private List<BoxItem> boxItems;
 
-    @SerializedName("itemconfig_uuid")
-    private String itemConfigUuid;
-
-    public Cart(String boxItemUuid, int quantity, String itemConfigUuid) {
-        this.boxItemUuid = boxItemUuid;
-        this.quantity = quantity;
-        this.itemConfigUuid = itemConfigUuid;
+    public Cart(String boxUuid, String boxTitle, List<BoxItem> boxItems) {
+        this.boxUuid = boxUuid;
+        this.boxTitle = boxTitle;
+        this.boxItems = boxItems;
     }
 
-    public String getBoxItemUuid() {
-        return boxItemUuid;
+    public String getBoxUuid() {
+        return boxUuid;
     }
 
-    public void setBoxItemUuid(String boxItemUuid) {
-        this.boxItemUuid = boxItemUuid;
+    public void setBoxUuid(String boxUuid) {
+        this.boxUuid = boxUuid;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getBoxTitle() {
+        return boxTitle;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setBoxTitle(String boxTitle) {
+        this.boxTitle = boxTitle;
     }
 
-    public String getItemConfigUuid() {
-        return itemConfigUuid;
+    public List<BoxItem> getBoxItems() {
+        return boxItems;
     }
 
-    public void setItemConfigUuid(String itemConfigUuid) {
-        this.itemConfigUuid = itemConfigUuid;
+    public void setBoxItems(List<BoxItem> boxItems) {
+        this.boxItems = boxItems;
     }
 }

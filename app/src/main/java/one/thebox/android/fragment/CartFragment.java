@@ -21,9 +21,13 @@ import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
+import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.user.User;
@@ -33,6 +37,7 @@ import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.adapter.cart.CartAdapter;
+import one.thebox.android.adapter.cart.CartItemAdapter;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
@@ -50,6 +55,7 @@ public class CartFragment extends Fragment {
     private View rootView;
     private RelativeLayout emptyCartLayout;
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
+
     private int requestCounter = 0;
     private GifImageView progressBar;
     private Toolbar toolbar;
@@ -74,29 +80,6 @@ public class CartFragment extends Fragment {
         return fragment;
     }
 
-    public void initVariables(boolean isUpdateRecyclerview) {
-        boxItems = CartHelper.getCart();
-        if (boxItems != null) {
-            if (boxItems.size() > 0) {
-                isCartEmpty = false;
-                if (isUpdateRecyclerview) {
-                    setupRecyclerView();
-                }
-                setCartPrices(CartHelper.getCartPrice(), CartHelper.getTotalSavings(), CartHelper.getCartSize());
-
-            } else {
-                //cart is Empty
-                isCartEmpty = true;
-                setCartEmpty();
-            }
-        } else {
-            //cart is Empty
-            isCartEmpty = true;
-            setCartEmpty();
-        }
-
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +94,69 @@ public class CartFragment extends Fragment {
         initVariables(true);
         return rootView;
     }
+
+    public void initVariables(boolean isUpdateRecyclerview) {
+        boxItems = CartHelper.getCart();
+        if (boxItems != null) {
+            if (boxItems.size() > 0) {
+                isCartEmpty = false;
+                if (isUpdateRecyclerview) {
+                    //group the boxItem accoording to group
+                    groupBoxItem();
+                }
+                setCartPrices(CartHelper.getCartPrice(), CartHelper.getTotalSavings(), CartHelper.getCartSize());
+
+            } else {
+                //cart is Empty
+                isCartEmpty = true;
+                setCartEmpty();
+            }
+        } else {
+            //cart is Empty
+            isCartEmpty = true;
+            setCartEmpty();
+        }
+    }
+
+    /**
+     * Group BoxItem According to Box
+     */
+    public void groupBoxItem() {
+        TreeMap<String, ArrayList<BoxItem>> cartHashMap = new TreeMap<>();
+        ArrayList<Cart> carts = new ArrayList<>();
+
+        for (BoxItem boxItem : boxItems) {
+            if (boxItem.getBoxUuid() != null) {
+                //grouping
+                if (cartHashMap.containsKey(boxItem.getBoxUuid())) {
+                    ArrayList<BoxItem> getBoxItems = cartHashMap.get(boxItem.getBoxUuid());
+                    getBoxItems.add(boxItem);
+                    cartHashMap.put(boxItem.getBoxUuid(), getBoxItems);
+                } else {
+                    ArrayList<BoxItem> newBoxItems = new ArrayList<>();
+                    newBoxItems.add(boxItem);
+                    cartHashMap.put(boxItem.getBoxUuid(), newBoxItems);
+                }
+            }
+        }
+
+        Setting setting = new SettingService().getSettings(getActivity());
+
+        Set<String> keys = cartHashMap.keySet();
+        for (String uuid : keys) {
+            for (Box box : setting.getBoxes()) {
+                if (uuid.equalsIgnoreCase(box.getUuid())) {
+                    carts.add(new Cart(uuid, box.getTitle(), cartHashMap.get(uuid)));
+                }
+            }
+        }
+
+        cartHashMap.clear();
+        //setup recyclerview
+        setupRecyclerView(carts);
+
+    }
+
 
     /**
      * Empty State
@@ -140,19 +186,19 @@ public class CartFragment extends Fragment {
     /**
      * Set List of items
      */
-    private void setupRecyclerView() {
+    private void setupRecyclerView(ArrayList<Cart> carts) {
         emptyCartLayout.setVisibility(View.GONE);
         bottomCard.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
 
         if (adapter == null) {
             adapter = new CartAdapter(getActivity(), glideRequestManager, this);
-            adapter.setBoxItems(boxItems);
+            adapter.setCarts(carts);
 
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
         } else {
-            adapter.setBoxItems(boxItems);
+            adapter.setCarts(carts);
             adapter.notifyDataSetChanged();
         }
 
@@ -317,7 +363,7 @@ public class CartFragment extends Fragment {
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         /**
          * 1- My Account Fragment
-         * 2- Cart Fargment
+         * 2- CartProduct Fargment
          */
         intent.putExtra("called_from", 2);
         /**
@@ -391,12 +437,11 @@ public class CartFragment extends Fragment {
             }
         } else {
             progressIndicatorLayout.setVisibility(View.GONE);
-            forwardMessage.setText("Proceed to Payments");
         }
     }
 
     /**
-     * When proceed from Cart
+     * When proceed from CartProduct
      */
     public void setCleverTapEventProocedFromCart() {
         HashMap<String, Object> cartItems = new HashMap<>();

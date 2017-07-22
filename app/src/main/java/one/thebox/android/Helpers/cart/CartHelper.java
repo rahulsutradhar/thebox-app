@@ -27,7 +27,7 @@ import one.thebox.android.util.PrefUtils;
 public class CartHelper {
 
     /**
-     * Add Box Item to Cart
+     * Add Box Item to CartProduct
      */
     public static void addBoxItemToCart(final BoxItem boxItem) {
         Realm realm = TheBox.getRealm();
@@ -41,7 +41,7 @@ public class CartHelper {
     }
 
     /**
-     * Remove Box Item from Cart
+     * Remove Box Item from CartProduct
      */
     public static void removeItemFromCart(final BoxItem boxItem) {
         //removing from memory
@@ -55,7 +55,7 @@ public class CartHelper {
     }
 
     /**
-     * Update Quantity in Cart
+     * Update Quantity in CartProduct
      */
     public static void updateQuantityInCart(final BoxItem boxItem, final int quantity) {
         Realm realm = TheBox.getRealm();
@@ -87,7 +87,7 @@ public class CartHelper {
     }
 
     /**
-     * Update ItemConfig in Cart
+     * Update ItemConfig in CartProduct
      */
     public static void updateItemConfigInCart(final BoxItem boxItem, final ItemConfig itemConfig) {
         Realm realm = TheBox.getRealm();
@@ -119,7 +119,7 @@ public class CartHelper {
     }
 
     /**
-     * Update ItemConfig inside Cart
+     * Update ItemConfig inside CartProduct
      */
     public static BoxItem updateItemConfigInsideCart(final BoxItem boxItem, ItemConfig itemConfig) {
         BoxItem updatedBoxItem = null;
@@ -138,7 +138,7 @@ public class CartHelper {
     }
 
     /**
-     * Get Cart Size
+     * Get CartProduct Size
      */
     public static int getCartSize() {
         int size = 0;
@@ -160,7 +160,7 @@ public class CartHelper {
     }
 
     /**
-     * Get Cart
+     * Get CartProduct
      */
     public static ArrayList<BoxItem> getCart() {
         ArrayList<BoxItem> cart = new ArrayList<>();
@@ -173,7 +173,7 @@ public class CartHelper {
     }
 
     /**
-     * Update Cart After fetching from Server; when app opens
+     * Update CartProduct After fetching from Server; when app opens
      */
     public static void updateCart(final RealmList<BoxItem> boxItems) {
         //remove all item
@@ -199,7 +199,7 @@ public class CartHelper {
     }
 
     /**
-     * Clear Cart
+     * Clear CartProduct
      */
     public static void clearCart(final boolean shallBroadCast) {
         Realm realm = TheBox.getRealm();
@@ -227,7 +227,7 @@ public class CartHelper {
     }
 
     /**
-     * Calculate Total Price of Cart
+     * Calculate Total Price of CartProduct
      */
     public static float getCartPrice() {
         float price = 0;
@@ -238,7 +238,7 @@ public class CartHelper {
     }
 
     /**
-     * Calculate Total Savings in Cart
+     * Calculate Total Savings in CartProduct
      */
     public static float getTotalSavings() {
         float savings = 0;
@@ -249,7 +249,7 @@ public class CartHelper {
     }
 
     /**
-     * Send Broadcast to show number of item in Cart status
+     * Send Broadcast to show number of item in CartProduct status
      */
     public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {
         Intent intent = new Intent(SearchDetailFragment.BROADCAST_EVENT_TAB);

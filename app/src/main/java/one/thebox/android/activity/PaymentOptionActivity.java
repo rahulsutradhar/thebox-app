@@ -247,7 +247,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
 
     /**
-     * Make Payment COD: Cart
+     * Make Payment COD: CartProduct
      */
     private void makePayment(MakePaymentRequest makePaymentRequest) {
         final BoxLoader dialog = new BoxLoader(this).show();
@@ -313,7 +313,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
 
     public void paymentCompleteClearCartAndMoveToHome() {
         if (!isPayFromOrder) {
-            //clear Cart
+            //clear CartProduct
             CartHelper.clearCart(true);
             ProductQuantity.trash();
 
@@ -368,7 +368,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
             );
 
             options.put("amount", amount);
-            options.put("name", "The Box Cart");
+            options.put("name", "The Box CartProduct");
             options.put("prefill", new JSONObject("{email: '" + email + "', contact: '" + phonenumber + "', name: '" + name + "'}"));
 
             razorpayCheckout.open(activity, options);

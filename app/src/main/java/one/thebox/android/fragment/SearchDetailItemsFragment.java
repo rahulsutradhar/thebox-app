@@ -224,7 +224,7 @@ public class SearchDetailItemsFragment extends Fragment {
                     if (dy != 0) {
 
                         /**
-                         * Specail Cart Event
+                         * Specail CartProduct Event
                          */
                         EventBus.getDefault().post(new ShowSpecialCardEvent(false));
 
@@ -314,7 +314,7 @@ public class SearchDetailItemsFragment extends Fragment {
     }
 
     /**
-     * Check if item is in Cart
+     * Check if item is in CartProduct
      */
     public int isBoxItemInCart(BoxItem boxItem) {
         int pos = -1;

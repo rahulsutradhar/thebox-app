@@ -3,7 +3,7 @@ package one.thebox.android.api.RequestBodies.cart;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.cart.CartProduct;
 
 /**
  * Created by developers on 01/06/17.
@@ -11,17 +11,17 @@ import one.thebox.android.Models.cart.Cart;
 
 public class CartItemRequest implements Serializable {
 
-    private ArrayList<Cart> carts;
+    private ArrayList<CartProduct> cartProducts;
 
-    public CartItemRequest(ArrayList<Cart> carts) {
-        this.carts = carts;
+    public CartItemRequest(ArrayList<CartProduct> cartProducts) {
+        this.cartProducts = cartProducts;
     }
 
-    public ArrayList<Cart> getCarts() {
-        return carts;
+    public ArrayList<CartProduct> getCartProducts() {
+        return cartProducts;
     }
 
-    public void setCarts(ArrayList<Cart> carts) {
-        this.carts = carts;
+    public void setCartProducts(ArrayList<CartProduct> cartProducts) {
+        this.cartProducts = cartProducts;
     }
 }

@@ -151,7 +151,7 @@ public interface APIService {
     Call<BoxCategoryResponse> getCategories(@Header("Authorization") String accessToken, @Path("box_uuid") String boxUuid);
 
     /**
-     * Sync Cart with Server
+     * Sync CartProduct with Server
      */
     @POST("/consumer/api/v1/carts")
     Call<CartItemResponse> syncCart(@Header("Authorization") String accessToken, @Body CartItemRequest cartItemRequest);

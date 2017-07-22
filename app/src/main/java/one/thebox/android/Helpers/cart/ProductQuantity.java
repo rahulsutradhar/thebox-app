@@ -4,8 +4,8 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.cart.CartProduct;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.cart.Cart;
 import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.services.cart.CartHelperService;
 
@@ -15,20 +15,20 @@ import one.thebox.android.services.cart.CartHelperService;
 
 public class ProductQuantity {
 
-    private static ArrayList<Cart> productQuantities = new ArrayList<>();
+    private static ArrayList<CartProduct> productQuantities = new ArrayList<>();
 
     /**
      * Add Product
      */
     public static void addProduct(BoxItem boxItem) {
-        productQuantities.add(new Cart(boxItem.getUuid(), boxItem.getQuantity(), boxItem.getSelectedItemConfig().getUuid()));
+        productQuantities.add(new CartProduct(boxItem.getUuid(), boxItem.getQuantity(), boxItem.getSelectedItemConfig().getUuid()));
     }
 
     /**
      * Set product
      */
     public static void setProduct(BoxItem boxItem, int position) {
-        productQuantities.set(position, new Cart(boxItem.getUuid(), boxItem.getQuantity(), boxItem.getSelectedItemConfig().getUuid()));
+        productQuantities.set(position, new CartProduct(boxItem.getUuid(), boxItem.getQuantity(), boxItem.getSelectedItemConfig().getUuid()));
     }
 
     /**
@@ -39,8 +39,8 @@ public class ProductQuantity {
         if (getCartSize() > 0) {
             int index = 0;
             boolean flag = false;
-            for (Cart cart : getProductQuantities()) {
-                if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+            for (CartProduct cartProduct : getProductQuantities()) {
+                if (cartProduct.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                     flag = true;
                     setProduct(boxItem, index);
                     break;
@@ -62,8 +62,8 @@ public class ProductQuantity {
      */
     public static void removeProduct(BoxItem boxItem) {
         int index = 0;
-        for (Cart cart : productQuantities) {
-            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+        for (CartProduct cartProduct : productQuantities) {
+            if (cartProduct.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.remove(index);
                 break;
             }
@@ -76,8 +76,8 @@ public class ProductQuantity {
      */
     public static void updateQuantity(BoxItem boxItem, int quantity) {
         int index = 0;
-        for (Cart cart : productQuantities) {
-            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+        for (CartProduct cartProduct : productQuantities) {
+            if (cartProduct.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.get(index).setQuantity(quantity);
                 break;
             }
@@ -90,8 +90,8 @@ public class ProductQuantity {
      */
     public static void updateItemConfig(BoxItem boxItem, ItemConfig selectedItemConfig) {
         int index = 0;
-        for (Cart cart : productQuantities) {
-            if (cart.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
+        for (CartProduct cartProduct : productQuantities) {
+            if (cartProduct.getBoxItemUuid().equalsIgnoreCase(boxItem.getUuid())) {
                 productQuantities.get(index).setItemConfigUuid(selectedItemConfig.getUuid());
                 break;
             }
@@ -100,11 +100,11 @@ public class ProductQuantity {
     }
 
     /**
-     * Synced With Cart Item; fetched in Setting call
+     * Synced With CartProduct Item; fetched in Setting call
      */
-    public static void syncedWithCart(ArrayList<Cart> carts, Context context) {
+    public static void syncedWithCart(ArrayList<CartProduct> cartProducts, Context context) {
         trash();
-        setProductQuantities(carts);
+        setProductQuantities(cartProducts);
 
         //check if service is running or not
         CartHelperService.checkServiceRunningWhenAdded(context);
@@ -125,11 +125,11 @@ public class ProductQuantity {
     }
 
 
-    public static ArrayList<Cart> getProductQuantities() {
+    public static ArrayList<CartProduct> getProductQuantities() {
         return productQuantities;
     }
 
-    public static void setProductQuantities(ArrayList<Cart> productQuantities) {
+    public static void setProductQuantities(ArrayList<CartProduct> productQuantities) {
         ProductQuantity.productQuantities = productQuantities;
     }
 }

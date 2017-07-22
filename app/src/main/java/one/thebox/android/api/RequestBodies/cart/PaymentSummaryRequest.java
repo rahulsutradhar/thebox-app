@@ -3,7 +3,7 @@ package one.thebox.android.api.RequestBodies.cart;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.cart.CartProduct;
 
 /**
  * Created by developers on 02/06/17.
@@ -11,17 +11,17 @@ import one.thebox.android.Models.cart.Cart;
 
 public class PaymentSummaryRequest implements Serializable {
 
-    private ArrayList<Cart> carts;
+    private ArrayList<CartProduct> cartProducts;
 
-    public PaymentSummaryRequest(ArrayList<Cart> carts){
-        this.carts = carts;
+    public PaymentSummaryRequest(ArrayList<CartProduct> cartProducts){
+        this.cartProducts = cartProducts;
     }
 
-    public ArrayList<Cart> getCarts() {
-        return carts;
+    public ArrayList<CartProduct> getCartProducts() {
+        return cartProducts;
     }
 
-    public void setCarts(ArrayList<Cart> carts) {
-        this.carts = carts;
+    public void setCartProducts(ArrayList<CartProduct> cartProducts) {
+        this.cartProducts = cartProducts;
     }
 }

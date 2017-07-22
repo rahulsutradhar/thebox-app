@@ -63,7 +63,7 @@ public class AddAddressFragment extends FragmentBase {
         this.address = address;
     }
 
-    //from Cart to add Address
+    //from CartProduct to add Address
     @SuppressLint("ValidFragment")
     public AddAddressFragment(int calledFrom, int type, boolean isMerge) {
         this.calledFrom = calledFrom;

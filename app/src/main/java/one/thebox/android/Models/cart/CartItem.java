@@ -21,7 +21,7 @@ public class CartItem implements Serializable {
     private String itemconfigUuid;
 
     @SerializedName("item_uuid")
-    private String boxUuid;
+    private String boxItemUuid;
 
     @SerializedName("selected_itemconfig")
     private ItemConfig selectedItemconfig;
@@ -58,12 +58,12 @@ public class CartItem implements Serializable {
         this.itemconfigUuid = itemconfigUuid;
     }
 
-    public String getBoxUuid() {
-        return boxUuid;
+    public String getBoxItemUuid() {
+        return boxItemUuid;
     }
 
-    public void setBoxUuid(String boxUuid) {
-        this.boxUuid = boxUuid;
+    public void setBoxItemUuid(String boxItemUuid) {
+        this.boxItemUuid = boxItemUuid;
     }
 
     public ItemConfig getSelectedItemconfig() {

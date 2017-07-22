@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/very_light_grey"
+    android:orientation="vertical"
+    android:paddingTop="5dp">
+
+    <TextView
+        android:id="@+id/box_title"
+        style="@style/AppTheme.Widget.Avenir.Next.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:gravity="left"
+        android:padding="5dp"
+        android:text="The Dairy Box"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_medium1" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cart_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

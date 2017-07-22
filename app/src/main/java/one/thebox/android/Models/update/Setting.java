@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.cart.CartProduct;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
@@ -77,15 +77,15 @@ public class Setting implements Serializable {
      *
      * @return
      */
-    public ArrayList<Cart> getParsedCartUuids() {
-        ArrayList<Cart> carts = new ArrayList<>();
+    public ArrayList<CartProduct> getParsedCartUuids() {
+        ArrayList<CartProduct> cartProducts = new ArrayList<>();
 
         for (CartItem cartItem : getCartItems()) {
-            Cart cart = new Cart(cartItem.getBoxUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
-            carts.add(cart);
+            CartProduct cartProduct = new CartProduct(cartItem.getBoxItemUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
+            cartProducts.add(cartProduct);
         }
 
-        return carts;
+        return cartProducts;
     }
 
 

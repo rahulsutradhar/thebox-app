@@ -149,7 +149,7 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <!-- Cart Items -->
+    <!-- CartProduct Items -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -157,7 +157,7 @@
         android:layout_above="@+id/bottom_card"
         android:layout_below="@+id/app_bar_layout" />
 
-    <!-- Bottom Cart Details-->
+    <!-- Bottom CartProduct Details-->
     <android.support.v7.widget.CardView
         android:id="@+id/bottom_card"
         android:layout_width="match_parent"
@@ -263,7 +263,7 @@
 
             </RelativeLayout>
 
-            <!-- Cart Pricing Detials-->
+            <!-- CartProduct Pricing Detials-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -496,7 +496,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:text="No item found in cart."
+                android:text="No item found in cartProduct."
                 android:textColor="@color/dim_gray"
                 android:textSize="@dimen/text_medium2" />
 

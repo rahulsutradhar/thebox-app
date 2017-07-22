@@ -209,7 +209,7 @@ public class MainActivity extends BaseActivity implements
     public void updateAppSettings() {
         try {
             if (setting.getCartItems() != null) {
-                //update Cart
+                //update CartProduct
                 CartHelper.updateCart(setting.getParsedCartItems());
                 //synced memory with cart
                 ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
@@ -288,7 +288,7 @@ public class MainActivity extends BaseActivity implements
                         } else {
 
                             /**
-                             * CleverTap Event Cart Icon clicked
+                             * CleverTap Event CartProduct Icon clicked
                              */
 
                             startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));

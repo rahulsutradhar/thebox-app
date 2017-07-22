@@ -115,7 +115,7 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
     }
 
     /**
-     * Called from Cart to Save Address
+     * Called from CartProduct to Save Address
      * type=1
      * calledFrom =2
      */
@@ -540,10 +540,10 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
                 addAddressFragment.getActivity().setResult(2, intent);
                 addAddressFragment.getActivity().finish();
             }
-            //Cart frament
+            //CartProduct frament
             else if (calledFrom == 2) {
 
-                //Clevertap Event for Saved Address After Proceed from Cart
+                //Clevertap Event for Saved Address After Proceed from CartProduct
                 setCleverTapEventSaveAddress(address);
 
                 //transact to delivery Address Fragment
