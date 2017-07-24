@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import one.thebox.android.Models.cart.CartProduct;
+import one.thebox.android.Models.mycart.Cart;
 
 /**
  * Created by developers on 06/06/17.
@@ -20,8 +20,7 @@ public class MakePaymentRequest implements Serializable {
     @SerializedName("timestamp")
     private long timeSlotTimeStamp;
 
-    @SerializedName("carts")
-    private ArrayList<CartProduct> cartProducts;
+    private ArrayList<Cart> carts;
 
     @SerializedName("merge")
     private boolean isMerge;
@@ -35,20 +34,20 @@ public class MakePaymentRequest implements Serializable {
     private String orderUuid;
 
     /**
-     * COD : CartProduct
+     * COD : Cart
      *
      * @param cod
      * @param isMerge
      * @param addressUuid
      * @param timeSlotTimeStamp
-     * @param cartProducts
+     * @param carts
      */
-    public MakePaymentRequest(boolean cod, boolean isMerge, String addressUuid, long timeSlotTimeStamp, ArrayList<CartProduct> cartProducts) {
+    public MakePaymentRequest(boolean cod, boolean isMerge, String addressUuid, long timeSlotTimeStamp, ArrayList<Cart> carts) {
         this.cod = cod;
         this.isMerge = isMerge;
         this.addressUuid = addressUuid;
         this.timeSlotTimeStamp = timeSlotTimeStamp;
-        this.cartProducts = cartProducts;
+        this.carts = carts;
     }
 
     /**
@@ -58,33 +57,33 @@ public class MakePaymentRequest implements Serializable {
      * @param isMerge
      * @param addressUuid
      * @param orderUuid
-     * @param cartProducts
+     * @param carts
      */
-    public MakePaymentRequest(boolean cod, boolean isMerge, String addressUuid, String orderUuid, ArrayList<CartProduct> cartProducts) {
+    public MakePaymentRequest(boolean cod, boolean isMerge, String addressUuid, String orderUuid, ArrayList<Cart> carts) {
         this.cod = cod;
         this.isMerge = isMerge;
         this.addressUuid = addressUuid;
         this.orderUuid = orderUuid;
-        this.cartProducts = cartProducts;
+        this.carts = carts;
     }
 
     /**
-     * ONLINE : CartProduct
+     * ONLINE : Cart
      *
      * @param cod
      * @param isMerge
      * @param razorpayId
      * @param addressUuid
      * @param timeSlotTimeStamp
-     * @param cartProducts
+     * @param carts
      */
-    public MakePaymentRequest(boolean cod, boolean isMerge, String razorpayId, String addressUuid, long timeSlotTimeStamp, ArrayList<CartProduct> cartProducts) {
+    public MakePaymentRequest(boolean cod, boolean isMerge, String razorpayId, String addressUuid, long timeSlotTimeStamp, ArrayList<Cart> carts) {
         this.cod = cod;
         this.isMerge = isMerge;
         this.razorpayId = razorpayId;
         this.addressUuid = addressUuid;
         this.timeSlotTimeStamp = timeSlotTimeStamp;
-        this.cartProducts = cartProducts;
+        this.carts = carts;
     }
 
     /**
@@ -95,15 +94,15 @@ public class MakePaymentRequest implements Serializable {
      * @param razorpayId
      * @param addressUuid
      * @param orderUuid
-     * @param cartProducts
+     * @param carts
      */
-    public MakePaymentRequest(boolean cod, boolean isMerge, String razorpayId, String addressUuid, String orderUuid, ArrayList<CartProduct> cartProducts) {
+    public MakePaymentRequest(boolean cod, boolean isMerge, String razorpayId, String addressUuid, String orderUuid, ArrayList<Cart> carts) {
         this.cod = cod;
         this.isMerge = isMerge;
         this.razorpayId = razorpayId;
         this.addressUuid = addressUuid;
         this.orderUuid = orderUuid;
-        this.cartProducts = cartProducts;
+        this.carts = carts;
     }
 
     /**
@@ -164,12 +163,12 @@ public class MakePaymentRequest implements Serializable {
         this.timeSlotTimeStamp = timeSlotTimeStamp;
     }
 
-    public ArrayList<CartProduct> getCartProducts() {
-        return cartProducts;
+    public ArrayList<Cart> getCarts() {
+        return carts;
     }
 
-    public void setCartProducts(ArrayList<CartProduct> cartProducts) {
-        this.cartProducts = cartProducts;
+    public void setCarts(ArrayList<Cart> carts) {
+        this.carts = carts;
     }
 
     public boolean isMerge() {

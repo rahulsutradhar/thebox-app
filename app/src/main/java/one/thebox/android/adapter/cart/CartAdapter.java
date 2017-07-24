@@ -13,7 +13,7 @@ import com.bumptech.glide.RequestManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.mycart.CartProductDetail;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.R;
@@ -26,7 +26,7 @@ import one.thebox.android.fragment.CartFragment;
 
 public class CartAdapter extends BaseRecyclerAdapter {
 
-    private ArrayList<Cart> carts = new ArrayList<>();
+    private ArrayList<CartProductDetail> cartProductDetails = new ArrayList<>();
     private ArrayList<Box> suggestedBoxes = new ArrayList<>();
     /**
      * GLide Request Manager
@@ -43,13 +43,13 @@ public class CartAdapter extends BaseRecyclerAdapter {
         this.cartFragment = cartFragment;
     }
 
-    public ArrayList<Cart> getCarts() {
-        return carts;
+    public ArrayList<CartProductDetail> getCartProductDetails() {
+        return cartProductDetails;
     }
 
-    public void setCarts(ArrayList<Cart> carts) {
-        this.carts.clear();
-        this.carts.addAll(carts);
+    public void setCartProductDetails(ArrayList<CartProductDetail> cartProductDetails) {
+        this.cartProductDetails.clear();
+        this.cartProductDetails.addAll(cartProductDetails);
         notifyDataSetChanged();
     }
 
@@ -84,7 +84,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(carts.get(position), position);
+        itemViewHolder.setViews(cartProductDetails.get(position), position);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
     @Override
     public int getItemsCount() {
-        return carts.size();
+        return cartProductDetails.size();
     }
 
     @Override
@@ -138,7 +138,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
 
         public void setViews(ArrayList<Box> suggestedBoxes) {
             if (suggestedBoxAdapter == null || null == recyclerViewSuggestedBox.getAdapter()) {
-                suggestedBoxAdapter = new SuggestedBoxAdapter(context, glideRequestManager,cartFragment);
+                suggestedBoxAdapter = new SuggestedBoxAdapter(context, glideRequestManager, cartFragment);
                 recyclerViewSuggestedBox.setLayoutManager(horizontalLinearLayoutManager);
                 suggestedBoxAdapter.setSuggestedBoxes(suggestedBoxes);
                 suggestedBoxAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
@@ -166,27 +166,27 @@ public class CartAdapter extends BaseRecyclerAdapter {
             this.verticalLinearLayoutManager = new LinearLayoutManager(mContext);
         }
 
-        public void setViews(final Cart cart, final int position) {
+        public void setViews(final CartProductDetail cartProductDetail, final int position) {
             try {
-                if (cart.getBoxItems() == null || cart.getBoxItems().isEmpty()) {
+                if (cartProductDetail.getBoxItems() == null || cartProductDetail.getBoxItems().isEmpty()) {
                     boxTitle.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.GONE);
                     removeItemFromPosition(position);
                 } else {
                     boxTitle.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.VISIBLE);
-                    boxTitle.setText(cart.getBoxTitle());
+                    boxTitle.setText(cartProductDetail.getBoxTitle());
                     recyclerView.setLayoutManager(verticalLinearLayoutManager);
 
                     cartItemAdapter = new CartItemAdapter(context, glideRequestManager, cartFragment);
-                    cartItemAdapter.setBoxItems(cart.getBoxItems());
+                    cartItemAdapter.setBoxItems(cartProductDetail.getBoxItems());
                     cartItemAdapter.addOnBoxItemChangeListener(new CartItemAdapter.OnBoxItemChange() {
                         @Override
                         public void onBoxItem(List<BoxItem> boxItemList) {
                             if (boxItemList != null) {
                                 if (!boxItemList.isEmpty()) {
-                                    carts.get(position).setBoxItems(boxItemList);
-                                    setViews(carts.get(position), position);
+                                    cartProductDetails.get(position).setBoxItems(boxItemList);
+                                    setViews(cartProductDetails.get(position), position);
                                 } else {
                                     removeItemFromPosition(position);
                                 }
@@ -204,7 +204,7 @@ public class CartAdapter extends BaseRecyclerAdapter {
         }
 
         public void removeItemFromPosition(int position) {
-            carts.remove(position);
+            cartProductDetails.remove(position);
             notifyItemRemoved(position);
             notifyDataSetChanged();
         }

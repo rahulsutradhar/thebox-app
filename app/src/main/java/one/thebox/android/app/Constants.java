@@ -27,7 +27,7 @@ public class Constants {
     public static final String EXTRA_NOTIFICATION_PARAMETER = "extra_notification_params";
 
     /**
-     * Items in CartProduct
+     * Items in Cart
      */
     public static final String EXTRA_ITEMS_IN_CART = "extra_item_in_cart";
 
@@ -89,7 +89,7 @@ public class Constants {
     public static final String EXTRA_CATEGORY_LIST = "extra_category_list";
 
     /**
-     * Update CartProduct Polling Time
+     * Update Cart Polling Time
      */
     public static long UPDATE_CART_POLLING_TIME = 5000;
 
@@ -104,7 +104,7 @@ public class Constants {
     public static final int UNAUTHORIZED = 401;
 
     /**
-     * Extra CartProduct Is Merging
+     * Extra Cart Is Merging
      */
     public static final String EXTRA_IS_CART_MERGING = "extra_is_cart_merging";
 

@@ -208,7 +208,7 @@ public class MainActivity extends BaseActivity implements
     public void updateAppSettings() {
         try {
             if (setting.getCartItems() != null) {
-                //update CartProduct
+                //update Cart
                 CartHelper.updateCart(setting.getParsedCartItems());
                 //synced memory with cart
                 ProductQuantity.syncedWithCart(setting.getParsedCartUuids(), this);
@@ -217,6 +217,8 @@ public class MainActivity extends BaseActivity implements
             if (setting.getCartPollingTime() != 0) {
                 Constants.UPDATE_CART_POLLING_TIME = setting.getCartPollingTime();
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,7 +289,7 @@ public class MainActivity extends BaseActivity implements
                         } else {
 
                             /**
-                             * CleverTap Event CartProduct Icon clicked
+                             * CleverTap Event Cart Icon clicked
                              */
 
                             startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
@@ -785,7 +787,7 @@ public class MainActivity extends BaseActivity implements
             }
             case 5: {
                 /**
-                 * Called from Suggested Box Cart to open Search Detail Fragment
+                 * Called from Suggested Box CartProductDetail to open Search Detail Fragment
                  */
                 attachSearchDetailFragmentForBoxUuid(intent);
                 break;
@@ -835,6 +837,7 @@ public class MainActivity extends BaseActivity implements
 
     /**
      * Get Data and opens Search Detail Fragment for the Box Uuid
+     *
      * @param intent
      */
     public void attachSearchDetailFragmentForBoxUuid(Intent intent) {

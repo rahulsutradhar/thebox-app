@@ -99,7 +99,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
                         Intent intent = new Intent(getActivity(), AddressActivity.class);
                         /**
                          * 1- My Account Fragment
-                         * 2- CartProduct Fargment
+                         * 2- Cart Fargment
                          */
                         intent.putExtra("called_from", 1);
                         /**

@@ -405,7 +405,7 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
         }
 
         /**
-         * Update Quantity of BoxItem in CartProduct
+         * Update Quantity of BoxItem in Cart
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             try {
@@ -428,7 +428,7 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
         }
 
         /**
-         * Remove BoxItem from CartProduct
+         * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
             /**
@@ -455,7 +455,7 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
         }
 
         /**
-         * Update ItemConfig in CartProduct
+         * Update ItemConfig in Cart
          */
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position, boolean isFrequency) {
             try {
@@ -488,7 +488,7 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
         /**
          * CleverTap Event;
          * <p>
-         * Remove Item from CartProduct;
+         * Remove Item from Cart;
          */
         public void setCleverTapEventItemRemoveFromCart(BoxItem boxItem) {
             try {

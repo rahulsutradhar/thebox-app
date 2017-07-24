@@ -80,7 +80,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private Setting setting;
 
     /**
-     * CartProduct
+     * Cart
      */
     public static Intent newInstance(Context context, boolean isMerge) {
         return new Intent(context, ConfirmTimeSlotActivity.class)
@@ -768,7 +768,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     /**
      * Clever Tap Events
      * <p>
-     * TimeSlot from CartProduct
+     * TimeSlot from Cart
      */
     public void setCleverTapEventTimeSlotsFromCart() {
         try {

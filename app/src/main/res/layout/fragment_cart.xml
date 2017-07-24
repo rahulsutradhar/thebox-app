@@ -149,7 +149,7 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <!-- CartProduct Items -->
+    <!-- Cart Items -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -157,7 +157,7 @@
         android:layout_above="@+id/bottom_card"
         android:layout_below="@+id/app_bar_layout" />
 
-    <!-- Bottom CartProduct Details-->
+    <!-- Bottom Cart Details-->
     <android.support.v7.widget.CardView
         android:id="@+id/bottom_card"
         android:layout_width="match_parent"
@@ -171,43 +171,6 @@
             android:orientation="vertical">
 
 
-            <!-- Promotional Tool -->
-            <LinearLayout
-                android:id="@+id/promotional_tool"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/raspberry_red"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:visibility="visible">
-
-                <TextView
-                    android:id="@+id/message_line1"
-                    style="@style/AppTheme.Widget.Avenir.Next.Medium"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:gravity="center_horizontal"
-                    android:padding="2dp"
-                    android:text="Amazing offer on First Delivery"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_small1" />
-
-                <TextView
-                    android:id="@+id/message_line2"
-                    style="@style/AppTheme.Widget.Avenir.Heavy"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:gravity="center_horizontal"
-                    android:padding="0dp"
-                    android:text="Get 750ml milk with 500g of muskmelon"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_extra_small2" />
-
-
-            </LinearLayout>
-
             <!-- Tutorial Tool -->
             <RelativeLayout
                 android:id="@+id/tutorial_tool"
@@ -215,7 +178,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/davy_grey"
                 android:padding="8dp"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -223,7 +186,9 @@
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/remove_message"
                     android:orientation="vertical"
-                    android:paddingLeft="8dp">
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp">
 
                     <TextView
                         android:id="@+id/tutorial_message_line1"
@@ -235,21 +200,10 @@
                         android:paddingBottom="1dp"
                         android:paddingRight="2dp"
                         android:paddingTop="2dp"
-                        android:text="You can always change subscription."
+                        android:text="You can always change subscription You can always change subscription You can always change subscription."
                         android:textColor="@color/white"
                         android:textSize="@dimen/text_small1" />
 
-                    <TextView
-                        android:id="@+id/tutorial_message_line2"
-                        style="@style/AppTheme.Widget.Avenir.Heavy"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="0dp"
-                        android:gravity="left"
-                        android:padding="0dp"
-                        android:text="We charge per order, never upfront."
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/text_extra_small2" />
 
                 </LinearLayout>
 
@@ -263,7 +217,32 @@
 
             </RelativeLayout>
 
-            <!-- CartProduct Pricing Detials-->
+            <!-- Promotional Tool -->
+            <LinearLayout
+                android:id="@+id/promotional_tool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/raspberry_red"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/message_line1"
+                    style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:gravity="center_horizontal"
+                    android:padding="2dp"
+                    android:text="Amazing offer on First Delivery Amazing offer on First Delivery Amazing offer on First Delivery"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small1" />
+
+
+            </LinearLayout>
+
+            <!-- Cart Pricing Detials-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
@@ -458,15 +437,24 @@
 
     </android.support.v7.widget.CardView>
 
-    <!-- Loader -->
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/progress_bar"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_centerInParent="true"
-        android:padding="8dp"
-        android:src="@drawable/loader"
-        android:visibility="gone" />
+    <android.support.v7.widget.CardView
+        android:id="@+id/loader_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/app_bar_layout"
+        android:backgroundTint="@color/translucent_black"
+        android:visibility="gone"
+        app:cardElevation="10dp">
+        <!-- Loader -->
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/progress_bar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:src="@drawable/loader"
+            android:visibility="visible" />
+    </android.support.v7.widget.CardView>
 
     <!-- Empty State -->
     <RelativeLayout
@@ -496,7 +484,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:text="No item found in cartProduct."
+                android:text="No item found in cart."
                 android:textColor="@color/dim_gray"
                 android:textSize="@dimen/text_medium2" />
 

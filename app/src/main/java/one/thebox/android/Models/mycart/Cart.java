@@ -1,4 +1,4 @@
-package one.thebox.android.Models.cart;
+package one.thebox.android.Models.mycart;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by developers on 01/06/17.
  */
 
-public class CartProduct implements Serializable {
+public class Cart implements Serializable {
 
     @SerializedName("item_uuid")
     private String boxItemUuid;
@@ -18,7 +18,7 @@ public class CartProduct implements Serializable {
     @SerializedName("itemconfig_uuid")
     private String itemConfigUuid;
 
-    public CartProduct(String boxItemUuid, int quantity, String itemConfigUuid) {
+    public Cart(String boxItemUuid, int quantity, String itemConfigUuid) {
         this.boxItemUuid = boxItemUuid;
         this.quantity = quantity;
         this.itemConfigUuid = itemConfigUuid;

@@ -6,11 +6,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.cart.CartProduct;
+import one.thebox.android.Models.mycart.Cart;
+import one.thebox.android.Models.promotion.PromotionalOffer;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.cart.CartItem;
+import one.thebox.android.Models.mycart.CartItem;
 
 /**
  * Created by nbansal2211 on 03/01/17.
@@ -52,6 +53,9 @@ public class Setting implements Serializable {
     @SerializedName("suggested_boxes")
     private ArrayList<Box> suggestedBoxes;
 
+    @SerializedName("promotional_offers")
+    private ArrayList<PromotionalOffer> promotionalOffers;
+
 
     /***************************************
      * Methods
@@ -80,15 +84,15 @@ public class Setting implements Serializable {
      *
      * @return
      */
-    public ArrayList<CartProduct> getParsedCartUuids() {
-        ArrayList<CartProduct> cartProducts = new ArrayList<>();
+    public ArrayList<Cart> getParsedCartUuids() {
+        ArrayList<Cart> carts = new ArrayList<>();
 
         for (CartItem cartItem : getCartItems()) {
-            CartProduct cartProduct = new CartProduct(cartItem.getBoxItemUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
-            cartProducts.add(cartProduct);
+            Cart cart = new Cart(cartItem.getBoxItemUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
+            carts.add(cart);
         }
 
-        return cartProducts;
+        return carts;
     }
 
 
@@ -190,5 +194,13 @@ public class Setting implements Serializable {
 
     public void setSuggestedBoxes(ArrayList<Box> suggestedBoxes) {
         this.suggestedBoxes = suggestedBoxes;
+    }
+
+    public ArrayList<PromotionalOffer> getPromotionalOffers() {
+        return promotionalOffers;
+    }
+
+    public void setPromotionalOffers(ArrayList<PromotionalOffer> promotionalOffers) {
+        this.promotionalOffers = promotionalOffers;
     }
 }

@@ -327,7 +327,7 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         Intent intent = new Intent(this, AddressActivity.class);
         /**
          * 1- My Account Fragment
-         * 2- CartProduct Fragment
+         * 2- Cart Fragment
          */
         intent.putExtra("called_from", 2);
         /**

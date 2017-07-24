@@ -1,7 +1,6 @@
-package one.thebox.android.Models.cart;
+package one.thebox.android.Models.mycart;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import one.thebox.android.Models.items.BoxItem;
@@ -10,14 +9,14 @@ import one.thebox.android.Models.items.BoxItem;
  * Created by developers on 22/07/17.
  */
 
-public class Cart implements Serializable {
+public class CartProductDetail implements Serializable {
 
     private String boxUuid;
     private String boxTitle;
 
     private List<BoxItem> boxItems;
 
-    public Cart(String boxUuid, String boxTitle, List<BoxItem> boxItems) {
+    public CartProductDetail(String boxUuid, String boxTitle, List<BoxItem> boxItems) {
         this.boxUuid = boxUuid;
         this.boxTitle = boxTitle;
         this.boxItems = boxItems;

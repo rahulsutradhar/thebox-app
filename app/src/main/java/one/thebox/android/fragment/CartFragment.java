@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.mycart.CartProductDetail;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
@@ -37,7 +37,6 @@ import one.thebox.android.activity.FillUserInfoActivity;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.ConfirmTimeSlotActivity;
 import one.thebox.android.adapter.cart.CartAdapter;
-import one.thebox.android.adapter.cart.CartItemAdapter;
 import one.thebox.android.api.Responses.cart.CartItemResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
@@ -45,7 +44,6 @@ import one.thebox.android.services.SettingService;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment {
 
@@ -53,13 +51,13 @@ public class CartFragment extends Fragment {
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     private RecyclerView recyclerView;
     private LinearLayout proceedForward;
+    private CardView loaderLayout;
     private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
     private ArrayList<BoxItem> boxItems = new ArrayList<>();
 
     private int requestCounter = 0;
-    private GifImageView progressBar;
     private Toolbar toolbar;
     private TextView totalPriceCart, totalSavingsCart, totalPriceBottomStrip, deliveryCharges,
             forwardMessage, progressStepToCheckoutText, cartQuantityText;
@@ -125,7 +123,7 @@ public class CartFragment extends Fragment {
      */
     public void groupBoxItem() {
         TreeMap<String, ArrayList<BoxItem>> cartHashMap = new TreeMap<>();
-        ArrayList<Cart> carts = new ArrayList<>();
+        ArrayList<CartProductDetail> cartProductDetails = new ArrayList<>();
 
         for (BoxItem boxItem : boxItems) {
             if (boxItem.getBoxUuid() != null) {
@@ -148,14 +146,14 @@ public class CartFragment extends Fragment {
         for (String uuid : keys) {
             for (Box box : setting.getBoxes()) {
                 if (uuid.equalsIgnoreCase(box.getUuid())) {
-                    carts.add(new Cart(uuid, box.getTitle(), cartHashMap.get(uuid)));
+                    cartProductDetails.add(new CartProductDetail(uuid, box.getTitle(), cartHashMap.get(uuid)));
                 }
             }
         }
 
         cartHashMap.clear();
         //setup recyclerview
-        setupRecyclerView(carts, setting);
+        setupRecyclerView(cartProductDetails, setting);
 
     }
 
@@ -166,7 +164,7 @@ public class CartFragment extends Fragment {
     public void setCartEmpty() {
         emptyCartLayout.setVisibility(View.VISIBLE);
         bottomCard.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
+        loaderLayout.setVisibility(View.GONE);
         progressIndicatorLayout.setVisibility(View.GONE);
         cartQuantityText.setVisibility(View.GONE);
     }
@@ -188,14 +186,14 @@ public class CartFragment extends Fragment {
     /**
      * Set List of items
      */
-    private void setupRecyclerView(ArrayList<Cart> carts, Setting setting) {
+    private void setupRecyclerView(ArrayList<CartProductDetail> cartProductDetailses, Setting setting) {
         emptyCartLayout.setVisibility(View.GONE);
         bottomCard.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        loaderLayout.setVisibility(View.GONE);
 
         if (adapter == null) {
             adapter = new CartAdapter(getActivity(), glideRequestManager, this);
-            adapter.setCarts(carts);
+            adapter.setCartProductDetails(cartProductDetailses);
             //check if suggestion is available or not
             if (setting.getSuggestedBoxes() != null) {
                 if (!setting.getSuggestedBoxes().isEmpty()) {
@@ -211,7 +209,7 @@ public class CartFragment extends Fragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
         } else {
-            adapter.setCarts(carts);
+            adapter.setCartProductDetails(cartProductDetailses);
             adapter.notifyDataSetChanged();
         }
 
@@ -223,7 +221,7 @@ public class CartFragment extends Fragment {
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        this.progressBar = (GifImageView) rootView.findViewById(R.id.progress_bar);
+        this.loaderLayout = (CardView) rootView.findViewById(R.id.loader_layout);
         emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
         proceedForward = (LinearLayout) rootView.findViewById(R.id.button_proceed_forward);
         proceedForward.setOnClickListener(new View.OnClickListener() {
@@ -293,14 +291,14 @@ public class CartFragment extends Fragment {
     public void requestServerConfirmCart() {
         CartHelperService.stopCartService(getActivity(), false);
         requestCounter++;
-        progressBar.setVisibility(View.VISIBLE);
+        loaderLayout.setVisibility(View.VISIBLE);
         CartHelperService.updateCartToServer(getActivity(), this);
     }
 
     public void setCartUpdateServerResponse(boolean isSuccess, CartItemResponse response) {
 
         if (isSuccess) {
-            progressBar.setVisibility(View.GONE);
+            loaderLayout.setVisibility(View.GONE);
             //Proceed
             doesUserExist(response.isMerge());
 
@@ -310,7 +308,7 @@ public class CartFragment extends Fragment {
             } else {
                 //if the call fails start background service again; if cart size is greater then 0
                 CartHelperService.checkServiceRunningWhenAdded(getActivity());
-                progressBar.setVisibility(View.GONE);
+                loaderLayout.setVisibility(View.GONE);
                 requestCounter = 0;
                 //show a error message about failed called
                 Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
@@ -376,7 +374,7 @@ public class CartFragment extends Fragment {
         Intent intent = new Intent(getActivity(), AddressActivity.class);
         /**
          * 1- My Account Fragment
-         * 2- CartProduct Fargment
+         * 2- Cart Fargment
          */
         intent.putExtra("called_from", 2);
         /**
@@ -454,7 +452,7 @@ public class CartFragment extends Fragment {
     }
 
     /**
-     * When proceed from CartProduct
+     * When proceed from Cart
      */
     public void setCleverTapEventProocedFromCart() {
         HashMap<String, Object> cartItems = new HashMap<>();

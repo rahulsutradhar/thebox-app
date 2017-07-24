@@ -511,7 +511,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         /**
-         * Add BoxItem to CartProduct
+         * Add BoxItem to Cart
          */
         private void addItemToCart(BoxItem boxItem, int position) {
             boxItem.setQuantity(1);
@@ -533,7 +533,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         /**
-         * Remove BoxItem from CartProduct
+         * Remove BoxItem from Cart
          */
         private void removeItemFromCart(BoxItem boxItem, int position) {
             /**
@@ -556,7 +556,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         /**
-         * Update Quantity of BoxItem in CartProduct
+         * Update Quantity of BoxItem in Cart
          */
         private void updateQuantityInCart(BoxItem boxItem, int quantity, int position) {
             boxItem.setQuantity(quantity);
@@ -574,7 +574,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         /**
-         * Update ItemConfig in CartProduct
+         * Update ItemConfig in Cart
          */
         private void updateItemConfigInCart(BoxItem boxItem, ItemConfig selectedItemConfig, int position) {
             CartHelper.updateItemConfigInCart(boxItem, selectedItemConfig);
@@ -631,7 +631,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         /**
          * CleverTap Event;
          * <p>
-         * Item Added to CartProduct; Subscribed
+         * Item Added to Cart; Subscribed
          */
         public void setCleverTapEventItemAddedToCart(BoxItem boxItem) {
             try {
@@ -1040,9 +1040,9 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * Update on Event Passed from CartProduct
+     * Update on Event Passed from Cart
      * <p>
-     * When CartProduct Update Quantity; Increase or Decrease
+     * When Cart Update Quantity; Increase or Decrease
      */
     public synchronized void updateQuantityEvent(BoxItem updatedBoxItem) {
         int index = 0;
@@ -1064,7 +1064,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * When CartProduct Remove Quantity
+     * When Cart Remove Quantity
      */
     public synchronized void removeQuantityEvent(BoxItem updatedBoxItem) {
         int index = 0;
@@ -1086,7 +1086,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * When CartProduct Update ItemConfig
+     * When Cart Update ItemConfig
      */
     public synchronized void updateItemConfigEvent(BoxItem updatedBoxItem) {
         int index = 0;

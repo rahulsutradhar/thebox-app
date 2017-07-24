@@ -254,7 +254,7 @@ public class SubscriptionAdapter extends BaseRecyclerAdapter {
                     public void onClick(View v) {
 
                         /**
-                         * Set Clever Tab Event on Clicking Savings CartProduct
+                         * Set Clever Tab Event on Clicking Savings Cart
                          */
                         setCleverTapEventSubscribeNextSavings(saving);
 
