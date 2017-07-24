@@ -79,7 +79,7 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
             public void onClick(View v) {
 
                 Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4);
+                intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 4);
                 intent.putExtra(Constants.EXTRA_SEARCH_RESULT_DATA, CoreGsonUtils.toJson(searchResults.get(position)));
                 ((Activity) mContext).setResult(1, intent);
                 ((Activity) mContext).finish();

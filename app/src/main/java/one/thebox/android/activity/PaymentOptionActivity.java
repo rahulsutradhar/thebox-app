@@ -329,7 +329,7 @@ public class PaymentOptionActivity extends AppCompatActivity {
         PrefUtils.putBoolean(this, Keys.LOAD_CAROUSEL, true);
 
         Intent intent = new Intent(PaymentOptionActivity.this, MainActivity.class);
-        intent.putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 1);
+        intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 1);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();

@@ -96,7 +96,6 @@ public class MainActivity extends BaseActivity implements
      */
     private GcmNetworkManager mGcmNetworkManager;
 
-    public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -291,7 +290,7 @@ public class MainActivity extends BaseActivity implements
                              * CleverTap Event CartProduct Icon clicked
                              */
 
-                            startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                            startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
                         }
 
                     } catch (Exception e) {
@@ -756,7 +755,7 @@ public class MainActivity extends BaseActivity implements
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
+        switch (intent.getIntExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
                 attachMyBoxesFragment(1, true);
                 break;
@@ -785,8 +784,10 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 5: {
-               /* attachSearchDetailFragmentForCategory(CoreGsonUtils.fromJson
-                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));*/
+                /**
+                 * Called from Suggested Box Cart to open Search Detail Fragment
+                 */
+                attachSearchDetailFragmentForBoxUuid(intent);
                 break;
             }
             case 6: {
@@ -832,14 +833,26 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Get Data and opens Search Detail Fragment for the Box Uuid
+     * @param intent
+     */
+    public void attachSearchDetailFragmentForBoxUuid(Intent intent) {
+        try {
+            String boxUuid = intent.getStringExtra(Constants.EXTRA_BOX_UUID);
+            String boxTitle = intent.getStringExtra(Constants.EXTRA_BOX_NAME);
+            attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
+        } catch (Exception e) {
+
+        }
+    }
+
     private void performCategoryNotification(Intent intent) {
         //check if Box Fragment is visible or not
 
         //bad technic, need to reafactor
         attachMyBoxesFragment(1, false);
         attachCategoriesFragmentForNotifications(intent);
-
-
     }
 
     /**

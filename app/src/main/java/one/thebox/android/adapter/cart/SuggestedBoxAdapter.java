@@ -1,6 +1,7 @@
 package one.thebox.android.adapter.cart;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.R;
+import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.util.PrefUtils;
 
@@ -66,7 +69,7 @@ public class SuggestedBoxAdapter extends BaseRecyclerAdapter {
     @Override
     public void onBindViewItemHolder(ItemHolder holder, int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(suggestedBoxes.get(position), position);
+        itemViewHolder.setViews(suggestedBoxes.get(position));
     }
 
     @Override
@@ -119,7 +122,7 @@ public class SuggestedBoxAdapter extends BaseRecyclerAdapter {
             savings = (TextView) itemView.findViewById(R.id.text_view_savings);
         }
 
-        public void setViews(Box box, int position) {
+        public void setViews(final Box box) {
             try {
 
                 title.setText(box.getTitle());
@@ -145,11 +148,16 @@ public class SuggestedBoxAdapter extends BaseRecyclerAdapter {
                          *
                          * Set data for Search Detail Item fragment
                          */
-
-
                         if (cartFragment != null) {
-                            FragmentTransaction transaction = cartFragment.getActivity().getSupportFragmentManager().beginTransaction();
-                            transaction.remove(cartFragment).commit();
+                            //open search Detail Fragment for the box
+                            Intent intent = new Intent(cartFragment.getActivity(), MainActivity.class);
+                            intent.putExtra(Constants.EXTRA_BOX_UUID, box.getUuid());
+                            intent.putExtra(Constants.EXTRA_BOX_NAME, box.getTitle());
+                            intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 5);
+                            cartFragment.getActivity().startActivity(intent);
+                            //close this fragment
+                            cartFragment.getActivity().onBackPressed();
+
                         }
                     }
                 });
