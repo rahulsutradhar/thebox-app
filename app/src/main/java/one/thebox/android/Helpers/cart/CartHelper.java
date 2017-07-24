@@ -238,6 +238,17 @@ public class CartHelper {
     }
 
     /**
+     * Calculate Total Savings in Cart
+     */
+    public static float getTotalSavings() {
+        float savings = 0;
+        for (BoxItem boxItem : getCart()) {
+            savings += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getSavings());
+        }
+        return savings;
+    }
+
+    /**
      * Send Broadcast to show number of item in Cart status
      */
     public static void sendUpdateNoItemsInCartBroadcast(int numberOfItem) {

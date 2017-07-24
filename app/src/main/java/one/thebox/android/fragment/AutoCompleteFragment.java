@@ -26,6 +26,7 @@ import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
 import one.thebox.android.activity.MainActivity;
 import one.thebox.android.adapter.SearchAutoCompleteAdapter;
+import one.thebox.android.app.Constants;
 
 
 public class AutoCompleteFragment extends Fragment {
@@ -154,7 +155,7 @@ public class AutoCompleteFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+                        .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
     }

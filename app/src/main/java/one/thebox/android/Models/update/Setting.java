@@ -6,11 +6,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.cart.Cart;
+import one.thebox.android.Models.mycart.Cart;
+import one.thebox.android.Models.promotion.PromotionalOffer;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.cart.CartItem;
+import one.thebox.android.Models.mycart.CartItem;
 
 /**
  * Created by nbansal2211 on 03/01/17.
@@ -46,6 +47,15 @@ public class Setting implements Serializable {
     @SerializedName("sink_time")
     private long cartPollingTime;
 
+    @SerializedName("first_order")
+    private boolean firstOrder;
+
+    @SerializedName("suggested_boxes")
+    private ArrayList<Box> suggestedBoxes;
+
+    @SerializedName("promotional_offers")
+    private ArrayList<PromotionalOffer> promotionalOffers;
+
 
     /***************************************
      * Methods
@@ -78,7 +88,7 @@ public class Setting implements Serializable {
         ArrayList<Cart> carts = new ArrayList<>();
 
         for (CartItem cartItem : getCartItems()) {
-            Cart cart = new Cart(cartItem.getBoxUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
+            Cart cart = new Cart(cartItem.getBoxItemUuid(), cartItem.getQuantity(), cartItem.getItemconfigUuid());
             carts.add(cart);
         }
 
@@ -168,5 +178,29 @@ public class Setting implements Serializable {
 
     public void setCartPollingTime(long cartPollingTime) {
         this.cartPollingTime = cartPollingTime;
+    }
+
+    public boolean isFirstOrder() {
+        return firstOrder;
+    }
+
+    public void setFirstOrder(boolean firstOrder) {
+        this.firstOrder = firstOrder;
+    }
+
+    public ArrayList<Box> getSuggestedBoxes() {
+        return suggestedBoxes;
+    }
+
+    public void setSuggestedBoxes(ArrayList<Box> suggestedBoxes) {
+        this.suggestedBoxes = suggestedBoxes;
+    }
+
+    public ArrayList<PromotionalOffer> getPromotionalOffers() {
+        return promotionalOffers;
+    }
+
+    public void setPromotionalOffers(ArrayList<PromotionalOffer> promotionalOffers) {
+        this.promotionalOffers = promotionalOffers;
     }
 }

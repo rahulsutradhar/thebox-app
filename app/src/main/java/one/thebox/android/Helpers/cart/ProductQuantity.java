@@ -4,8 +4,8 @@ import android.content.Context;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Models.mycart.Cart;
 import one.thebox.android.Models.items.BoxItem;
-import one.thebox.android.Models.cart.Cart;
 import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.services.cart.CartHelperService;
 
@@ -130,6 +130,6 @@ public class ProductQuantity {
     }
 
     public static void setProductQuantities(ArrayList<Cart> productQuantities) {
-        ProductQuantity.productQuantities = productQuantities;
+        ProductQuantity.productQuantities.addAll(productQuantities);
     }
 }

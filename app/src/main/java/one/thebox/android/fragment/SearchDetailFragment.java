@@ -204,7 +204,10 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         specialCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                specialCardView.setVisibility(View.GONE);
+                specialCardView.startAnimation(AnimationUtils.loadAnimation(TheBox.getInstance(), R.anim.passport_options_popdown));
+                previousScrollAction = false;
+                startActivity(new Intent(getActivity(), MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
             }
         });
         itemsInCart = (TextView) rootView.findViewById(R.id.items_in_cart);
@@ -411,7 +414,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 7));
+                        .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
 

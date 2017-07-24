@@ -463,7 +463,7 @@ public class StoreFragment extends Fragment implements AppBarObserver.OnOffsetCh
      */
     public void displayProduct(RealmList<Category> categories, String categoryUuid, String boxTitle, int position) {
         Intent intent = new Intent(getActivity(), MainActivity.class)
-                .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 6)
                 .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))
                 .putExtra(Constants.EXTRA_CLICKED_CATEGORY_UID, categoryUuid)
                 .putExtra(Constants.EXTRA_CLICK_POSITION, position)

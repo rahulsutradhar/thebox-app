@@ -41,6 +41,9 @@ public class BoxItem extends RealmObject implements Serializable {
     @SerializedName("no_of_options")
     private String noOfOptions;
 
+    @SerializedName("box_uuid")
+    private String boxUuid;
+
     private int quantity;
 
     private ItemConfig selectedItemConfig;
@@ -215,5 +218,13 @@ public class BoxItem extends RealmObject implements Serializable {
 
     public void setItemViewType(int itemViewType) {
         this.itemViewType = itemViewType;
+    }
+
+    public String getBoxUuid() {
+        return boxUuid;
+    }
+
+    public void setBoxUuid(String boxUuid) {
+        this.boxUuid = boxUuid;
     }
 }

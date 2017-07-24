@@ -245,7 +245,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
         }
     };
 
