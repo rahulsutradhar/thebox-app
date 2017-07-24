@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,11 +58,17 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
     private AuthenticationService authenticationService;
     private double latitude = 0.0, longitude = 0.0;
     private int locationPermisionCounter = 0;
-
+    private Toolbar toolbar;
     private boolean isMerge;
+
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
+    private TextView progressStepToCheckoutText;
 
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
+
+    private Setting setting;
 
     public static Intent newInstance(Context context, boolean isMerge) {
         return new Intent(context, FillUserInfoActivity.class)
@@ -76,11 +84,15 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
 
-        setToolbar((Toolbar) findViewById(R.id.toolbar));
-        setSupportActionBar(getToolbar());
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("User Information");
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         initViews();
         initVariable();
@@ -97,14 +109,35 @@ public class FillUserInfoActivity extends BaseActivity implements View.OnClickLi
         textInputLayoutName = (TextInputLayout) findViewById(R.id.name_text_input);
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.email_text_input);
 
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressStepToCheckoutText = (TextView) findViewById(R.id.progress_step_text);
+        progressStep1 = (View) findViewById(R.id.progress_step1);
+        progressStep2 = (View) findViewById(R.id.progress_step2);
+        progressStep3 = (View) findViewById(R.id.progress_step3);
+        progressStep4 = (View) findViewById(R.id.progress_step4);
+        progressStep5 = (View) findViewById(R.id.progress_step5);
+        progressStep6 = (View) findViewById(R.id.progress_step6);
+
+
         authenticationService = new AuthenticationService();
     }
 
     private void initVariable() {
         try {
             isMerge = getIntent().getBooleanExtra(Constants.EXTRA_IS_CART_MERGING, false);
+            setting = new SettingService().getSettings(this);
+            showProgressIndicatorToolbar();
         } catch (Exception e) {
 
+        }
+    }
+
+    public void showProgressIndicatorToolbar() {
+        if (setting.isFirstOrder()) {
+            progressIndicatorLayout.setVisibility(View.VISIBLE);
+        } else {
+            progressIndicatorLayout.setVisibility(View.GONE);
         }
     }
 

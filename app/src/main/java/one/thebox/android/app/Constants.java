@@ -57,15 +57,6 @@ public class Constants {
     public static final String CATEGORY_UUID = "extra_category_uuid";
 
     /**
-     * Constants to Notify Boradcast
-     */
-    public static final int DELIVERIES = 2;
-    public static final int SUBSCRIPTION = 1;
-    public static final int CART = 3;
-
-    public static final int BROADCAST_SUBSCRIPTION_AND_DELIVERIES = 4;
-
-    /**
      * Extra Category; to display category tabs
      */
     public static final String EXTRA_BOX_CATEGORY = "extra_box_category";
@@ -237,4 +228,15 @@ public class Constants {
      * Update Deliveries For Reschedule
      */
     public final static String EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE = "extra_update_deliveries_for_reschedule";
+
+    /**
+     * Promotional Offer
+     * <p>
+     * First Time User Offer
+     */
+    public final static String EXTRA_PROMOTIONAL_OFFER_FIRST_TIME = "extra_promotional_offer_first_time";
+
+    public final static String EXTRA_PROMOTIONAL_TUTORIAL = "extra_promotional_tutorial";
+
+
 }

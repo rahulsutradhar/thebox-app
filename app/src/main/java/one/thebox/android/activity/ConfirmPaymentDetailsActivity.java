@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.address.Address;
 import one.thebox.android.Models.checkout.PurchaseData;
+import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.adapter.checkout.PaymentDetailsAdapter;
@@ -22,6 +25,7 @@ import one.thebox.android.api.Responses.cart.PaymentSummaryResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
+import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -37,6 +41,12 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     private long timeSlotTimeStamp;
     private boolean isMerge;
     private String orderUuid;
+
+    private LinearLayout progressIndicatorLayout;
+    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
+    private TextView progressStepToCheckoutText;
+    private Toolbar toolbar;
+    private Setting setting;
 
 
     public static Intent getInstance(Context context, boolean isMerge, Address address, long timeSlotTimeStamp) {
@@ -59,7 +69,17 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_details);
-        setTitle("Payment Summary");
+
+        //Tootalbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         initViews();
         initVariables();
     }
@@ -70,6 +90,13 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
             address = CoreGsonUtils.fromJson(getIntent().getStringExtra(Constants.EXTRA_SELECTED_ADDRESS), Address.class);
             timeSlotTimeStamp = getIntent().getLongExtra(Constants.EXTRA_TIMESLOT_SELECTED, 0);
             orderUuid = getIntent().getStringExtra(Constants.EXTRA_SELECTED_ORDER_UUID);
+
+            setting = new SettingService().getSettings(this);
+            if (setting.isFirstOrder()) {
+                progressIndicatorLayout.setVisibility(View.VISIBLE);
+            } else {
+                progressIndicatorLayout.setVisibility(View.GONE);
+            }
 
             if (!isMerge) {
                 //API Request for 1st order; When there is no previous order
@@ -111,6 +138,17 @@ public class ConfirmPaymentDetailsActivity extends BaseActivity {
         recyclerViewPaymentDetail.setItemViewCacheSize(3);
         recyclerViewPaymentDetail.setDrawingCacheEnabled(true);
         recyclerViewPaymentDetail.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_AUTO);
+
+        //toolbar
+        progressIndicatorLayout = (LinearLayout) findViewById(R.id.progress_indicator);
+        progressStepToCheckoutText = (TextView) findViewById(R.id.progress_step_text);
+        progressStep1 = (View) findViewById(R.id.progress_step1);
+        progressStep2 = (View) findViewById(R.id.progress_step2);
+        progressStep3 = (View) findViewById(R.id.progress_step3);
+        progressStep4 = (View) findViewById(R.id.progress_step4);
+        progressStep5 = (View) findViewById(R.id.progress_step5);
+        progressStep5 = (View) findViewById(R.id.progress_step6);
+
     }
 
 

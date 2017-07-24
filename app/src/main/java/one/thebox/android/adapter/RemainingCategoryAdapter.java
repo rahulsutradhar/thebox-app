@@ -229,7 +229,7 @@ public class RemainingCategoryAdapter extends BaseRecyclerAdapter {
                 setCleverTapEventForBoxCategorySelected(category);
 
                 Intent intent = new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 6)
+                        .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 6)
                         .putExtra(Constants.EXTRA_BOX_CATEGORY, CoreGsonUtils.toJson(categories))
                         .putExtra(Constants.EXTRA_CLICKED_CATEGORY_UID, category.getUuid())
                         .putExtra(Constants.EXTRA_CLICK_POSITION, position)

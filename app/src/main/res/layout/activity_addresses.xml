@@ -21,11 +21,108 @@
             android:backgroundTint="@color/primary"
             android:elevation="6dp"
             android:gravity="center_vertical"
-            android:title="Address"
             app:contentInsetEnd="6dp"
             app:contentInsetLeft="6dp"
             app:contentInsetRight="6dp"
-            app:contentInsetStart="6dp" />
+            app:contentInsetStart="6dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+
+                    <TextView
+                        android:id="@+id/title"
+                        style="@style/AppTheme.Widget.Avenir.Heavy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Address"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_medium1" />
+
+                    <LinearLayout
+                        android:id="@+id/progress_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/title"
+                        android:layout_marginTop="3dp"
+                        android:orientation="vertical"
+                        android:paddingBottom="2dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/progress_step_text"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="3 step remaining"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_extra_small3" />
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:id="@+id/progress_step1"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/md_green_500" />
+
+                            <View
+                                android:id="@+id/progress_step2"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/md_green_500" />
+
+                            <View
+                                android:id="@+id/progress_step3"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/md_green_500" />
+
+                            <View
+                                android:id="@+id/progress_step4"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step5"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step6"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout

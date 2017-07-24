@@ -91,6 +91,6 @@ public class DeliveryAddressFragment extends FragmentBase {
     @Override
     public void onResume() {
         super.onResume();
-        ((AddressActivity) getActivity()).getToolbar().setTitle("Delivery Address");
+        ((AddressActivity) getActivity()).getToolbarTitle().setText("Delivery Address");
     }
 }

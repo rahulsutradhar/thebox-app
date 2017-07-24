@@ -41,6 +41,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import one.thebox.android.Events.SearchEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
@@ -48,6 +50,7 @@ import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.promotion.PromotionalOffer;
 import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.notifications.Params;
@@ -96,8 +99,6 @@ public class MainActivity extends BaseActivity implements
      */
     private GcmNetworkManager mGcmNetworkManager;
 
-    public static final String EXTRA_ATTACH_FRAGMENT_NO = "extra_tab_no";
-    public static final String EXTRA_ATTACH_FRAGMENT_DATA = "extra_attach_fragment_data";
     public static boolean isSearchFragmentIsAttached = false;
     private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
@@ -219,6 +220,78 @@ public class MainActivity extends BaseActivity implements
             if (setting.getCartPollingTime() != 0) {
                 Constants.UPDATE_CART_POLLING_TIME = setting.getCartPollingTime();
             }
+
+            /**
+             * Parse Promotional Message
+             */
+            if (setting.getPromotionalOffers() != null) {
+                ArrayList<PromotionalOffer> firstTimeOffers = new ArrayList<>();
+                ArrayList<PromotionalOffer> tutorialMessage = new ArrayList<>();
+                ArrayList<PromotionalOffer> storedTutorialMessages = CoreGsonUtils.fromJsontoArrayList(
+                        PrefUtils.getString(this, Constants.EXTRA_PROMOTIONAL_TUTORIAL), PromotionalOffer.class);
+
+                for (PromotionalOffer promotionalOffer : setting.getPromotionalOffers()) {
+                    //offer shown to first time user
+                    if (promotionalOffer.isFirstTime()) {
+                        firstTimeOffers.add(promotionalOffer);
+                    } else {
+                        //tutorial shown to non- first time users
+                        if (storedTutorialMessages != null) {
+                            if (!storedTutorialMessages.isEmpty()) {
+                                boolean doesExit = false;
+                                for (PromotionalOffer storeTutorial : storedTutorialMessages) {
+                                    //check if this offer exist earlier
+                                    if (promotionalOffer.getUuid().equalsIgnoreCase(storeTutorial.getUuid())) {
+                                        doesExit = true;
+                                        //copy the checked status of this offer
+                                        promotionalOffer.setChecked(storeTutorial.isChecked());
+                                        tutorialMessage.add(promotionalOffer);
+                                        break;
+                                    }
+                                }
+                                if (!doesExit) {
+                                    promotionalOffer.setChecked(false);
+                                    tutorialMessage.add(promotionalOffer);
+                                }
+
+                            } else {
+                                promotionalOffer.setChecked(false);
+                                tutorialMessage.add(promotionalOffer);
+                            }
+                        } else {
+                            promotionalOffer.setChecked(false);
+                            tutorialMessage.add(promotionalOffer);
+                        }
+
+                    }
+                }
+
+                //sort tutorial according to the priority
+                if (!tutorialMessage.isEmpty()) {
+                    Collections.sort(tutorialMessage, new Comparator<PromotionalOffer>() {
+                        @Override
+                        public int compare(PromotionalOffer o1, PromotionalOffer o2) {
+                            if (o1.getPriority() < o2.getPriority()) {
+                                return -1;
+                            } else {
+                                return 1;
+                            }
+                        }
+                    });
+                }
+
+                //save the values in preferences
+                PrefUtils.putString(this, Constants.EXTRA_PROMOTIONAL_OFFER_FIRST_TIME, CoreGsonUtils.toJson(firstTimeOffers));
+                PrefUtils.putString(this, Constants.EXTRA_PROMOTIONAL_TUTORIAL, CoreGsonUtils.toJson(tutorialMessage));
+
+                firstTimeOffers.clear();
+                tutorialMessage.clear();
+                if (storedTutorialMessages != null) {
+                    storedTutorialMessages.clear();
+                }
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -283,7 +356,7 @@ public class MainActivity extends BaseActivity implements
 
                     try {
                         //check if cart fragment is visible or not
-                        CartFragment cartFragment = (CartFragment) fragmentManager.findFragmentByTag("Bills");
+                        CartFragment cartFragment = (CartFragment) fragmentManager.findFragmentByTag("cart_fragment");
                         if (cartFragment != null && cartFragment.isVisible()) {
                             //blank
                         } else {
@@ -292,7 +365,7 @@ public class MainActivity extends BaseActivity implements
                              * CleverTap Event Cart Icon clicked
                              */
 
-                            startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+                            startActivity(new Intent(MainActivity.this, MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
                         }
 
                     } catch (Exception e) {
@@ -422,7 +495,7 @@ public class MainActivity extends BaseActivity implements
                 attachMyAccountFragment();
                 return true;
             case R.id.view_bill:
-                attachOrderFragment();
+                attachCartFragment();
                 return true;
             default: {
                 String menuName = (String) menuItem.getTitle();
@@ -549,14 +622,11 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void attachOrderFragment() {
-
-
+    private void attachCartFragment() {
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment, "Bills").addToBackStack("Orders");
+        fragmentTransaction.replace(R.id.frame_container, fragment, "cart_fragment").addToBackStack("cart_fragment");
         fragmentTransaction.commit();
-        appBarLayout.setExpanded(true, true);
     }
 
     private void attachMyAccountFragment() {
@@ -760,7 +830,7 @@ public class MainActivity extends BaseActivity implements
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        switch (intent.getIntExtra(EXTRA_ATTACH_FRAGMENT_NO, 0)) {
+        switch (intent.getIntExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 0)) {
             case 0: {
                 attachMyBoxesFragment(1, true);
                 break;
@@ -780,7 +850,7 @@ public class MainActivity extends BaseActivity implements
             }
 
             case 3: {
-                attachOrderFragment();
+                attachCartFragment();
                 break;
             }
             case 4: {
@@ -789,8 +859,10 @@ public class MainActivity extends BaseActivity implements
                 break;
             }
             case 5: {
-               /* attachSearchDetailFragmentForCategory(CoreGsonUtils.fromJson
-                        (intent.getStringExtra(EXTRA_ATTACH_FRAGMENT_DATA), ExploreItem.class));*/
+                /**
+                 * Called from Suggested Box CartProductDetail to open Search Detail Fragment
+                 */
+                attachSearchDetailFragmentForBoxUuid(intent);
                 break;
             }
             case 6: {
@@ -836,14 +908,27 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Get Data and opens Search Detail Fragment for the Box Uuid
+     *
+     * @param intent
+     */
+    public void attachSearchDetailFragmentForBoxUuid(Intent intent) {
+        try {
+            String boxUuid = intent.getStringExtra(Constants.EXTRA_BOX_UUID);
+            String boxTitle = intent.getStringExtra(Constants.EXTRA_BOX_NAME);
+            attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
+        } catch (Exception e) {
+
+        }
+    }
+
     private void performCategoryNotification(Intent intent) {
         //check if Box Fragment is visible or not
 
         //bad technic, need to reafactor
         attachMyBoxesFragment(1, false);
         attachCategoriesFragmentForNotifications(intent);
-
-
     }
 
     /**
