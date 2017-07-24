@@ -20,6 +20,7 @@ public class MakePaymentRequest implements Serializable {
     @SerializedName("timestamp")
     private long timeSlotTimeStamp;
 
+    @SerializedName("carts")
     private ArrayList<CartProduct> cartProducts;
 
     @SerializedName("merge")

@@ -1,5 +1,7 @@
 package one.thebox.android.api.RequestBodies.cart;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ import one.thebox.android.Models.cart.CartProduct;
 
 public class CartItemRequest implements Serializable {
 
+    @SerializedName("carts")
     private ArrayList<CartProduct> cartProducts;
 
     public CartItemRequest(ArrayList<CartProduct> cartProducts) {
