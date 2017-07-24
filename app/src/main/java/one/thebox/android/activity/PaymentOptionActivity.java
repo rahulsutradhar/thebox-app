@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +17,7 @@ import com.razorpay.Checkout;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -28,6 +28,7 @@ import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.Models.items.Category;
 import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.promotion.PromotionalOffer;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.address.Address;
@@ -321,7 +322,11 @@ public class PaymentOptionActivity extends AppCompatActivity {
             if (setting.isFirstOrder()) {
                 setting.setFirstOrder(false);
                 new SettingService().setSettings(this, setting);
+                PrefUtils.putString(this, Constants.EXTRA_PROMOTIONAL_OFFER_FIRST_TIME, CoreGsonUtils.toJson(new ArrayList<PromotionalOffer>()));
+            } else {
+                PrefUtils.putString(this, Constants.EXTRA_PROMOTIONAL_TUTORIAL, CoreGsonUtils.toJson(new ArrayList<PromotionalOffer>()));
             }
+
         }
 
         //set the flags

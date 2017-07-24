@@ -228,4 +228,15 @@ public class Constants {
      * Update Deliveries For Reschedule
      */
     public final static String EXTRA_UPDATE_DELIVERIES_FOR_RESCHEDULE = "extra_update_deliveries_for_reschedule";
+
+    /**
+     * Promotional Offer
+     * <p>
+     * First Time User Offer
+     */
+    public final static String EXTRA_PROMOTIONAL_OFFER_FIRST_TIME = "extra_promotional_offer_first_time";
+
+    public final static String EXTRA_PROMOTIONAL_TUTORIAL = "extra_promotional_tutorial";
+
+
 }

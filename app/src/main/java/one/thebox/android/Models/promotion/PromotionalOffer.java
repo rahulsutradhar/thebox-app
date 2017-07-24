@@ -2,11 +2,13 @@ package one.thebox.android.Models.promotion;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by developers on 24/07/17.
  */
 
-public class PromotionalOffer {
+public class PromotionalOffer implements Serializable {
 
     private String uuid;
     private String title;
@@ -14,6 +16,9 @@ public class PromotionalOffer {
 
     @SerializedName("first_time")
     private boolean firstTime;
+
+    private boolean checked;
+
 
     public String getUuid() {
         return uuid;
@@ -45,5 +50,13 @@ public class PromotionalOffer {
 
     public void setFirstTime(boolean firstTime) {
         this.firstTime = firstTime;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

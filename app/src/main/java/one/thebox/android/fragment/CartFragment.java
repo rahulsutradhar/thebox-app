@@ -8,9 +8,11 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -30,6 +33,7 @@ import one.thebox.android.Models.mycart.CartProductDetail;
 import one.thebox.android.Models.items.Box;
 import one.thebox.android.Models.items.BoxItem;
 import one.thebox.android.Models.address.Address;
+import one.thebox.android.Models.promotion.PromotionalOffer;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
@@ -50,7 +54,9 @@ public class CartFragment extends Fragment {
     public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     private RecyclerView recyclerView;
-    private LinearLayout proceedForward;
+    private LinearLayout proceedForward, promotionalMessageLayout;
+    private RelativeLayout promotionalTutorialLayout;
+    private ImageView removeTutorial;
     private CardView loaderLayout;
     private CartAdapter adapter;
     private View rootView;
@@ -60,12 +66,14 @@ public class CartFragment extends Fragment {
     private int requestCounter = 0;
     private Toolbar toolbar;
     private TextView totalPriceCart, totalSavingsCart, totalPriceBottomStrip, deliveryCharges,
-            forwardMessage, progressStepToCheckoutText, cartQuantityText;
+            forwardMessage, progressStepToCheckoutText, cartQuantityText, promotionalMessage, tutorialMessage;
     private LinearLayout progressIndicatorLayout;
-    private View progressStep1, progressStep2, progressStep3, progressStep4, progressStep5, progressStep6;
+    private View progressStep1, progressStep2, progressStep3;
     private Setting setting;
     private CardView bottomCard;
     private boolean isCartEmpty = false;
+    private PromotionalOffer displayedPromotionalTutorial;
+    private boolean isTutorialAvailble = false;
 
     /**
      * GLide Request Manager
@@ -151,6 +159,9 @@ public class CartFragment extends Fragment {
             }
         }
 
+        //reverse the list
+        Collections.reverse(cartProductDetails);
+
         cartHashMap.clear();
         //setup recyclerview
         setupRecyclerView(cartProductDetails, setting);
@@ -215,6 +226,9 @@ public class CartFragment extends Fragment {
 
     }
 
+    /**
+     * Initialize Views
+     */
     private void initViews() {
         this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
@@ -255,9 +269,6 @@ public class CartFragment extends Fragment {
         progressStep1 = (View) rootView.findViewById(R.id.progress_step1);
         progressStep2 = (View) rootView.findViewById(R.id.progress_step2);
         progressStep3 = (View) rootView.findViewById(R.id.progress_step3);
-        progressStep4 = (View) rootView.findViewById(R.id.progress_step4);
-        progressStep5 = (View) rootView.findViewById(R.id.progress_step5);
-        progressStep6 = (View) rootView.findViewById(R.id.progress_step6);
 
 
         //Bottom Card
@@ -269,6 +280,24 @@ public class CartFragment extends Fragment {
 
         bottomCard = (CardView) rootView.findViewById(R.id.bottom_card);
 
+        promotionalMessageLayout = (LinearLayout) rootView.findViewById(R.id.promotional_tool);
+        promotionalMessage = (TextView) rootView.findViewById(R.id.promotion_message_line1);
+
+        promotionalTutorialLayout = (RelativeLayout) rootView.findViewById(R.id.tutorial_tool);
+        removeTutorial = (ImageView) rootView.findViewById(R.id.remove_tutorial);
+        tutorialMessage = (TextView) rootView.findViewById(R.id.tutorial_message);
+
+        //cancelable popup
+        removeTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isTutorialAvailble) {
+                    if (displayedPromotionalTutorial != null) {
+                        removeTutorialPopup();
+                    }
+                }
+            }
+        });
         /**
          * Save CleverTap Event; OpenCart
          */
@@ -280,8 +309,44 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        setting = new SettingService().getSettings(getActivity());
-        setForwardMessageWithIndicator();
+        try {
+            setting = new SettingService().getSettings(getActivity());
+            setForwardMessageWithIndicator();
+
+            if (setting.isFirstOrder()) {
+                //get message from preferences
+                ArrayList<PromotionalOffer> promtionaFirstTimeOffer = CoreGsonUtils.fromJsontoArrayList(
+                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_OFFER_FIRST_TIME), PromotionalOffer.class);
+
+                if (promtionaFirstTimeOffer != null) {
+                    if (!promtionaFirstTimeOffer.isEmpty()) {
+                        //set the first time offer data
+                        checkPromotionalOfferMessage(promtionaFirstTimeOffer.get(0));
+                    } else {
+                        promotionalMessageLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    promotionalMessageLayout.setVisibility(View.GONE);
+                }
+            } else {
+                //get message from preferences
+                ArrayList<PromotionalOffer> promotionTutorials = CoreGsonUtils.fromJsontoArrayList(
+                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_TUTORIAL), PromotionalOffer.class);
+
+                if (promotionTutorials != null) {
+                    if (!promotionTutorials.isEmpty()) {
+                        //set the tutorial message
+                        checkPromotionalTutorial(promotionTutorials);
+                    } else {
+                        promotionalTutorialLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    promotionalTutorialLayout.setVisibility(View.GONE);
+                }
+            }
+        } catch (Exception e) {
+
+        }
     }
 
 
@@ -449,6 +514,83 @@ public class CartFragment extends Fragment {
         } else {
             progressIndicatorLayout.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Check to show promotional Message
+     */
+    public void checkPromotionalOfferMessage(PromotionalOffer promotionalOffer) {
+        try {
+            if (promotionalOffer.isFirstTime()) {
+                promotionalMessageLayout.setVisibility(View.VISIBLE);
+                promotionalMessage.setText(Html.fromHtml(promotionalOffer.getTitle()));
+            } else {
+                promotionalMessageLayout.setVisibility(View.GONE);
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+    }
+
+    /**
+     * Check for promotional Tutorial
+     */
+    public void checkPromotionalTutorial(ArrayList<PromotionalOffer> promotionalTutorials) {
+        try {
+            for (PromotionalOffer tutorial : promotionalTutorials) {
+                //should not be shown earlier
+                if (!tutorial.isChecked()) {
+                    isTutorialAvailble = true;
+                    displayedPromotionalTutorial = tutorial;
+                    promotionalTutorialLayout.setVisibility(View.VISIBLE);
+                    tutorialMessage.setText(Html.fromHtml(tutorial.getTitle()));
+                    break;
+                } else {
+                    isTutorialAvailble = false;
+                    continue;
+                }
+            }
+
+            if (!isTutorialAvailble) {
+                promotionalTutorialLayout.setVisibility(View.GONE);
+            }
+
+        } catch (Exception e) {
+
+        }
+
+    }
+
+    /**
+     * Remove Tutorial Popup or Cancelable popup
+     */
+    public void removeTutorialPopup() {
+        try {
+            ArrayList<PromotionalOffer> promotionTutorials = CoreGsonUtils.fromJsontoArrayList(
+                    PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_TUTORIAL), PromotionalOffer.class);
+            boolean isRemoved = false;
+            if (promotionTutorials != null) {
+                if (!promotionTutorials.isEmpty()) {
+                    for (PromotionalOffer tutorial : promotionTutorials) {
+                        //check displayed tutorial with all the tutorial
+                        if (tutorial.getUuid().equalsIgnoreCase(displayedPromotionalTutorial.getUuid())) {
+                            tutorial.setChecked(true);
+                            isRemoved = true;
+                            isTutorialAvailble = false;
+                            promotionalTutorialLayout.setVisibility(View.GONE);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isRemoved) {
+                PrefUtils.putString(getActivity(), Constants.EXTRA_PROMOTIONAL_TUTORIAL, CoreGsonUtils.toJson(promotionTutorials));
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
+
     }
 
     /**

@@ -178,20 +178,21 @@
                 android:layout_height="wrap_content"
                 android:background="@color/davy_grey"
                 android:padding="8dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/remove_message"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/remove_tutorial"
                     android:orientation="vertical"
                     android:paddingBottom="4dp"
                     android:paddingLeft="8dp"
                     android:paddingTop="4dp">
 
                     <TextView
-                        android:id="@+id/tutorial_message_line1"
+                        android:id="@+id/tutorial_message"
                         style="@style/AppTheme.Widget.Avenir.Next.Medium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -208,7 +209,7 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/remove_message"
+                    android:id="@+id/remove_tutorial"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -225,10 +226,10 @@
                 android:background="@color/raspberry_red"
                 android:orientation="vertical"
                 android:padding="12dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/message_line1"
+                    android:id="@+id/promotion_message_line1"
                     style="@style/AppTheme.Widget.Avenir.Next.Medium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
