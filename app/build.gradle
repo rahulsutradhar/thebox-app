@@ -124,8 +124,8 @@ dependencies {
     /**
      * Google Play services
      */
-    compile 'com.google.android.gms:play-services-location:10.2.1'
-    compile 'com.google.android.gms:play-services-gcm:10.2.1'
+    compile 'com.google.android.gms:play-services-location:11.0.2'
+    compile 'com.google.android.gms:play-services-gcm:11.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
 
     /**
@@ -211,6 +211,11 @@ dependencies {
      * CleverTap Analytics
      */
     compile 'com.clevertap.android:clevertap-android-sdk:3.1.2'
+
+    /**
+     * Apps FLyer for Analytics
+     */
+    compile 'com.appsflyer:af-android-sdk:4.7.4'
 }
 
 apply plugin: 'com.google.gms.google-services'

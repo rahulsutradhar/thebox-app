@@ -32,6 +32,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".app.TheBox"
@@ -46,6 +48,15 @@
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- AppsFlyer Install Refferar-->
+        <receiver
+            android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
 
@@ -153,7 +164,7 @@
             </intent-filter>
         </receiver>
 
-        android:screenOrientation="portrait" />
+        <!-- Activities-->
         <activity
             android:name=".activity.OnBoardingActivity"
             android:label="@string/on_boarding_activity"
@@ -194,8 +205,8 @@
 
         <activity
             android:name=".activity.order.OrderCalenderActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.FillUserInfoActivity"
             android:screenOrientation="portrait"
@@ -272,14 +283,6 @@
             android:name="CLEVERTAP_TOKEN"
             android:value="@string/clevertab_account_token" />
 
-        <!--
-    ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
-        -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
         <!-- BRANCH.IO Key-->
         <meta-data
             android:name="io.branch.sdk.BranchKey"
@@ -306,6 +309,12 @@
         </service>
 
         <activity android:name=".activity.FullImageActivity"></activity>
+
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.-->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

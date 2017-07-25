@@ -2,10 +2,13 @@ package one.thebox.android.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import com.appsflyer.AppsFlyerLib;
 import com.clevertap.android.sdk.ActivityLifecycleCallback;
 import com.clevertap.android.sdk.CleverTapAPI;
 import com.clevertap.android.sdk.exceptions.CleverTapMetaDataNotFoundException;
@@ -145,13 +148,13 @@ public class TheBox extends MultiDexApplication {
 
             /*debuger tools*/
            /* if (BuildConfig.enableStetho) {*/
-                Stetho.initialize(
-                        Stetho.newInitializerBuilder(this)
-                                .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                                .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                                .build());
-           // }
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                            .build());
+            // }
 
              /* initialize Calligraphy*/
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
@@ -176,6 +179,19 @@ public class TheBox extends MultiDexApplication {
             hlConfig.setCameraCaptureEnabled(true);
             hlConfig.setPictureMessagingEnabled(true);
             Hotline.getInstance(getApplicationContext()).init(hlConfig);
+
+            /**
+             * AppsFlyer Initialization
+             */
+            if (!BuildConfig.DEBUG) {
+                AppsFlyerLib.getInstance().startTracking(this, "3XdxagvSPtjFzoh6HZgJzB");
+                //set IMEI number to appsflyer
+                TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                AppsFlyerLib.getInstance().setImeiData(telephonyManager.getDeviceId());
+                //set device id to appsflyer
+                String device_unique_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                AppsFlyerLib.getInstance().setAndroidIdData(device_unique_id);
+            }
 
         } catch (CleverTapMetaDataNotFoundException e) {
             // thrown if you haven't specified your CleverTap Account ID or Token in your AndroidManifest.xml

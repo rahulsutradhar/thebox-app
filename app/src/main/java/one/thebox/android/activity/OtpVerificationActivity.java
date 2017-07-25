@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.lang.annotation.Annotation;
 
 import okhttp3.ResponseBody;
+import one.thebox.android.BuildConfig;
 import one.thebox.android.Events.SmsEvent;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
@@ -176,9 +177,14 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
                                     //set user information to crashlytics
                                     authenticationService.setUserDataToCrashlytics();
 
+                                    if (!BuildConfig.DEBUG) {
+                                        //AppsFlyer Custom user id
+                                        authenticationService.setAppFLyerUniqueId();
+                                    }
+
                                     //set user information to CleverTap upon Login and set profile
-                                    authenticationService.setCleverTapOnLogin();
                                     authenticationService.setCleverTapUserProfile();
+                                    authenticationService.setCleverTapOnLogin();
 
                                     //Setting Api Call then move to Home
                                     fetchSettingsfromServer();
