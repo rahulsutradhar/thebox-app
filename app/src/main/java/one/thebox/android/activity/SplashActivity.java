@@ -107,6 +107,14 @@ public class SplashActivity extends Activity {
      */
     public void setServerResponseForSettingsCall(boolean isSuccess) {
         if (isSuccess) {
+            /**
+             * Set clever tab and AppsFlyer Data everytime user opens app
+             */
+            authenticationService.setCleverTapOnLogin();
+            authenticationService.setAppFLyerUniqueId();
+            authenticationService.setUserDataToCrashlytics();
+
+            //navigate to Home
             navigateToHome();
         } else {
             if (requestCounter > 1) {

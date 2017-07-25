@@ -54,6 +54,7 @@
         android:padding="16dp"
         android:text="Proceed to Payment Summary"
         android:textColor="@color/white"
+        android:textSize="@dimen/text_medium1"
         android:visibility="visible" />
 
 
