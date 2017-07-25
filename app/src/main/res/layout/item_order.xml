@@ -73,22 +73,22 @@
 
                         <TextView
                             android:id="@+id/schedule_text"
-                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            style="@style/AppTheme.Widget.Avenir.Next.Medium"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="0dp"
                             android:text="Delivered on: "
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_small1" />
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_small2" />
 
                         <TextView
                             android:id="@+id/text_date"
-                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="0dp"
                             android:text="@string/sample_date"
-                            android:textColor="@color/manatee"
+                            android:textColor="@color/davy_grey"
                             android:textSize="@dimen/text_extra_small3" />
 
                     </LinearLayout>
@@ -102,11 +102,11 @@
 
                         <TextView
                             android:id="@+id/time_slot"
-                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/sample_slot"
-                            android:textColor="@color/manatee"
+                            android:textColor="@color/davy_grey"
                             android:textSize="@dimen/text_extra_small3" />
 
 
@@ -124,8 +124,8 @@
                         android:paddingRight="@dimen/padding_medium_button_horizontal"
                         android:paddingTop="@dimen/padding_medium_button_vertical"
                         android:text="@string/adjust"
-                        android:textColor="@color/manatee"
-                        android:textSize="@dimen/text_extra_small4"
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_small1"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -146,21 +146,21 @@
 
                     <TextView
                         android:id="@+id/text_view_view_items"
-                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        style="@style/AppTheme.Widget.Avenir.Next.Medium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/view_items"
                         android:textColor="@color/davy_grey"
-                        android:textSize="@dimen/text_extra_small4" />
+                        android:textSize="@dimen/text_small1" />
 
                     <TextView
                         android:id="@+id/text_items_name"
-                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text=""
-                        android:textColor="@color/manatee"
+                        android:textColor="@color/davy_grey"
                         android:textSize="@dimen/text_extra_small3" />
 
 
@@ -186,20 +186,20 @@
 
                 <TextView
                     android:id="@+id/text_amount_to_be_paid"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="2dp"
                     android:gravity="center"
                     android:text="Total amount Rs. 2000"
-                    android:textColor="@color/warm_grey"
-                    android:textSize="@dimen/text_small1" />
+                    android:textColor="@color/manatee"
+                    android:textSize="@dimen/text_small2" />
 
 
                 <TextView
                     android:id="@+id/message"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    style="@style/AppTheme.Widget.Avenir.Next.Medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

@@ -193,7 +193,7 @@
 
                     <TextView
                         android:id="@+id/tutorial_message"
-                        style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                        style="@style/AppTheme.Widget.Avenir.Heavy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
@@ -230,7 +230,7 @@
 
                 <TextView
                     android:id="@+id/promotion_message_line1"
-                    style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                    style="@style/AppTheme.Widget.Avenir.Heavy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
@@ -269,7 +269,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="Subtotal"
-                            android:textColor="@color/secondary_text_color"
+                            android:textColor="@color/manatee"
                             android:textSize="@dimen/text_extra_small4" />
 
                         <TextView
@@ -313,7 +313,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="Savings"
-                            android:textColor="@color/secondary_text_color"
+                            android:textColor="@color/manatee"
                             android:textSize="@dimen/text_extra_small4" />
 
                         <TextView
@@ -355,7 +355,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
                             android:text="Delivery Charges"
-                            android:textColor="@color/secondary_text_color"
+                            android:textColor="@color/manatee"
                             android:textSize="@dimen/text_extra_small4" />
 
                         <TextView
@@ -385,7 +385,7 @@
             <LinearLayout
                 android:id="@+id/button_proceed_forward"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 android:background="@color/md_green_500"
                 android:orientation="horizontal"
                 android:paddingLeft="8dp"

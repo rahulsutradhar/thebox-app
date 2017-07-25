@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
 
+import com.appsflyer.AppsFlyerLib;
+import com.appsflyer.AppsFlyerProperties;
 import com.crashlytics.android.Crashlytics;
 
 import java.util.HashMap;
@@ -122,6 +124,10 @@ public class AuthenticationService {
             profileUpdate.put("App Version Name", pInfo.versionName);
             profileUpdate.put("App Version Code", pInfo.versionCode);
 
+            //get the appsflyer unique id
+            String uniqueIDAppflyer = AppsFlyerLib.getInstance().getAppsFlyerUID(TheBox.getAppContext());
+            profileUpdate.put("App_flyer_unique_id", uniqueIDAppflyer);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,5 +190,57 @@ public class AuthenticationService {
         accountManager.deleteAndNavigateToLogin();
     }
 
+    /**
+     * AppsFlyer Unique ID
+     */
+    public void setAppFLyerUniqueId() {
+        try {
+            User user = PrefUtils.getUser(TheBox.getAppContext());
+            if (user.getPhoneNumber() != null) {
+                if (!user.getPhoneNumber().isEmpty()) {
+                    AppsFlyerLib.getInstance().setCustomerUserId(user.getPhoneNumber());
+                }
+            }
+
+            if (user.getEmail() != null) {
+                if (!user.getEmail().isEmpty()) {
+                    AppsFlyerLib.getInstance().setUserEmails(AppsFlyerProperties.EmailsCryptType.MD5, user.getEmail());
+                }
+            }
+
+            //set users data to appsflyer
+            AppsFlyerLib.getInstance().setAdditionalData(getAppFlyersData());
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    private HashMap<String, Object> getAppFlyersData() {
+        HashMap<String, Object> profileData = new HashMap<String, Object>();
+        try {
+            User user = PrefUtils.getUser(TheBox.getAppContext());
+
+            if (user.getName() != null) {
+                if (!user.getName().isEmpty()) {
+                    profileData.put("Name", user.getName());
+                }
+            }
+
+            profileData.put("Unique-Id", user.getUuid());
+            profileData.put("Platform", "Android");
+
+            PackageInfo pInfo = null;
+            pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
+                    TheBox.getAppContext().getPackageName(), 0);
+
+            profileData.put("App Version Name", pInfo.versionName);
+            profileData.put("App Version Code", pInfo.versionCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return profileData;
+    }
 
 }

@@ -270,10 +270,11 @@
             style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary"
+            android:background="@color/md_green_500"
             android:gravity="center_horizontal"
             android:padding="16dp"
-            android:text="Proceed to Payment"
+            android:textSize="@dimen/text_medium1"
+            android:text="Proceed to Payment Summary"
             android:textColor="@color/white"
             android:visibility="visible" />
 
