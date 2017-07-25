@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class OrderHistoryFragment extends Fragment {
     private int positionInViewPager;
     private RecyclerView recyclerView;
     private UpcomingOrderAdapter adapter;
-    private TextView emptyState, noInternet;
+    private RelativeLayout emptyState, noInternet;
     private int currentYear;
     private GifImageView loader;
 
@@ -80,9 +81,9 @@ public class OrderHistoryFragment extends Fragment {
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        emptyState = (TextView) rootView.findViewById(R.id.empty_state);
+        emptyState = (RelativeLayout) rootView.findViewById(R.id.empty_state);
         loader = (GifImageView) rootView.findViewById(R.id.loader_gif);
-        noInternet = (TextView) rootView.findViewById(R.id.no_internet);
+        noInternet = (RelativeLayout) rootView.findViewById(R.id.no_internet);
 
         noInternet.setOnClickListener(new View.OnClickListener() {
             @Override

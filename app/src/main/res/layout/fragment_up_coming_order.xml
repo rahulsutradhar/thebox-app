@@ -28,6 +28,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="76dp"
         android:layout_marginRight="20dp"
+        android:src="@drawable/ic_calendar_icon"
         app:backgroundTint="@color/primary"
         app:elevation="2dp"
         app:fabSize="normal"
