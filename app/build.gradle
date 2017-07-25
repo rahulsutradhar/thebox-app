@@ -211,6 +211,11 @@ dependencies {
      * CleverTap Analytics
      */
     compile 'com.clevertap.android:clevertap-android-sdk:3.1.2'
+
+    /**
+     * Apps FLyer for Analytics
+     */
+    compile 'com.appsflyer:af-android-sdk:4.7.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
