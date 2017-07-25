@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import io.branch.referral.Branch;
 import io.branch.referral.BranchError;
+import one.thebox.android.BuildConfig;
 import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MutedVideoView;
@@ -111,8 +112,11 @@ public class SplashActivity extends Activity {
              * Set clever tab and AppsFlyer Data everytime user opens app
              */
             authenticationService.setCleverTapOnLogin();
-            authenticationService.setAppFLyerUniqueId();
             authenticationService.setUserDataToCrashlytics();
+
+            if (!BuildConfig.DEBUG) {
+                authenticationService.setAppFLyerUniqueId();
+            }
 
             //navigate to Home
             navigateToHome();

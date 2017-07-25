@@ -183,13 +183,15 @@ public class TheBox extends MultiDexApplication {
             /**
              * AppsFlyer Initialization
              */
-            AppsFlyerLib.getInstance().startTracking(this, "3XdxagvSPtjFzoh6HZgJzB");
-            //set IMEI number to appsflyer
-            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            AppsFlyerLib.getInstance().setImeiData(telephonyManager.getDeviceId());
-            //set device id to appsflyer
-            String device_unique_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            AppsFlyerLib.getInstance().setAndroidIdData(device_unique_id);
+            if (!BuildConfig.DEBUG) {
+                AppsFlyerLib.getInstance().startTracking(this, "3XdxagvSPtjFzoh6HZgJzB");
+                //set IMEI number to appsflyer
+                TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                AppsFlyerLib.getInstance().setImeiData(telephonyManager.getDeviceId());
+                //set device id to appsflyer
+                String device_unique_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                AppsFlyerLib.getInstance().setAndroidIdData(device_unique_id);
+            }
 
         } catch (CleverTapMetaDataNotFoundException e) {
             // thrown if you haven't specified your CleverTap Account ID or Token in your AndroidManifest.xml
