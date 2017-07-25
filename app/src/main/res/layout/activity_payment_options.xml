@@ -141,6 +141,7 @@
 
     <TextView
         android:id="@+id/txtPlaceOrder"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -149,7 +150,7 @@
         android:padding="15dp"
         android:text="Place Order"
         android:textColor="@android:color/white"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
 
 
 </RelativeLayout>
