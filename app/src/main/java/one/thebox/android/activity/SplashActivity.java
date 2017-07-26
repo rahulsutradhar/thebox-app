@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -19,6 +23,7 @@ import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.MutedVideoView;
 import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
 import one.thebox.android.services.SettingService;
 import one.thebox.android.util.CoreGsonUtils;
@@ -31,6 +36,7 @@ public class SplashActivity extends Activity {
     private static final int DELAY = 0;
     private MutedVideoView vidHolder;
     private AuthenticationService authenticationService;
+    private ImageView theboxLogo;
     private int requestCounter = 0;
     private int attachmentNumber = 0;
     private Params params;
@@ -44,6 +50,9 @@ public class SplashActivity extends Activity {
         initVariable();
         try {
             setContentView(R.layout.video_splash);
+            theboxLogo = (ImageView) findViewById(R.id.thebox_logo);
+            theboxLogo.setVisibility(View.INVISIBLE);
+
             authenticationService = new AuthenticationService();
             vidHolder = (MutedVideoView) findViewById(R.id.splash_video);
             Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.splash_video);
@@ -51,23 +60,33 @@ public class SplashActivity extends Activity {
             vidHolder.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    setContentView(R.layout.activity_splash_activty);
-                    jump();
+                    updateUI();
                     return true;
                 }
             });
             vidHolder.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
-                    jump();
+                    updateUI();
+
                 }
             });
             vidHolder.start();
 
         } catch (Exception ex) {
-            setContentView(R.layout.activity_splash_activty);
-            jump();
+            updateUI();
         }
 
+    }
+
+    public void updateUI() {
+        vidHolder.setVisibility(View.GONE);
+        theboxLogo.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                jump();
+            }
+        }, 500);
     }
 
     public void initVariable() {
@@ -87,7 +106,9 @@ public class SplashActivity extends Activity {
                 /**
                  * Not Authenticated Move to OnBoard Activity
                  */
-                startActivity(new Intent(SplashActivity.this, OnBoardingActivity.class));
+                Intent intent = new Intent(SplashActivity.this, OnBoardingActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 finish();
             }
         } catch (Exception e) {
@@ -136,9 +157,9 @@ public class SplashActivity extends Activity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, attachmentNumber);
         intent.putExtra(Constants.EXTRA_NOTIFICATION_PARAMETER, CoreGsonUtils.toJson(params));
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }

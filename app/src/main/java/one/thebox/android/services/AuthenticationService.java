@@ -19,6 +19,7 @@ import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.Keys;
 import one.thebox.android.app.TheBox;
+import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.AccountManager;
 import one.thebox.android.util.PrefUtils;
 import retrofit2.Call;
@@ -138,6 +139,8 @@ public class AuthenticationService {
      * Log out
      */
     public void logOut(final Context context, final boolean showLoader) {
+        CartHelperService.checkServiceAndStopForLogout(context);
+
         final BoxLoader dialog = new BoxLoader(context);
         if (showLoader) {
             dialog.show();
@@ -181,13 +184,11 @@ public class AuthenticationService {
     }
 
     public void navigateToSplash(Context context) {
-        AccountManager accountManager = new AccountManager(context);
-        accountManager.deleteAccountData();
+        new AccountManager().deleteAccountData(context);
     }
 
     public void navigateToLogin(Context context) {
-        AccountManager accountManager = new AccountManager(context);
-        accountManager.deleteAndNavigateToLogin();
+        new AccountManager().deleteAndNavigateToLogin(context);
     }
 
     /**
