@@ -191,6 +191,7 @@ public class TheBox extends MultiDexApplication {
                 //set device id to appsflyer
                 String device_unique_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 AppsFlyerLib.getInstance().setAndroidIdData(device_unique_id);
+                AppsFlyerLib.getInstance().reportTrackSession(this);
             }
 
         } catch (CleverTapMetaDataNotFoundException e) {
