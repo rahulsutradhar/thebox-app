@@ -142,4 +142,14 @@ public class CartHelperService implements ServiceConnection {
     }
 
 
+    /**
+     * Check running status;
+     * if running stop for Logout Operation
+     */
+    public static void checkServiceAndStopForLogout(Context context) {
+        if (isCartSyncRunning()) {
+            stopCartService(context, false);
+        }
+    }
+
 }

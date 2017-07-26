@@ -17,8 +17,6 @@ import one.thebox.android.util.PrefUtils;
  */
 public class OnBoardingActivity extends BaseActivity {
 
-    private final String AUTO_ENABLE_PERMISSION = "AUTO_ENABLE_PERMISSION";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -2,6 +2,7 @@ package one.thebox.android.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -12,6 +13,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -200,8 +202,8 @@ public class CartFragment extends Fragment {
      */
     private void setupRecyclerView(ArrayList<CartProductDetail> cartProductDetailses, Setting setting) {
         emptyCartLayout.setVisibility(View.GONE);
-        bottomCard.setVisibility(View.VISIBLE);
         loaderLayout.setVisibility(View.GONE);
+        bottomCard.setVisibility(View.VISIBLE);
 
         if (adapter == null) {
             adapter = new CartAdapter(getActivity(), glideRequestManager, this);
