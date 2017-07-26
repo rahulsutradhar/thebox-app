@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.json.JSONObject;
@@ -31,6 +34,7 @@ public class SplashActivity extends Activity {
     private static final int DELAY = 0;
     private MutedVideoView vidHolder;
     private AuthenticationService authenticationService;
+    private RelativeLayout theboxLogo;
     private int requestCounter = 0;
     private int attachmentNumber = 0;
     private Params params;
@@ -44,6 +48,8 @@ public class SplashActivity extends Activity {
         initVariable();
         try {
             setContentView(R.layout.video_splash);
+            theboxLogo = (RelativeLayout) findViewById(R.id.thebox_logo);
+            theboxLogo.setVisibility(View.INVISIBLE);
             authenticationService = new AuthenticationService();
             vidHolder = (MutedVideoView) findViewById(R.id.splash_video);
             Uri video = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.splash_video);
@@ -51,7 +57,8 @@ public class SplashActivity extends Activity {
             vidHolder.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    setContentView(R.layout.activity_splash_activty);
+                    vidHolder.setVisibility(View.GONE);
+                    theboxLogo.setVisibility(View.VISIBLE);
                     jump();
                     return true;
                 }
@@ -64,7 +71,8 @@ public class SplashActivity extends Activity {
             vidHolder.start();
 
         } catch (Exception ex) {
-            setContentView(R.layout.activity_splash_activty);
+            vidHolder.setVisibility(View.GONE);
+            theboxLogo.setVisibility(View.VISIBLE);
             jump();
         }
 
@@ -82,7 +90,16 @@ public class SplashActivity extends Activity {
     private void jump() {
         try {
             if (authenticationService.isAuthenticated()) {
-                fetchSettingFromServer();
+                //hide the video , show logo
+                vidHolder.setVisibility(View.INVISIBLE);
+                theboxLogo.setVisibility(View.VISIBLE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchSettingFromServer();
+                    }
+                }, 500);
+
             } else {
                 /**
                  * Not Authenticated Move to OnBoard Activity
