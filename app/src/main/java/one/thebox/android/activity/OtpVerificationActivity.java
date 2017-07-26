@@ -265,8 +265,8 @@ public class OtpVerificationActivity extends BaseActivity implements View.OnClic
 
     public void navigateToHome() {
         Intent intent = new Intent(OtpVerificationActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

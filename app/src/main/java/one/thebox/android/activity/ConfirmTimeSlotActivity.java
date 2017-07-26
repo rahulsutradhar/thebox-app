@@ -126,12 +126,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             if (isMerge) {
                 //merge cart
                 setContentView(R.layout.confirm_time_slot_when_user_have_orders);
-                setTitle("Merge with future deliveries");
                 initViewsCaseMergeDeliveries();
             } else {
                 //Case First Order
                 setContentView(R.layout.activity_confirm_time_slot);
-                setTitle("Select Time Slot");
                 initViewCaseFirstOrder();
             }
         }
