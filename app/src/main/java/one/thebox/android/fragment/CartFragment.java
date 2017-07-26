@@ -55,7 +55,7 @@ public class CartFragment extends Fragment {
     public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
     private RecyclerView recyclerView;
     private LinearLayout proceedForward, promotionalMessageLayout;
-    private RelativeLayout promotionalTutorialLayout;
+    private RelativeLayout promotionalTutorialLayout, parentLayout;
     private ImageView removeTutorial;
     private CardView loaderLayout;
     private CartAdapter adapter;
@@ -148,7 +148,7 @@ public class CartFragment extends Fragment {
             }
         }
 
-        Setting setting = new SettingService().getSettings(getActivity());
+        setting = new SettingService().getSettings(getActivity());
 
         Set<String> keys = cartHashMap.keySet();
         for (String uuid : keys) {
@@ -166,8 +166,9 @@ public class CartFragment extends Fragment {
         //setup recyclerview
         setupRecyclerView(cartProductDetails, setting);
 
+        //check for promotional popups or tutorial popups
+        checkForPopup();
     }
-
 
     /**
      * Empty State
@@ -231,6 +232,7 @@ public class CartFragment extends Fragment {
      */
     private void initViews() {
         this.glideRequestManager = Glide.with(this);
+        this.parentLayout = (RelativeLayout) rootView.findViewById(R.id.parent_layout);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
@@ -238,6 +240,14 @@ public class CartFragment extends Fragment {
         this.loaderLayout = (CardView) rootView.findViewById(R.id.loader_layout);
         emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
         proceedForward = (LinearLayout) rootView.findViewById(R.id.button_proceed_forward);
+        parentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //blank
+            }
+        });
+
+
         proceedForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -313,37 +323,6 @@ public class CartFragment extends Fragment {
             setting = new SettingService().getSettings(getActivity());
             setForwardMessageWithIndicator();
 
-            if (setting.isFirstOrder()) {
-                //get message from preferences
-                ArrayList<PromotionalOffer> promtionaFirstTimeOffer = CoreGsonUtils.fromJsontoArrayList(
-                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_OFFER_FIRST_TIME), PromotionalOffer.class);
-
-                if (promtionaFirstTimeOffer != null) {
-                    if (!promtionaFirstTimeOffer.isEmpty()) {
-                        //set the first time offer data
-                        checkPromotionalOfferMessage(promtionaFirstTimeOffer.get(0));
-                    } else {
-                        promotionalMessageLayout.setVisibility(View.GONE);
-                    }
-                } else {
-                    promotionalMessageLayout.setVisibility(View.GONE);
-                }
-            } else {
-                //get message from preferences
-                ArrayList<PromotionalOffer> promotionTutorials = CoreGsonUtils.fromJsontoArrayList(
-                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_TUTORIAL), PromotionalOffer.class);
-
-                if (promotionTutorials != null) {
-                    if (!promotionTutorials.isEmpty()) {
-                        //set the tutorial message
-                        checkPromotionalTutorial(promotionTutorials);
-                    } else {
-                        promotionalTutorialLayout.setVisibility(View.GONE);
-                    }
-                } else {
-                    promotionalTutorialLayout.setVisibility(View.GONE);
-                }
-            }
         } catch (Exception e) {
 
         }
@@ -513,6 +492,47 @@ public class CartFragment extends Fragment {
             }
         } else {
             progressIndicatorLayout.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Check and display promotional popup
+     */
+    public void checkForPopup() {
+        try {
+            if (setting.isFirstOrder()) {
+                //get message from preferences
+                ArrayList<PromotionalOffer> promtionaFirstTimeOffer = CoreGsonUtils.fromJsontoArrayList(
+                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_OFFER_FIRST_TIME), PromotionalOffer.class);
+
+                if (promtionaFirstTimeOffer != null) {
+                    if (!promtionaFirstTimeOffer.isEmpty()) {
+                        //set the first time offer data
+                        checkPromotionalOfferMessage(promtionaFirstTimeOffer.get(0));
+                    } else {
+                        promotionalMessageLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    promotionalMessageLayout.setVisibility(View.GONE);
+                }
+            } else {
+                //get message from preferences
+                ArrayList<PromotionalOffer> promotionTutorials = CoreGsonUtils.fromJsontoArrayList(
+                        PrefUtils.getString(getActivity(), Constants.EXTRA_PROMOTIONAL_TUTORIAL), PromotionalOffer.class);
+
+                if (promotionTutorials != null) {
+                    if (!promotionTutorials.isEmpty()) {
+                        //set the tutorial message
+                        checkPromotionalTutorial(promotionTutorials);
+                    } else {
+                        promotionalTutorialLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    promotionalTutorialLayout.setVisibility(View.GONE);
+                }
+            }
+        } catch (Exception e) {
+
         }
     }
 
