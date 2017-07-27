@@ -215,15 +215,9 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
                     no_of_options_holder.setText(boxItem.getNoOfOptions());
                 }
 
-                //Size of the ItemConfig selected
+                //Size of the ItemConfig selected; packet details
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
-                    if (boxItem.getSelectedItemConfig().getSize() == 0) {
-                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getQuantity()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                                + " " + boxItem.getSelectedItemConfig().getItemType());
-                    } else {
-                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                                + " " + boxItem.getSelectedItemConfig().getItemType());
-                    }
+                    size.setText(boxItem.getSelectedItemConfig().getItemPacketDetails());
                 }
 
                 glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())

@@ -188,11 +188,8 @@ public class OrderItemAdapter extends BaseRecyclerAdapter {
 
                 frequency.setText("Repeat delivery " + selectedItemConfig.getSubscriptionText().toLowerCase());
 
-                if (selectedItemConfig.getSize() == 0) {
-                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
-                } else {
-                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
-                }
+                //item packet details
+                config.setText(selectedItemConfig.getItemPacketDetails());
 
                 //show savings text if exist
                 if (orderItem.getSavingsText() != null) {
