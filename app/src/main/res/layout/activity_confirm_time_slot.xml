@@ -60,7 +60,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:text="2 step remaining"
+                            android:text="2 steps remaining"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_extra_small3" />
 
@@ -273,9 +273,9 @@
             android:background="@color/md_green_500"
             android:gravity="center_horizontal"
             android:padding="16dp"
-            android:textSize="@dimen/text_medium1"
             android:text="Proceed"
             android:textColor="@color/white"
+            android:textSize="@dimen/text_medium1"
             android:visibility="visible" />
 
     </LinearLayout>
