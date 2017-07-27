@@ -55,6 +55,30 @@ public class ItemConfig extends RealmObject implements Serializable {
 
 
     /************************************************
+     * Helper Methods
+     ************************************************/
+    public String getItemPacketDetails() {
+        String packet = "";
+        try {
+            if (getSize() == 0) {
+                packet = getQuantity() + " " + getSizeUnit() + " " + getItemType();
+            } else {
+                //size non-zero
+                if (getQuantity() == 1) {
+                    packet = getSize() + " " + getSizeUnit() + " " + getItemType();
+                } else {
+                    packet = getQuantity() + " x " + getSize() + " " + getSizeUnit() + " " + getItemType();
+                }
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return packet;
+    }
+
+
+    /************************************************
      * Getter Setter
      ************************************************/
 
