@@ -2,7 +2,6 @@ package one.thebox.android.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -13,7 +12,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -50,6 +48,7 @@ import one.thebox.android.services.SettingService;
 import one.thebox.android.services.cart.CartHelperService;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
+import pl.droidsonroids.gif.GifImageView;
 
 public class CartFragment extends Fragment {
 
@@ -59,7 +58,7 @@ public class CartFragment extends Fragment {
     private LinearLayout proceedForward, promotionalMessageLayout;
     private RelativeLayout promotionalTutorialLayout, parentLayout;
     private ImageView removeTutorial;
-    private CardView loaderLayout;
+    private GifImageView progressLoader;
     private CartAdapter adapter;
     private View rootView;
     private RelativeLayout emptyCartLayout;
@@ -178,7 +177,7 @@ public class CartFragment extends Fragment {
     public void setCartEmpty() {
         emptyCartLayout.setVisibility(View.VISIBLE);
         bottomCard.setVisibility(View.GONE);
-        loaderLayout.setVisibility(View.GONE);
+        progressLoader.setVisibility(View.GONE);
         progressIndicatorLayout.setVisibility(View.GONE);
         cartQuantityText.setVisibility(View.GONE);
     }
@@ -202,7 +201,7 @@ public class CartFragment extends Fragment {
      */
     private void setupRecyclerView(ArrayList<CartProductDetail> cartProductDetailses, Setting setting) {
         emptyCartLayout.setVisibility(View.GONE);
-        loaderLayout.setVisibility(View.GONE);
+        progressLoader.setVisibility(View.GONE);
         bottomCard.setVisibility(View.VISIBLE);
 
         if (adapter == null) {
@@ -239,7 +238,7 @@ public class CartFragment extends Fragment {
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        this.loaderLayout = (CardView) rootView.findViewById(R.id.loader_layout);
+        this.progressLoader = (GifImageView) rootView.findViewById(R.id.progress_bar);
         emptyCartLayout = (RelativeLayout) rootView.findViewById(R.id.empty_cart);
         proceedForward = (LinearLayout) rootView.findViewById(R.id.button_proceed_forward);
         parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -248,7 +247,6 @@ public class CartFragment extends Fragment {
                 //blank
             }
         });
-
 
         proceedForward.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -337,14 +335,14 @@ public class CartFragment extends Fragment {
     public void requestServerConfirmCart() {
         CartHelperService.stopCartService(getActivity(), false);
         requestCounter++;
-        loaderLayout.setVisibility(View.VISIBLE);
+        progressLoader.setVisibility(View.VISIBLE);
         CartHelperService.updateCartToServer(getActivity(), this);
     }
 
     public void setCartUpdateServerResponse(boolean isSuccess, CartItemResponse response) {
 
         if (isSuccess) {
-            loaderLayout.setVisibility(View.GONE);
+            progressLoader.setVisibility(View.GONE);
             //Proceed
             doesUserExist(response.isMerge());
 
@@ -354,7 +352,7 @@ public class CartFragment extends Fragment {
             } else {
                 //if the call fails start background service again; if cart size is greater then 0
                 CartHelperService.checkServiceRunningWhenAdded(getActivity());
-                loaderLayout.setVisibility(View.GONE);
+                progressLoader.setVisibility(View.GONE);
                 requestCounter = 0;
                 //show a error message about failed called
                 Toast.makeText(getActivity(), "Something went wrong, please try again later.", Toast.LENGTH_SHORT).show();
@@ -465,7 +463,7 @@ public class CartFragment extends Fragment {
 
                             progressIndicatorLayout.setVisibility(View.VISIBLE);
                             forwardMessage.setText("Select Address to Checkout");
-                            progressStepToCheckoutText.setText("3 step remaining");
+                            progressStepToCheckoutText.setText("3 steps remaining");
                             progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
                             progressStep2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
                             progressStep3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
@@ -474,7 +472,7 @@ public class CartFragment extends Fragment {
                             //Proceed to Address
                             progressIndicatorLayout.setVisibility(View.VISIBLE);
                             forwardMessage.setText("Add Address to Checkout");
-                            progressStepToCheckoutText.setText("4 step remaining");
+                            progressStepToCheckoutText.setText("4 steps remaining");
                             progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
                             progressStep2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
                         }
@@ -483,7 +481,7 @@ public class CartFragment extends Fragment {
                         //Proceed to User Data
                         progressIndicatorLayout.setVisibility(View.VISIBLE);
                         forwardMessage.setText("Add User Details to Checkout");
-                        progressStepToCheckoutText.setText("5 step remaining");
+                        progressStepToCheckoutText.setText("5 steps remaining");
                         progressStep1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.md_green_500));
 
                     }
@@ -544,8 +542,18 @@ public class CartFragment extends Fragment {
     public void checkPromotionalOfferMessage(PromotionalOffer promotionalOffer) {
         try {
             if (promotionalOffer.isFirstTime()) {
-                promotionalMessageLayout.setVisibility(View.VISIBLE);
-                promotionalMessage.setText(Html.fromHtml(promotionalOffer.getTitle()));
+                //check for null and empty state
+                if (promotionalOffer.getTitle() != null) {
+                    if (!promotionalOffer.getTitle().isEmpty()) {
+                        promotionalMessageLayout.setVisibility(View.VISIBLE);
+                        promotionalMessage.setText(Html.fromHtml(promotionalOffer.getTitle()));
+                    } else {
+                        promotionalMessageLayout.setVisibility(View.GONE);
+                    }
+                } else {
+                    promotionalMessageLayout.setVisibility(View.GONE);
+                }
+
             } else {
                 promotionalMessageLayout.setVisibility(View.GONE);
             }
@@ -562,10 +570,19 @@ public class CartFragment extends Fragment {
             for (PromotionalOffer tutorial : promotionalTutorials) {
                 //should not be shown earlier
                 if (!tutorial.isChecked()) {
-                    isTutorialAvailble = true;
-                    displayedPromotionalTutorial = tutorial;
-                    promotionalTutorialLayout.setVisibility(View.VISIBLE);
-                    tutorialMessage.setText(Html.fromHtml(tutorial.getTitle()));
+                    //check for null
+                    if (tutorial.getTitle() != null) {
+                        if (!tutorial.getTitle().isEmpty()) {
+                            isTutorialAvailble = true;
+                            displayedPromotionalTutorial = tutorial;
+                            promotionalTutorialLayout.setVisibility(View.VISIBLE);
+                            tutorialMessage.setText(Html.fromHtml(tutorial.getTitle()));
+                        } else {
+                            isTutorialAvailble = false;
+                        }
+                    } else {
+                        isTutorialAvailble = false;
+                    }
                     break;
                 } else {
                     isTutorialAvailble = false;

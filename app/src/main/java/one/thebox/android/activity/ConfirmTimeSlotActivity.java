@@ -160,6 +160,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         timeSlotInformationTitle = (TextView) findViewById(R.id.timeslotInformationText);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setText("Proceed to Payment Summary");
 
         setting = new SettingService().getSettings(this);
         if (setting.isFirstOrder()) {
@@ -214,6 +215,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
     private void initViewsCaseMergeDeliveries() {
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setText("Proceed to Payment Summary");
         proceedToPayment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -321,6 +323,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
         textViewSelectDate.setText("Arriving on:");
         timeSlotRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_time_slots);
         proceedToPayment = (TextView) findViewById(R.id.button_proceed_to_payment);
+        proceedToPayment.setText("Proceed to Payment");
 
         //fetch slots for orders
         fetchTimeSlotForOrder();

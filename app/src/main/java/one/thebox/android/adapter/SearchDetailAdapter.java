@@ -365,14 +365,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 //Size of the ItemConfig selected
                 if (boxItem.getItemConfigs() != null && !boxItem.getItemConfigs().isEmpty()) {
                     //show size
-                    if (boxItem.getSelectedItemConfig().getSize() == 0) {
-                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getQuantity()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                                + " " + boxItem.getSelectedItemConfig().getItemType());
-                    } else {
-                        //show number of pieces
-                        size.setText(String.valueOf(boxItem.getSelectedItemConfig().getSize()) + " " + boxItem.getSelectedItemConfig().getSizeUnit()
-                                + " " + boxItem.getSelectedItemConfig().getItemType());
-                    }
+                    size.setText(boxItem.getSelectedItemConfig().getItemPacketDetails());
                 }
 
                 glideRequestManager.load(boxItem.getSelectedItemConfig().getItemImage())
@@ -709,11 +702,8 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 productName.setText(subscribeItem.getBoxItem().getTitle());
 
-                if (selectedItemConfig.getSize() == 0) {
-                    config.setText(selectedItemConfig.getQuantity() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
-                } else {
-                    config.setText(selectedItemConfig.getSize() + " " + selectedItemConfig.getSizeUnit() + " " + selectedItemConfig.getItemType());
-                }
+                //packet size details
+                config.setText(selectedItemConfig.getItemPacketDetails());
 
                 arrivingTime.setText(subscribeItem.getArrivingAt());
 

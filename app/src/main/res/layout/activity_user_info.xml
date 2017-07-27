@@ -55,10 +55,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/title"
-                            android:visibility="gone"
                             android:layout_marginTop="3dp"
                             android:orientation="vertical"
-                            android:paddingBottom="2dp">
+                            android:paddingBottom="2dp"
+                            android:visibility="gone">
 
                             <TextView
                                 android:id="@+id/progress_step_text"
@@ -67,7 +67,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="4 step remaining"
+                                android:text="4 steps remaining"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/text_extra_small3" />
 
