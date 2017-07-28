@@ -41,6 +41,9 @@ import retrofit2.Response;
 
 public class OrderHistoryFragment extends Fragment {
 
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
+    public static final int RECYCLER_VIEW_TYPE_FOOTER = 302;
+
     private View rootView;
     private CalenderMonth calenderMonth;
     private int positionInViewPager;
@@ -120,7 +123,7 @@ public class OrderHistoryFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
                                     if (response.body().getOrders() != null) {
-                                        setUpRecyclerView(response.body().getOrders());
+                                        setUpRecyclerView(response.body().getOrders(), response.body());
                                     } else {
                                         emptyState.setVisibility(View.VISIBLE);
                                     }
@@ -141,10 +144,18 @@ public class OrderHistoryFragment extends Fragment {
                 });
     }
 
-    public void setUpRecyclerView(ArrayList<Order> orders) {
+    public void setUpRecyclerView(ArrayList<Order> orders, OrdersResponse ordersResponse) {
         if (orders.size() > 0) {
             emptyState.setVisibility(View.GONE);
             adapter = new UpcomingOrderAdapter(getActivity(), orders, this);
+            if (ordersResponse.isLastOrder()) {
+                adapter.setLastOrders(ordersResponse.isLastOrder());
+                adapter.setTitleOrderCreatedUpto(ordersResponse.getTitle());
+                adapter.setDescriptionOrderCreatedUpto(ordersResponse.getDescription());
+                adapter.setViewType(RECYCLER_VIEW_TYPE_FOOTER);
+            } else {
+                adapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
             final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
             recyclerView.setAdapter(adapter);

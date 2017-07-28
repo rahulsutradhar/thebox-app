@@ -31,6 +31,15 @@ public class OrdersResponse extends ApiResponse implements Serializable {
     @SerializedName("current_year")
     private int currentYear;
 
+    @SerializedName("last_orders")
+    private boolean lastOrder;
+
+    @SerializedName("title")
+    private String title;
+
+    @SerializedName("description")
+    private String description;
+
 
     public OrdersResponse() {
 
@@ -74,5 +83,29 @@ public class OrdersResponse extends ApiResponse implements Serializable {
 
     public void setCalenderYears(Vector<CalenderYear> calenderYears) {
         this.calenderYears = calenderYears;
+    }
+
+    public boolean isLastOrder() {
+        return lastOrder;
+    }
+
+    public void setLastOrder(boolean lastOrder) {
+        this.lastOrder = lastOrder;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

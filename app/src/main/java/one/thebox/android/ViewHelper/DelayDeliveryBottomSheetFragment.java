@@ -197,21 +197,13 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             if (rescheduleSkip.isVisible()) {
                 skipLayout.setClickable(true);
                 skipLayout.setEnabled(true);
-                if (sdk < 16) {
-                    skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.green_background));
-                } else {
-                    skipLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.green_background));
-                }
+                skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.green_background));
                 skipText.setTextColor(getActivity().getResources().getColor(R.color.white));
 
             } else {
                 skipLayout.setClickable(false);
                 skipLayout.setEnabled(false);
-                if (sdk < 16) {
-                    skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.grey_background));
-                } else {
-                    skipLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.grey_background));
-                }
+                skipLayout.setBackgroundDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.grey_background));
                 skipText.setTextColor(getActivity().getResources().getColor(R.color.divide_color));
             }
 

@@ -29,6 +29,8 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
     private ArrayList<Order> orders = new ArrayList<>();
     private UpComingOrderFragment upComingOrderFragment;
     private OrderHistoryFragment orderHistoryFragment;
+    private String titleOrderCreatedUpto, descriptionOrderCreatedUpto;
+    private boolean lastOrders;
 
     public UpcomingOrderAdapter(Context context, UpComingOrderFragment upComingOrderFragment, ArrayList<Order> orders) {
         super(context);
@@ -56,6 +58,30 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
         this.orders = orders;
     }
 
+    public String getTitleOrderCreatedUpto() {
+        return titleOrderCreatedUpto;
+    }
+
+    public void setTitleOrderCreatedUpto(String titleOrderCreatedUpto) {
+        this.titleOrderCreatedUpto = titleOrderCreatedUpto;
+    }
+
+    public String getDescriptionOrderCreatedUpto() {
+        return descriptionOrderCreatedUpto;
+    }
+
+    public void setDescriptionOrderCreatedUpto(String descriptionOrderCreatedUpto) {
+        this.descriptionOrderCreatedUpto = descriptionOrderCreatedUpto;
+    }
+
+    public boolean isLastOrders() {
+        return lastOrders;
+    }
+
+    public void setLastOrders(boolean lastOrders) {
+        this.lastOrders = lastOrders;
+    }
+
     @Override
     protected ItemHolder getItemHolder(View view) {
         return new ItemViewHolder(view);
@@ -73,7 +99,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected FooterHolder getFooterHolder(View view) {
-        return null;
+        return new FooterViewHolder(view);
     }
 
     @Override
@@ -88,7 +114,8 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewFooterHolder(FooterHolder holder, int position) {
-
+        FooterViewHolder footerViewHolder = (FooterViewHolder) holder;
+        footerViewHolder.setViews();
     }
 
     @Override
@@ -113,7 +140,7 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
 
     @Override
     protected int getFooterLayoutId() {
-        return 0;
+        return R.layout.card_footer_order_created_upto;
     }
 
 
@@ -132,7 +159,10 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
         }
     }
 
-    class ItemViewHolder extends ItemHolder {
+    /**
+     * ItemView Holder
+     */
+    class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private TextView dateTextView, scheduleText, itemsNameTextView, amountTobePaidTextView,
                 viewItemsTextView, timeSlot, month, message, reschedule_order_button, completeOrderButton;
@@ -261,4 +291,36 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
             }
         }
     }
+
+    /**
+     * Footer View Holder
+     */
+    class FooterViewHolder extends BaseRecyclerAdapter.FooterHolder {
+
+        private TextView title, description;
+
+        public FooterViewHolder(View itemView) {
+            super(itemView);
+            title = (TextView) itemView.findViewById(R.id.order_create_upto_title);
+            description = (TextView) itemView.findViewById(R.id.order_create_upto_desc);
+        }
+
+        public void setViews() {
+            //title
+            if (getTitleOrderCreatedUpto() != null) {
+                if (!getTitleOrderCreatedUpto().isEmpty()) {
+                    title.setText(getTitleOrderCreatedUpto());
+                }
+            }
+
+            //description
+            if (getDescriptionOrderCreatedUpto() != null) {
+                if (!getDescriptionOrderCreatedUpto().isEmpty()) {
+                    description.setText(getDescriptionOrderCreatedUpto());
+                }
+            }
+        }
+    }
+
+
 }

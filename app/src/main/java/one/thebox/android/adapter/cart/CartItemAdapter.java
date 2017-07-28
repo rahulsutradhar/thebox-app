@@ -497,13 +497,7 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
             try {
                 hashMap.put("title", boxItem.getTitle());
                 hashMap.put("brand", boxItem.getBrand());
-                if (boxItem.getSelectedItemConfig().getSize() == 0) {
-                    hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getQuantity() + " " +
-                            boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
-                } else {
-                    hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getSize() + " " +
-                            boxItem.getSelectedItemConfig().getSizeUnit() + ", " + boxItem.getSelectedItemConfig().getItemType());
-                }
+                hashMap.put("item_config_name", boxItem.getSelectedItemConfig().getItemPacketDetails());
                 hashMap.put("item_config_subscription", boxItem.getSelectedItemConfig().getSubscriptionText());
                 hashMap.put("item_config_uuid", boxItem.getSelectedItemConfig().getUuid());
             } catch (Exception e) {
