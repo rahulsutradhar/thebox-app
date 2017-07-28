@@ -157,8 +157,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_card"
-        android:background="@color/off_white"
-        android:layout_below="@+id/app_bar_layout" />
+        android:layout_below="@+id/app_bar_layout"
+        android:background="@color/off_white" />
 
     <!-- Bottom Cart Details-->
     <android.support.v7.widget.CardView
@@ -212,7 +212,7 @@
                         android:paddingTop="2dp"
                         android:text="You can always change subscription You can always change subscription You can always change subscription."
                         android:textColor="@color/white"
-                        android:textSize="@dimen/text_small1" />
+                        android:textSize="@dimen/text_small2" />
 
 
                 </LinearLayout>
@@ -224,7 +224,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:clickable="true"
-                    android:src="@drawable/ic_clear_white_36px" />
+                    android:src="@drawable/ic_close" />
 
             </RelativeLayout>
 
@@ -236,7 +236,7 @@
                 android:background="@color/raspberry_red"
                 android:clickable="false"
                 android:orientation="vertical"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:visibility="gone">
 
                 <TextView
@@ -250,7 +250,7 @@
                     android:padding="2dp"
                     android:text="Amazing offer on First Delivery Amazing offer on First Delivery Amazing offer on First Delivery"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_small1" />
+                    android:textSize="@dimen/text_small2" />
 
 
             </LinearLayout>
