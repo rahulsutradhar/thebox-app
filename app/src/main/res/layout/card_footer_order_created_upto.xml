@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp"
+    android:background="@color/md_grey_100"
+    android:orientation="vertical"
+    android:paddingBottom="30dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="16dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_empty_state_orders" />
+
+
+    <TextView
+        android:id="@+id/order_create_upto_title"
+        style="@style/AppTheme.Widget.Avenir.Next.Regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:text="Deliveries has been autocreated upto this point."
+        android:textColor="@color/davy_grey"
+        android:textSize="@dimen/text_medium2" />
+
+    <TextView
+        android:id="@+id/order_create_upto_desc"
+        style="@style/AppTheme.Widget.Avenir.Next.Regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="New Deliveries will be auto created when old ones are closed"
+        android:textColor="@color/manatee"
+        android:textSize="@dimen/text_extra_small4" />
+
+</LinearLayout>

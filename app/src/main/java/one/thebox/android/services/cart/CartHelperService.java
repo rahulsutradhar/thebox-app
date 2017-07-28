@@ -48,7 +48,7 @@ public class CartHelperService implements ServiceConnection {
                             } else {
                                 if (response.code() == Constants.UNAUTHORIZED) {
                                     //unauthorized user navigate to login
-                                    new AuthenticationService().navigateToLogin(context);
+                                    //TODO show user is unauthorised
                                 }
                             }
 

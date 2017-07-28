@@ -506,15 +506,8 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
                 hashMap.put("title", subscribeItem.getBoxItem().getTitle());
                 hashMap.put("box_item_uuid", subscribeItem.getBoxItem().getUuid());
                 hashMap.put("item_config_uuid", subscribeItem.getSelectedItemConfig().getUuid());
-                if (subscribeItem.getSelectedItemConfig().getSize() == 0) {
-                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getQuantity() + " " +
-                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
-                } else {
-                    hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getSize() + " " +
-                            subscribeItem.getSelectedItemConfig().getSizeUnit() + ", " + subscribeItem.getSelectedItemConfig().getItemType());
-                }
+                hashMap.put("item_config_name", subscribeItem.getSelectedItemConfig().getItemPacketDetails());
                 hashMap.put("item_config_subscription", subscribeItem.getSelectedItemConfig().getSubscriptionText());
-
 
                 TheBox.getCleverTap().event.push("cancel_subscription", hashMap);
             } catch (Exception e) {

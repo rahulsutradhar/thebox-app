@@ -197,6 +197,10 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="AppTheme.Widget.Avenir.Next.Regular" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/avenir-next-regular.ttf</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="DefaultTextInputLayout" parent="TextAppearance.AppCompat">
