@@ -116,7 +116,6 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
         skipText = (TextView) rootView.findViewById(R.id.skip);
 
-
         skipLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,7 +183,8 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             }
 
             setUIData(rescheduleResponse);
-            setupViewPagerWithTab(tabsList);
+            //check if data is avilable for reschedule or not
+            checkDataForReschedule(tabsList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,7 +193,6 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     public void setUIData(RescheduleResponse rescheduleResponse) {
         try {
 
-            final int sdk = android.os.Build.VERSION.SDK_INT;
             if (rescheduleSkip.isVisible()) {
                 skipLayout.setClickable(true);
                 skipLayout.setEnabled(true);
@@ -238,6 +237,34 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             arrivingAtText.setText("Item is " + subscribeItem.getArrivingAt());
             deliveryDate.setText("");
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkDataForReschedule(ArrayList<Reschedule> tabsList) {
+        try {
+            boolean flag1 = false;
+            boolean flag2 = false;
+
+            if (tabsList.get(0).getDeliveries() != null) {
+                if (tabsList.get(0).getDeliveries().size() == 0) {
+                    flag1 = true;
+                }
+            }
+
+            if (tabsList.get(1).getDeliveries() != null) {
+                if (tabsList.get(1).getDeliveries().size() == 0) {
+                    flag2 = true;
+                }
+            }
+
+            if (flag1 == true && flag2 == true) {
+                tabLayout.setVisibility(View.INVISIBLE);
+                viewPager.setVisibility(View.GONE);
+            } else {
+                setupViewPagerWithTab(tabsList);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

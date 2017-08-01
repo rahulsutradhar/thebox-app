@@ -24,6 +24,7 @@ import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
@@ -44,6 +45,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private RecyclerView recyclerView;
     private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
     private GifImageView progress_bar;
     private FrameLayout fabHolder;
     private FloatingActionButton floatingActionButton;
@@ -99,6 +101,13 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
                 intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
                 startActivityForResult(intent, 5);
+            }
+        });
+
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getOrdersFromServer();
             }
         });
     }
@@ -165,6 +174,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
      * Fetch Orders from Server
      */
     public void getOrdersFromServer() {
+        connectionErrorViewHelper.isVisible(false);
         progress_bar.setVisibility(View.VISIBLE);
         HashMap<String, Object> params = new HashMap<>();
         TheBox.getAPIService()
@@ -172,6 +182,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 .enqueue(new Callback<OrdersResponse>() {
                     @Override
                     public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
                         progress_bar.setVisibility(View.GONE);
                         try {
                             if (response.isSuccessful()) {
@@ -183,12 +194,19 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            progress_bar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            no_orders_subscribed_view_holder.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<OrdersResponse> call, Throwable t) {
                         progress_bar.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        no_orders_subscribed_view_holder.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
 
