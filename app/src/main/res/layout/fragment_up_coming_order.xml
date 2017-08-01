@@ -1,112 +1,134 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/progress_bar"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:src="@drawable/loader"
-        android:visibility="gone" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/md_grey_200" />
+        android:layout_height="match_parent">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="76dp"
-        android:layout_marginRight="20dp"
-        android:src="@drawable/ic_calendar_icon"
-        app:backgroundTint="@color/primary"
-        app:elevation="2dp"
-        app:fabSize="normal"
-        app:rippleColor="@color/primary_transparent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".fragment.UpComingOrderFragment">
 
-    <LinearLayout
-        android:id="@+id/no_orders_subscribed_view_holder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:orientation="vertical"
-        android:visibility="gone">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/md_grey_200" />
 
-        <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:src="@drawable/calendar" />
+            <LinearLayout
+                android:id="@+id/no_orders_subscribed_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-        <one.thebox.android.ViewHelper.MontserratTextView
+                <ImageView
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/calendar" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="@string/no_orders_yet"
+                    android:textColor="@color/md_black_1000"
+                    android:textSize="@dimen/text_medium1"
+                    app:typeface="montserratSemiBold" />
+
+                <!---    -->
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/empty_view_margin_from_top"
+                    android:gravity="center"
+                    android:text="@string/subscribe_and_forget"
+                    android:textColor="@color/md_pink_500"
+                    android:textSize="@dimen/text_large1"
+                    app:typeface="montserratSemiBold" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_co_element"
+                    android:gravity="center"
+                    android:text="@string/never_run_out_hassle_free_delivery"
+                    android:textColor="@color/md_grey_800"
+                    android:textSize="@dimen/text_small1" />
+
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:background="@drawable/circular_background_pink"
+                    android:gravity="center"
+                    android:src="@drawable/ic_add" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:gravity="center"
+                    android:text="Lets start building your list"
+                    android:textColor="@color/md_grey_800"
+                    android:textSize="@dimen/text_small1" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fab_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="72dp"
+            android:visibility="visible">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_calendar_icon"
+                app:backgroundTint="@color/primary"
+                app:elevation="2dp"
+                app:fabSize="normal"
+                app:layout_anchor="@+id/fab_holder"
+                app:layout_anchorGravity="bottom|right|end" />
+
+        </FrameLayout>
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/progress_bar"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-            android:gravity="center"
-            android:maxLines="2"
-            android:text="@string/no_orders_yet"
-            android:textColor="@color/md_black_1000"
-            android:textSize="@dimen/text_medium1"
-            app:typeface="montserratSemiBold" />
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:src="@drawable/loader"
+            android:visibility="gone" />
 
-        <!---    -->
-
-        <one.thebox.android.ViewHelper.MontserratTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/empty_view_margin_from_top"
-            android:gravity="center"
-            android:text="@string/subscribe_and_forget"
-            android:textColor="@color/md_pink_500"
-            android:textSize="@dimen/text_large1"
-            app:typeface="montserratSemiBold" />
-
-        <one.thebox.android.ViewHelper.MontserratTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_vertical_between_co_element"
-            android:gravity="center"
-            android:text="@string/never_run_out_hassle_free_delivery"
-            android:textColor="@color/md_grey_800"
-            android:textSize="@dimen/text_small1" />
-
-
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-            android:background="@drawable/circular_background_pink"
-            android:gravity="center"
-            android:src="@drawable/ic_add" />
-
-        <one.thebox.android.ViewHelper.MontserratTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
-            android:gravity="center"
-            android:text="Lets start building your list"
-            android:textColor="@color/md_grey_800"
-            android:textSize="@dimen/text_small1" />
-
-    </LinearLayout>
-
-</RelativeLayout>
+    </FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

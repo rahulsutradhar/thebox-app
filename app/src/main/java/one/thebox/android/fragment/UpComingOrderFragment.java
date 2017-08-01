@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
     private GifImageView progress_bar;
+    private FrameLayout fabHolder;
     private FloatingActionButton floatingActionButton;
     private int currentYear, currentMonth;
 
@@ -73,6 +75,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews() {
+        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
@@ -103,14 +106,16 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void setupRecyclerView(ArrayList<Order> orders) {
         if (orders.size() > 0) {
+            fabHolder.setVisibility(View.VISIBLE);
             floatingActionButton.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
+
             upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
-            floatingActionButton.setVisibility(View.GONE);
+            fabHolder.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
