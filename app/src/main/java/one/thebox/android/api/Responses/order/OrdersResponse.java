@@ -19,9 +19,6 @@ public class OrdersResponse extends ApiResponse implements Serializable {
 
     private ArrayList<Order> orders;
 
-    @SerializedName("months")
-    private Vector<CalenderMonth> calenderMonths;
-
     @SerializedName("years")
     private Vector<CalenderYear> calenderYears;
 
@@ -51,14 +48,6 @@ public class OrdersResponse extends ApiResponse implements Serializable {
 
     public void setOrders(ArrayList<Order> orders) {
         this.orders = orders;
-    }
-
-    public Vector<CalenderMonth> getCalenderMonths() {
-        return calenderMonths;
-    }
-
-    public void setCalenderMonths(Vector<CalenderMonth> calenderMonths) {
-        this.calenderMonths = calenderMonths;
     }
 
     public int getCurrentMonth() {

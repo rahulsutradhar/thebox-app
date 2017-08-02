@@ -22,6 +22,7 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -50,7 +51,7 @@ public class OrderCalenderFragment extends Fragment {
 
     private Toolbar toolbar;
     private View rootView;
-    private TextView selectedYearText, noInternet;
+    private TextView selectedYearText, noInternet, noOrders;
     private int currentYear, currentMonth;
     private Vector<CalenderYear> calenderYears;
     private FrameLayout frameLayout;
@@ -73,7 +74,7 @@ public class OrderCalenderFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fetchDataFromServer(true);
+        fetchDataFromServer();
         setYear(String.valueOf(currentYear));
 
     }
@@ -110,9 +111,11 @@ public class OrderCalenderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 noInternet.setVisibility(View.GONE);
-                fetchDataFromServer(true);
+                fetchDataFromServer();
             }
         });
+
+        noOrders = (TextView) rootView.findViewById(R.id.no_data_available);
     }
 
     /**
@@ -132,7 +135,8 @@ public class OrderCalenderFragment extends Fragment {
                     removeFragment();
                     setYear(calenderYear.getName());
                     currentYear = Integer.parseInt(calenderYear.getName());
-                    fetchDataFromServer(false);
+                    //search Month for year
+                    searchMonthForYear(calenderYear.getName());
                 }
                 fragmentSheet.dismiss();
             }
@@ -143,7 +147,7 @@ public class OrderCalenderFragment extends Fragment {
     /**
      * Fetch CalenderMonth from Server
      */
-    public void fetchDataFromServer(final boolean isFirst) {
+    public void fetchDataFromServer() {
         HashMap<String, Object> params = new HashMap<>();
         params.put("month", currentMonth);
         params.put("year", currentYear);
@@ -159,11 +163,11 @@ public class OrderCalenderFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
 
-                                    if (response.body().getCalenderMonths() != null) {
-                                        if (isFirst) {
-                                            calenderYears = response.body().getCalenderYears();
-                                        }
-                                        transactToContainerFragment(response.body().getCalenderMonths());
+                                    if (response.body().getCalenderYears() != null) {
+                                        calenderYears = response.body().getCalenderYears();
+                                        searchMonthForYear(String.valueOf(currentYear));
+                                    } else {
+                                        noOrders.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -181,6 +185,37 @@ public class OrderCalenderFragment extends Fragment {
                 });
     }
 
+
+    /**
+     * Search For Month List with the coresponding year
+     *
+     * @param selectedYear
+     */
+    public void searchMonthForYear(String selectedYear) {
+        boolean flag = false;
+        if (calenderYears.size() > 0) {
+            for (CalenderYear calenderYear : calenderYears) {
+                if (calenderYear.getName().equalsIgnoreCase(selectedYear)) {
+                    if (calenderYear.getCalenderMonths() != null) {
+                        if (calenderYear.getCalenderMonths().size() > 0) {
+                            flag = true;
+                            transactToContainerFragment(calenderYear.getCalenderMonths());
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!flag) {
+                //month doesnot exist for this year
+                noOrders.setVisibility(View.VISIBLE);
+            } else {
+                noOrders.setVisibility(View.GONE);
+            }
+        } else {
+            noOrders.setVisibility(View.VISIBLE);
+        }
+    }
 
     public void setYear(String year) {
         selectedYearText.setText(year);
