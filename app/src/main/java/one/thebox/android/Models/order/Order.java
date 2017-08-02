@@ -59,6 +59,9 @@ public class Order extends RealmObject implements Serializable {
     @SerializedName("scheduled_text")
     private String scheduledText;
 
+    @SerializedName("color_code")
+    private int coloCode;
+
 
     /****************************************
      * Getter Setter
@@ -181,5 +184,13 @@ public class Order extends RealmObject implements Serializable {
 
     public void setScheduledText(String scheduledText) {
         this.scheduledText = scheduledText;
+    }
+
+    public int getColoCode() {
+        return coloCode;
+    }
+
+    public void setColoCode(int coloCode) {
+        this.coloCode = coloCode;
     }
 }

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.Order;
 import one.thebox.android.R;
+import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.adapter.orders.UpcomingOrderAdapter;
 import one.thebox.android.api.Responses.order.OrdersResponse;
@@ -43,7 +45,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private RecyclerView recyclerView;
     private UpcomingOrderAdapter upcomingOrderAdapter;
     private LinearLayout no_orders_subscribed_view_holder;
+    private ConnectionErrorViewHelper connectionErrorViewHelper;
     private GifImageView progress_bar;
+    private FrameLayout fabHolder;
     private FloatingActionButton floatingActionButton;
     private int currentYear, currentMonth;
 
@@ -73,6 +77,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews() {
+        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
@@ -98,19 +103,28 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 startActivityForResult(intent, 5);
             }
         });
+
+        connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getOrdersFromServer();
+            }
+        });
     }
 
 
     private void setupRecyclerView(ArrayList<Order> orders) {
         if (orders.size() > 0) {
+            fabHolder.setVisibility(View.VISIBLE);
             floatingActionButton.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
+
             upcomingOrderAdapter = new UpcomingOrderAdapter(getActivity(), this, orders);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
-            floatingActionButton.setVisibility(View.GONE);
+            fabHolder.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
@@ -160,6 +174,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
      * Fetch Orders from Server
      */
     public void getOrdersFromServer() {
+        connectionErrorViewHelper.isVisible(false);
         progress_bar.setVisibility(View.VISIBLE);
         HashMap<String, Object> params = new HashMap<>();
         TheBox.getAPIService()
@@ -167,6 +182,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 .enqueue(new Callback<OrdersResponse>() {
                     @Override
                     public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
+                        connectionErrorViewHelper.isVisible(false);
                         progress_bar.setVisibility(View.GONE);
                         try {
                             if (response.isSuccessful()) {
@@ -178,12 +194,19 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            progress_bar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            no_orders_subscribed_view_holder.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<OrdersResponse> call, Throwable t) {
                         progress_bar.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        no_orders_subscribed_view_holder.setVisibility(View.GONE);
+                        connectionErrorViewHelper.isVisible(true);
                     }
                 });
 

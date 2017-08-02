@@ -255,26 +255,14 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                 message.setText(order.getReminderText());
                 amountTobePaidTextView.setText(order.getPaymentText());
 
-                /**
-                 * Condition for colors
-                 */
-                if (order.isPaymentComplete()) {
+                //set color
+                setColorForMessage(order.getColoCode());
 
+                if (order.isPaymentComplete()) {
                     completeOrderButton.setVisibility(View.GONE);
-                    if (order.isCod()) {
-                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
-                    } else if (order.isPaid()) {
-                        message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
-                    }
                 } else {
 
                     completeOrderButton.setVisibility(View.VISIBLE);
-
-                    if (order.isCod() == false && order.isPaid() == false && order.isDelivered() == true) {
-                        message.setTextColor(mContext.getResources().getColor(R.color.accent));
-                    } else {
-                        message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
-                    }
                     completeOrderButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -289,6 +277,29 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        public void setColorForMessage(int colorCode) {
+            /**
+             * Condition for colors
+             * 1- Saffron
+             * 2- Blue
+             * 3- Red
+             */
+            switch (colorCode) {
+                case 1:
+                    message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
+                    break;
+                case 2:
+                    message.setTextColor(mContext.getResources().getColor(R.color.md_blue_500));
+                    break;
+                case 3:
+                    message.setTextColor(mContext.getResources().getColor(R.color.accent));
+                    break;
+                default:
+                    message.setTextColor(mContext.getResources().getColor(R.color.neon_carrot));
+            }
+
         }
     }
 

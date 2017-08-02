@@ -231,8 +231,12 @@ public class CartHelper {
      */
     public static float getCartPrice() {
         float price = 0;
-        for (BoxItem boxItem : getCart()) {
-            price += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getPrice());
+        try {
+            for (BoxItem boxItem : getCart()) {
+                price += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getPrice());
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
         return price;
     }
@@ -242,8 +246,12 @@ public class CartHelper {
      */
     public static float getTotalSavings() {
         float savings = 0;
-        for (BoxItem boxItem : getCart()) {
-            savings += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getSavings());
+        try {
+            for (BoxItem boxItem : getCart()) {
+                savings += (boxItem.getQuantity() * boxItem.getSelectedItemConfig().getSavings());
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
         return savings;
     }
