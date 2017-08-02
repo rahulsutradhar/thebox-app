@@ -197,11 +197,12 @@ public class AuthenticationService {
     public void setAppFLyerUniqueId() {
         try {
             User user = PrefUtils.getUser(TheBox.getAppContext());
-            if (user.getPhoneNumber() != null) {
-                if (!user.getPhoneNumber().isEmpty()) {
-                    AppsFlyerLib.getInstance().setCustomerUserId(user.getPhoneNumber());
-                }
-            }
+
+            /**
+             * Unique identity attribute provided by Clevertap
+             */
+            String attributionID = TheBox.getCleverTap().getCleverTapAttributionIdentifier();
+            AppsFlyerLib.getInstance().setCustomerUserId(attributionID);
 
             if (user.getEmail() != null) {
                 if (!user.getEmail().isEmpty()) {
@@ -225,6 +226,12 @@ public class AuthenticationService {
             if (user.getName() != null) {
                 if (!user.getName().isEmpty()) {
                     profileData.put("Name", user.getName());
+                }
+            }
+
+            if (user.getPhoneNumber() != null) {
+                if (!user.getPhoneNumber().isEmpty()) {
+                    profileData.put("Phone", user.getPhoneNumber());
                 }
             }
 
