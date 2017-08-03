@@ -304,6 +304,7 @@
 
         <service
             android:name=".services.cart.SyncCartService"
+            android:description="@string/cart_service_description"
             android:exported="false">
 
         </service>
