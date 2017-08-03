@@ -30,8 +30,8 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
 
     private View rootView;
     private TextView showAllAddressesButton;
-    private TextView showAllOrdersButton, editAddressButton;
-    private TextView userName, email, phoneNumber, address, lastOrder, signOut;
+    private TextView editAddressButton;
+    private TextView userName, email, phoneNumber, address,signOut;
     private User user;
 
     public MyAccountFragment() {
@@ -63,18 +63,15 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
 
     private void initViews() {
         showAllAddressesButton = (TextView) rootView.findViewById(R.id.button_show_all_address);
-        showAllOrdersButton = (TextView) rootView.findViewById(R.id.button_show_all_orders);
         editAddressButton = (TextView) rootView.findViewById(R.id.button_edit_address);
 
         showAllAddressesButton.setOnClickListener(this);
-        showAllOrdersButton.setOnClickListener(this);
         editAddressButton.setOnClickListener(this);
 
         userName = (TextView) rootView.findViewById(R.id.user_name_text_view);
         email = (TextView) rootView.findViewById(R.id.email_text_view);
         phoneNumber = (TextView) rootView.findViewById(R.id.phone_text_view);
         address = (TextView) rootView.findViewById(R.id.address_text_view);
-        lastOrder = (TextView) rootView.findViewById(R.id.last_order_text_view);
         signOut = (TextView) rootView.findViewById(R.id.button_sign_out);
         signOut.setOnClickListener(this);
     }
@@ -174,10 +171,6 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.button_show_all_orders: {
-                startActivity(new Intent(getActivity(), OrderDetailActivity.class));
-                break;
-            }
             case R.id.button_sign_out: {
                 new AuthenticationService().logOut(getContext(), true);
                 break;
