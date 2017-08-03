@@ -17,8 +17,6 @@ import one.thebox.android.Models.user.User;
 import one.thebox.android.R;
 import one.thebox.android.activity.address.AddressActivity;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.activity.OrderDetailActivity;
-import one.thebox.android.activity.UpdateProfileActivity;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;
 import one.thebox.android.services.AuthenticationService;
@@ -31,7 +29,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     private View rootView;
     private TextView showAllAddressesButton;
     private TextView editAddressButton;
-    private TextView userName, email, phoneNumber, address,signOut;
+    private TextView userName, email, phoneNumber, address, signOut;
     private User user;
 
     public MyAccountFragment() {
@@ -173,6 +171,7 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         switch (id) {
             case R.id.button_sign_out: {
                 new AuthenticationService().logOut(getContext(), true);
+                setCleverTapEventLogout();
                 break;
             }
         }
@@ -189,8 +188,6 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), UpdateProfileActivity.class);
-                startActivityForResult(intent, 3);
             }
         });
     }
@@ -224,15 +221,13 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
             }
 
         } catch (Exception e) {
-
         }
-
     }
 
     /**
      * Save Clever Tap Event
      */
-    public void setCleverTapEventLogout(User user) {
+    public void setCleverTapEventLogout() {
         try {
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("Phone", user.getPhoneNumber());
@@ -246,6 +241,5 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
