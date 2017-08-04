@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
@@ -573,7 +574,7 @@ public class MainActivity extends BaseActivity implements
             TextView header = (TextView) dialog.findViewById(R.id.header_title);
             TextView content = (TextView) dialog.findViewById(R.id.text_content);
             TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
-            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+            CardView okayButton = (CardView) dialog.findViewById(R.id.holder_button);
 
             header.setText(Html.fromHtml(commonPopupDetails.getTitle()));
             content.setText(Html.fromHtml(commonPopupDetails.getContent()));

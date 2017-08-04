@@ -1,84 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/round_corner_dailog"
+    android:background="@color/white"
     android:fitsSystemWindows="true">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_upper_right_corner_box_logo" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/header_title"
-            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:text="Delivery Zone"
-            android:textColor="@color/davy_grey"
-            android:textSize="@dimen/text_medium2" />
+            android:paddingTop="8dp">
 
+            <TextView
+                android:id="@+id/header_title"
+                style="@style/AppTheme.Widget.Avenir.Heavy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Delivery Zone"
+                android:textColor="@color/davy_grey"
+                android:textSize="@dimen/text_medium2" />
+        </LinearLayout>
 
-        <ScrollView
+        <LinearLayout
+            android:id="@+id/view2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:scrollbars="vertical">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical">
+
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:scrollbars="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="8dp">
+
+                    <TextView
+                        android:id="@+id/text_content"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:lineSpacingExtra="2dp"
+                        android:textColor="@color/warm_grey"
+                        android:textSize="@dimen/text_small3" />
+
+                </RelativeLayout>
+            </ScrollView>
+        </LinearLayout>
+
+        <!-- Button-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view2"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:src="@drawable/ic_lower_left_corner_box_logo" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/text_content"
-                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/holder_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:lineSpacingExtra="2dp"
-                    android:textColor="@color/warm_grey"
-                    android:textSize="@dimen/text_small3" />
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="35dp"
+                    android:layout_marginTop="14dp"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="1dp"
+                    app:cardElevation="1dp"
+                    app:contentPaddingBottom="6dp"
+                    app:contentPaddingLeft="25dp"
+                    app:contentPaddingRight="25dp"
+                    app:contentPaddingTop="6dp">
 
-            </RelativeLayout>
-        </ScrollView>
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/okay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:text="OK"
+                        android:textColor="@color/manatee"
+                        android:textSize="@dimen/text_medium1"
+                        android:textStyle="bold"
+                        app:typeface="montserratSemiBold" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:id="@+id/holder_okay_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:paddingBottom="6dp"
-                android:paddingLeft="28dp"
-                android:paddingRight="16dp"
-                android:paddingTop="6dp">
-
-                <one.thebox.android.ViewHelper.MontserratTextView
-                    android:id="@+id/okay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="0dp"
-                    android:text="OK"
-                    android:textColor="@color/md_green_500"
-                    android:textSize="@dimen/text_medium1"
-                    android:textStyle="bold"
-                    app:typeface="montserratSemiBold" />
-
+                </android.support.v7.widget.CardView>
             </RelativeLayout>
 
-
-        </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 </RelativeLayout>
