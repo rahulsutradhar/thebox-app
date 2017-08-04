@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -579,6 +580,7 @@ public class MainActivity extends BaseActivity implements
             header.setText(Html.fromHtml(commonPopupDetails.getTitle()));
             content.setText(Html.fromHtml(commonPopupDetails.getContent()));
             okayButtonText.setText(commonPopupDetails.getButtonText());
+            content.setMovementMethod(ScrollingMovementMethod.getInstance());
 
             okayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
