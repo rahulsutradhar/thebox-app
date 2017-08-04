@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import one.thebox.android.Helpers.cart.ProductQuantity;
 import one.thebox.android.app.Constants;
 
 /**
@@ -32,7 +34,6 @@ public class SyncCartService extends Service {
     public void onCreate() {
         super.onCreate();
         CartHelperService.setCartSyncRunning(true);
-
     }
 
     @Nullable
@@ -67,7 +68,15 @@ public class SyncCartService extends Service {
                 while (true) {
                     try {
                         sleep(INTERVAL);
-                        CartHelperService.updateCartToServer(context,null);
+                        CartHelperService.updateCartToServer(context, null);
+
+                        /**
+                         * Self Stop the service when cart Size is Zero
+                         */
+                        if (ProductQuantity.getCartSize() == 0) {
+                            stopSelf();
+                            CartHelperService.setCartSyncRunning(false);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 
