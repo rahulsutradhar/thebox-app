@@ -754,7 +754,7 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
             CardView okayButton = (CardView) dialog.findViewById(R.id.holder_button);
 
             header.setText(Html.fromHtml(timeSlotInformation.getPopupTitle()));
-            content.setText(Html.fromHtml(timeSlotInformation.getContent() + "\n" + timeSlotInformation.getContent()));
+            content.setText(Html.fromHtml(timeSlotInformation.getContent()));
             okayButtonText.setText("OK");
 
             okayButton.setOnClickListener(new View.OnClickListener() {
