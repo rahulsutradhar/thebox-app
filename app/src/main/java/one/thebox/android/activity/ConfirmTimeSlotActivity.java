@@ -4,10 +4,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -746,8 +748,10 @@ public class ConfirmTimeSlotActivity extends BaseActivity {
 
             TextView header = (TextView) dialog.findViewById(R.id.header_title);
             TextView content = (TextView) dialog.findViewById(R.id.text_content);
+            content.setMovementMethod(ScrollingMovementMethod.getInstance());
+
             TextView okayButtonText = (TextView) dialog.findViewById(R.id.okay);
-            RelativeLayout okayButton = (RelativeLayout) dialog.findViewById(R.id.holder_okay_button);
+            CardView okayButton = (CardView) dialog.findViewById(R.id.holder_button);
 
             header.setText(Html.fromHtml(timeSlotInformation.getPopupTitle()));
             content.setText(Html.fromHtml(timeSlotInformation.getContent()));

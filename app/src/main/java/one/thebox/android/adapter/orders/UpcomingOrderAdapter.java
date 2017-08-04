@@ -211,8 +211,16 @@ public class UpcomingOrderAdapter extends BaseRecyclerAdapter {
                         scheduleText.setText(order.getScheduledText());
                         if (order.getScheduledText().contains("Delivered on")) {
                             scheduleText.setTextColor(mContext.getResources().getColor(R.color.manatee));
+
+                            //delivered but not paid
+                            if (order.getColoCode() == 3) {
+                                amountTobePaidTextView.setTextColor(mContext.getResources().getColor(R.color.black));
+                            } else {
+                                amountTobePaidTextView.setTextColor(mContext.getResources().getColor(R.color.manatee));
+                            }
                         } else {
                             scheduleText.setTextColor(mContext.getResources().getColor(R.color.black));
+                            amountTobePaidTextView.setTextColor(mContext.getResources().getColor(R.color.black));
                         }
                     }
                 }

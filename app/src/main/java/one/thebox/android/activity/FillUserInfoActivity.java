@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -24,16 +22,12 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
-import io.realm.RealmList;
-import one.thebox.android.Models.order.Order;
 import one.thebox.android.Models.user.User;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.BoxLoader;
 import one.thebox.android.activity.address.AddressActivity;
-import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.RequestBodies.user.UpdateUserInforRequest;
-import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.api.Responses.user.UpdateUserInfoResponse;
 import one.thebox.android.app.Constants;
 import one.thebox.android.app.TheBox;

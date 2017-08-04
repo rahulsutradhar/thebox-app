@@ -182,7 +182,7 @@ public class OrderItemsActivity extends BaseActivity {
             recyclerView.setVisibility(View.VISIBLE);
 
             if (orderItemAdapter == null) {
-                orderItemAdapter = new OrderItemAdapter(this, this, glideRequestManager, orderItems, isChangesApplicable,calledFromCalender);
+                orderItemAdapter = new OrderItemAdapter(this, this, glideRequestManager, orderItems, isChangesApplicable, calledFromCalender);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this));
                 recyclerView.setAdapter(orderItemAdapter);
             }

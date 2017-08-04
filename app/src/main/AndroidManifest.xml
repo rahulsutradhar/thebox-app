@@ -212,10 +212,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name=".activity.MobileNumberActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
-        <activity
             android:name=".activity.OtpVerificationActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -234,17 +230,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".activity.ConfirmOtpActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
-        <activity
-            android:name=".activity.UpdateProfileActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.UpdatePhoneNumberActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".activity.RequestOtpActivity"
             android:launchMode="singleTop"
@@ -304,6 +289,7 @@
 
         <service
             android:name=".services.cart.SyncCartService"
+            android:description="@string/cart_service_description"
             android:exported="false">
 
         </service>
