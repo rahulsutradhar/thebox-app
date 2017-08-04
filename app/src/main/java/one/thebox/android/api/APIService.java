@@ -1,7 +1,6 @@
 package one.thebox.android.api;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 import one.thebox.android.api.RequestBodies.address.AddressRequest;
 import one.thebox.android.api.RequestBodies.authentication.ResendOtpRequestBody;
@@ -19,14 +18,10 @@ import one.thebox.android.api.Responses.LocalityResponse;
 import one.thebox.android.api.Responses.RescheduleResponse;
 import one.thebox.android.api.Responses.CarouselApiResponse;
 import one.thebox.android.api.Responses.TimeSlotResponse;
-import one.thebox.android.api.RequestBodies.CreateUserRequestBody;
 import one.thebox.android.api.RequestBodies.MergeSubscriptionRequest;
-import one.thebox.android.api.RequestBodies.authentication.OtpRequestBody;
 import one.thebox.android.api.RequestBodies.RegistrationIdRequestBody;
-import one.thebox.android.api.RequestBodies.StoreUserInfoRequestBody;
 import one.thebox.android.api.Responses.MergeSubscriptionResponse;
 import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
-import one.thebox.android.api.Responses.UserSignInSignUpResponse;
 import one.thebox.android.api.Responses.address.AddressResponse;
 import one.thebox.android.api.Responses.authentication.LogoutResponse;
 import one.thebox.android.api.Responses.authentication.RequestOtpResponse;
@@ -293,39 +288,5 @@ public interface APIService {
     @GET("/consumer/api/v1/categories/autocomplete")
     Call<SearchAutoCompleteResponse> searchAutoComplete(@Header("Authorization") String accessToken,
                                                         @Query("q") String query);
-
-
-    /**
-     * Refator
-     */
-
-
-    @POST("/users")
-    Call<UserSignInSignUpResponse> createNewUser(
-            @Body CreateUserRequestBody createUserRequestBody
-    );
-
-    @POST("/sign_in/verify_otp")
-    Call<UserSignInSignUpResponse> verifyOtp(
-            @Body OtpRequestBody otpRequestBody
-    );
-
-
-    @POST("/users/sign_in")
-    Call<UserSignInSignUpResponse> signIn(
-            @Body CreateUserRequestBody createUserRequestBody
-    );
-
-
-    @POST("/sign_up/store_user_details")
-    Call<UserSignInSignUpResponse>
-    storeUserInfo(@Header("authtoken") String authToken,
-                  @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
-
-
-    @POST("/updatemyprofile")
-    Call<UserSignInSignUpResponse> updateProfile(@Header("authtoken") String authtoken,
-                                                 @Body StoreUserInfoRequestBody storeUserInfoRequestBody);
-
 
 }

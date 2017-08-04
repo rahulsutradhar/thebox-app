@@ -110,5 +110,8 @@
     <string name="hint_edit_subscription_change_size">Choose new size or frequency (weekly, monthly etc.) for your subscription.</string>
     <string name="hint_edit_subscription_cancel">Remove this item from your list of subscriptions.</string>
 
+    <!--Cart Service Description -->
+    <string name="cart_service_description">Maintain you cart item with our server.</string>
 </resources>
+
 

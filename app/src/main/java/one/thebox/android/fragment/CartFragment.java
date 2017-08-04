@@ -105,25 +105,31 @@ public class CartFragment extends Fragment {
     }
 
     public void initVariables(boolean isUpdateRecyclerview) {
-        boxItems = CartHelper.getCart();
-        if (boxItems != null) {
-            if (boxItems.size() > 0) {
-                isCartEmpty = false;
-                if (isUpdateRecyclerview) {
-                    //group the boxItem accoording to group
-                    groupBoxItem();
-                }
-                setCartPrices(CartHelper.getCartPrice(), CartHelper.getTotalSavings(), CartHelper.getCartSize());
+        try {
+            boxItems = CartHelper.getCart();
+            if (boxItems != null) {
+                if (boxItems.size() > 0) {
+                    isCartEmpty = false;
+                    if (isUpdateRecyclerview) {
+                        //group the boxItem accoording to group
+                        groupBoxItem();
+                    }
+                    setCartPrices(CartHelper.getCartPrice(), CartHelper.getTotalSavings(), CartHelper.getCartSize());
 
+                } else {
+                    //cart is Empty
+                    isCartEmpty = true;
+                    setCartEmpty();
+                }
             } else {
                 //cart is Empty
                 isCartEmpty = true;
                 setCartEmpty();
             }
-        } else {
-            //cart is Empty
-            isCartEmpty = true;
-            setCartEmpty();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -136,7 +142,7 @@ public class CartFragment extends Fragment {
 
         for (BoxItem boxItem : boxItems) {
             if (boxItem.getBoxUuid() != null) {
-                //grouping
+                //grouping box wise
                 if (cartHashMap.containsKey(boxItem.getBoxUuid())) {
                     ArrayList<BoxItem> getBoxItems = cartHashMap.get(boxItem.getBoxUuid());
                     getBoxItems.add(boxItem);

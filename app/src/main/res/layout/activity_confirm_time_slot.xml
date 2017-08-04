@@ -235,12 +235,12 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingTop="8dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
+                android:layout_centerVertical="true">
 
                 <ImageView
                     android:id="@+id/icon_info"
@@ -255,10 +255,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_toRightOf="@+id/icon_info"
-                    android:text="Why not early morning slots?"
+                    android:text="Why no morning slots?"
                     android:textColor="@color/primary_text_color"
                     android:textSize="@dimen/text_small3" />
             </RelativeLayout>
