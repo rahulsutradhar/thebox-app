@@ -412,11 +412,11 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
         ((MainActivity) getActivity()).getButtonSpecialAction().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), MainActivity.class)
-                        .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 7));
+                //close this fragment and move back
+                getActivity().onBackPressed();
             }
         });
-        
+
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }

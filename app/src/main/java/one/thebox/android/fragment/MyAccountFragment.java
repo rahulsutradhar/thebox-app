@@ -44,7 +44,6 @@ public class MyAccountFragment extends Fragment implements View.OnClickListener 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         initvariables();
         ((MainActivity) getActivity()).getToolbar().setTitle("My Account");
         if (rootView == null) {

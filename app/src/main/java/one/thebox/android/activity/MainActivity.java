@@ -407,7 +407,7 @@ public class MainActivity extends BaseActivity implements
             case R.id.my_account:
                 attachMyAccountFragment();
                 return true;
-            case R.id.view_bill:
+            case R.id.view_cart:
                 attachCartFragment();
                 return true;
             default: {
@@ -536,6 +536,9 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Attach Cart Fragment
+     */
     private void attachCartFragment() {
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -543,8 +546,10 @@ public class MainActivity extends BaseActivity implements
         fragmentTransaction.commit();
     }
 
+    /**
+     * My Account Fragment
+     */
     private void attachMyAccountFragment() {
-
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My_Account").addToBackStack("My_Account");
@@ -557,6 +562,12 @@ public class MainActivity extends BaseActivity implements
         drawerLayout.closeDrawers();
     }
 
+    /**
+     * Box tab Fragment
+     *
+     * @param default_position
+     * @param show_loader
+     */
     public void attachMyBoxesFragment(int default_position, boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
@@ -580,7 +591,7 @@ public class MainActivity extends BaseActivity implements
 
 
     /**
-     * Called from Search
+     * Called from Search; when you search
      */
     public void attachSearchDetailFragment(SearchResult searchResult) {
         getToolbar().setSubtitle(null);
@@ -605,6 +616,13 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
+    /**
+     * Attach Search Detail Fragment; when you have Box Uuid and Box Title.
+     * Fetch category in the Fragment and display
+     *
+     * @param boxUuid
+     * @param boxTitle
+     */
     private void attachSearchDetailFragmentForCategory(String boxUuid, String boxTitle) {
         getToolbar().setSubtitle(null);
 
@@ -667,12 +685,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public String getActiveFragmentTag() {
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            return null;
-        }
-        return getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -743,12 +755,16 @@ public class MainActivity extends BaseActivity implements
             }
 
             case 3: {
+                //attach cart and display
                 attachCartFragment();
                 break;
             }
             case 4: {
-                //Search Results
-                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
+                /**
+                 * Search Item- navigate via this to Browse category
+                 */
+                attachSearchDetailFragment(CoreGsonUtils.fromJson(
+                        intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
                 break;
             }
             case 5: {
@@ -762,14 +778,6 @@ public class MainActivity extends BaseActivity implements
                 attachCategoriesFragment(intent);
                 break;
             }
-            case 7: {
-                attachMyBoxesFragment(1, false);
-                break;
-            }
-            //carosuel
-            case 8:
-                //attachCategoryFragmentForCarousel(intent);
-                break;
 
             /**
              * Notifications Action Handiling
@@ -816,6 +824,12 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Category Notification
+     *
+     * @param intent
+     */
+    //TODO need to re-configure this
     private void performCategoryNotification(Intent intent) {
         //check if Box Fragment is visible or not
 
@@ -884,33 +898,6 @@ public class MainActivity extends BaseActivity implements
 
     }
 
-    /**
-     * Attach Search Detail Fragment on Click Carosuel
-     */
-    public void attachCategoryFragmentForCarousel(Intent intent) {
-
-        int categoryId = intent.getIntExtra(Constants.CATEGORY_UUID, 0);
-
-        getToolbar().setSubtitle(null);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setImageResource(R.drawable.ic_box);
-        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attachMyBoxesFragment(1, false);
-            }
-        });
-
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(categoryId, "");
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
-        fragmentTransaction.commit();
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        appBarLayout.setExpanded(true, true);
-    }
-
     @Override
     public void showDrawerToggle(boolean showDrawerToggle) {
 
@@ -961,15 +948,9 @@ public class MainActivity extends BaseActivity implements
         this.drawerLayout = drawerLayout;
     }
 
-    public ImageView getSearchAction() {
-        return searchAction;
-    }
-
-    public void setSearchAction(ImageView searchAction) {
-        this.searchAction = searchAction;
-    }
-
-
+    /**
+     * Add Box Name to menu in navigation drawer layout
+     */
     public void addBoxesToMenu() {
 
         if (setting.getBoxes() != null) {
