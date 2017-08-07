@@ -404,7 +404,6 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity) getActivity()).getSearchViewHolder().setVisibility(View.GONE);
         ((MainActivity) getActivity()).getButtonSearch().setVisibility(View.VISIBLE);
         ((MainActivity) getActivity()).getChatbutton().setVisibility(View.GONE);
 
@@ -417,17 +416,7 @@ public class SearchDetailFragment extends BaseFragment implements AppBarObserver
                         .putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 7));
             }
         });
-
-        ((MainActivity) getActivity()).getSearchAction().setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).getSearchAction().setImageResource(R.drawable.menu_icon);
-        ((MainActivity) getActivity()).getSearchAction().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).getDrawerLayout().openDrawer(Gravity.LEFT);
-            }
-        });
-
-
+        
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
                 new IntentFilter(BROADCAST_EVENT_TAB));
     }
