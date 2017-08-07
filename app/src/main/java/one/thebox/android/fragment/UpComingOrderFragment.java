@@ -1,5 +1,6 @@
 package one.thebox.android.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -261,6 +262,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 }
 
             }
+        } catch (ActivityNotFoundException anf) {
+            anf.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

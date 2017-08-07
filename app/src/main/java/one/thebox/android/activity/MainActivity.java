@@ -1,6 +1,7 @@
 package one.thebox.android.activity;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -1002,6 +1003,8 @@ public class MainActivity extends BaseActivity implements
                     }
                 }
             }
+        } catch (ActivityNotFoundException anf) {
+            anf.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
