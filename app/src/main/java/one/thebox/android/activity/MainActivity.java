@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,12 +37,15 @@ import android.widget.Toast;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import one.thebox.android.Events.FABVisibilityOrderFactorEvent;
+import one.thebox.android.Events.FABVisibilityTabFactorEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
@@ -54,7 +58,9 @@ import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.app.Keys;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
@@ -68,7 +74,6 @@ import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 
@@ -103,6 +108,9 @@ public class MainActivity extends BaseActivity implements
     private User user;
     private FragmentManager fragmentManager;
     private AppBarLayout appBarLayout;
+    private FloatingActionButton floatingActionButton;
+    private int currentYear, currentMonth;
+    private boolean orderAvailable = false;
 
 
     @Override
@@ -373,6 +381,7 @@ public class MainActivity extends BaseActivity implements
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
         chatbutton = (ImageView) findViewById(R.id.chat_button);
         btn_search = (ImageView) findViewById(R.id.btn_search);
@@ -380,6 +389,16 @@ public class MainActivity extends BaseActivity implements
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         navigationViewBottom.setOnClickListener(this);
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, OrderCalenderActivity.class);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -721,11 +740,13 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
 
         // For the purposes of this sample, cancel all tasks when the app is stopped.
         mGcmNetworkManager.cancelAllTasks(MyTaskService.class);
@@ -949,6 +970,14 @@ public class MainActivity extends BaseActivity implements
         this.drawerLayout = drawerLayout;
     }
 
+    public boolean isOrderAvailable() {
+        return orderAvailable;
+    }
+
+    public void setOrderAvailable(boolean orderAvailable) {
+        this.orderAvailable = orderAvailable;
+    }
+
     /**
      * Add Box Name to menu in navigation drawer layout
      */
@@ -1035,6 +1064,46 @@ public class MainActivity extends BaseActivity implements
         attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
     }
 
+    @Subscribe
+    public void eventFABTabFactorVisibility(final FABVisibilityTabFactorEvent fabVisibilityTabFactorEvent) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isOrderAvailable()) {
+                    if (fabVisibilityTabFactorEvent != null) {
+                        if (fabVisibilityTabFactorEvent.isVisible()) {
+                            floatingActionButton.setVisibility(View.VISIBLE);
+                        } else {
+                            floatingActionButton.setVisibility(View.GONE);
+                        }
+                    } else {
+                        floatingActionButton.setVisibility(View.GONE);
+                    }
+                } else {
+                    floatingActionButton.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    @Subscribe
+    public void eventFABOrderFactorVisibility(final FABVisibilityOrderFactorEvent fabVisibilityOrderFactorEvent) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (fabVisibilityOrderFactorEvent != null) {
+                    if (fabVisibilityOrderFactorEvent.isOrderAvailable()) {
+                        setOrderAvailable(true);
+
+                        currentMonth = fabVisibilityOrderFactorEvent.getCurrentMonth();
+                        currentYear = fabVisibilityOrderFactorEvent.getCurrentYear();
+                    } else {
+                        setOrderAvailable(false);
+                    }
+                }
+            }
+        });
+    }
 
 }
 

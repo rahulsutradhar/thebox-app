@@ -16,6 +16,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
+import one.thebox.android.Events.FABVisibilityTabFactorEvent;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.R;
 import one.thebox.android.activity.BaseActivity;
@@ -126,11 +127,23 @@ public class MyBoxTabFragment extends Fragment {
                 }
             }
 
+            //initial condition
+            if (default_position == 2) {
+                EventBus.getDefault().post(new FABVisibilityTabFactorEvent(true));
+            } else {
+                EventBus.getDefault().post(new FABVisibilityTabFactorEvent(false));
+            }
+
             viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     viewPager.setCurrentItem(tab.getPosition());
+                    if (tab.getPosition() == 2) {
+                        EventBus.getDefault().post(new FABVisibilityTabFactorEvent(true));
+                    } else {
+                        EventBus.getDefault().post(new FABVisibilityTabFactorEvent(false));
+                    }
                 }
 
                 @Override
