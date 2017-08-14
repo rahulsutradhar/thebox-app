@@ -30,59 +30,78 @@ public class CartHelper {
      * Add Box Item to Cart
      */
     public static void addBoxItemToCart(final BoxItem boxItem) {
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(boxItem);
-        realm.commitTransaction();
+        try {
+            Realm realm = TheBox.getRealm();
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(boxItem);
+            realm.commitTransaction();
 
-        sendUpdateNoItemsInCartBroadcast(getCartSize());
-        //storing in memory
-        ProductQuantity.addNewProduct(boxItem);
+            sendUpdateNoItemsInCartBroadcast(getCartSize());
+            //storing in memory
+            ProductQuantity.addNewProduct(boxItem);
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     /**
      * Remove Box Item from Cart
      */
     public static void removeItemFromCart(final BoxItem boxItem) {
-        //removing from memory
-        ProductQuantity.removeProduct(boxItem);
+        try {
+            //removing from memory
+            ProductQuantity.removeProduct(boxItem);
 
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst().deleteFromRealm();
-        realm.commitTransaction();
-        sendUpdateNoItemsInCartBroadcast(getCartSize());
+            Realm realm = TheBox.getRealm();
+            realm.beginTransaction();
+            BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+            if (boxItem1 != null) {
+                boxItem1.deleteFromRealm();
+            }
+            realm.commitTransaction();
+            sendUpdateNoItemsInCartBroadcast(getCartSize());
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     /**
      * Update Quantity in Cart
      */
     public static void updateQuantityInCart(final BoxItem boxItem, final int quantity) {
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
-        if (boxItem1 != null) {
-            boxItem1.setQuantity(quantity);
-        }
-        realm.commitTransaction();
+        try {
+            Realm realm = TheBox.getRealm();
+            realm.beginTransaction();
+            BoxItem boxItem1 = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+            if (boxItem1 != null) {
+                boxItem1.setQuantity(quantity);
+            }
+            realm.commitTransaction();
 
-        //updating Quantity from memory
-        ProductQuantity.updateQuantity(boxItem, quantity);
+            //updating Quantity from memory
+            ProductQuantity.updateQuantity(boxItem, quantity);
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
     }
 
     /**
      * Update Quantity inside cart
      */
     public static BoxItem updateQuantityInsideCart(final BoxItem boxItem, final int quantity) {
-        BoxItem updatedBoxItem;
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
-        updatedBoxItem.setQuantity(quantity);
-        realm.commitTransaction();
+        BoxItem updatedBoxItem = null;
+        try {
+            Realm realm = TheBox.getRealm();
+            realm.beginTransaction();
+            updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+            updatedBoxItem.setQuantity(quantity);
+            realm.commitTransaction();
 
-        //updating Quantity from memory
-        ProductQuantity.updateQuantity(boxItem, quantity);
+            //updating Quantity from memory
+            ProductQuantity.updateQuantity(boxItem, quantity);
+        } catch (NullPointerException npe) {
+
+        }
         return updatedBoxItem;
     }
 
@@ -123,16 +142,20 @@ public class CartHelper {
      */
     public static BoxItem updateItemConfigInsideCart(final BoxItem boxItem, ItemConfig itemConfig) {
         BoxItem updatedBoxItem = null;
-        Realm realm = TheBox.getRealm();
-        realm.beginTransaction();
-        if (itemConfig != null) {
-            updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
-            updatedBoxItem.setSelectedItemConfig(itemConfig);
-        }
-        realm.commitTransaction();
+        try {
+            Realm realm = TheBox.getRealm();
+            realm.beginTransaction();
+            if (itemConfig != null) {
+                updatedBoxItem = realm.where(BoxItem.class).equalTo("uuid", boxItem.getUuid()).findFirst();
+                updatedBoxItem.setSelectedItemConfig(itemConfig);
+            }
+            realm.commitTransaction();
 
-        //updating itemconfig in memory
-        ProductQuantity.updateItemConfig(boxItem, itemConfig);
+            //updating itemconfig in memory
+            ProductQuantity.updateItemConfig(boxItem, itemConfig);
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        }
 
         return updatedBoxItem;
     }
@@ -142,9 +165,13 @@ public class CartHelper {
      */
     public static int getCartSize() {
         int size = 0;
-
-        size = TheBox.getRealm().where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll().size();
-
+        try {
+            size = TheBox.getRealm().where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll().size();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return size;
     }
 
@@ -208,7 +235,9 @@ public class CartHelper {
                     @Override
                     public void execute(Realm realm) {
                         RealmResults<BoxItem> realmResults = realm.where(BoxItem.class).notEqualTo("uuid", "").greaterThan("quantity", 0).findAll();
-                        realmResults.deleteAllFromRealm();
+                        if (realmResults.size() > 0) {
+                            realmResults.deleteAllFromRealm();
+                        }
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override

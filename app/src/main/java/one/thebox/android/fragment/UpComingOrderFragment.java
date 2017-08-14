@@ -1,5 +1,6 @@
 package one.thebox.android.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import one.thebox.android.Events.FABVisibilityOrderFactorEvent;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.UpdateUpcomingDeliveriesEvent;
 import one.thebox.android.Models.order.Order;
@@ -47,8 +50,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     private LinearLayout no_orders_subscribed_view_holder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private GifImageView progress_bar;
-    private FrameLayout fabHolder;
-    private FloatingActionButton floatingActionButton;
     private int currentYear, currentMonth;
 
     public UpComingOrderFragment() {
@@ -77,8 +78,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
     }
 
     private void initViews() {
-        fabHolder = (FrameLayout) rootView.findViewById(R.id.fab_holder);
-        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fab);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         no_orders_subscribed_view_holder = (LinearLayout) rootView.findViewById(R.id.no_orders_subscribed_view_holder);
         progress_bar = (GifImageView) rootView.findViewById(R.id.progress_bar);
@@ -90,19 +89,6 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             }
         });
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /**
-                 * Open OrderCalenderFragment
-                 * Update this list if any change occur in Calender
-                 */
-                Intent intent = new Intent(getActivity(), OrderCalenderActivity.class);
-                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
-                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
-                startActivityForResult(intent, 5);
-            }
-        });
 
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
@@ -115,8 +101,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
 
     private void setupRecyclerView(ArrayList<Order> orders) {
         if (orders.size() > 0) {
-            fabHolder.setVisibility(View.VISIBLE);
-            floatingActionButton.setVisibility(View.VISIBLE);
+            //send event to display floating action button in main activity
+            fabVisibility(true);
+
             recyclerView.setVisibility(View.VISIBLE);
             no_orders_subscribed_view_holder.setVisibility(View.GONE);
 
@@ -124,7 +111,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(upcomingOrderAdapter);
         } else {
-            fabHolder.setVisibility(View.GONE);
+            fabVisibility(false);
             recyclerView.setVisibility(View.GONE);
             no_orders_subscribed_view_holder.setVisibility(View.VISIBLE);
         }
@@ -158,6 +145,18 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
         super.onStop();
     }
 
+    public void fabVisibility(boolean visibility) {
+        if (visibility) {
+            FABVisibilityOrderFactorEvent fabVisibilityOrderFactorEvent = new FABVisibilityOrderFactorEvent(true);
+            fabVisibilityOrderFactorEvent.setCurrentMonth(currentMonth);
+            fabVisibilityOrderFactorEvent.setCurrentYear(currentYear);
+            EventBus.getDefault().post(fabVisibilityOrderFactorEvent);
+        } else {
+            FABVisibilityOrderFactorEvent fabVisibilityOrderFactorEvent = new FABVisibilityOrderFactorEvent(false);
+            EventBus.getDefault().post(fabVisibilityOrderFactorEvent);
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -187,9 +186,9 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                         try {
                             if (response.isSuccessful()) {
                                 if (response.body() != null) {
-                                    setupRecyclerView(response.body().getOrders());
                                     currentYear = response.body().getCurrentYear();
                                     currentMonth = response.body().getCurrentMonth();
+                                    setupRecyclerView(response.body().getOrders());
                                 }
                             }
                         } catch (Exception e) {
@@ -198,6 +197,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                             recyclerView.setVisibility(View.GONE);
                             no_orders_subscribed_view_holder.setVisibility(View.GONE);
                             connectionErrorViewHelper.isVisible(true);
+                            fabVisibility(false);
                         }
                     }
 
@@ -207,6 +207,7 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                         recyclerView.setVisibility(View.GONE);
                         no_orders_subscribed_view_holder.setVisibility(View.GONE);
                         connectionErrorViewHelper.isVisible(true);
+                        fabVisibility(false);
                     }
                 });
 
@@ -261,6 +262,8 @@ public class UpComingOrderFragment extends Fragment implements View.OnClickListe
                 }
 
             }
+        } catch (ActivityNotFoundException anf) {
+            anf.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

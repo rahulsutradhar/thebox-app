@@ -163,7 +163,7 @@ public class OrderItemsActivity extends BaseActivity {
                 payTextView.setClickable(false);
                 payTextView.setEnabled(false);
             } else {
-                payTextView.setBackgroundColor(getResources().getColor(R.color.primary));
+                payTextView.setBackgroundColor(getResources().getColor(R.color.md_green_500));
                 payTextView.setClickable(true);
                 payTextView.setEnabled(true);
                 setClickEvent();

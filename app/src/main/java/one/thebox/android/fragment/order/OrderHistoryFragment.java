@@ -1,5 +1,6 @@
 package one.thebox.android.fragment.order;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -190,6 +191,8 @@ public class OrderHistoryFragment extends Fragment {
                     }
                 }
             }
+        } catch (ActivityNotFoundException anf) {
+            anf.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
