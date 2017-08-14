@@ -2,6 +2,8 @@ package one.thebox.android.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
@@ -105,9 +107,21 @@ public class TheBox extends MultiDexApplication {
                         public okhttp3.Response intercept(Chain chain) throws IOException {
 
                             okhttp3.Request request;
+                            PackageInfo pInfo = null;
+                            try {
+                                pInfo = TheBox.getAppContext().getPackageManager().getPackageInfo(
+                                        TheBox.getAppContext().getPackageName(), 0);
+
+                            } catch (PackageManager.NameNotFoundException e) {
+                                e.printStackTrace();
+                            }
                             request = chain.request().newBuilder()
                                     .addHeader("Accept", "application/json")
-                                    .addHeader("Content-type", "application/json").build();
+                                    .addHeader("Content-type", "application/json")
+                                    .addHeader("platform", "android")
+                                    .addHeader("app_version_code", String.valueOf(pInfo.versionCode))
+                                    .addHeader("app_version_name", pInfo.versionName)
+                                    .build();
 
                             return chain.proceed(request);
                         }
@@ -147,14 +161,14 @@ public class TheBox extends MultiDexApplication {
             Branch.getAutoInstance(this);
 
             /*debuger tools*/
-           /* if (BuildConfig.enableStetho) {*/
-            Stetho.initialize(
-                    Stetho.newInitializerBuilder(this)
-                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                            .build());
-            // }
+            if (BuildConfig.enableStetho) {
+                Stetho.initialize(
+                        Stetho.newInitializerBuilder(this)
+                                .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                                .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                                .build());
+            }
 
              /* initialize Calligraphy*/
             CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()

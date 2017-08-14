@@ -1,6 +1,7 @@
 package one.thebox.android.activity;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,9 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.Html;
-import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
@@ -27,11 +27,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +44,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import one.thebox.android.Events.SearchEvent;
+import one.thebox.android.Events.FABVisibilityOrderFactorEvent;
+import one.thebox.android.Events.FABVisibilityTabFactorEvent;
 import one.thebox.android.Events.UpdateOrderItemEvent;
 import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.cart.ProductQuantity;
@@ -59,16 +58,15 @@ import one.thebox.android.Models.notifications.Params;
 import one.thebox.android.Models.update.CommonPopupDetails;
 import one.thebox.android.Models.update.Setting;
 import one.thebox.android.R;
+import one.thebox.android.activity.order.OrderCalenderActivity;
 import one.thebox.android.app.Keys;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.dialog.UpdateDialogFragment;
 import one.thebox.android.services.SettingService;
 import one.thebox.android.services.notification.MyInstanceIDListenerService;
 import one.thebox.android.services.notification.MyTaskService;
 import one.thebox.android.services.notification.RegistrationIntentService;
-import one.thebox.android.api.Responses.search.SearchAutoCompleteResponse;
 import one.thebox.android.app.Constants;
-import one.thebox.android.app.TheBox;
-import one.thebox.android.fragment.AutoCompleteFragment;
 import one.thebox.android.fragment.CartFragment;
 import one.thebox.android.fragment.MyAccountFragment;
 import one.thebox.android.fragment.MyBoxTabFragment;
@@ -76,10 +74,6 @@ import one.thebox.android.fragment.SearchDetailFragment;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.OnFragmentInteractionListener;
 import one.thebox.android.util.PrefUtils;
-import pl.droidsonroids.gif.GifImageView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
 
@@ -101,55 +95,22 @@ public class MainActivity extends BaseActivity implements
      */
     private GcmNetworkManager mGcmNetworkManager;
 
-    public static boolean isSearchFragmentIsAttached = false;
-    private Call<SearchAutoCompleteResponse> call;
     private NavigationView navigationView;
     private LinearLayout navigationViewBottom;
 
     private DrawerLayout drawerLayout;
     private ImageView buttonSpecialAction, searchAction, btn_search, chatbutton;
-    private EditText searchView;
-    private String query;
-    private boolean callHasBeenCompleted = true;
-    private GifImageView progressBar;
     private Menu menu;
     private int numberOfItemIncart = -1;
     private TextView userNameTextView;
     private Setting setting = new Setting();
-
-    Callback<SearchAutoCompleteResponse> searchAutoCompleteResponseCallback = new Callback<SearchAutoCompleteResponse>() {
-        @Override
-        public void onResponse(Call<SearchAutoCompleteResponse> call, Response<SearchAutoCompleteResponse> response) {
-            progressBar.setVisibility(View.GONE);
-            callHasBeenCompleted = true;
-            try {
-                if (response.isSuccessful()) {
-                    if (response.body().isStatus()) {
-                        if (response.body() != null) {
-                            EventBus.getDefault().post(new SearchEvent(query, response.body().getSearchResults()));
-                        }
-                    } else {
-                        //SHow an error message
-                    }
-                } else {
-                    //handle error
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onFailure(Call<SearchAutoCompleteResponse> call, Throwable t) {
-            progressBar.setVisibility(View.GONE);
-            callHasBeenCompleted = true;
-        }
-    };
-    private FrameLayout searchViewHolder;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private User user;
     private FragmentManager fragmentManager;
     private AppBarLayout appBarLayout;
+    private FloatingActionButton floatingActionButton;
+    private int currentYear, currentMonth;
+    private boolean orderAvailable = false;
 
 
     @Override
@@ -417,57 +378,27 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void initViews() {
-        searchView = (EditText) findViewById(R.id.search);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationViewBottom = (LinearLayout) findViewById(R.id.navigation_drawer_bottom);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.floating_action_button);
         buttonSpecialAction = (ImageView) findViewById(R.id.button_special_action);
         chatbutton = (ImageView) findViewById(R.id.chat_button);
         btn_search = (ImageView) findViewById(R.id.btn_search);
-        progressBar = (GifImageView) findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.GONE);
         buttonSpecialAction.setOnClickListener(this);
-        searchViewHolder = (FrameLayout) findViewById(R.id.search_view_holder);
-
-        /**
-         * Search Text Change Listener
-         */
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                query = s.toString();
-                attachSearchResultFragment();
-                if (s.length() > 0) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    if (callHasBeenCompleted) {
-                        callHasBeenCompleted = false;
-                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
-                        call.enqueue(searchAutoCompleteResponseCallback);
-                    } else {
-                        call.cancel();
-                        call = TheBox.getAPIService().searchAutoComplete(PrefUtils.getToken(MainActivity.this), query);
-                        call.enqueue(searchAutoCompleteResponseCallback);
-                    }
-                } else {
-                    getSupportFragmentManager().popBackStackImmediate();
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
 
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        searchAction = (ImageView) findViewById(R.id.image_view_search_action);
         navigationViewBottom.setOnClickListener(this);
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, OrderCalenderActivity.class);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_YEAR, currentYear);
+                intent.putExtra(Constants.EXTRA_CALENDER_SELECTED_MONTH, currentMonth);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -496,7 +427,7 @@ public class MainActivity extends BaseActivity implements
             case R.id.my_account:
                 attachMyAccountFragment();
                 return true;
-            case R.id.view_bill:
+            case R.id.view_cart:
                 attachCartFragment();
                 return true;
             default: {
@@ -625,15 +556,20 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Attach Cart Fragment
+     */
     private void attachCartFragment() {
         CartFragment fragment = new CartFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_container, fragment, "cart_fragment").addToBackStack("cart_fragment");
+        fragmentTransaction.replace(R.id.container_overlay, fragment, "cart_fragment").addToBackStack("cart_fragment");
         fragmentTransaction.commit();
     }
 
+    /**
+     * My Account Fragment
+     */
     private void attachMyAccountFragment() {
-
         MyAccountFragment fragment = new MyAccountFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame, fragment, "My_Account").addToBackStack("My_Account");
@@ -646,6 +582,12 @@ public class MainActivity extends BaseActivity implements
         drawerLayout.closeDrawers();
     }
 
+    /**
+     * Box tab Fragment
+     *
+     * @param default_position
+     * @param show_loader
+     */
     public void attachMyBoxesFragment(int default_position, boolean show_loader) {
         clearBackStack();
         MyBoxTabFragment fragment = new MyBoxTabFragment();
@@ -667,28 +609,12 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
-    private void attachSearchResultFragment() {
-        getToolbar().setSubtitle(null);
-
-        if (!isSearchFragmentIsAttached) {
-            isSearchFragmentIsAttached = true;
-            getToolbar().setTitle(null);
-            AutoCompleteFragment fragment = new AutoCompleteFragment();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frame, fragment, "Search_Result").addToBackStack("Explore_Boxes");
-            fragmentTransaction.commit();
-        }
-        appBarLayout.setExpanded(true, true);
-    }
 
     /**
-     * Called from Search
+     * Called from Search; when you search
      */
     public void attachSearchDetailFragment(SearchResult searchResult) {
         getToolbar().setSubtitle(null);
-
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -710,11 +636,16 @@ public class MainActivity extends BaseActivity implements
         appBarLayout.setExpanded(true, true);
     }
 
+    /**
+     * Attach Search Detail Fragment; when you have Box Uuid and Box Title.
+     * Fetch category in the Fragment and display
+     *
+     * @param boxUuid
+     * @param boxTitle
+     */
     private void attachSearchDetailFragmentForCategory(String boxUuid, String boxTitle) {
         getToolbar().setSubtitle(null);
 
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.GONE);
         btn_search.setVisibility(View.VISIBLE);
 
         buttonSpecialAction.setVisibility(View.VISIBLE);
@@ -740,9 +671,6 @@ public class MainActivity extends BaseActivity implements
     public void onClick(View view) {
         int id = view.getId();
         switch (id) {
-            case R.id.search: {
-                break;
-            }
             case R.id.navigation_drawer_bottom:
                 openContactUsActivity();
                 break;
@@ -777,12 +705,6 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    public String getActiveFragmentTag() {
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-            return null;
-        }
-        return getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -818,11 +740,13 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        EventBus.getDefault().unregister(this);
 
         // For the purposes of this sample, cancel all tasks when the app is stopped.
         mGcmNetworkManager.cancelAllTasks(MyTaskService.class);
@@ -853,12 +777,16 @@ public class MainActivity extends BaseActivity implements
             }
 
             case 3: {
+                //attach cart and display
                 attachCartFragment();
                 break;
             }
             case 4: {
-                //Search Results
-                attachSearchDetailFragment(CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
+                /**
+                 * Search Item- navigate via this to Browse category
+                 */
+                attachSearchDetailFragment(CoreGsonUtils.fromJson(
+                        intent.getStringExtra(Constants.EXTRA_SEARCH_RESULT_DATA), SearchResult.class));
                 break;
             }
             case 5: {
@@ -872,14 +800,6 @@ public class MainActivity extends BaseActivity implements
                 attachCategoriesFragment(intent);
                 break;
             }
-            case 7: {
-                attachMyBoxesFragment(1, false);
-                break;
-            }
-            //carosuel
-            case 8:
-                //attachCategoryFragmentForCarousel(intent);
-                break;
 
             /**
              * Notifications Action Handiling
@@ -926,6 +846,12 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    /**
+     * Category Notification
+     *
+     * @param intent
+     */
+    //TODO need to re-configure this
     private void performCategoryNotification(Intent intent) {
         //check if Box Fragment is visible or not
 
@@ -939,10 +865,6 @@ public class MainActivity extends BaseActivity implements
      */
     private void attachCategoriesFragment(Intent intent) {
         getToolbar().setSubtitle(null);
-
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.GONE);
-
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -978,8 +900,6 @@ public class MainActivity extends BaseActivity implements
         Params params = CoreGsonUtils.fromJson(intent.getStringExtra(Constants.EXTRA_NOTIFICATION_PARAMETER), Params.class);
 
         getToolbar().setSubtitle(null);
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.GONE);
         buttonSpecialAction.setVisibility(View.VISIBLE);
         buttonSpecialAction.setImageResource(R.drawable.ic_box);
         buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
@@ -998,35 +918,6 @@ public class MainActivity extends BaseActivity implements
         imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
         appBarLayout.setExpanded(true, true);
 
-    }
-
-    /**
-     * Attach Search Detail Fragment on Click Carosuel
-     */
-    public void attachCategoryFragmentForCarousel(Intent intent) {
-
-        int categoryId = intent.getIntExtra(Constants.CATEGORY_UUID, 0);
-
-        getToolbar().setSubtitle(null);
-        searchView.getText().clear();
-        searchViewHolder.setVisibility(View.GONE);
-        buttonSpecialAction.setVisibility(View.VISIBLE);
-        buttonSpecialAction.setImageResource(R.drawable.ic_box);
-        buttonSpecialAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attachMyBoxesFragment(1, false);
-            }
-        });
-
-        SearchDetailFragment fragment = SearchDetailFragment.getInstance(categoryId, "");
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment).addToBackStack("Search_Details");
-        fragmentTransaction.commit();
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getContentView().getWindowToken(), 0);
-        appBarLayout.setExpanded(true, true);
     }
 
     @Override
@@ -1071,18 +962,6 @@ public class MainActivity extends BaseActivity implements
         return btn_search;
     }
 
-    public EditText getSearchView() {
-        return searchView;
-    }
-
-    public FrameLayout getSearchViewHolder() {
-        return searchViewHolder;
-    }
-
-    public void setSearchView(EditText searchView) {
-        this.searchView = searchView;
-    }
-
     public DrawerLayout getDrawerLayout() {
         return drawerLayout;
     }
@@ -1091,15 +970,17 @@ public class MainActivity extends BaseActivity implements
         this.drawerLayout = drawerLayout;
     }
 
-    public ImageView getSearchAction() {
-        return searchAction;
+    public boolean isOrderAvailable() {
+        return orderAvailable;
     }
 
-    public void setSearchAction(ImageView searchAction) {
-        this.searchAction = searchAction;
+    public void setOrderAvailable(boolean orderAvailable) {
+        this.orderAvailable = orderAvailable;
     }
 
-
+    /**
+     * Add Box Name to menu in navigation drawer layout
+     */
     public void addBoxesToMenu() {
 
         if (setting.getBoxes() != null) {
@@ -1151,6 +1032,8 @@ public class MainActivity extends BaseActivity implements
                     }
                 }
             }
+        } catch (ActivityNotFoundException anf) {
+            anf.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1181,6 +1064,46 @@ public class MainActivity extends BaseActivity implements
         attachSearchDetailFragmentForCategory(boxUuid, boxTitle);
     }
 
+    @Subscribe
+    public void eventFABTabFactorVisibility(final FABVisibilityTabFactorEvent fabVisibilityTabFactorEvent) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isOrderAvailable()) {
+                    if (fabVisibilityTabFactorEvent != null) {
+                        if (fabVisibilityTabFactorEvent.isVisible()) {
+                            floatingActionButton.setVisibility(View.VISIBLE);
+                        } else {
+                            floatingActionButton.setVisibility(View.GONE);
+                        }
+                    } else {
+                        floatingActionButton.setVisibility(View.GONE);
+                    }
+                } else {
+                    floatingActionButton.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    @Subscribe
+    public void eventFABOrderFactorVisibility(final FABVisibilityOrderFactorEvent fabVisibilityOrderFactorEvent) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (fabVisibilityOrderFactorEvent != null) {
+                    if (fabVisibilityOrderFactorEvent.isOrderAvailable()) {
+                        setOrderAvailable(true);
+
+                        currentMonth = fabVisibilityOrderFactorEvent.getCurrentMonth();
+                        currentYear = fabVisibilityOrderFactorEvent.getCurrentYear();
+                    } else {
+                        setOrderAvailable(false);
+                    }
+                }
+            }
+        });
+    }
 
 }
 

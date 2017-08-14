@@ -494,6 +494,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     dialogFragment.dismiss();
 
                     if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                        //update item config
                         updateItemConfigInCart(boxItem, selectedItemConfig, position);
                     } else {
                         boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
@@ -540,6 +541,7 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
             boxItems.set(position, boxItem);
             notifyItemChanged(position);
+            //remove item from local database
             CartHelper.removeItemFromCart(boxItem);
 
             //check for background service
