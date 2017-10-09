@@ -77,6 +77,7 @@ android {
             resValue "string", "io.branch.schema", "thebox"
             resValue "string", "clevertab_account_id", "W84-885-984Z"
             resValue "string", "clevertab_account_token", "5bb-4b0"
+            resValue "string", "razorpay.apikey", "rzp_live_e1nfI8frHunaFM"
             signingConfig signingConfigs.config
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -96,6 +97,7 @@ android {
             resValue "string", "io.branch.schema", "thebox.test"
             resValue "string", "clevertab_account_id", "TEST-Z84-885-984Z"
             resValue "string", "clevertab_account_token", "TEST-5bb-4b1"
+            resValue "string", "razorpay.apikey", "rzp_test_R4R82jOEbvmNDW"
         }
     }
 }
@@ -216,6 +218,11 @@ dependencies {
      * Apps FLyer for Analytics
      */
     compile 'com.appsflyer:af-android-sdk:4.7.4'
+
+    /**
+     * Razorpay Payment Gateway
+     */
+    compile 'com.razorpay:checkout:1.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

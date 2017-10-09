@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.razorpay.Checkout;
+import com.razorpay.PaymentResultListener;
 
 import org.json.JSONObject;
 
@@ -57,7 +58,7 @@ import retrofit2.Response;
  * <p>
  * Modified by Developers on 06/04/2017.
  */
-public class PaymentOptionActivity extends AppCompatActivity {
+public class PaymentOptionActivity extends AppCompatActivity implements PaymentResultListener {
 
     @BindView(R2.id.tabsPaymentOption)
     TabLayout tabsPaymentOption;
@@ -340,21 +341,13 @@ public class PaymentOptionActivity extends AppCompatActivity {
         finish();
     }
 
-
+    /**
+     * Start Razorpay payment
+     */
     public void startPayment(String amount, String description, String email, String phonenumber, String name) {
 
-        /**
-         * Put your key id generated in Razorpay dashboard here
-         */
-        final String test_key_id = "rzp_test_R4R82jOEbvmNDW";
-        final String live_key_id = "rzp_live_e1nfI8frHunaFM";
-
         Checkout razorpayCheckout = new Checkout();
-        if (BuildConfig.DEBUG) {
-            razorpayCheckout.setKeyID(test_key_id);
-        } else {
-            razorpayCheckout.setKeyID(live_key_id);
-        }
+        razorpayCheckout.setFullScreenDisable(true);
 
         /**
          * Image for checkout form can passed as reference to a drawable
@@ -383,25 +376,36 @@ public class PaymentOptionActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback for Razorpay payment
+     *
+     * @param razorpayPaymentID
+     */
 
+    @Override
     public void onPaymentSuccess(String razorpayPaymentID) {
+        Toast.makeText(this, "Payment successful", Toast.LENGTH_SHORT).show();
         razorpayId = razorpayPaymentID;
         setRequestDataForOnline(razorpayPaymentID);
     }
 
-    private void payOnLine(String razorpayPaymentID) {
-        razorpayId = razorpayPaymentID;
-        setRequestDataForOnline(razorpayPaymentID);
-    }
-
-
+    @Override
     public void onPaymentError(int code, String response) {
         try {
-            Toast.makeText(this, "Payment failed, Try Cash on Delivery ", Toast.LENGTH_SHORT).show();
+            if (code == Checkout.NETWORK_ERROR) {
+                Toast.makeText(this, "Please check your internet connection and try again", Toast.LENGTH_SHORT).show();
+            } else if (code == Checkout.INVALID_OPTIONS) {
+                Toast.makeText(this, "Payment failed, Try Cash on Delivery", Toast.LENGTH_SHORT).show();
+            } else if (code == Checkout.PAYMENT_CANCELED) {
+                Toast.makeText(this, "Payment has been cancelled, please try again", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Payment failed, Try Cash on Delivery", Toast.LENGTH_SHORT).show();
+            }
             /**
              * Set Celver tap Event; failed- razorpay
              */
             setCleverTapEventPayments(false, 1);
+
         } catch (Exception e) {
             Log.e("com.merchant", e.getMessage(), e);
         }

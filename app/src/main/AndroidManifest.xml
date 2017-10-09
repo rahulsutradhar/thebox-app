@@ -273,6 +273,10 @@
             android:name="io.branch.sdk.BranchKey"
             android:value="@string/io.branch.sdk.BranchKey" />
 
+        <!-- Razorpay Payment Gateway-->
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="@string/razorpay.apikey" />
 
         <activity android:name=".activity.TermsOfUserActivity" />
 
