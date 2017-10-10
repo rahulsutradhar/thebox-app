@@ -51,7 +51,6 @@ public class SplashActivity extends Activity {
         try {
             setContentView(R.layout.video_splash);
             theboxLogo = (ImageView) findViewById(R.id.thebox_logo);
-            theboxLogo.setVisibility(View.INVISIBLE);
 
             authenticationService = new AuthenticationService();
             vidHolder = (MutedVideoView) findViewById(R.id.splash_video);
@@ -80,7 +79,6 @@ public class SplashActivity extends Activity {
 
     public void updateUI() {
         vidHolder.setVisibility(View.GONE);
-        theboxLogo.setVisibility(View.VISIBLE);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -157,9 +155,7 @@ public class SplashActivity extends Activity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, attachmentNumber);
         intent.putExtra(Constants.EXTRA_NOTIFICATION_PARAMETER, CoreGsonUtils.toJson(params));
-        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }

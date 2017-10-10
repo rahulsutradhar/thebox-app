@@ -158,6 +158,7 @@ public class TheBox extends MultiDexApplication {
             RealmChangeManager.getInstance();
 
             /*Branch.io*/
+            Branch.setPlayStoreReferrerCheckTimeout(0);
             Branch.getAutoInstance(this);
 
             /*debuger tools*/

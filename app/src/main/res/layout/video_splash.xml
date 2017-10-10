@@ -11,8 +11,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/thebox_identitycolor"
-        android:visibility="invisible" />
+        android:src="@drawable/thebox_identitycolor" />
 
     <one.thebox.android.ViewHelper.MutedVideoView
         android:id="@+id/splash_video"
@@ -21,7 +20,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:visibility="visible" />
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
