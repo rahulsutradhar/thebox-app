@@ -33,7 +33,6 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private View rootView;
-    private BoxItem boxItem;
     private OnSizeAndFrequencySelected onSizeAndFrequencySelected;
     private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private ItemConfig selectedItemConfig;
@@ -45,6 +44,9 @@ public class SizeAndFrequencyBottomSheetDialogFragment extends BottomSheetDialog
         this.selectedItemConfig = selectedItemConfig;
     }
 
+    /**
+     * Default Constructor
+     */
     public SizeAndFrequencyBottomSheetDialogFragment() {
 
     }

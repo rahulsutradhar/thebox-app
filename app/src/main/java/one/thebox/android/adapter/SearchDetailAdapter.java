@@ -75,10 +75,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      */
     private RequestManager glideRequestManager;
 
-    public RealmList<Category> getSuggestedCategories() {
-        return suggestedCategories;
-    }
-
     public void setSuggestedCategories(RealmList<Category> suggestedCategories) {
         this.suggestedCategories = suggestedCategories;
     }
@@ -93,6 +89,12 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         loadPosition = this.boxItems.size();
     }
 
+    /**
+     * Constructore
+     *
+     * @param context
+     * @param glideRequestManager
+     */
     public SearchDetailAdapter(Context context, RequestManager glideRequestManager) {
         this.mContext = context;
         this.glideRequestManager = glideRequestManager;
@@ -482,26 +484,36 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
 
+        /**
+         * Display Other option available for this product
+         *
+         * @param boxItem
+         * @param position
+         */
         private void displayNumberOfOption(final BoxItem boxItem, final int position) {
-            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
-                    SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
-            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+            try {
+                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
+                        SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
+                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
 
-            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                @Override
-                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                    dialogFragment.dismiss();
+                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                    @Override
+                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                        dialogFragment.dismiss();
 
-                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
-                        //update item config
-                        updateItemConfigInCart(boxItem, selectedItemConfig, position);
-                    } else {
-                        boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
-                        notifyItemChanged(position);
+                        if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                            //update item config
+                            updateItemConfigInCart(boxItem, selectedItemConfig, position);
+                        } else {
+                            boxItems.get(position).setSelectedItemConfig(selectedItemConfig);
+                            notifyItemChanged(position);
+                        }
                     }
-                }
-            });
+                });
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
         }
 
         /**
@@ -772,8 +784,6 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     } else {
                         Toast.makeText(TheBox.getInstance(), "Item count could not be negative", Toast.LENGTH_SHORT).show();
                     }
-
-
                 }
             });
 
@@ -783,84 +793,87 @@ public class SearchDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
          * Edit Subscription
          */
         private void doEditSubscription(final BoxItem boxItem, final SubscribeItem subscribeItem, final int position) {
-            final EditItemFragment dialogFragment = EditItemFragment.newInstance();
+            try {
+                final EditItemFragment dialogFragment = EditItemFragment.newInstance();
 
-            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                    , EditItemFragment.TAG);
-            dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
-                @Override
-                public void onEditItemoptionSelected(int actionUserItemSubscription) {
+                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                        , EditItemFragment.TAG);
+                dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
+                    @Override
+                    public void onEditItemoptionSelected(int actionUserItemSubscription) {
 
-                    dialogFragment.dismiss();
+                        dialogFragment.dismiss();
 
-                    // true if change_size was clicked
-                    // false otherwise
-                    switch (actionUserItemSubscription) {
-                        case 1:
-                            //Update ItemConfig
-                            subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
+                        // true if change_size was clicked
+                        // false otherwise
+                        switch (actionUserItemSubscription) {
+                            case 1:
+                                //Update ItemConfig
+                                subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
-                                    subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
+                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                        subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
 
-                            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                @Override
-                                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                    dialogFragment.dismiss();
-                                    //request server and update Item Config
-                                    updateItemConfig(boxItem, subscribeItem, position, selectedItemConfig);
+                                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                    @Override
+                                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                        dialogFragment.dismiss();
+                                        //request server and update Item Config
+                                        updateItemConfig(boxItem, subscribeItem, position, selectedItemConfig);
 
-                                }
-                            });
-                            break;
-                        case 2:
-                            //Reschedule
-                            final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(subscribeItem);
-                            deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
-                            deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
-                                @Override
-                                public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
-
-                                    //update the arriving at Text on the existing list object
-                                    subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
-                                    boxItem.getUserItem().setSubscribeItem(subscribeItem);
-                                    boxItems.set(position, boxItem);
-                                    notifyItemChanged(position);
-
-                                    if (deliveryBottomSheet != null) {
-                                        deliveryBottomSheet.dismiss();
                                     }
-                                    updateHomeTabs();
+                                });
+                                break;
+                            case 2:
+                                //Reschedule
+                                final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(subscribeItem);
+                                deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
+                                deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
+                                    @Override
+                                    public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
+
+                                        //update the arriving at Text on the existing list object
+                                        subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
+                                        boxItem.getUserItem().setSubscribeItem(subscribeItem);
+                                        boxItems.set(position, boxItem);
+                                        notifyItemChanged(position);
+
+                                        if (deliveryBottomSheet != null) {
+                                            deliveryBottomSheet.dismiss();
+                                        }
+                                        updateHomeTabs();
+                                    }
+                                });
+                                break;
+                            case 3:
+                                //cancel subscription
+                                if (subscribeItem.getQuantity() > 0) {
+                                    MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                            title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
+                                            positiveText("Cancel")
+                                            .negativeText("Unsubscribe").
+                                                    onNegative(new MaterialDialog.SingleButtonCallback() {
+                                                        @Override
+                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                            //Remove Subscribe Item
+                                                            updateQuantity(boxItem, subscribeItem, position, 0);
+                                                        }
+                                                    }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                    dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                    dialog.show();
+                                } else {
+                                    //error handling
                                 }
-                            });
-                            break;
-                        case 3:
-                            //cancel subscription
-                            if (subscribeItem.getQuantity() > 0) {
-                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                        title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
-                                        positiveText("Cancel")
-                                        .negativeText("Unsubscribe").
-                                                onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                        //Remove Subscribe Item
-                                                        updateQuantity(boxItem, subscribeItem, position, 0);
-                                                    }
-                                                }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
-                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                                dialog.show();
-                            } else {
-                                //error handling
-                            }
 
-                            break;
+                                break;
+                        }
                     }
-                }
-            });
-
+                });
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
 
         }
 

@@ -270,88 +270,89 @@ public class SubscribeItemAdapter extends BaseRecyclerAdapter {
          * Edit Subscription
          */
         private void doEditSubscription(final SubscribeItem subscribeItem, final int position) {
-            final EditItemFragment dialogFragment = EditItemFragment.newInstance();
+            try {
+                final EditItemFragment dialogFragment = EditItemFragment.newInstance();
 
-            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                    , EditItemFragment.TAG);
-            dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
-                @Override
-                public void onEditItemoptionSelected(int actionUserItemSubscription) {
+                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                        , EditItemFragment.TAG);
+                dialogFragment.attachListener(new EditItemFragment.OnEditItemoptionSelected() {
+                    @Override
+                    public void onEditItemoptionSelected(int actionUserItemSubscription) {
 
-                    dialogFragment.dismiss();
+                        dialogFragment.dismiss();
 
-                    // true if change_size was clicked
-                    // false otherwise
-                    switch (actionUserItemSubscription) {
-                        case 1:
-                            //Update ItemConfig
-                            subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
+                        // true if change_size was clicked
+                        // false otherwise
+                        switch (actionUserItemSubscription) {
+                            case 1:
+                                //Update ItemConfig
+                                subscribeItem.getBoxItem().setSelectedItemConfig(subscribeItem.getSelectedItemConfig());
 
-                            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
-                                    subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
-                            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-                            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                                @Override
-                                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                                    dialogFragment.dismiss();
-                                    //request server and update Item Config
-                                    updateItemConfig(subscribeItem, position, selectedItemConfig);
+                                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new SizeAndFrequencyBottomSheetDialogFragment(
+                                        subscribeItem.getBoxItem().getItemConfigs(), subscribeItem.getSelectedItemConfig());
+                                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                                    @Override
+                                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                                        dialogFragment.dismiss();
+                                        //request server and update Item Config
+                                        updateItemConfig(subscribeItem, position, selectedItemConfig);
 
-                                }
-                            });
-                            break;
-                        case 2:
-                            //Reschedule
-                            final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(subscribeItem);
-                            deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
-                            deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
-                                @Override
-                                public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
-
-                                    //update the arriving at Text on the existing list object
-                                    subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
-                                    subscribeItems.set(position, subscribeItem);
-
-                                    if (onSubscribeItemChange != null) {
-                                        onSubscribeItemChange.onSubscribeItem(subscribeItems);
                                     }
-                                    notifyItemChanged(getAdapterPosition());
+                                });
+                                break;
+                            case 2:
+                                //Reschedule
+                                final DelayDeliveryBottomSheetFragment deliveryBottomSheet = DelayDeliveryBottomSheetFragment.newInstance(subscribeItem);
+                                deliveryBottomSheet.show(((AppCompatActivity) mContext).getSupportFragmentManager(), DelayDeliveryBottomSheetFragment.TAG);
+                                deliveryBottomSheet.attachListener(new DelayDeliveryBottomSheetFragment.OnDelayActionCompleted() {
+                                    @Override
+                                    public void onDelayActionCompleted(SubscribeItem updatedSubscribeItem) {
 
-                                    if (deliveryBottomSheet != null) {
-                                        deliveryBottomSheet.dismiss();
+                                        //update the arriving at Text on the existing list object
+                                        subscribeItem.setArrivingAt(updatedSubscribeItem.getArrivingAt());
+                                        subscribeItems.set(position, subscribeItem);
+
+                                        if (onSubscribeItemChange != null) {
+                                            onSubscribeItemChange.onSubscribeItem(subscribeItems);
+                                        }
+                                        notifyItemChanged(getAdapterPosition());
+
+                                        if (deliveryBottomSheet != null) {
+                                            deliveryBottomSheet.dismiss();
+                                        }
+                                        //fetch orders to update the list
+                                        EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
                                     }
-                                    //fetch orders to update the list
-                                    EventBus.getDefault().post(new UpdateUpcomingDeliveriesEvent());
+                                });
+                                break;
+                            case 3:
+                                //cancel subscription
+                                if (subscribeItem.getQuantity() > 0) {
+                                    MaterialDialog dialog = new MaterialDialog.Builder(mContext).
+                                            title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
+                                            positiveText("Cancel")
+                                            .negativeText("Unsubscribe").
+                                                    onNegative(new MaterialDialog.SingleButtonCallback() {
+                                                        @Override
+                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                            //Remove Subscribe Item
+                                                            updateQuantity(subscribeItem, position, 0);
+                                                        }
+                                                    }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
+                                    dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
+                                    dialog.show();
+                                } else {
+                                    //error handling
                                 }
-                            });
-                            break;
-                        case 3:
-                            //cancel subscription
-                            if (subscribeItem.getQuantity() > 0) {
-                                MaterialDialog dialog = new MaterialDialog.Builder(mContext).
-                                        title("Unsubscribe " + subscribeItem.getBoxItem().getTitle()).
-                                        positiveText("Cancel")
-                                        .negativeText("Unsubscribe").
-                                                onNegative(new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                        //Remove Subscribe Item
-                                                        updateQuantity(subscribeItem, position, 0);
-                                                    }
-                                                }).content("Unsubscribing " + subscribeItem.getBoxItem().getTitle() + " will remove it from all subsequent orders. Are you sure you want to unsubscribe?").build();
-                                dialog.getWindow().getAttributes().windowAnimations = R.style.MyAnimation_Window;
-                                dialog.show();
-                            } else {
-                                //error handling
-                            }
-
-                            break;
+                                break;
+                        }
                     }
-                }
-            });
-
-
+                });
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
         }
 
         /**

@@ -315,10 +315,16 @@ public class AddAddressFragmentViewModel extends BaseViewModel {
 
     public boolean checkPinCodeSelected() {
         boolean flag = false;
-        if (localityUid.equals("")) {
-            flag = false;
-            localityErrorMessage.setVisibility(View.VISIBLE);
-            localityErrorMessage.setText("Please select your Locality");
+        if (localityUid != null) {
+            if (localityUid.equals("")) {
+                flag = false;
+                localityErrorMessage.setVisibility(View.VISIBLE);
+                localityErrorMessage.setText("Please select your Locality");
+            } else {
+                localityErrorMessage.setText("");
+                localityErrorMessage.setVisibility(View.GONE);
+                flag = true;
+            }
         } else {
             localityErrorMessage.setText("");
             localityErrorMessage.setVisibility(View.GONE);

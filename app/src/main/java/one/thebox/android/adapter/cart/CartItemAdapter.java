@@ -381,21 +381,31 @@ public class CartItemAdapter extends BaseRecyclerAdapter {
 
         }
 
+        /**
+         * Display Other option available for this product
+         *
+         * @param boxItem
+         * @param position
+         */
         private void displayNumberOfOption(final BoxItem boxItem, final int position) {
-            final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
-                    SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
-            dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
-                    , SizeAndFrequencyBottomSheetDialogFragment.TAG);
-            dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
-                @Override
-                public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
-                    dialogFragment.dismiss();
+            try {
+                final SizeAndFrequencyBottomSheetDialogFragment dialogFragment = new
+                        SizeAndFrequencyBottomSheetDialogFragment(boxItem.getItemConfigs(), boxItem.getSelectedItemConfig());
+                dialogFragment.show(((AppCompatActivity) mContext).getSupportFragmentManager()
+                        , SizeAndFrequencyBottomSheetDialogFragment.TAG);
+                dialogFragment.attachListener(new SizeAndFrequencyBottomSheetDialogFragment.OnSizeAndFrequencySelected() {
+                    @Override
+                    public void onSizeAndFrequencySelected(ItemConfig selectedItemConfig) {
+                        dialogFragment.dismiss();
 
-                    if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
-                        updateItemConfigInCart(boxItem, selectedItemConfig, position, false);
+                        if (!boxItem.getUuid().isEmpty() && boxItem.getQuantity() > 0) {
+                            updateItemConfigInCart(boxItem, selectedItemConfig, position, false);
+                        }
                     }
-                }
-            });
+                });
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
         }
 
         /**

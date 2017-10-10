@@ -74,8 +74,9 @@ public class SyncCartService extends Service {
                          * Self Stop the service when cart Size is Zero
                          */
                         if (ProductQuantity.getCartSize() == 0) {
-                            stopSelf();
                             CartHelperService.setCartSyncRunning(false);
+                            stopSelf();
+
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();

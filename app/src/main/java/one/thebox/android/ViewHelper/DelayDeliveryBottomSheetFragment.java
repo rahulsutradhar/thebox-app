@@ -72,6 +72,9 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
     private RescheduleReason rescheduleReason;
     private int requestCount = 0;
 
+    /**
+     * Constructor
+     */
     public DelayDeliveryBottomSheetFragment() {
 
     }
@@ -85,6 +88,11 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         return delayDeliveryBottomSheetFragment;
     }
 
+    /**
+     * Interface
+     *
+     * @param onDelayActionCompleted
+     */
     public void attachListener(OnDelayActionCompleted onDelayActionCompleted) {
         this.onDelayActionCompleted = onDelayActionCompleted;
     }
@@ -225,6 +233,8 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
             }
 
 
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -360,11 +370,13 @@ public class DelayDeliveryBottomSheetFragment extends BottomSheetDialogFragment 
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (rescheduleSkip.getDeliveries().size() > 0) {
-                    openDeliverInNextCycleDialog(subscribeItem, rescheduleSkip.getDeliveries().get(0));
-                    dialog.dismiss();
-                } else {
-                    //something went wrong
+                if (rescheduleSkip != null) {
+                    if (rescheduleSkip.getDeliveries().size() > 0) {
+                        openDeliverInNextCycleDialog(subscribeItem, rescheduleSkip.getDeliveries().get(0));
+                        dialog.dismiss();
+                    } else {
+                        //something went wrong
+                    }
                 }
             }
         });
