@@ -22,9 +22,12 @@ public class OnBoardingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboard);
 
-
-        setStatusBarTranslucent(true);
-        setStatusBarColor(getResources().getColor(R.color.white));
+        try {
+            setStatusBarTranslucent(true);
+            setStatusBarColor(getResources().getColor(R.color.white));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -32,7 +32,7 @@ android {
     }
 
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -40,8 +40,10 @@ android {
         minSdkVersion 15
         multiDexEnabled true
         targetSdkVersion 25
+        vectorDrawables.useSupportLibrary = true
         versionCode 22
         versionName "2.0.2"
+
     }
 
     dataBinding {
