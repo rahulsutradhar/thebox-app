@@ -1,216 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/md_grey_100"
     android:orientation="vertical">
 
-    <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
         android:id="@+id/month"
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="June"
         android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="16dp"
-        android:paddingBottom="8dp"
-        android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_large1" />
+        android:text="June"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_large1"
+        android:visibility="gone" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_for_card_top"
         android:layout_marginBottom="@dimen/margin_for_card_bottom"
-        android:layout_marginLeft="@dimen/margin_from_left_of_window"
-        android:layout_marginStart="@dimen/margin_from_left_of_window"
-        android:layout_marginRight="@dimen/margin_from_right_of_window"
         android:layout_marginEnd="@dimen/margin_from_right_of_window"
+        android:layout_marginLeft="@dimen/margin_from_left_of_window"
+        android:layout_marginRight="@dimen/margin_from_right_of_window"
+        android:layout_marginStart="@dimen/margin_from_left_of_window"
+        android:layout_marginTop="@dimen/margin_for_card_top"
         android:clickable="true"
         android:focusable="true"
         android:foreground="@drawable/ripple"
         card_view:cardBackgroundColor="@color/white"
         card_view:cardCornerRadius="6dp"
-        card_view:cardElevation="2dp">
+        card_view:cardElevation="3dp">
 
 
         <LinearLayout
-            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_from_top_of_card"
             android:layout_marginBottom="@dimen/margin_from_bottom_of_card"
-            android:layout_marginLeft="@dimen/margin_from_left_of_card"
-            android:layout_marginStart="@dimen/margin_from_left_of_card"
-            android:layout_marginRight="@dimen/margin_from_right_of_card"
             android:layout_marginEnd="@dimen/margin_from_right_of_card"
+            android:layout_marginLeft="@dimen/margin_from_left_of_card"
+            android:layout_marginRight="@dimen/margin_from_right_of_card"
+            android:layout_marginStart="@dimen/margin_from_left_of_card"
+            android:layout_marginTop="@dimen/margin_from_top_of_card"
+            android:background="@color/white"
             android:orientation="vertical">
 
-                <LinearLayout
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_from_bottom_of_card"
-                    android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_from_bottom_of_card"
+                android:background="@color/white"
+                android:orientation="horizontal">
 
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.7"
-                        android:orientation="vertical"
-                        >
-
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
-                            >
-
-
-                            <one.thebox.android.ViewHelper.MontserratTextView
-                                android:id="@+id/text_order_state"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
-                                android:text="Arriving on: "
-                                android:textColor="@color/primary_text_color"
-                                android:textSize="@dimen/text_medium1" />
-
-                            <one.thebox.android.ViewHelper.MontserratTextView
-                                android:id="@+id/text_date"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="@dimen/margin_vertical_between_co_element"
-                                android:text="@string/sample_date"
-                                android:textColor="@color/primary_text_color"
-                                android:textSize="@dimen/text_small2" />
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
-                            >
-
-                            <one.thebox.android.ViewHelper.MontserratTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Between "
-                                android:textColor="@color/secondary_text_color"
-                                android:textSize="@dimen/text_small2" />
-
-                            <one.thebox.android.ViewHelper.MontserratTextView
-                                android:id="@+id/time_slot"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/sample_slot"
-                                android:textColor="@color/secondary_text_color"
-                                android:textSize="@dimen/text_small2" />
-
-
-                        </LinearLayout>
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/reschdule_order_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="@dimen/padding_medium_button_horizontal"
-                            android:paddingRight="@dimen/padding_medium_button_horizontal"
-                            android:paddingBottom="@dimen/padding_medium_button_vertical"
-                            android:paddingTop="@dimen/padding_medium_button_vertical"
-                            android:gravity="center"
-                            android:background="@drawable/green_borders"
-                            android:text="@string/adjust"
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_small3"
-                            android:visibility="gone"
-                            />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.3"
-                        android:layout_gravity="center"
-                        android:paddingLeft="@dimen/padding_medium_button_horizontal"
-                        android:paddingRight="@dimen/padding_medium_button_horizontal"
-                        android:paddingBottom="@dimen/padding_medium_button_vertical"
-                        android:paddingTop="@dimen/padding_medium_button_vertical"
-                        android:gravity="center"
-                        android:background="@drawable/green_borders"
-                        android:orientation="vertical">
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/text_view_view_items"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/view_items"
-                            android:textColor="@color/primary_text_color"
-                            android:textSize="@dimen/text_small3" />
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/text_items_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="21 items"
-                            android:textColor="@color/secondary_text_color"
-                            android:textSize="@dimen/text_small1" />
-
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/md_green_500"/>
 
                 <LinearLayout
-                    android:id="@+id/holder"
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_vertical_between_non_co_element"
+                    android:layout_weight="0.7"
                     android:orientation="vertical">
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
-                        android:id="@+id/message"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
-                        android:gravity="center"
-                        android:text="Please confirm the payment to confirm delivery"
-                        android:textColor="@color/accent" />
 
-                    <one.thebox.android.ViewHelper.MontserratTextView
-                        android:id="@+id/text_amount_to_be_paid"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/schedule_text"
+                            style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="0dp"
+                            android:text="Delivered on: "
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_small2" />
+
+                        <TextView
+                            android:id="@+id/text_date"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="0dp"
+                            android:text="@string/sample_date"
+                            android:textColor="@color/davy_grey"
+                            android:textSize="@dimen/text_extra_small3" />
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_horizontal_between_co_element"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/time_slot"
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sample_slot"
+                            android:textColor="@color/davy_grey"
+                            android:textSize="@dimen/text_extra_small3" />
+
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/reschdule_order_button"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/green_borders"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/padding_medium_button_vertical"
                         android:paddingLeft="@dimen/padding_medium_button_horizontal"
                         android:paddingRight="@dimen/padding_medium_button_horizontal"
-                        android:paddingBottom="@dimen/padding_medium_button_vertical"
                         android:paddingTop="@dimen/padding_medium_button_vertical"
-                        android:gravity="center"
-                        android:background="@drawable/green_borders"
-                        android:text="Pay Rs. 200"
-                        android:textColor="@color/primary_text_color"
-                        android:textSize="@dimen/text_small3"/>
+                        android:text="@string/adjust"
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_small1"
+                        android:visibility="gone" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/holder_view_items"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.25"
+                    android:background="@drawable/green_borders"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/padding_medium_button_vertical"
+                    android:paddingLeft="@dimen/padding_medium_button_horizontal"
+                    android:paddingRight="@dimen/padding_medium_button_horizontal"
+                    android:paddingTop="@dimen/padding_medium_button_vertical">
+
+                    <TextView
+                        android:id="@+id/text_view_view_items"
+                        style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/view_items"
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_small1" />
+
+                    <TextView
+                        android:id="@+id/text_items_name"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_extra_small3" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@color/manatee" />
+
+            <LinearLayout
+                android:id="@+id/holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_horizontal_between_co_element"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingBottom="0dp">
+
+                <TextView
+                    android:id="@+id/text_amount_to_be_paid"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="2dp"
+                    android:gravity="center"
+                    android:text="Total amount Rs. 2000"
+                    android:textColor="@color/manatee"
+                    android:textSize="@dimen/text_small2" />
+
+
+                <TextView
+                    android:id="@+id/message"
+                    style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/margin_vertical_between_non_co_element"
+                    android:gravity="center"
+                    android:text="Please confirm the payment to confirm delivery"
+                    android:textColor="@color/accent"
+                    android:textSize="@dimen/text_extra_small3" />
+
+                <one.thebox.android.ViewHelper.MontserratTextView
+                    android:id="@+id/button_payment_complete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/green_filled_button"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="7dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="7dp"
+                    android:text="Complete Payment"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small1" />
+
+
+            </LinearLayout>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

@@ -13,7 +13,7 @@
             android:title="My Account" />
 
         <item
-            android:id="@+id/view_bill"
+            android:id="@+id/view_cart"
             android:checked="false"
             android:title="My Cart" />
 

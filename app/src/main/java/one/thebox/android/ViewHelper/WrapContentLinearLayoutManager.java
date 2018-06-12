@@ -50,6 +50,15 @@ public class WrapContentLinearLayoutManager extends android.support.v7.widget.Li
         this.overScrollMode = ViewCompat.getOverScrollMode(view);
     }
 
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e("probe", "meet a IOOBE in RecyclerView");
+        }
+    }
+
     public static int makeUnspecifiedSpec() {
         return View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
     }

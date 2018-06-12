@@ -2,14 +2,17 @@ package one.thebox.android.adapter;
 
 import android.content.Context;
 import android.graphics.Paint;
-import android.util.TypedValue;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.fragment.SizeAndFrequencyBottomSheetDialogFragment;
 
 /**
@@ -77,18 +80,22 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
     public void onBindViewItemHolder(ItemHolder holder, final int position) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
 
-        if (itemConfigs.get(position).is_in_stock()) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (itemConfigs.get(position).isInStock()) {
                     prevItemSelected = currentItemSelected;
                     currentItemSelected = position;
                     notifyItemChanged(prevItemSelected);
                     notifyItemChanged(currentItemSelected);
                     onSizeAndFrequencySelected.onSizeAndFrequencySelected(itemConfigs.get(currentItemSelected));
+
+                } else {
+                    Toast.makeText(TheBox.getAppContext(), "This product is out of stock.", Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+        });
         itemViewHolder.setViewHolder(itemConfigs.get(position));
     }
 
@@ -130,27 +137,60 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
     public class ItemViewHolder extends BaseRecyclerAdapter.ItemHolder {
 
         private TextView sizeTextView;
+        private TextView savingsTextView, mrpTextView;
         private TextView costTextView;
         private int colorDimGray, colorRose;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             sizeTextView = (TextView) itemView.findViewById(R.id.size_text_view);
+            mrpTextView = (TextView) itemView.findViewById(R.id.mrp_text_view);
             costTextView = (TextView) itemView.findViewById(R.id.cost_text_view);
+            savingsTextView = (TextView) itemView.findViewById(R.id.text_view_savings);
             colorDimGray = mContext.getResources().getColor(R.color.primary_text_color);
             colorRose = mContext.getResources().getColor(R.color.brilliant_rose);
         }
 
         public void setViewHolder(ItemConfig itemConfig) {
 
-                if (itemConfig.getCorrectQuantity().equals("NA")) {
-                    sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
-                } else {
-                    sizeTextView.setText(itemConfig.getCorrectQuantity() + " x " + itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
-                }
-                costTextView.setText("Rs " + itemConfig.getPrice());
+            if (itemConfig.getSize() == 0) {
+                sizeTextView.setText(itemConfig.getQuantity() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            } else {
+                sizeTextView.setText(itemConfig.getSize() + " " + itemConfig.getSizeUnit() + " " + itemConfig.getItemType());
+            }
 
-            if (itemConfig.is_in_stock()) {
+
+            costTextView.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
+
+            //savings text
+            if (itemConfig.getSavingsText() != null) {
+                if (!itemConfig.getSavingsText().isEmpty()) {
+                    savingsTextView.setVisibility(View.VISIBLE);
+                    savingsTextView.setText(itemConfig.getSavingsText());
+                } else {
+                    savingsTextView.setText("");
+                    savingsTextView.setVisibility(View.GONE);
+                }
+            } else {
+                savingsTextView.setText("");
+                savingsTextView.setVisibility(View.GONE);
+            }
+
+            //mrp textView
+            if (itemConfig.getMrpText() != null) {
+                if (!itemConfig.getMrpText().isEmpty()) {
+                    mrpTextView.setVisibility(View.VISIBLE);
+                    mrpTextView.setText(itemConfig.getMrpText());
+                } else {
+                    mrpTextView.setText("");
+                    mrpTextView.setVisibility(View.GONE);
+                }
+            } else {
+                mrpTextView.setText("");
+                mrpTextView.setVisibility(View.GONE);
+            }
+
+            if (itemConfig.isInStock()) {
                 if (getAdapterPosition() == currentItemSelected) {
                     sizeTextView.setTextColor(colorRose);
                     costTextView.setTextColor(colorRose);
@@ -158,10 +198,9 @@ public class SizeAndFrequencyAdapter extends BaseRecyclerAdapter {
                     sizeTextView.setTextColor(colorDimGray);
                     costTextView.setTextColor(colorDimGray);
                 }
-            }
-            else{
-                sizeTextView.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.manatee));
-                costTextView.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.manatee));
+            } else {
+                sizeTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
+                costTextView.setTextColor(TheBox.getInstance().getResources().getColor(R.color.manatee));
                 sizeTextView.setPaintFlags(sizeTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 costTextView.setPaintFlags(costTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }

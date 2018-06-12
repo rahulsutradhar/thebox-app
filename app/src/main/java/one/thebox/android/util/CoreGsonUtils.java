@@ -14,128 +14,115 @@ import io.realm.RealmList;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
 
-public class CoreGsonUtils
-{
+public class CoreGsonUtils {
 
-	private static Gson instance;
+    private static Gson instance;
 
-	private static Gson getGsonObject()
-	{
+    private static Gson getGsonObject() {
 
-		if (instance == null)
-		{
-			instance = new Gson();
-		}
-		return instance;
+        if (instance == null) {
+            instance = new Gson();
+        }
+        return instance;
 
-	}
+    }
 
-	public static <T> T fromJson(String string, Class<T> model)
-	{
+    public static <T> T fromJson(String string, Class<T> model) {
 
-		Gson gson = getGsonObject();
-		T gfromat = null;
-		try
-		{
-			gfromat = gson.fromJson(string, model);
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return gfromat;
-	}
+        Gson gson = getGsonObject();
+        T gfromat = null;
+        try {
+            gfromat = gson.fromJson(string, model);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return gfromat;
+    }
 
-	public static <T> T fromJson(String string, Type type)
-	{
+    public static <T> T fromJson(String string, Type type) {
 
-		Gson gson = getGsonObject();
-		T gfromat = null;
-		try
-		{
-			gfromat = gson.fromJson(string, type);
-		} catch (Exception e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return gfromat;
-	}
+        Gson gson = getGsonObject();
+        T gfromat = null;
+        try {
+            gfromat = gson.fromJson(string, type);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return gfromat;
+    }
 
-	public static <T> String toJson(Object obj)
-	{
+    public static <T> String toJson(Object obj) {
 
-		String gsonstr = "";
+        String gsonstr = "";
 
-		Gson gson = getGsonObject();
-		gsonstr = gson.toJson(obj);
-		return gsonstr;
-	}
+        Gson gson = getGsonObject();
+        gsonstr = gson.toJson(obj);
+        return gsonstr;
+    }
 
-	public static <T> ArrayList<T> fromJsontoArrayList(String string, Class<T> model)
-	{
+    public static <T> ArrayList<T> fromJsontoArrayList(String string, Class<T> model) {
 
-		Gson gson = getGsonObject();
-		T gfromat = null;
-		ArrayList<T> localArrayList = new ArrayList<T>();
-		try
-		{
+        Gson gson = getGsonObject();
+        T gfromat = null;
+        ArrayList<T> localArrayList = new ArrayList<T>();
+        try {
 
-			JSONArray jsonInner = new JSONArray(string);
-			int i = 0;
-			while (i < jsonInner.length())
-			{
-				gfromat = gson.fromJson(jsonInner.get(i).toString(), model);
-				localArrayList.add(gfromat);
-				i++;
+            JSONArray jsonInner = new JSONArray(string);
+            int i = 0;
+            while (i < jsonInner.length()) {
+                gfromat = gson.fromJson(jsonInner.get(i).toString(), model);
+                localArrayList.add(gfromat);
+                i++;
 
-			}
+            }
 
-		} catch (Exception e)
+        } catch (Exception e)
 
-		{
-			e.printStackTrace();
-		}
+        {
+            e.printStackTrace();
+        }
 
-		return localArrayList;
-	}
+        return localArrayList;
+    }
 
-	public static <T extends RealmModel> RealmList<T> fromJsontoRealmList(String string, Class<T> model) {
+    public static <T extends RealmModel> RealmList<T> fromJsontoRealmList(String string, Class<T> model) {
 
-		Gson gson = getGsonObject();
-		T gfromat = null;
-		RealmList<T> localArrayList = new RealmList<>();
-		try {
-			JSONArray jsonInner = new JSONArray(string);
+        Gson gson = getGsonObject();
+        T gfromat = null;
+        RealmList<T> localArrayList = new RealmList<>();
+        try {
+            JSONArray jsonInner = new JSONArray(string);
 
-			int i = 0;
-			while (i < jsonInner.length()) {
-				gfromat = gson.fromJson(jsonInner.get(i).toString(), model);
-				localArrayList.add(gfromat);
-				i++;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+            int i = 0;
+            while (i < jsonInner.length()) {
+                gfromat = gson.fromJson(jsonInner.get(i).toString(), model);
+                localArrayList.add(gfromat);
+                i++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return localArrayList;
-	}
+        return localArrayList;
+    }
 
-	public static String toJsonFromRealmObject(Object object) {
-		Gson gson = new GsonBuilder()
-				.setExclusionStrategies(new ExclusionStrategy() {
-					@Override
-					public boolean shouldSkipField(FieldAttributes f) {
-						return f.getDeclaringClass().equals(RealmObject.class);
-					}
+    public static String toJsonFromRealmObject(Object object) {
+        Gson gson = new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
 
-					@Override
-					public boolean shouldSkipClass(Class<?> clazz) {
-						return false;
-					}
-				})
-				.create();
-		return gson.toJson(object);
-	}
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
+        return gson.toJson(object);
+    }
 
 }

@@ -10,9 +10,11 @@
     <dimen name="text_large1">20sp</dimen>
     <dimen name="text_medium2">18sp</dimen>
     <dimen name="text_medium1">16sp</dimen>
+    <dimen name="text_medium4">15sp</dimen>
     <dimen name="text_small3">14sp</dimen>
     <dimen name="text_small2">13sp</dimen>
     <dimen name="text_small1">12sp</dimen>
+    <dimen name="text_extra_small4">11sp</dimen>
     <dimen name="text_extra_small3">10sp</dimen>
     <dimen name="text_extra_small2">9sp</dimen>
     <dimen name="text_extra_small1">8sp</dimen>
@@ -38,4 +40,6 @@
     <dimen name="padding_small_button_horizontal">4dp</dimen>
     <dimen name="padding_medium_button_vertical">4dp</dimen>
     <dimen name="padding_medium_button_horizontal">8dp</dimen>
+
+    <item name="disabled_alpha_main" format="float" type="dimen">0.26</item>
 </resources>

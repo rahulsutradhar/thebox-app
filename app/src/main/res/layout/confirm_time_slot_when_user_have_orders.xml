@@ -4,27 +4,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".fragment.MyBoxesFragment">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_gravity="top"
-        android:background="@color/primary"
-        android:backgroundTint="@color/primary"
-        android:elevation="6dp"
-        android:gravity="center_vertical"
-        app:contentInsetEnd="6dp"
-        app:contentInsetLeft="6dp"
-        app:contentInsetRight="6dp"
-        app:contentInsetStart="6dp" />
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="top"
+            android:background="@color/primary"
+            android:backgroundTint="@color/primary"
+            android:elevation="6dp"
+            android:gravity="center_vertical"
+            app:contentInsetEnd="6dp"
+            app:contentInsetLeft="6dp"
+            app:contentInsetRight="6dp"
+            app:contentInsetStart="6dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/title"
+                    style="@style/AppTheme.Widget.Avenir.Heavy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="Merge with future deliveries"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_medium1" />
+
+            </RelativeLayout>
 
 
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
 
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,28 +57,29 @@
         android:layout_marginTop="16dp"
         android:text="You have following deliveries scheduled:"
         android:textColor="@color/primary_text_color"
-        android:textSize="@dimen/text_medium1" />
+        android:textSize="@dimen/text_medium4" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_time_slots"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1" />
 
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <one.thebox.android.ViewHelper.MontserratTextView
         android:id="@+id/button_proceed_to_payment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary"
+        android:background="@color/md_green_500"
         android:gravity="center_horizontal"
         android:padding="16dp"
-        android:text="Proceed to Payment"
+        android:text="Proceed to Payment Summary"
         android:textColor="@color/white"
+        android:textSize="@dimen/text_medium1"
         android:visibility="visible" />
 
 

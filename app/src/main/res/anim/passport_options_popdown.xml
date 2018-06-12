@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scale android:interpolator="@android:anim/anticipate_interpolator" android:duration="220" android:pivotX="50.0%" android:pivotY="79.99999%" android:fromXScale="1.0" android:toXScale="0.0" android:fromYScale="1.0" android:toYScale="0.0"
-  xmlns:android="http://schemas.android.com/apk/res/android" />
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="220"
+    android:fromXScale="1.0"
+    android:fromYScale="1.0"
+    android:interpolator="@android:anim/anticipate_interpolator"
+    android:pivotX="50.0%"
+    android:pivotY="79.99999%"
+    android:toXScale="0.0"
+    android:toYScale="0.0" />

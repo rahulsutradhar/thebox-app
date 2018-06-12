@@ -1,16 +1,20 @@
-package one.thebox.android.Services;
+package one.thebox.android.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import one.thebox.android.Events.SmsEvent;
+import one.thebox.android.app.TheBox;
 
 /**
  * Created by Ajeet Kumar Meena on 18-04-2016.
@@ -18,29 +22,44 @@ import one.thebox.android.Events.SmsEvent;
 public class SmsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Retrieves a map of extended data from the intent.
-        final Bundle bundle = intent.getExtras();
+        if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
+            Bundle bundle = intent.getExtras();
+            SmsMessage[] messages = null;
+            String messageFrom;
+            try {
+                if (bundle != null) {
+                    final Object[] pdusObj = (Object[]) bundle.get("pdus");
+                    messages = new SmsMessage[pdusObj.length];
+                    for (int i = 0; i < messages.length; i++) {
 
-        try {
+                        messages[i] = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
+                        messageFrom = messages[i].getOriginatingAddress();
+                        String messageBody = messages[i].getMessageBody();
 
-            if (bundle != null) {
+                        if (messageFrom.contains("THEBOX")) {
+                            String otp = extractOtp(messageBody);
 
-                final Object[] pdusObj = (Object[]) bundle.get("pdus");
-
-                for (int i = 0; i < pdusObj.length; i++) {
-
-                    SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
-                    String phoneNumber = currentMessage.getDisplayOriginatingAddress();
-
-                    String senderNum = phoneNumber;
-                    String message = currentMessage.getDisplayMessageBody();
-
-                    EventBus.getDefault().post(new SmsEvent(senderNum, message));
+                            EventBus.getDefault().post(new SmsEvent(otp));
+                        }
+                    }
                 }
+
+            } catch (Exception e) {
+
             }
-
-        } catch (Exception e) {
-
         }
+    }
+
+    private String extractOtp(String messageBody) {
+        Pattern otpPattern = Pattern.compile("(|^)\\d{6}");
+        String otp = null;
+        Matcher matcher = otpPattern.matcher(messageBody);
+        if (matcher.find()) {
+            otp = matcher.group(0);
+        } else {
+            //something went wrong
+        }
+
+        return otp;
     }
 }

@@ -49,6 +49,12 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="colorControlNormal">@color/light_grey</item>
+        <item name="colorControlActivated">@color/primary_text_color</item>
+        <item name="colorControlHighlight">@color/primary_text_color</item>
+    </style>
+
     <style name="AppTheme.Green" parent="AppTheme">
         <item name="colorPrimary">@color/manatee</item>
         <item name="colorPrimaryDark">@color/manatee</item>
@@ -101,8 +107,109 @@
 
     <style name="tv_subtext_app_update" parent="tv_title_app_update"></style>
 
+    <style name="toolbar">
+        <item name="android:id">@id/toolbar</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@color/primary</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <item name="toolbar" type="id"></item>
     <!--android:layout_width="wrap_content"-->
     <!--android:layout_height="wrap_content"-->
     <!--android:layout_gravity="center"-->
+
+    <style name="AppTheme.Button.BaseButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Button.PrimaryButtonTheme" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
+        <item name="android:textStyle">bold</item>
+        <item name="colorButtonNormal">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="titleTextAppearance">@style/AppTheme.Toolbar.TitleText</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="titleTextAppearance">@style/AppTheme.Toolbar.TitleText</item>
+    </style>
+
+    <style name="AppTheme.Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="fontPath">fonts/Montserrat-Bold.ttf</item>
+    </style>
+
+    <style name="AppTheme.Button.PrimaryButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="colorButtonNormal">@color/primary</item>
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
+    <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirLTStd-Roman.otf</item>
+    </style>
+
+    <style name="AppTheme.Widget.TextView.Avenir.Book" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirLTStd-Book.otf</item>
+    </style>
+
+    <style name="AppTheme.Widget.TextView.Avenir.Light" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirLTStd-Light.otf</item>
+    </style>
+
+    <style name="AppTheme.Widget.Montserrat.Regular" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Next.Ltpro.Bold" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirNextLTPro-Bold.otf</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Next.Medium" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/avenir_next_medium.ttf</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Next.Ltpro" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirNextLTPro-lt.otf</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Next.Ltpro.Regular" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/AvenirNextLTPro-Regular.otf</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Heavy" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/avenir-heavy.ttf</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AppTheme.Widget.Avenir.Next.Regular" parent="android:Widget.Holo.Light.TextView">
+        <item name="fontPath">fonts/avenir-next-regular.ttf</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DefaultTextInputLayout" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:labelTextSize">12sp</item>
+        <item name="android:textColorHint">@color/dark_grey_30_opacity</item>
+        <item name="android:keyTextSize">10sp</item>
+        <item name="android:textColor">@color/dark_grey</item>
+        <item name="fontPath">fonts/AvenirLTStd-Roman.otf</item>
+    </style>
 
 </resources>

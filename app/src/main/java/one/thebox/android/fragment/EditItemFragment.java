@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+
 import one.thebox.android.R;
 
 /**
@@ -16,9 +18,8 @@ import one.thebox.android.R;
  */
 
 public class EditItemFragment extends BottomSheetDialogFragment {
-    public static final String TAG = "Edit Item";
-    private Button reschedule_delivery;
-    private Button change_size;
+    public static final String TAG = "Edit_User_Item";
+    private LinearLayout layoutReschedule, layoutChangeSize, layoutCancelSubscription;
     private View rootView;
     private OnEditItemoptionSelected onEditItemoptionSelected;
 
@@ -42,21 +43,28 @@ public class EditItemFragment extends BottomSheetDialogFragment {
     }
 
     private void setupViews() {
-        change_size.setOnClickListener(new View.OnClickListener() {
+        layoutReschedule.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                onEditItemoptionSelected.onEditItemoptionSelected(true);
+                onEditItemoptionSelected.onEditItemoptionSelected(2);
             }
         });
-        reschedule_delivery.setOnClickListener(new View.OnClickListener() {
+        layoutChangeSize.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                onEditItemoptionSelected.onEditItemoptionSelected(false);
+                onEditItemoptionSelected.onEditItemoptionSelected(1);
+            }
+        });
+
+        layoutCancelSubscription.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onEditItemoptionSelected.onEditItemoptionSelected(3);
             }
         });
     }
 
     private void initViews() {
-        change_size = (Button) rootView.findViewById(R.id.change_size);
-        reschedule_delivery = (Button) rootView.findViewById(R.id.reschedule_delivery);
+        layoutReschedule = (LinearLayout) rootView.findViewById(R.id.item_reschedule);
+        layoutChangeSize = (LinearLayout) rootView.findViewById(R.id.item_change_size);
+        layoutCancelSubscription = (LinearLayout) rootView.findViewById(R.id.item_cancel_subscription);
     }
 
     private void initVariables() {
@@ -67,7 +75,9 @@ public class EditItemFragment extends BottomSheetDialogFragment {
         // true if change_size was clicked
         // false otherwise
         void onEditItemoptionSelected(
-                Boolean change_size_or_reschedule);
+                int actionUserItemSubscription);
     }
+
+
 }
 

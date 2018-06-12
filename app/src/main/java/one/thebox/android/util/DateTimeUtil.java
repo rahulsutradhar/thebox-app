@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DateTimeUtil {
     private static String TAG = DateTimeUtil.class.getSimpleName();
-    private static final long fetch_after_miliseconds = 20000;
+    private static final long fetch_after_miliseconds = 10000;
 
     public static String getNowDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -88,9 +88,14 @@ public class DateTimeUtil {
         return cal.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
     }
 
-    public static boolean should_i_fetch_model_data_from_server(long timestamp){
+    public static boolean should_i_fetch_model_data_from_server(long timestamp) {
         long time_difference = (new Date(System.currentTimeMillis())).getTime() - timestamp;
-        return ( ((time_difference > fetch_after_miliseconds))? true : false );
+        return (((time_difference > fetch_after_miliseconds)) ? true : false);
+    }
+
+    public static boolean checkCurrentDateIsWithinRange(Date startDate, Date endDate, Date currentDate) {
+
+        return currentDate.getTime() >= startDate.getTime() && currentDate.getTime() <= endDate.getTime();
     }
 
 }

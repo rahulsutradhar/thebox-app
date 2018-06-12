@@ -1,0 +1,291 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data class="AddAddressFragmentBinding">
+
+        <import type="android.view.View" />
+
+        <import
+            alias="ViewModel"
+            type="one.thebox.android.viewmodel.address.AddAddressFragmentViewModel" />
+
+        <variable
+            name="viewModel"
+            type="ViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- The Address Cart-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="56dp"
+                android:background="@color/white"
+                android:padding="8dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <!-- Address Type -->
+                        <LinearLayout
+                            android:id="@+id/textlayout_add_address_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:id="@+id/textAddressType"
+                                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Address Type"
+                                android:textColor="@color/manatee"
+                                android:textSize="12sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <RadioGroup
+                                    android:id="@+id/radioAddressType"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="35dp"
+                                    android:orientation="horizontal">
+
+                                    <RadioButton
+                                        android:id="@+id/radioAddressTypeHome"
+                                        style="@style/AppTheme.Button.PrimaryButtonStyle"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="10dp"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/radiobutton_background"
+                                        android:button="@null"
+                                        android:checked="@{viewModel.addressLabel == 0? true : false}"
+                                        android:gravity="center"
+                                        android:text="HOME"
+                                        android:textColor="@color/radiobutton_text_color"
+                                        android:textSize="12sp"></RadioButton>
+
+                                    <RadioButton
+                                        android:id="@+id/radioAddressTypeWork"
+                                        style="@style/AppTheme.Button.PrimaryButtonStyle"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="10dp"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/radiobutton_background"
+                                        android:button="@null"
+                                        android:checked="@{viewModel.addressLabel == 1? true : false}"
+                                        android:gravity="center"
+                                        android:text="WORK"
+                                        android:textColor="@color/radiobutton_text_color"
+                                        android:textSize="12sp"></RadioButton>
+
+                                    <RadioButton
+                                        android:id="@+id/radioAddressTypeOther"
+                                        style="@style/AppTheme.Button.PrimaryButtonStyle"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/radiobutton_background"
+                                        android:button="@null"
+                                        android:checked="@{viewModel.addressLabel == 2? true : false}"
+                                        android:gravity="center"
+                                        android:text="OTHER"
+                                        android:textColor="@color/radiobutton_text_color"
+                                        android:textSize="12sp"></RadioButton>
+                                </RadioGroup>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Locality Spinner Pincodes -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Choose your Locality"
+                                android:textColor="@color/manatee"
+                                android:textSize="@dimen/text_small1" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:background="@drawable/light_grey_border"
+                                android:paddingLeft="5dp">
+
+                                <android.support.v7.widget.AppCompatSpinner
+                                    android:id="@+id/spinnerLocality"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="?attr/actionBarSize"
+                                    android:layout_gravity="center"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="5dp"
+                                    android:spinnerMode="dropdown"
+                                    android:theme="@style/ThemeOverlay.AppCompat.Light" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/error_message_locality"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text=""
+                                android:textColor="@color/accent"
+                                android:textSize="@dimen/text_small1"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+
+                        <!-- Flat Number-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <android.support.design.widget.TextInputLayout
+                                android:id="@+id/textlayout_flatNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
+
+                                <android.support.v7.widget.AppCompatEditText
+                                    android:id="@+id/edittext_flatNumber"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/hint_flat_house_office_number"
+                                    android:inputType="textCapSentences"
+                                    android:paddingBottom="16dp"
+                                    android:paddingTop="16dp"
+                                    android:text="@{viewModel.addressFlat}"
+                                    android:textColor="@color/primary_text_color"
+                                    android:textSize="@dimen/text_small3"
+                                    android:theme="@style/EditTextStyle"
+                                    app:addTextChangedListener="@{viewModel.addressLineFlatWatcher}" />
+                            </android.support.design.widget.TextInputLayout>
+
+                        </LinearLayout>
+
+                        <!-- Society -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+
+                            <android.support.design.widget.TextInputLayout
+                                android:id="@+id/textlayout_Society"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
+
+                                <android.support.v7.widget.AppCompatEditText
+                                    android:id="@+id/edittextSociety"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/hind_society"
+                                    android:inputType="textCapSentences"
+                                    android:paddingBottom="16dp"
+                                    android:paddingTop="16dp"
+                                    android:text="@{viewModel.addressSociety}"
+                                    android:textColor="@color/primary_text_color"
+                                    android:textSize="@dimen/text_small3"
+                                    android:theme="@style/EditTextStyle"
+                                    app:addTextChangedListener="@{viewModel.addressLineSocietyWatcher}" />
+                            </android.support.design.widget.TextInputLayout>
+
+
+                        </LinearLayout>
+
+                        <!-- Street and Office-->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <android.support.design.widget.TextInputLayout
+                                android:id="@+id/textlayout_Street"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColorHighlight="@color/primary_text"
+                                android:textColorHint="@color/manatee">
+
+                                <android.support.v7.widget.AppCompatEditText
+                                    android:id="@+id/edittextStreet"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/hint_street_office"
+                                    android:inputType="textCapSentences"
+                                    android:paddingBottom="16dp"
+                                    android:paddingTop="16dp"
+                                    android:text="@{viewModel.addressStreet}"
+                                    android:textColor="@color/primary_text_color"
+                                    android:textSize="@dimen/text_small3"
+                                    android:theme="@style/EditTextStyle"
+                                    app:addTextChangedListener="@{viewModel.addressLineStreetWatcher}" />
+                            </android.support.design.widget.TextInputLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </ScrollView>
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/button_save_address"
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:background="@color/green_navigation_contact_us"
+                android:gravity="center_horizontal"
+                android:onClick="@{()->viewModel.onClickSaveAddress()}"
+                android:padding="16dp"
+                android:text="Save Address"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</layout>

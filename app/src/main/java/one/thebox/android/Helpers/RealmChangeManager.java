@@ -4,15 +4,14 @@ import android.util.Log;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Observable;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import one.thebox.android.Models.BoxItem;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.UserItem;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.order.Order;
+import one.thebox.android.Models.items.UserItem;
+import one.thebox.android.app.TheBox;
 
 /**
  * Created by nbansal2211 on 09/11/16.
@@ -26,7 +25,7 @@ public class RealmChangeManager {
     public static RealmChangeManager getInstance() {
         if (instance == null) {
             instance = new RealmChangeManager();
-            instance.realm = MyApplication.getRealm();
+            instance.realm = TheBox.getRealm();
             instance.init();
         }
         return instance;

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F3F1F1"
+    android:fitsSystemWindows="true"
     tools:context="one.thebox.android.activity.ContactUsActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

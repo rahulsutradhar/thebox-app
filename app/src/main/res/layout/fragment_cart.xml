@@ -1,42 +1,501 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_white"
-    android:orientation="vertical"
+    android:clickable="false"
+    android:fitsSystemWindows="true"
     tools:context="one.thebox.android.fragment.CartFragment">
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="5dp">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="top"
+            android:background="@color/primary"
+            android:backgroundTint="@color/primary"
+            android:elevation="6dp"
+            android:gravity="center_vertical"
+            app:contentInsetEnd="6dp"
+            app:contentInsetLeft="6dp"
+            app:contentInsetRight="6dp"
+            app:contentInsetStart="6dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+
+                    <RelativeLayout
+                        android:id="@+id/title_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/title"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:gravity="center"
+                            android:text="Cart"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_medium1" />
+
+                        <TextView
+                            android:id="@+id/cart_quantity"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toRightOf="@+id/title"
+                            android:gravity="center"
+                            android:text="(5)"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_medium1" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/progress_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/title_layout"
+                        android:layout_marginTop="3dp"
+                        android:orientation="vertical"
+                        android:paddingBottom="2dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/progress_step_text"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="5 steps remaining"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_extra_small3" />
+
+                        <LinearLayout
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:id="@+id/progress_step1"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/md_green_500" />
+
+                            <View
+                                android:id="@+id/progress_step2"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step3"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step4"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step5"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                            <View
+                                android:id="@+id/progress_step6"
+                                android:layout_width="match_parent"
+                                android:layout_height="5dp"
+                                android:layout_weight="1"
+                                android:background="@color/white" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- Cart Items -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
-        />
+        android:layout_above="@+id/bottom_card"
+        android:layout_below="@+id/app_bar_layout"
+        android:background="@color/off_white" />
 
-
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/empty_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="16dp"
-        android:text="No items found"
-        android:textColor="@color/dim_gray" />
-
-
-    <one.thebox.android.ViewHelper.MontserratTextView
-        android:id="@+id/button_proceed_to_payment"
+    <!-- Bottom Cart Details-->
+    <android.support.v7.widget.CardView
+        android:id="@+id/bottom_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
-        android:background="@color/primary"
-        android:gravity="center_horizontal"
-        android:padding="16dp"
-        android:text="Total Price: Rs 349\n Proceed to Payment"
-        android:layout_gravity="bottom"
-        android:textColor="@color/white"
-        android:visibility="visible" />
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:clickable="false"
+        android:visibility="visible"
+        app:cardElevation="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
 
-</FrameLayout>
+            <!-- Tutorial Tool -->
+            <RelativeLayout
+                android:id="@+id/tutorial_tool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/davy_grey"
+                android:clickable="false"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_toLeftOf="@+id/remove_tutorial"
+                    android:clickable="false"
+                    android:orientation="vertical"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp">
+
+                    <TextView
+                        android:id="@+id/tutorial_message"
+                        style="@style/AppTheme.Widget.Avenir.Heavy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:clickable="false"
+                        android:gravity="left"
+                        android:paddingBottom="1dp"
+                        android:paddingRight="2dp"
+                        android:paddingTop="2dp"
+                        android:text="You can always change subscription You can always change subscription You can always change subscription."
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_small2" />
+
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/remove_tutorial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:src="@drawable/ic_close" />
+
+            </RelativeLayout>
+
+            <!-- Promotional Tool -->
+            <LinearLayout
+                android:id="@+id/promotional_tool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/raspberry_red"
+                android:clickable="false"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/promotion_message_line1"
+                    style="@style/AppTheme.Widget.Avenir.Heavy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:clickable="false"
+                    android:gravity="center_horizontal"
+                    android:padding="2dp"
+                    android:text="Amazing offer on First Delivery Amazing offer on First Delivery Amazing offer on First Delivery"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small2" />
+
+
+            </LinearLayout>
+
+            <!-- Cart Pricing Detials-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/light_grey_square_thin_border"
+                android:clickable="false"
+                android:orientation="horizontal">
+
+                <!-- Total Price -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:padding="2dp">
+
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="Subtotal"
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_extra_small4" />
+
+                        <TextView
+                            android:id="@+id/total_price_cart"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="₹1234"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_medium1" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divide_color" />
+
+
+                <!-- Total Savings -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:padding="2dp">
+
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="Savings"
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_extra_small4" />
+
+                        <TextView
+                            android:id="@+id/total_savings_cart"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="₹90"
+                            android:textColor="@color/raspberry_red"
+                            android:textSize="@dimen/text_medium1" />
+
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divide_color" />
+
+                <!-- Delivery Charges -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:orientation="vertical"
+                        android:padding="2dp">
+
+                        <TextView
+                            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="Delivery Charges"
+                            android:textColor="@color/manatee"
+                            android:textSize="@dimen/text_extra_small4" />
+
+                        <TextView
+                            android:id="@+id/delivery_charges"
+                            style="@style/AppTheme.Widget.Avenir.Heavy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Free"
+                            android:textColor="@color/md_green_500"
+                            android:textSize="@dimen/text_medium1" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/divide_color" />
+
+            <!-- Forward Message -->
+            <LinearLayout
+                android:id="@+id/button_proceed_forward"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/md_green_500"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/forward_message"
+                    style="@style/AppTheme.Widget.Avenir.Heavy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:padding="5dp"
+                    android:text="Proceed To Timeslots"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small3"
+                    android:visibility="visible" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+
+                    <TextView
+                        android:id="@+id/cart_price_bottom_strip"
+                        style="@style/AppTheme.Widget.Avenir.Heavy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="5dp"
+                        android:layout_toLeftOf="@+id/forward_arrow"
+                        android:padding="5dp"
+                        android:text="₹1234"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_small3" />
+
+                    <ImageView
+                        android:id="@+id/forward_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_arrow_forward_white_36px" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <!-- Loader -->
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/progress_bar"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerInParent="true"
+        android:padding="8dp"
+        android:src="@drawable/loader"
+        android:visibility="gone" />
+
+    <!-- Empty State -->
+    <RelativeLayout
+        android:id="@+id/empty_cart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/app_bar_layout"
+        android:background="@color/light_white"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_empty_cart" />
+
+
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="No item found in cart."
+                android:textColor="@color/dim_gray"
+                android:textSize="@dimen/text_medium2" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

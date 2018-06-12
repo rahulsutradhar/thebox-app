@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <permission
         android:name="one.thebox.android.permission.C2D_MESSAGE"
@@ -28,144 +29,254 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".app.MyApplication"
+        android:name=".app.TheBox"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".Services.SmsReceiver">
-            <intent-filter>
+
+        <receiver
+            android:name=".services.SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="2147483647">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <!-- AppsFlyer Install Refferar-->
+        <receiver
+            android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- GCM Push Notifications -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
                 <category android:name="one.thebox.android" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name=".Services.MyGcmListenerService"
+            android:name="one.thebox.android.services.notification.MyGcmListenerService"
             android:exported="true">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".Services.MyInstanceIDListenerService"
+            android:name="one.thebox.android.services.notification.MyInstanceIDListenerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".Services.RegistrationIntentService"
+            android:name="one.thebox.android.services.notification.RegistrationIntentService"
             android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        <!--HeartBeat -->
+        <service
+            android:name="one.thebox.android.services.notification.MyTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+                <action android:name="com.google.android.gms.gcm.SERVICE_ACTION_INITIALIZE" />
+            </intent-filter>
+        </service>
+
+        <!-- Clevertap Notifications -->
+        <meta-data
+            android:name="GCM_SENDER_ID"
+            android:value="id:381748823068" />
+
+        <!-- name of your file in the drawable directory without the file extension. -->
+        <meta-data
+            android:name="CLEVERTAP_NOTIFICATION_ICON"
+            android:value="ic_logo" />
+
+
+        <!-- replace com.your.package below with your package name-->
+        <receiver
+            android:name="com.clevertap.android.sdk.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="one.thebox.android" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.clevertap.android.sdk.GcmMessageListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.clevertap.android.sdk.GcmTokenListenerService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
+        <!-- HOTLINE -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="one.thebox.android.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/hotline_file_provider_paths" />
+        </provider>
+
+        <!-- BRANCH.io Install Refferal -->
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Activities-->
         <activity
             android:name=".activity.OnBoardingActivity"
             android:label="@string/on_boarding_activity"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Green" />
+            android:theme="@style/AppTheme" />
+
         <activity
             android:name=".activity.MainActivity"
+            android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoAnimation"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan" />
+
         <activity
             android:name=".activity.SplashActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/MyLaunchActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <data
+                    android:host="open"
+                    android:scheme="@string/io.branch.schema" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activity.order.OrderCalenderActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.FillUserInfoActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name=".activity.MobileNumberActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
-        <activity
             android:name=".activity.OtpVerificationActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activity.ConfirmPaymentDetailsActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.OrderDetailActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.AddressesActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activity.address.AddressActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activity.ConfirmOtpActivity"
+            android:name=".activity.RequestOtpActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
-        <activity
-            android:name=".activity.UpdateProfileActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.UpdatePhoneNumberActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
-        <activity
-            android:name=".activity.SignInActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible" />
-        <activity
-            android:name=".activity.ConfirmAddressActivity"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ConfirmTimeSlotActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
         <activity android:name=".activity.OrderItemsActivity" />
         <activity
             android:name=".activity.UniversalSearchActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.PaymentOptionActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.HotLineActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ImageActivity"
+            android:screenOrientation="portrait" />
+
         <!-- Activity of RazorPay in order to integrate payment integration. -->
         <activity
             android:name="com.razorpay.CheckoutActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize" />
 
-        <service
-            android:name=".Services.UpdateOrderService"
-            android:enabled="true" />
-        <!--
- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
-        -->
+        <!-- CleverTap, analytics-->
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:name="CLEVERTAP_ACCOUNT_ID"
+            android:value="@string/clevertab_account_id" />
+        <meta-data
+            android:name="CLEVERTAP_TOKEN"
+            android:value="@string/clevertab_account_token" />
+
+        <!-- BRANCH.IO Key-->
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="@string/io.branch.sdk.BranchKey" />
+
+        <!-- Razorpay Payment Gateway-->
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="@string/razorpay.apikey" />
 
         <activity android:name=".activity.TermsOfUserActivity" />
 
@@ -175,9 +286,25 @@
 
         <activity android:name=".activity.ContactUsActivity" />
 
+
         <service
-            android:name=".Services.SyncService"
-            android:exported="false"></service>
+            android:name=".services.SyncService"
+            android:exported="false" />
+
+        <service
+            android:name=".services.cart.SyncCartService"
+            android:description="@string/cart_service_description"
+            android:exported="false">
+
+        </service>
+
+        <activity android:name=".activity.FullImageActivity"></activity>
+
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.-->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

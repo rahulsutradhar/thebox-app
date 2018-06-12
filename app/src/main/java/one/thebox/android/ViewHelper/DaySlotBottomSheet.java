@@ -13,7 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import one.thebox.android.R;
-import one.thebox.android.adapter.DaySlotAdapter;
+import one.thebox.android.adapter.timeslot.DaySlotAdapter;
 
 /**
  * Created by Ajeet Kumar Meena on 29-04-2016.

@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import one.thebox.android.R;
+import one.thebox.android.app.Constants;
 
 /**
  * Created by Ruchit on 9/28/2016.
@@ -21,7 +22,6 @@ public class PaymentSelectorFragment extends Fragment {
 
     private View rootView;
     public static final String EXTRA_PAYMENT_TYPE = "payment_type";
-    public static final String EXTRA_PAYMENT_AMOUNT = "payment_amount";
 
     private Unbinder unbinder;
 
@@ -37,7 +37,7 @@ public class PaymentSelectorFragment extends Fragment {
     public static PaymentSelectorFragment getInstance(String paymentType, String paymentAmount) {
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_PAYMENT_TYPE, paymentType);
-        bundle.putString(EXTRA_PAYMENT_AMOUNT, paymentAmount);
+        bundle.putString(Constants.EXTRA_AMOUNT_TO_PAY, paymentAmount);
         PaymentSelectorFragment paymentSelectorFragment = new PaymentSelectorFragment();
         paymentSelectorFragment.setArguments(bundle);
         return paymentSelectorFragment;
@@ -60,25 +60,21 @@ public class PaymentSelectorFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CARD"))
-        {
+        if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CARD")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_card));
-            txtPaymentMessage.setText("Please aunthenticate payment for Rs. "+fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT)))+".");
-        }
-        else if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CASH"))
-        {
+            txtPaymentMessage.setText("Please aunthenticate payment for " + Constants.RUPEE_SYMBOL + " " + fmt(Double.parseDouble(getArguments().getString(Constants.EXTRA_AMOUNT_TO_PAY))) + ".");
+        } else if (getArguments().getString(EXTRA_PAYMENT_TYPE).contentEquals("CASH")) {
             imgPaymentOption.setImageDrawable(getResources().getDrawable(R.drawable.ic_cash));
-            txtPaymentMessage.setText("Please pay Rs. "+fmt(Double.parseDouble(getArguments().getString(EXTRA_PAYMENT_AMOUNT)))+" to delivery executive after delivery.");
+            txtPaymentMessage.setText("Please pay " + Constants.RUPEE_SYMBOL + " " + fmt(Double.parseDouble(getArguments().getString(Constants.EXTRA_AMOUNT_TO_PAY))) + " to delivery executive after delivery.");
         }
 
 
     }
 
-    public static String fmt(double d)
-    {
-        if(d == (long) d)
-            return String.format("%d",(long)d);
+    public static String fmt(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
         else
-            return String.format("%s",d);
+            return String.format("%s", d);
     }
 }

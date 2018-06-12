@@ -1,51 +1,46 @@
 package one.thebox.android.fragment;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmList;
-import io.realm.RealmModel;
-import io.realm.RealmResults;
 import one.thebox.android.Events.ShowSpecialCardEvent;
-import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Helpers.RealmController;
-import one.thebox.android.Models.BoxItem;
-import one.thebox.android.Models.Category;
-import one.thebox.android.Models.Order;
-import one.thebox.android.Models.SearchResult;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Events.SyncCartItemEvent;
+import one.thebox.android.Helpers.cart.CartHelper;
+import one.thebox.android.Models.Meta;
+import one.thebox.android.Models.items.BoxItem;
+import one.thebox.android.Models.items.Category;
+import one.thebox.android.Models.items.ItemConfig;
+import one.thebox.android.Models.items.UserItem;
+import one.thebox.android.Models.items.SubscribeItem;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.ViewHelper.EndlessRecyclerViewScrollListener;
 import one.thebox.android.adapter.SearchDetailAdapter;
-import one.thebox.android.api.RequestBodies.SearchDetailResponse;
-import one.thebox.android.api.Responses.CategoryBoxItemsResponse;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.api.Responses.category.BoxCategoryItemResponse;
+import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
@@ -53,71 +48,62 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
-
 
 public class SearchDetailItemsFragment extends Fragment {
 
-    private static final String EXTRA_QUERY = "extra_query";
-    private static final String EXTRA_CAT_ID = "extra_cat_id";
-    private static final String EXTRA_SOURCE = "extra_source";
-    private static final String EXTRA_USER_ITEM_ARRAY_LIST = "extra_user_item_array_list";
-    private static final String EXTRA_BOX_ITEM_ARRAY_LIST = "extra_box_item_array_list";
-    private static final String EXTRA_POSITION_IN_VIEW_PAGER = "extra_position_of_fragment_in_tab";
-    private static final int SOURCE_NON_CATEGORY = 0;
-    private static final int SOURCE_CATEGORY = 1;
-    private static final int SOURCE_SEARCH = 2;
-    private static final int PER_PAGE_ITEMS = 10;
-    private int pageNumber = 1;
     private View rootView;
     private RecyclerView recyclerView;
     private SearchDetailAdapter searchDetailAdapter;
     private LinearLayout linearLayoutHolder;
     private GifImageView progressBar;
-    private String query;
-    private int catId = -1;
-    private RealmList<Category> categories = new RealmList<>();
-    private List<UserItem> userItems = new ArrayList<>();
-    private List<BoxItem> boxItems = new ArrayList<>();
-    private int source;
     private TextView emptyText;
-    private int positionInViewPager;
+
     private ConnectionErrorViewHelper connectionErrorViewHelper;
-    private int totalItems;
-    private int maxPageNumber;
+    private boolean isRegistered;
+
+    private Category category;
+    private int positionInViewPager;
+    private RealmList<Category> suggestedCategories = new RealmList<>();
+    private String searchQuery = "";
+
+    /**
+     * Pagination
+     */
+    private int queryPage = 1;
+    private int queryPerPage = Constants.LOAD_PER_PAGE;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+    private Meta meta;
+
+    private List<BoxItem> cartItems;
+
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     public SearchDetailItemsFragment() {
     }
 
-    public static SearchDetailItemsFragment getInstance(SearchResult searchResult, int positionInViewPager) {
+
+    /**
+     * Called from Box Category; Source Category
+     *
+     * @param category
+     * @return
+     */
+    public static SearchDetailItemsFragment getInstance(Category category, List<Category> categories, int positionInViewPager, String searchQuery) {
         Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_QUERY, searchResult.getResult());
-        bundle.putInt(EXTRA_CAT_ID, searchResult.getId());
-        if (searchResult.getId() == 0) {
-            bundle.putInt(EXTRA_SOURCE, SOURCE_NON_CATEGORY);
-        } else {
-            bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
-        }
-        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
+        bundle.putString(Constants.EXTRA_CATEGORY, CoreGsonUtils.toJson(category));
+        bundle.putInt(Constants.EXTRA_CLICK_POSITION, positionInViewPager);
+        bundle.putString(Constants.EXTRA_CATEGORY_LIST, CoreGsonUtils.toJson(categories));
+        bundle.putString(Constants.EXTRA_SEARCH_QUERY, searchQuery);
         SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
         searchDetailItemsFragment.setArguments(bundle);
         return searchDetailItemsFragment;
     }
-
-    public static SearchDetailItemsFragment getInstance(Context activity, ArrayList<UserItem> userItems, ArrayList<BoxItem> boxItems, int positionInViewPager) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_SOURCE, SOURCE_CATEGORY);
-        bundle.putInt(EXTRA_SOURCE, SOURCE_SEARCH);
-        bundle.putString(EXTRA_USER_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(userItems));
-        bundle.putString(EXTRA_BOX_ITEM_ARRAY_LIST, CoreGsonUtils.toJson(boxItems));
-        bundle.putInt(EXTRA_POSITION_IN_VIEW_PAGER, positionInViewPager);
-        SearchDetailItemsFragment searchDetailItemsFragment = new SearchDetailItemsFragment();
-        searchDetailItemsFragment.setArguments(bundle);
-        return searchDetailItemsFragment;
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,16 +115,19 @@ public class SearchDetailItemsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         if (rootView == null) {
-            initVariables();
             rootView = inflater.inflate(R.layout.fragment_search_detail_items, container, false);
+            initVariables();
             initViews();
-            getDataBasedOnSource();
+
+            //request Server to get the Boc Catgeory Items
+            getBoxCategoryItems(true);
+
         }
         return rootView;
     }
 
     public void initDataChangeListener() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         realm.addChangeListener(realmListener);
     }
 
@@ -151,71 +140,42 @@ public class SearchDetailItemsFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        fillAllUserItems();
                     }
                 });
             }
         }
     };
 
-    private boolean isLoading;
-    EndlessRecyclerViewScrollListener listener = new EndlessRecyclerViewScrollListener() {
-        @Override
-        public void onLoadMore(int page, int totalItemsCount) {
-            if (boxItems != null) {
-                int boxItemCount = boxItems.size();
-                if (boxItemCount < totalItems && !isLoading && pageNumber < maxPageNumber) {
-                    pageNumber++;
-                    getDataBasedOnSource();
-                }
-            }
-        }
-    };
 
-    private void getDataBasedOnSource() {
-        switch (source) {
-            case SOURCE_CATEGORY: {
-                getCategoryDetail();
-                break;
-            }
-            case SOURCE_NON_CATEGORY: {
-                getSearchDetails();
-                break;
-            }
-            case SOURCE_SEARCH: {
-                setupRecyclerView();
-                break;
-            }
+    public void initVariables() {
+        try {
+            category = CoreGsonUtils.fromJson(getArguments().getString(Constants.EXTRA_CATEGORY), Category.class);
+            suggestedCategories = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(Constants.EXTRA_CATEGORY_LIST), Category.class);
+            positionInViewPager = getArguments().getInt(Constants.EXTRA_CLICK_POSITION);
+            searchQuery = getArguments().getString(Constants.EXTRA_SEARCH_QUERY);
+            cartItems = CartHelper.getCart();
+
+            updateSuggestionCatgeoryListBasedOnSelectedCategory();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
         }
     }
 
-    private void fillAllUserItems() {
-        if (catId != -1) {
-            Realm realm = MyApplication.getRealm();
-            RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
-            setBoxItemsBasedOnUserItems(items, boxItems);
-        } else {
-            getDataBasedOnSource();
-        }
-    }
+    /**
+     * Set Suggestion Category List based on Selected Category
+     */
+    public void updateSuggestionCatgeoryListBasedOnSelectedCategory() {
 
-    private RealmChangeManager.DBChangeListener boxItemChangeListener = new RealmChangeManager.DBChangeListener() {
-        @Override
-        public void onDBChanged() {
-            fillAllUserItems();
+        for (int i = 0; i < suggestedCategories.size(); i++) {
+            if (suggestedCategories.get(i).getUuid().equalsIgnoreCase(category.getUuid())) {
+                suggestedCategories.remove(i);
+                break;
+            }
         }
-    };
-
-    private void initVariables() {
-        source = getArguments().getInt(EXTRA_SOURCE);
-        query = getArguments().getString(EXTRA_QUERY);
-        catId = getArguments().getInt(EXTRA_CAT_ID);
-        userItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_USER_ITEM_ARRAY_LIST), UserItem.class);
-        boxItems = CoreGsonUtils.fromJsontoRealmList(getArguments().getString(EXTRA_BOX_ITEM_ARRAY_LIST), BoxItem.class);
-        positionInViewPager = getArguments().getInt(EXTRA_POSITION_IN_VIEW_PAGER);
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
@@ -226,175 +186,290 @@ public class SearchDetailItemsFragment extends Fragment {
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootView, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (source) {
-                    case SOURCE_CATEGORY: {
-                        getCategoryDetail();
-                        break;
-                    }
-                    case SOURCE_NON_CATEGORY: {
-                        getSearchDetails();
-                        break;
-                    }
-                    case SOURCE_SEARCH: {
-                        setupRecyclerView();
-                        break;
-                    }
-                }
-            }
-        });
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy != 0) {
-
-                    EventBus.getDefault().post(new ShowSpecialCardEvent(false));
-                }
+                //get box category item
+                getBoxCategoryItems(true);
             }
         });
     }
 
-    private void setupRecyclerView() {
-        linearLayoutHolder.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
-        if (boxItems.isEmpty() && userItems.isEmpty()) {
-            emptyText.setVisibility(View.VISIBLE);
-        } else {
-            emptyText.setVisibility(View.GONE);
+    /**
+     * Set Up RecyclerView
+     *
+     * @param boxItems
+     */
+    private void setupRecyclerView(List<BoxItem> boxItems, boolean isFirstTimeLoad) {
+        if (isFirstTimeLoad) {
+            linearLayoutHolder.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            if (boxItems.isEmpty()) {
+                emptyText.setVisibility(View.VISIBLE);
+            } else {
+                emptyText.setVisibility(View.GONE);
+            }
         }
+
         if (searchDetailAdapter == null) {
-            searchDetailAdapter = new SearchDetailAdapter(getActivity());
-            searchDetailAdapter.setPositionInViewPager(positionInViewPager);
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
-            LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+            searchDetailAdapter = new SearchDetailAdapter(getActivity(), glideRequestManager);
+            searchDetailAdapter.setSuggestedCategories(suggestedCategories);
+            //check with cart item and evaluate data
+            setData(boxItems);
+            final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(manager);
-            listener.setmLayoutManager(manager);
             recyclerView.setAdapter(searchDetailAdapter);
-            recyclerView.addOnScrollListener(listener);
+
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy != 0) {
+
+                        /**
+                         * Specail Cart Event
+                         */
+                        EventBus.getDefault().post(new ShowSpecialCardEvent(false));
+
+                        /**
+                         * Pagination Logic
+                         */
+
+                        visibleItemCount = recyclerView.getChildCount();
+                        totalItemCount = manager.getItemCount();
+                        firstVisibleItem = manager.findFirstVisibleItemPosition();
+
+                        if (loading) {
+                            if (totalItemCount > previousTotal) {
+                                loading = false;
+                                previousTotal = totalItemCount;
+                            }
+                        }
+                        if (!loading && (totalItemCount - visibleItemCount)
+                                <= (firstVisibleItem + visibleThreshold)) {
+                            // End has been reached
+                            Log.i("PAGINATION", "END HAS REACHED");
+                            // Logic for pagination
+                            if (meta != null) {
+                                if ((meta.getTotalItems() - (meta.getCurrentPage() * meta.getPerPage())) > 0) {
+                                    /**
+                                     * condition full fills more items are there
+                                     * so paginate to next page
+                                     */
+                                    queryPage = meta.getCurrentPage() + 1;
+                                    //Load Next Page data from Server
+                                    getBoxCategoryItems(false);
+                                    //next loading
+                                    loading = true;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            });
+
         } else {
-            searchDetailAdapter.setBoxItems(boxItems, userItems);
-            searchDetailAdapter.notifyDataSetChanged();
+            setData(boxItems);
         }
     }
 
-
-    private void getSearchDetails() {
-        linearLayoutHolder.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        MyApplication.getAPIService().getSearchResults(PrefUtils.getToken(getActivity()), query)
-                .enqueue(new Callback<SearchDetailResponse>() {
-                    @Override
-                    public void onResponse(Call<SearchDetailResponse> call, Response<SearchDetailResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        if (response.body() != null) {
-                            clearData();
-                            userItems.add(response.body().getMySearchItem());
-                            userItems.addAll(response.body().getMyNonSearchedItems());
-                            boxItems.add(response.body().getSearchedItem());
-                            boxItems.addAll(response.body().getNormalItems());
-                            categories.add(response.body().getSearchedCategory());
-                            categories.addAll(response.body().getRestCategories());
-                            setupRecyclerView();
+    /**
+     * Set the refined list after matching with cart data
+     */
+    public void setData(List<BoxItem> boxItems) {
+        if (cartItems.size() > 0) {
+            for (int i = 0; i < boxItems.size(); i++) {
+                BoxItem boxItem = boxItems.get(i);
+                int pos = isBoxItemInCart(boxItem);
+                if (pos != -1) {
+                    BoxItem cartItem = cartItems.get(pos);
+                    boxItem.setQuantity(cartItem.getQuantity());
+                    boxItem.setSelectedItemConfig(cartItem.getSelectedItemConfig());
+                    boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                    boxItems.set(i, boxItem);
+                } else {
+                    if (boxItem.getUserItem() != null) {
+                        if (checkForSubscribeItem(boxItem.getUserItem())) {
+                            boxItem.setItemViewType(Constants.VIEW_TYPE_SUBSCRIBE_ITEM);
+                        } else {
+                            boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
                         }
+                        boxItems.set(i, boxItem);
                     }
+                }
+            }
+        } else {
+            for (int i = 0; i < boxItems.size(); i++) {
+                BoxItem boxItem = boxItems.get(i);
+                if (boxItem.getUserItem() != null) {
+                    if (checkForSubscribeItem(boxItem.getUserItem())) {
+                        boxItem.setItemViewType(Constants.VIEW_TYPE_SUBSCRIBE_ITEM);
+                    } else {
+                        boxItem.setItemViewType(Constants.VIEW_TYPE_SEARCH_ITEM);
+                    }
+                    boxItems.set(i, boxItem);
+                }
+            }
+        }
 
-                    @Override
-                    public void onFailure(Call<SearchDetailResponse> call, Throwable t) {
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
-                    }
-                });
+        searchDetailAdapter.setBoxItems(boxItems);
     }
 
-    private void clearData() {
-        userItems.clear();
-        boxItems.clear();
-        categories.clear();
+    /**
+     * Check if item is in Cart
+     */
+    public int isBoxItemInCart(BoxItem boxItem) {
+        int pos = -1;
+        for (int i = 0; i < cartItems.size(); i++) {
+            if (boxItem.getUuid().equalsIgnoreCase(cartItems.get(i).getUuid())) {
+                if (!boxItem.isInStock()) {
+                    CartHelper.removeItemFromCart(boxItem);
+                } else {
+                    if (ifItemConfigInStock(boxItem, cartItems.get(i).getSelectedItemConfig())) {
+                        pos = i;
+                    } else {
+                        CartHelper.removeItemFromCart(boxItem);
+                    }
+                }
+                break;
+            }
+        }
+        return pos;
     }
 
-    private void getCategoryDetail() {
-        isLoading = true;
-        if (pageNumber == 1) {
+    /**
+     * Check if Item Config is in Stock
+     */
+    public boolean ifItemConfigInStock(BoxItem boxItem, ItemConfig selectedItemConfig) {
+        boolean flag = false;
+        for (ItemConfig itemConfig : boxItem.getItemConfigs()) {
+            if (selectedItemConfig.getUuid().equalsIgnoreCase(itemConfig.getUuid())) {
+                if (itemConfig.isInStock()) {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * Check For Subscribe Item
+     */
+    public boolean checkForSubscribeItem(UserItem userItem) {
+        boolean flag = false;
+        if (userItem.isSubscribeItemAvailable()) {
+            flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * Request Server to get Box Category Items
+     */
+    private void getBoxCategoryItems(final boolean isFirstTimeLoad) {
+        if (isFirstTimeLoad) {
             linearLayoutHolder.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
             connectionErrorViewHelper.isVisible(false);
         }
-        MyApplication.getAPIService().getItems(PrefUtils.getToken(getActivity()), catId, pageNumber, PER_PAGE_ITEMS)
-                .enqueue(new Callback<CategoryBoxItemsResponse>() {
+        TheBox.getAPIService()
+                .getCategoryItem(PrefUtils.getToken(getActivity()), category.getUuid(), searchQuery, queryPage, queryPerPage)
+                .enqueue(new Callback<BoxCategoryItemResponse>() {
                     @Override
-                    public void onResponse(Call<CategoryBoxItemsResponse> call, Response<CategoryBoxItemsResponse> response) {
-                        connectionErrorViewHelper.isVisible(false);
-                        isLoading = false;
-                        if (response.body() != null) {
-                            if (pageNumber == 1) {
-                                clearData();
+                    public void onResponse(Call<BoxCategoryItemResponse> call, Response<BoxCategoryItemResponse> response) {
+                        try {
+                            if (isFirstTimeLoad) {
+                                connectionErrorViewHelper.isVisible(false);
+                                progressBar.setVisibility(View.GONE);
+                                linearLayoutHolder.setVisibility(View.VISIBLE);
                             }
-//                            RealmController.addAllBoxItems(response.body().getNormalBoxItems());
-//                            RealmController.addAllUserItems(response.body().getMyBoxItems());
-//                            userItems.addAll(response.body().getMyBoxItems());
-                            CategoryBoxItemsResponse categoryBoxItemsResponse = response.body();
-                            totalItems = categoryBoxItemsResponse.getTotalCount();
-                            maxPageNumber = (totalItems % PER_PAGE_ITEMS) > 0 ? (totalItems / PER_PAGE_ITEMS) + 1 : (totalItems / PER_PAGE_ITEMS);
-                            if (categoryBoxItemsResponse.getNormalBoxItems() != null)
-                                boxItems.addAll(response.body().getNormalBoxItems());
-                            setBoxItemsBasedOnUserItems(response.body().getMyBoxItems(), boxItems);
-                            if (null != response.body().getSelectedCategory())
-                                categories.add(response.body().getSelectedCategory());
-                            if (null != response.body().getRestCategories())
-                                categories.addAll(response.body().getRestCategories());
-                            initDataChangeListener();
-//                            fillAllUserItems();
+
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+
+                                    if (response.body().getCategory() != null) {
+                                        //set Meta Data for pagination
+                                        meta = response.body().getMeta();
+                                        if (response.body().getCategory().getBoxItems() != null) {
+                                            if (isFirstTimeLoad) {
+                                                setupRecyclerView(response.body().getCategory().getBoxItems(), isFirstTimeLoad);
+                                            } else {
+                                                //don't pass data if is empty
+                                                if (response.body().getCategory().getBoxItems().size() > 0) {
+                                                    setupRecyclerView(response.body().getCategory().getBoxItems(), isFirstTimeLoad);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                //parse error codes here
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<CategoryBoxItemsResponse> call, Throwable t) {
-                        isLoading = false;
-                        emptyText.setText(t.toString());
-                        linearLayoutHolder.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        connectionErrorViewHelper.isVisible(true);
+                    public void onFailure(Call<BoxCategoryItemResponse> call, Throwable t) {
+                        if (isFirstTimeLoad) {
+                            linearLayoutHolder.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
+                        }
                     }
                 });
+
     }
 
-    private void setBoxItemsBasedOnUserItems(List<UserItem> items, List<BoxItem> bItems) {
-        if (items == null) {
-            Realm realm = MyApplication.getRealm();
-            items = realm.where(UserItem.class).equalTo("boxItem.categoryId", catId).findAll();
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!isRegistered) {
+            EventBus.getDefault().register(this);
+            isRegistered = true;
         }
-        LinkedHashMap<Integer, BoxItem> map = new LinkedHashMap<>();
+    }
 
-        for (BoxItem item : bItems) {
-            map.put(item.getId(), item);
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isRegistered) {
+            EventBus.getDefault().unregister(this);
+            isRegistered = false;
         }
-        userItems.clear();
-//            boxItems.clear();
-        for (UserItem item : items) {
-            if (!TextUtils.isEmpty(item.getNextDeliveryScheduledAt())) {
-                userItems.add(item);
-            } else {
-                BoxItem boxItem = item.getBoxItem();
-                if (map.containsKey(boxItem.getId())) {
-                    BoxItem box = map.get(boxItem.getId());
-                    box.setUserItemId(item.getId());
-                    box.setQuantity(item.getQuantity());
-                    map.put(box.getId(), box);
-                } else {
-                    boxItem.setUserItemId(item.getId());
-                    boxItem.setQuantity(item.getQuantity());
-                    map.put(boxItem.getId(), boxItem);
+    }
+
+    /**
+     * Synced with cart product item on editing cart
+     */
+    @Subscribe
+    public void syncedWithCart(final SyncCartItemEvent syncCartItemEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (syncCartItemEvent.getEventType()) {
+
+                        case Constants.UPDATE_QUANTITY_EVENT: //update Quantity
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.updateQuantityEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                        case Constants.REMOVE_ITEM_EVENT://remove quantity
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.removeQuantityEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                        case Constants.UPDATE_ITEMCONFIG_EVENT:
+                            if (searchDetailAdapter != null) {
+                                searchDetailAdapter.updateItemConfigEvent(syncCartItemEvent.getBoxItem());
+                            }
+                            break;
+                    }
                 }
-
-            }
+            });
         }
-        boxItems.clear();
-        boxItems.addAll(map.values());
-//            RealmResults<BoxItem> boxes = realm.where(BoxItem.class).equalTo("categoryId", catId).findAll();
-//            boxItems.addAll(boxes);
-        setupRecyclerView();
     }
-
 
 }

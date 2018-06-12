@@ -1,123 +1,90 @@
 package one.thebox.android.fragment;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import one.thebox.android.Events.OnHomeTabChangeEvent;
 import one.thebox.android.Events.TabEvent;
-import one.thebox.android.Events.UpdateOrderItemEvent;
-import one.thebox.android.Helpers.CartHelper;
+import one.thebox.android.Events.UpdateSavingsEvent;
+import one.thebox.android.Events.UpdateSubscribeItemEvent;
+import one.thebox.android.Helpers.cart.CartHelper;
 import one.thebox.android.Helpers.RealmChangeManager;
-import one.thebox.android.Models.Box;
-import one.thebox.android.Models.User;
-import one.thebox.android.Models.UserItem;
+import one.thebox.android.Models.saving.Saving;
+import one.thebox.android.Models.items.Subscription;
 import one.thebox.android.R;
 import one.thebox.android.ViewHelper.AppBarObserver;
 import one.thebox.android.ViewHelper.ConnectionErrorViewHelper;
 import one.thebox.android.activity.MainActivity;
-import one.thebox.android.adapter.MyBoxRecyclerAdapter;
-import one.thebox.android.api.Responses.MyBoxResponse;
-import one.thebox.android.app.MyApplication;
-import one.thebox.android.fragment.dialog.UpdateDialogFragment;
+import one.thebox.android.adapter.subscription.SubscriptionAdapter;
+import one.thebox.android.api.Responses.boxes.SubscriptionResponse;
+import one.thebox.android.api.Responses.subscribeitem.SavingsResponse;
+import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
+import one.thebox.android.util.CoreGsonUtils;
 import one.thebox.android.util.PrefUtils;
 import pl.droidsonroids.gif.GifImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static one.thebox.android.fragment.SearchDetailFragment.BROADCAST_EVENT_TAB;
-import static one.thebox.android.fragment.SearchDetailFragment.EXTRA_NUMBER_OF_TABS;
-
 /**
  * Created by vaibhav on 17/08/16.
+ * <p>
+ * Modified by Developers on 07/06/2017.
  */
 public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffsetChangeListener {
 
+    public static final int RECYCLER_VIEW_TYPE_HEADER = 301;
+    public static final int RECYCLER_VIEW_TYPE_NORMAL = 300;
     private RecyclerView recyclerView;
-    private MyBoxRecyclerAdapter myBoxRecyclerAdapter;
+    private SubscriptionAdapter subscriptionAdapter;
     private View rootLayout;
     private GifImageView progressBar;
-    private FloatingActionButton floatingActionButton;
-    private TextView noOfItemsInCart;
-    private List<Box> boxes = new ArrayList<>();
     private AppBarObserver appBarObserver;
-    private FrameLayout fabHolder;
     private ConnectionErrorViewHelper connectionErrorViewHelper;
     private LinearLayout no_item_subscribed_view_holder;
-    private String monthly_bill;
-    private String total_no_of_items;
     private boolean show_loader_and_call = false;
+    private boolean isRegistered;
+    private Saving saving;
+    ArrayList<Subscription> subscriptions = new ArrayList<>();
 
-
-    private boolean isLocallyUpdated;
-    private boolean has_one_or_more_subscribed_items = false;
-    private boolean show_loader = false;
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, final Intent intent) {
-            if (getActivity() == null) {
-                return;
-            }
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    int noOfTabs = intent.getIntExtra(EXTRA_NUMBER_OF_TABS, 0);
-                    if (noOfTabs > 0) {
-                        noOfItemsInCart.setVisibility(View.VISIBLE);
-                        noOfItemsInCart.setText(String.valueOf(noOfTabs));
-                    } else {
-                        noOfItemsInCart.setVisibility(View.GONE);
-                    }
-                }
-            });
-
-        }
-    };
-
+    /**
+     * GLide Request Manager
+     */
+    private RequestManager glideRequestManager;
 
     public MyBoxesFragment() {
 
     }
 
     public void initDataChangeListener() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         realm.addChangeListener(realmListener);
     }
 
     private void removeChangeListener() {
-        Realm realm = MyApplication.getRealm();
+        Realm realm = TheBox.getRealm();
         realm.removeChangeListener(realmListener);
     }
 
@@ -125,7 +92,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
 
         @Override
         public void onChange(Object element) {
-            Log.d("RealmChanged", "RealmData Changed");
             if (getActivity() != null) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -141,73 +107,28 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootLayout = inflater.inflate(R.layout.fragment_my_boxes, container, false);
-
-        initVariables();
-
-        initViews();
-        
-        //Fetching arguments
-        show_loader_and_call = getArguments().getBoolean("show_loader");
-
-        if (show_loader_and_call){
-            getMyBoxes();
-        }
-
-        setupAppBarObserver();
-
-        setupRecyclerView();
-
-        onTabEvent(new TabEvent(CartHelper.getNumberOfItemsInCart()));
-
         RealmChangeManager.getInstance();
 
+        initViews();
+
+        //Fetching arguments- silent notification for my items
+        show_loader_and_call = getArguments().getBoolean("show_loader");
+
+        //fetch subscription from server
+        fetchSubscription(show_loader_and_call);
+
+        setupAppBarObserver();
         initDataChangeListener();
+
+        onTabEvent(new TabEvent(CartHelper.getCartSize()));
 
         return rootLayout;
     }
 
-    private void initVariables() {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
 
-        //Setting up all the boxes
-        Realm realm = MyApplication.getRealm();
-        RealmQuery<Box> query = realm.where(Box.class);
-        RealmResults<Box> realmResults = query.notEqualTo(Box.FIELD_ID, 0).findAll();
-        RealmList<Box> boxes = new RealmList<>();
-        boxes.addAll(realmResults.subList(0, realmResults.size()));
-        this.boxes.clear();
-        this.boxes.addAll(realm.copyFromRealm(boxes));
-        setUpBoxes();
-
-        //Checking if useritems are present
-        if (realm.where(UserItem.class).equalTo("stillSubscribed", true).isNotNull("nextDeliveryScheduledAt").findAll().size() > 0){
-            has_one_or_more_subscribed_items = true;
-        }
-        else{
-            has_one_or_more_subscribed_items = false;
-        }
-
-
-    }
-
-    private void setUpBoxes() {
-        // Add to boxes list only if there are items in box
-        Iterator<Box> iterator = this.boxes.iterator();
-        while (iterator.hasNext()) {
-            Box box = iterator.next();
-            if (box.getAllItemInTheBox().isEmpty()) {
-                iterator.remove();
-            } else {
-            }
-        }
-    }
-
-    private List<UserItem> getUserItems(int boxId) {
-        Realm realm = MyApplication.getRealm();
-        RealmResults<UserItem> items = realm.where(UserItem.class).equalTo("boxId", boxId).findAll();
-        List<UserItem> list = new ArrayList<>();
-        list.addAll(items);
-        Log.d("MyBoxesFrag", "Size of user items for box id:" + list.size() + "");
-        return list;
     }
 
     private void setupAppBarObserver() {
@@ -220,65 +141,102 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
+    public void filterSubscriptionData() {
+        if (subscriptions.size() > 0) {
+            ArrayList<Subscription> filteredItem = new ArrayList<>();
+            for (Subscription subscription : subscriptions) {
+                if (subscription.getSubscribeItems() != null) {
+                    if (subscription.getSubscribeItems().size() > 0) {
+                        filteredItem.add(subscription);
+                    }
+                }
+            }
+            subscriptions.clear();
+            subscriptions.addAll(filteredItem);
+        } else {
+            setupEmptyStateView();
+        }
+    }
 
     private void setupRecyclerView() {
-
-        // No items are subscribed
-        if (!has_one_or_more_subscribed_items) {
-            no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
-            fabHolder.setVisibility(View.GONE);
+        if (subscriptions.size() > 0) {
+            //One or more items are subscribed
+            no_item_subscribed_view_holder.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
 
-            // Adding Onclick listener directing to Store Fragment
-            no_item_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
-                }
-            });
-        }
+            if (subscriptionAdapter == null || null == recyclerView.getAdapter()) {
+                final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                subscriptionAdapter = new SubscriptionAdapter(getActivity(), glideRequestManager);
 
-        //One or more items are subscribed
-        else {
-                progressBar.setVisibility(View.GONE);
-                fabHolder.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.VISIBLE);
-
-                if (myBoxRecyclerAdapter == null || null == recyclerView.getAdapter()) {
-                    final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                    recyclerView.setLayoutManager(linearLayoutManager);
-                    myBoxRecyclerAdapter = new MyBoxRecyclerAdapter(getActivity());
-                    myBoxRecyclerAdapter.setBoxes(boxes);
-                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                    recyclerView.setAdapter(myBoxRecyclerAdapter);
-                } else {
-                    myBoxRecyclerAdapter.setBoxes(boxes);
-                    myBoxRecyclerAdapter.setMonthly_bill(monthly_bill);
-                    myBoxRecyclerAdapter.setTotal_no_of_items(total_no_of_items);
-                    myBoxRecyclerAdapter.notifyDataSetChanged();
-                }
-
+                //This view will display the saving card as header and rest of the items
+                setDataToRecyclerView(subscriptions);
+                recyclerView.setAdapter(subscriptionAdapter);
+            } else {
+                setDataToRecyclerView(subscriptions);
             }
+        } else {
+            setupEmptyStateView();
+        }
+    }
+
+    /**
+     * Check and set the view type in recyclerview
+     */
+    public void setDataToRecyclerView(ArrayList<Subscription> subscriptions) {
+
+        subscriptionAdapter.setSubscriptions(subscriptions);
+        subscriptionAdapter.setSaving(saving);
+        /**
+         * Show Header savings ;if savings is true
+         * and user items
+         */
+        if (subscriptions.size() > 0 && saving != null) {
+            if (saving.isSaving()) {
+                subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_HEADER);
+            } else {
+                subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+            }
+        }
+        /**
+         * Show only user items
+         */
+        else if (subscriptions.size() > 0 && saving == null) {
+            subscriptionAdapter.setViewType(RECYCLER_VIEW_TYPE_NORMAL);
+        }
+    }
+
+    public void setupEmptyStateView() {
+        // No items are subscribed
+        no_item_subscribed_view_holder.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+
+        // Adding Onclick listener directing to Store Fragment
+        no_item_subscribed_view_holder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventBus.getDefault().post(new OnHomeTabChangeEvent(1));
+            }
+        });
+
     }
 
     private void initViews() {
+        this.glideRequestManager = Glide.with(this);
         this.progressBar = (GifImageView) rootLayout.findViewById(R.id.progress_bar);
         this.recyclerView = (RecyclerView) rootLayout.findViewById(R.id.recycler_view);
         this.no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        this.floatingActionButton = (FloatingActionButton) rootLayout.findViewById(R.id.fab);
-        floatingActionButton.setOnClickListener(fabClickListener);
-        noOfItemsInCart = (TextView) rootLayout.findViewById(R.id.no_of_items_in_cart);
-        fabHolder = (FrameLayout) rootLayout.findViewById(R.id.fab_holder);
         no_item_subscribed_view_holder = (LinearLayout) rootLayout.findViewById(R.id.no_item_subscribed_view_holder);
         connectionErrorViewHelper = new ConnectionErrorViewHelper(rootLayout, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getMyBoxes();
+                fetchSubscription(true);
             }
         });
     }
@@ -286,7 +244,7 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 3));
+            startActivity(new Intent(getActivity(), MainActivity.class).putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 3));
         }
     };
 
@@ -298,13 +256,14 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
     @Override
     public void onDestroy() {
         super.onDestroy();
+        removeChangeListener();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
-                new IntentFilter(BROADCAST_EVENT_TAB));
+        initDataChangeListener();
     }
 
     @Override
@@ -317,33 +276,71 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         super.onDetach();
     }
 
-    public void getMyBoxes() {
-        progressBar.setVisibility(View.VISIBLE);
+    /**
+     * Fetch Subscriptions from server
+     */
+    public void fetchSubscription(boolean showLoader) {
         connectionErrorViewHelper.isVisible(false);
-        String token = PrefUtils.getToken(getActivity());
-        Log.d("Token :", token + "");
-        MyApplication.getAPIService().getMyBoxes(PrefUtils.getToken(getActivity()))
-                .enqueue(new Callback<MyBoxResponse>() {
+        if (showLoader) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        TheBox.getAPIService()
+                .getSubscription(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<SubscriptionResponse>() {
                     @Override
-                    public void onResponse(Call<MyBoxResponse> call, Response<MyBoxResponse> response) {
+                    public void onResponse(Call<SubscriptionResponse> call, Response<SubscriptionResponse> response) {
                         connectionErrorViewHelper.isVisible(false);
                         progressBar.setVisibility(View.GONE);
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
 
-                        if (response.body() != null) {
-                            removeChangeListener();
-                            boxes.clear();
-                            monthly_bill = response.body().getMonthly_bill();
-                            total_no_of_items = response.body().getTotal_no_of_items();
-                            boxes.addAll(response.body().getBoxes());
-                            isLocallyUpdated = true;
-                            storeToRealm();
-                            setUpBoxes();
-                            setupRecyclerView();
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
+
+                                    //show recyclerview
+                                    subscriptions.clear();
+                                    if (response.body().getSubscriptions() != null) {
+                                        if (!response.body().getSubscriptions().isEmpty()) {
+                                            subscriptions.addAll(response.body().getSubscriptions());
+                                        }
+                                    }
+                                    /**
+                                     * Filter Subscription Data
+                                     */
+                                    filterSubscriptionData();
+
+                                }
+                            } else {
+                                if (response.code() == 404) {
+                                    recyclerView.setVisibility(View.GONE);
+                                    no_item_subscribed_view_holder.setVisibility(View.GONE);
+                                    connectionErrorViewHelper.isVisible(true);
+                                }
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.GONE);
+                            no_item_subscribed_view_holder.setVisibility(View.GONE);
+                            connectionErrorViewHelper.isVisible(true);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<MyBoxResponse> call, Throwable t) {
+                    public void onFailure(Call<SubscriptionResponse> call, Throwable t) {
+                        Toast.makeText(TheBox.getAppContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         no_item_subscribed_view_holder.setVisibility(View.GONE);
@@ -352,58 +349,65 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
                 });
     }
 
-    private void storeToRealm() {
-        final Realm superRealm = MyApplication.getRealm();
-        superRealm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                for (Box box : boxes) {
-                    List<UserItem> items = box.getAllItemInTheBox();
-                    for (UserItem item : items) {
-                        item.setBoxId(box.getBoxId());
-                    }
-                }
-                realm.copyToRealmOrUpdate(boxes);
-            }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
-                if (null != getActivity()) {
-                    ((MainActivity) getActivity()).addBoxesToMenu();
-                    initDataChangeListener();
-                }
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
-            }
-        });
 
+    /**
+     * Fetch Savings on Subscribe Item
+     */
+    public void fetchSavings() {
+
+        TheBox.getAPIService()
+                .getSavings(PrefUtils.getToken(getActivity()))
+                .enqueue(new Callback<SavingsResponse>() {
+                    @Override
+                    public void onResponse(Call<SavingsResponse> call, Response<SavingsResponse> response) {
+                        try {
+                            if (response.isSuccessful()) {
+                                if (response.body() != null) {
+                                    //set the Response and update the list
+                                    //get savings
+                                    if (response.body().getSavings() != null) {
+                                        if (response.body().getSavings().size() > 0) {
+                                            if (response.body().getSavings().get(0).getType().equals("current")) {
+                                                saving = response.body().getSavings().get(0);
+                                            }
+                                        }
+                                    }
+                                    updateSavingsUI(saving);
+
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SavingsResponse> call, Throwable t) {
+                    }
+                });
     }
+
+    public void updateSavingsUI(Saving saving) {
+        if (saving != null) {
+            //save saving in the preferance
+            PrefUtils.putString(getActivity(), Constants.SAVINGS, CoreGsonUtils.toJson(saving));
+
+            if (subscriptionAdapter != null) {
+                subscriptionAdapter.setSaving(saving);
+            }
+        }
+    }
+
 
     @Override
     public void onOffsetChange(int offset, int dOffset) {
-        fabHolder.setTranslationY(-offset);
     }
 
     public void onTabEvent(TabEvent tabEvent) {
         if (getActivity() == null) {
             return;
         }
-        FloatingActionButton mFab = (FloatingActionButton) fabHolder.findViewById(R.id.fab);
-        if (tabEvent.getNumberOfItemsInCart() > 0) {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
-            mFab.setOnClickListener(fabClickListener);
-            noOfItemsInCart.setVisibility(View.VISIBLE);
-            noOfItemsInCart.setText(String.valueOf(tabEvent.getNumberOfItemsInCart()));
-        } else {
-            mFab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.light_grey)));
-            mFab.setOnClickListener(null);
-            noOfItemsInCart.setVisibility(View.GONE);
-        }
     }
-
-    private boolean isRegistered;
 
     @Override
     public void onStart() {
@@ -423,21 +427,45 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
         }
     }
 
-    @Subscribe
-    public void UpdateOrderItemEvent() {
-    }
 
+    /**
+     * Called from Updating Subscription Item
+     */
     @Subscribe
-    public void onUpdateOrderEvent(UpdateOrderItemEvent onUpdateOrderItem) {
+    public void onUpdateSavingsEvent(UpdateSavingsEvent updateSavingsEvent) {
         if (getActivity() != null) {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    initVariables();
-                    setupRecyclerView();
+                    if (subscriptionAdapter != null) {
+                        //check id all items have been removed from the subscribed items list
+                        if (subscriptionAdapter.getItemsCount() == 0) {
+
+                            setupEmptyStateView();
+                        } else {
+                            //fetch savings to update
+                            fetchSavings();
+                        }
+                    }
                 }
             });
         }
+
     }
 
+    /**
+     * Called from Updating Subscription Item
+     */
+    @Subscribe
+    public void onUpdateSubscribeItemEvent(UpdateSubscribeItemEvent updateSubscribeItemEvent) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    fetchSubscription(false);
+                }
+            });
+        }
+
+    }
 }

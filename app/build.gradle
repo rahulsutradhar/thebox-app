@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -15,84 +14,220 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-apply plugin: 'android-apt'
-
+configurations.all {
+    resolutionStrategy {
+        force "com.android.support:support-annotations:25.2.0"
+    }
+}
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+
+    signingConfigs {
+        config {
+            keyAlias 'thebox'
+            keyPassword 'sharedthebox_123'
+            storeFile file('/Users/developers/thebox/android_workspace/thebox-app/thebox-android/keystore.jks')
+            storePassword 'sharedthebox_123'
+        }
+    }
+
+    compileSdkVersion 25
+    buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "one.thebox.android"
         minSdkVersion 15
+        multiDexEnabled true
+        targetSdkVersion 25
+        vectorDrawables.useSupportLibrary = true
+        versionCode 22
+        versionName "2.0.2"
 
-        targetSdkVersion 23
-        versionCode 13
-        versionName "1.1.3"
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            shrinkResources false
-            debuggable true
-        }
+
+    dataBinding {
+        enabled = true
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     repositories {
         maven {
             url 'https://jitpack.io'
         }
+
         maven {
             url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+            /**
+             * Set Variable in Runtime
+             */
+            buildConfigField 'Boolean', 'enableCrashlytics', 'true'
+            buildConfigField 'Boolean', 'enableStetho', 'false'
+            resValue "string", "app_name", "The Box"
+            resValue "string", "io.branch.sdk.BranchKey", "key_live_gpud56EtW1sAAy8sEcapQkloCwitt59c"
+            resValue "string", "io.branch.schema", "thebox"
+            resValue "string", "clevertab_account_id", "W84-885-984Z"
+            resValue "string", "clevertab_account_token", "5bb-4b0"
+            resValue "string", "razorpay.apikey", "rzp_live_e1nfI8frHunaFM"
+            signingConfig signingConfigs.config
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
+            /**
+             * Set Variable in Runtime
+             */
+            buildConfigField 'Boolean', 'enableCrashlytics', 'false'
+            buildConfigField 'Boolean', 'enableStetho', 'true'
+            resValue "string", "app_name", "The Box Debug"
+            resValue "string", "io.branch.sdk.BranchKey", "key_test_cjFj55Dw31swyAWuDbnm2kllzwoBv45z"
+            resValue "string", "io.branch.schema", "thebox.test"
+            resValue "string", "clevertab_account_id", "TEST-Z84-885-984Z"
+            resValue "string", "clevertab_account_token", "TEST-5bb-4b1"
+            resValue "string", "razorpay.apikey", "rzp_test_R4R82jOEbvmNDW"
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile('com.afollestad.material-dialogs:core:0.9.4.4') {
         transitive = true
     }
+    /**
+     * Dependency Injection
+     */
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
-    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.2'
-    compile 'com.uphyca:stetho_realm:0.9.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.google.android.gms:play-services-base:9.0.2'
-    compile 'com.google.android.gms:play-services-analytics:9.0.2'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.github.paolorotolo:appintro:3.3.0'
+    /**
+     * Support libraries
+     */
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:multidex:1.0.1'
+
+    /**
+     * Google Play services
+     */
+    compile 'com.google.android.gms:play-services-location:11.0.2'
+    compile 'com.google.android.gms:play-services-gcm:11.0.2'
     compile 'com.nineoldandroids:library:2.4.0'
+
+    /**
+     * Bottom Sheet Material Design
+     */
     compile 'com.cocosw:bottomsheet:1.+@aar'
+
+    /**
+     * Even Bus Green Robot
+     */
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    /**
+     * Network Library - Retrofit
+     */
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.1.2'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
+    /**
+     * Image loading library Glide
+     */
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.github.hotchemi:permissionsdispatcher:2.1.2'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-gcm:9.0.2'
+
+    /**
+     * Runtime permission handler for Android 6 and above
+     */
+    compile 'com.github.hotchemi:permissionsdispatcher:2.3.2'
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.2'
     compile 'ch.acra:acra:4.6.2'
+
+    /**
+     * Gif Image loader
+     */
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.16'
-    compile 'com.google.android.gms:play-services-appindexing:9.0.2'
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-    compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.eftimoff:androidplayer:1.0.3@aar'
     compile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    compile 'com.facebook.stetho:stetho:1.3.1'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.freshdesk:hotline-android:1.0.+'
+
+    /**
+     * Works only in debug build for Developer tools
+     */
+    compile 'com.facebook.stetho:stetho:1.5.0'
+    compile 'com.uphyca:stetho_realm:2.0.0'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
+
+    /**
+     * Hotline
+     */
+    compile 'com.github.freshdesk:hotline-android:1.2.2'
+
+    /**
+     * branch.io
+     */
+    compile('io.branch.sdk.android:library:2.+') {
+        exclude module: 'answers-shim'
+    }
+
+    /**
+     * Fabric crashlytics
+     */
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
 
+    compile 'com.github.oxoooo:touch-image-view:1.0.1'
+    compile 'gun0912.ted:tedpermission:1.0.2'
+
+    /**
+     * Custom fonts
+     */
+    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+
+    /**
+     * ViewPagerIndicator
+     */
+
+    /**
+     * CleverTap Analytics
+     */
+    compile 'com.clevertap.android:clevertap-android-sdk:3.1.2'
+
+    /**
+     * Apps FLyer for Analytics
+     */
+    compile 'com.appsflyer:af-android-sdk:4.7.4'
+
+    /**
+     * Razorpay Payment Gateway
+     */
+    compile 'com.razorpay:checkout:1.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'realm-android'
+apply plugin: 'com.jakewharton.butterknife'
 
 

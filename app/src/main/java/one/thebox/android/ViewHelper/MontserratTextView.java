@@ -3,22 +3,13 @@ package one.thebox.android.ViewHelper;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import java.util.HashMap;
 
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
 
 
-public class MontserratTextView extends TextView {
+public class MontserratTextView extends AppCompatTextView {
 
     private Context context;
 

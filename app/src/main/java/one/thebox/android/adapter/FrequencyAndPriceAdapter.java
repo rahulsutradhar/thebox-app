@@ -1,17 +1,18 @@
 package one.thebox.android.adapter;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import io.realm.RealmList;
-import one.thebox.android.Models.ItemConfig;
+import one.thebox.android.Models.items.ItemConfig;
 import one.thebox.android.R;
-import one.thebox.android.app.MyApplication;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
+import one.thebox.android.app.TheBox;
 
-class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
+public class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
 
     private RealmList<ItemConfig> itemConfigs = new RealmList<>();
     private int currentSelectedPosition = 0;
@@ -36,7 +37,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return itemConfigs;
     }
 
-    protected void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
+    public void setItemConfigs(RealmList<ItemConfig> itemConfigs) {
         this.itemConfigs = itemConfigs;
     }
 
@@ -65,7 +66,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         ItemFrequencyViewHolder itemFrequencyViewHolder = (ItemFrequencyViewHolder) holder;
         itemFrequencyViewHolder.setView(itemConfigs.get(position));
 
-        if (itemConfigs.get(position).is_in_stock()) {
+        if (itemConfigs.get(position).isInStock()) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -114,7 +115,7 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         return 0;
     }
 
-    interface OnItemConfigChange {
+    public interface OnItemConfigChange {
         void onItemConfigItemChange(ItemConfig selectedItemConfig);
     }
 
@@ -131,27 +132,31 @@ class FrequencyAndPriceAdapter extends BaseRecyclerAdapter {
         }
 
         public void setView(ItemConfig itemConfig) {
-            if (quantity != 0){
-                textViewPrice.setText("Rs " + itemConfig.getPrice() * quantity);
-            } else {
-                textViewPrice.setText("Rs " + itemConfig.getPrice());
-            }
-            textViewSize.setText(itemConfig.getSubscriptionType());
+            try {
 
+                if (quantity != 0) {
+                    textViewPrice.setText(Constants.RUPEE_SYMBOL + " " + (itemConfig.getPrice() * quantity));
+                } else {
+                    textViewPrice.setText(Constants.RUPEE_SYMBOL + " " + itemConfig.getPrice());
+                }
+                textViewSize.setText(itemConfig.getSubscriptionText());
 
                 if (getAdapterPosition() == currentSelectedPosition) {
-                    textViewPrice.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.black));
-                    textViewSize.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.black));
-                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_small1));
-                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_small1));
+                    textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                    textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.black));
+                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
+                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_small1));
                     selector.setVisibility(View.VISIBLE);
                 } else {
-                    textViewSize.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.primary_text_color));
-                    textViewPrice.setTextColor(MyApplication.getInstance().getResources().getColor(R.color.primary_text_color));
-                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
-                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, MyApplication.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
+                    textViewSize.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
+                    textViewPrice.setTextColor(TheBox.getInstance().getResources().getColor(R.color.md_grey_600));
+                    textViewPrice.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
+                    textViewSize.setTextSize(TypedValue.COMPLEX_UNIT_PX, TheBox.getInstance().getResources().getDimension(R.dimen.text_extra_small3));
                     selector.setVisibility(View.INVISIBLE);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
         }

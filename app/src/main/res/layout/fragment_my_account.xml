@@ -1,6 +1,4 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -114,98 +112,54 @@
                         android:id="@+id/button_show_all_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Show All"
-                        android:textColor="@color/red_orange"
-                        android:textSize="14dp"
-                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true" />
+                        android:layout_alignParentTop="true"
+                        android:padding="16dp"
+                        android:text="Add Address"
+                        android:textColor="@color/red_orange"
+                        android:textSize="14dp" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/button_edit_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Address"
-                        android:textColor="@color/manatee"
-                        android:textSize="18dp"
-                        android:id="@+id/montserratTextView"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
+                        android:padding="16dp"
+                        android:text="Edit Address"
+                        android:textColor="@color/red_orange"
+                        android:textSize="14dp" />
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/montserratTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
                         android:layout_toLeftOf="@+id/button_show_all_address"
-                        android:layout_toStartOf="@+id/button_show_all_address" />
+                        android:layout_toStartOf="@+id/button_show_all_address"
+                        android:text="Address"
+                        android:textColor="@color/manatee"
+                        android:textSize="18dp" />
 
                     <one.thebox.android.ViewHelper.MontserratTextView
                         android:id="@+id/address_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="c2603, Oberoi splendor, JVLR"
-                        android:textColor="@color/primary_text_color"
-                        android:layout_below="@+id/montserratTextView"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
+                        android:layout_below="@+id/montserratTextView"
                         android:layout_toLeftOf="@+id/button_show_all_address"
-                        android:layout_toStartOf="@+id/button_show_all_address" />
+                        android:layout_toStartOf="@+id/button_show_all_address"
+                        android:text=""
+                        android:textColor="@color/primary_text_color" />
                 </RelativeLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@color/primary_text_color" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Orders"
-                            android:textColor="@color/manatee"
-                            android:textSize="18dp" />
-
-                        <one.thebox.android.ViewHelper.MontserratTextView
-                            android:id="@+id/button_show_all_orders"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/grey_borders"
-                            android:paddingBottom="4dp"
-                            android:paddingLeft="20dp"
-                            android:paddingRight="20dp"
-                            android:paddingTop="4dp"
-                            android:text="Show All"
-                            android:textColor="@color/primary_dark"
-                            android:textSize="14dp" />
-
-                    </LinearLayout>
-
-                    <one.thebox.android.ViewHelper.MontserratTextView
-                        android:id="@+id/last_order_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Last Box Deliver on 10th Feb 2016"
-                        android:textColor="@color/primary_text_color" />
-                </LinearLayout>
-            </LinearLayout>
 
             <one.thebox.android.ViewHelper.MontserratTextView
                 android:id="@+id/button_sign_out"
@@ -220,23 +174,12 @@
                 android:paddingRight="32dp"
                 android:paddingTop="8dp"
                 android:text="@string/sign_out"
-                android:textSize="@dimen/text_large1"
-                android:textColor="@color/primary_text_color" />
+                android:textColor="@color/primary_text_color"
+                android:textSize="@dimen/text_large1" />
 
 
         </LinearLayout>
 
     </ScrollView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:visibility="gone"
-        app:backgroundTint="@color/primary"
-        app:layout_anchorGravity="bottom|right|end" />
-
 
 </FrameLayout>

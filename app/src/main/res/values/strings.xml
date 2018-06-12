@@ -1,92 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-  <!-- App strings-->
-  <string name="app_name">The Box</string>
-  <!-- Account Authenticator, Content Provider -->
-  <string name="account_type">one.thebox.android.account</string>
-  <string name="authority">one.thebox.android.provider</string>
-  <string name="auth_token_type">User Access</string>
-  <!-- Hello world-->
-  <string name="hello_world">Hello world!</string>
-  <!-- Activiy title-->
-  <string name="action_settings">Settings</string>
-  <string name="title_activity_login">Login Activity</string>
-  <!-- Navigation strings-->
-  <string name="closeDrawer">Navigation View</string>
-  <string name="openDrawer">Navigation View Closed</string>
-  <!-- Message strings -->
-  <string name="logout_message">You\'ve been signed out. Please sign in again!</string>
-  <string name="shahnaz_beauty_box_b">Shahnaz Beauty Box by shahnaz khan</string>
-  <string name="on_boarding_activity">OnBoardingActivity</string>
-  <string name="view_items">View Items</string>
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="adjust">Reschedule</string>
-  <string name="change_button">
+    <!-- Account Authenticator, Content Provider -->
+    <string name="account_type">one.thebox.android.account</string>
+    <string name="authority">one.thebox.android.provider</string>
+    <string name="auth_token_type">User Access</string>
+    <!-- Hello world-->
+    <string name="hello_world">Hello world!</string>
+    <!-- Activiy title-->
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">Login Activity</string>
+    <!-- Navigation strings-->
+    <string name="closeDrawer">Navigation View</string>
+    <string name="openDrawer">Navigation View Closed</string>
+    <!-- Message strings -->
+    <string name="logout_message">You\'ve been signed out. Please sign in again!</string>
+    <string name="shahnaz_beauty_box_b">Shahnaz Beauty Box by shahnaz khan</string>
+    <string name="on_boarding_activity">OnBoardingActivity</string>
+    <string name="view_items">View Items</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="adjust">Reschedule</string>
+    <string name="change_button">
     <b>
       <u>Select</u>
     </b>
   </string>
-  <string name="select_button">
+    <string name="select_button">
     <b>
       <u>Change</u>
     </b>
   </string>
-  <string name="hello_blank_fragment">Hello blank fragment</string>
-  <string name="change_size">Change Size</string>
-  <string name="change_quantity">Change Quantity</string>
-  <string name="change_frequency">Change Frequency</string>
-  <string name="swap_with_similar_product">Swap with Similar Product</string>
-  <string name="delay_delivery">Delay Delivery</string>
-  <string name="app_label">explore</string>
-  <string name="subscribe">
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="change_size">Change Size</string>
+    <string name="change_quantity">Change Quantity</string>
+    <string name="change_frequency">Change Frequency</string>
+    <string name="swap_with_similar_product">Swap with Similar Product</string>
+    <string name="delay_delivery">Delay Delivery</string>
+    <string name="app_label">explore</string>
+    <string name="subscribe">
     <b>Subscribe</b>
   </string>
-  <string name="out_of_stock">
+    <string name="out_of_stock">
     <b>Out of Stock</b>
   </string>
-  <string name="search_hint">Search</string>
-  <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
-  <string name="no_connection_error">No internet Connection</string>
-  <string name="tap_to_retry">Tap to retry</string>
-  <string name="sign_out">Sign out</string>
-  <string name="enter_details">
+    <string name="skip">
+    <b>Skip</b>
+  </string>
+    <string name="merge">
+    <b>Merge</b>
+  </string>
+    <string name="search_hint">Search</string>
+    <string name="acra_app_id">bca81005f9c943c4ac8f63f58ed56485</string>
+    <string name="no_connection_error">No internet Connection</string>
+    <string name="tap_to_retry">Tap to retry</string>
+    <string name="sign_out">Sign out</string>
+    <string name="enter_details">
     <u>Enter Details</u>
   </string>
-  <!-- Announcement String -->
-  <string name="useritem_quantity_change_from_box_title">Hey</string>
-  <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
-  <string name="useritem_quantity_change_from_box_agree_button">Change for all</string>
-  <string name="useritem_quantity_change_from_box_disagree_button">Choose Delivery</string>
-  <string name="add_more_items">Add Items</string>
-  <string name="explore">Explore</string>
-  <string name="calendar">Calendar</string>
-  <string name="total_items_heading">Items in My Box:</string>
-  <string name="monthly_spend_heading">Monthly Spend:</string>
-  <string name="my_summary">My Summary:</string>
-  <string name="total_items_no">20 items</string>
-  <string name="total_monthly_spend_no">Rs 200</string>
-  <string name="empty_my_items_header">Missed Something in the Breakfast Today?</string>
-  <string name="no_orders_yet">No Deliveries Scheduled Yet</string>
-  <string name="subscribe_and_forget">Subscribe and Forget</string>
-  <string name="never_run_out_hassle_free_delivery">Never Run Out. Hassle Free Delivery.</string>
-  <string name="only_operational_in_powai">We are currently only operational in Powai</string>
-  <string name="suggested_categories">Hey, Don\'t forget to pick these</string>
+
+    <!-- Announcement String -->
+    <string name="useritem_quantity_change_from_box_title">Hey</string>
+    <string name="useritem_quantity_change_from_box_content">This will change item quantity for all deliveries. You can also change quantity for specific delivery</string>
+    <string name="useritem_quantity_change_from_box_agree_button">Change for all</string>
+    <string name="useritem_quantity_change_from_box_disagree_button">Choose Delivery</string>
+    <string name="add_more_items">Add Items</string>
+    <string name="explore">Explore</string>
+    <string name="calendar">Calendar</string>
+    <string name="total_items_heading">Items in My Box:</string>
+    <string name="monthly_spend_heading">Monthly Spend:</string>
+    <string name="my_summary">My Summary:</string>
+    <string name="total_items_no">20 items</string>
+    <string name="total_monthly_spend_no">Rs 200</string>
+    <string name="empty_my_items_header">Missed Something in the Breakfast Today?</string>
+    <string name="no_orders_yet">No Deliveries Scheduled Yet</string>
+    <string name="subscribe_and_forget">Subscribe and Forget</string>
+    <string name="never_run_out_hassle_free_delivery">Never Run Out. Hassle Free Delivery.</string>
+    <string name="only_operational_in_powai">We are currently only operational in Powai</string>
+    <string name="suggested_categories">Hey, Don\'t forget to pick these</string>
+
     <string name="chat">Chat</string>
-  <string name="contact_support">Contact Support</string>
-  <string name="faq">FAQ</string>
-  <string name="faq_options">FAQ Options</string>
-  <!-- Sample DataUnits -->
-  <string name="sample_date">Sun 14 Feb, Wednesday</string>
-  <string name="sample_slot">10:00 A.M - 11:30 A.M</string>
-  <string name="contact_us">Talk to us</string>
-  <string name="reach_us_at">Reach us at</string>
-  <string name="support_thebox.one">support
-@thebox.one</string>
-  <string name="search_message">Looking it Up</string>
-  <string name="sample_text_arriving_in_x_days">Arriving in 10 days</string>
-  <string name="default_subtext_3">Never ever ever\nRUN OUT</string>
-  <string name="default_text_update_button">I want the new version</string>
-  <string name="default_subtext_2">We hope you enjoy the new version please update the app and</string>
-  <string name="default_title_app_update">We come bearing gifts</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="faq">FAQ</string>
+    <string name="faq_options">FAQ Options</string>
+    <string name="hotline_file_provider_authority">one.thebox.android.provider</string>
+
+    <!-- Sample DataUnits -->
+    <string name="sample_date">Sun 14 Feb, Wednesday</string>
+    <string name="sample_slot">Between 10:00 A.M - 11:30 A.M</string>
+    <string name="contact_us">Talk to us</string>
+    <string name="reach_us_at">Reach us at</string>
+    <string name="support_thebox.one">support@thebox.one</string>
+    <string name="search_message">Looking it Up</string>
+    <string name="sample_text_arriving_in_x_days">Arriving in 10 days</string>
+    <string name="default_subtext_3">Never ever ever\nRUN OUT</string>
+    <string name="default_text_update_button">I want the new version</string>
+    <string name="default_subtext_2">We hope you enjoy the new version please update the app and</string>
+    <string name="default_title_app_update">We come bearing gifts</string>
+
+    <!-- OnBoard Activity -->
+    <string name="get_started">GET STARTED</string>
+    <string name="gps_error">We cannot get your location. Please turn on your GPS.</string>
+
+    <!-- Address -->
+    <string name="hint_flat_house_office_number">Flat / House / Office No.</string>
+    <string name="hind_society">Society</string>
+    <string name="hint_street_office">Street / Office</string>
+
+    <!-- Edit Subscription -->
+    <string name="hint_edit_subscription_reschedule">Delay or request this item early.</string>
+    <string name="hint_edit_subscription_change_size">Choose new size or frequency (weekly, monthly etc.) for your subscription.</string>
+    <string name="hint_edit_subscription_cancel">Remove this item from your list of subscriptions.</string>
+
+    <!--Cart Service Description -->
+    <string name="cart_service_description">Maintain you cart item with our server.</string>
 </resources>
+
 

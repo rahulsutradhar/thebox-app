@@ -6,22 +6,22 @@
     android:gravity="center"
     android:orientation="vertical">
 
-     <one.thebox.android.ViewHelper.MontserratTextView
+    <TextView
+        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Select delivery day"
-        android:gravity="center_horizontal"
-        android:textColor="@color/primary_text_color"
+        android:layout_marginBottom="0dp"
         android:background="@color/light_white"
-        android:textSize="@dimen/text_medium1"/>
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:text="Select delivery day"
+        android:textColor="@color/primary_text_color"
+        android:textSize="@dimen/text_medium1" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_day"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        />
+        android:layout_gravity="center_vertical" />
 
 </LinearLayout>

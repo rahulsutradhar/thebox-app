@@ -25,7 +25,6 @@ import one.thebox.android.ViewHelper.Montserrat;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    boolean isLoginActivity = false;
     private Toolbar toolbar;
     private TextView toolbarTitle = null;
     private boolean hasTransparentTitle = false;
@@ -34,6 +33,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void closeActivityOnBackPress(boolean shouldCloseActivityOnBackPress) {
         this.shouldCloseActivityOnBackPress = true;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setVisible(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setVisible(false);
     }
 
     @Override
@@ -69,7 +81,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void setToolbarFont() {
-        if(toolbar!=null) {
+        if (toolbar != null) {
             for (int i = 0; i < toolbar.getChildCount(); ++i) {
                 View child = toolbar.getChildAt(i);
 
@@ -117,10 +129,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setStatusBarTranslucent(boolean makeTranslucent) {
-        if (makeTranslucent) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (makeTranslucent) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
         }
     }
 
@@ -129,13 +143,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setStatusBarColor(int color) {
-        Window window = getWindow();
-// clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-// finally change the color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            // clear FLAG_TRANSLUCENT_STATUS flag:
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            // finally change the color
             window.setStatusBarColor(color);
         }
     }
@@ -156,8 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return findViewById(android.R.id.content);
     }
 
-    public void setEditTextFocus(EditText searchEditText, boolean isFocused)
-    {
+    public void setEditTextFocus(EditText searchEditText, boolean isFocused) {
         searchEditText.setCursorVisible(isFocused);
         searchEditText.setFocusable(isFocused);
         searchEditText.setFocusableInTouchMode(isFocused);
@@ -165,7 +178,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             searchEditText.requestFocus();
         } else {
             InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS );
+            inputManager.hideSoftInputFromWindow(searchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
 }

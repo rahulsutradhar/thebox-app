@@ -1,0 +1,212 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="@drawable/ripple"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.6">
+
+                <ImageView
+                    android:id="@+id/product_image_view"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp">
+
+                <RelativeLayout
+                    android:id="@+id/holder_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="60dp">
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:text="Purifying Neem"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_small3" />
+
+                    <TextView
+                        android:id="@+id/product_brand"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/product_name"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="0dp"
+                        android:lines="1"
+                        android:text="Amul"
+                        android:textColor="@color/secondary_text_color"
+                        android:textSize="@dimen/text_extra_small3" />
+
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/frequency"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="3dp"
+                    android:lines="1"
+                    android:text="Repeats every two months"
+                    android:textColor="@color/secondary_text_color"
+                    android:textSize="@dimen/text_small1" />
+
+                <TextView
+                    android:id="@+id/config"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="55ml Tube"
+                    android:textColor="@color/bistre"
+                    android:textSize="@dimen/text_small1" />
+
+                <TextView
+                    android:id="@+id/price"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="3dp"
+                    android:lines="1"
+                    android:text="Rs 55"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_small3" />
+
+
+                <TextView
+                    android:id="@+id/savings_monthly"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="3dp"
+                    android:lines="1"
+                    android:text="Save rs 20 every month"
+                    android:textColor="@color/raspberry_red"
+                    android:textSize="@dimen/text_extra_small4" />
+
+                <LinearLayout
+                    android:id="@+id/layout_quantity_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/button_subtract"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/circular_drawable"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textColor="@color/primary_text_color"
+                        android:textSize="@dimen/text_small3" />
+
+
+                    <TextView
+                        android:id="@+id/no_of_item_selected"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:text="0"
+                        android:textColor="@color/davy_grey"
+                        android:textSize="@dimen/text_small3" />
+
+                    <TextView
+                        android:id="@+id/button_add"
+                        style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/circular_drawable"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="+"
+                        android:textColor="@color/primary_text_color"
+                        android:textSize="@dimen/text_small3" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/layout_item_paid"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:cardBackgroundColor="@color/md_green_500"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="4dp"
+        app:contentPaddingBottom="3dp"
+        app:contentPaddingTop="3dp">
+
+        <TextView
+            android:id="@+id/user_item_edit_button"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:gravity="center"
+            android:text="Paid"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_extra_small4" />
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

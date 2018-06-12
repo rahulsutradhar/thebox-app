@@ -1,27 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:background="@color/primary">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/header_title"
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="Reschedule"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_medium2"
+            android:textStyle="bold" />
+
+        <!--Delivery Dates -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/arriving_at_text"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:paddingBottom="3dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="0dp"
+                    android:text="Item is arriving in 4 days"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_small2" />
+
+                <TextView
+                    android:id="@+id/delivery_date_text"
+                    style="@style/AppTheme.Widget.Avenir.Next.Ltpro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:paddingBottom="2dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="0dp"
+                    android:text="Delivered on 11 March, Sunday"
+                    android:textColor="@color/primary_inverse_text_color"
+                    android:textSize="@dimen/text_extra_small2" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2">
+
+                <RelativeLayout
+                    android:id="@+id/holder_skip_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/green_background">
+
+                    <one.thebox.android.ViewHelper.MontserratTextView
+                        android:id="@+id/skip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="6dp"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginTop="6dp"
+                        android:padding="0dp"
+                        android:text="@string/skip"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_medium1"
+                        app:typeface="montserratSemiBold" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+        <!--  Bottom tabs-->
+
+        <LinearLayout
+            android:id="@+id/bottom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="5dp"
+                app:tabBackground="@color/primary"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="@color/md_green_500"
+                app:tabIndicatorHeight="5dp"
+                app:tabMaxWidth="0dp"
+                app:tabSelectedTextColor="@color/white"
+                app:tabTextAppearance="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                app:tabTextColor="@color/primary_inverse_text_color">
+
+            </android.support.design.widget.TabLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Loader -->
+
+    <RelativeLayout
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primary"
+        android:visibility="gone">
 
         <pl.droidsonroids.gif.GifImageView
             android:id="@+id/progress_bar"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_gravity="center"
-            android:padding="16dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:padding="8dp"
             android:src="@drawable/loader" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
-    </FrameLayout>
+    </RelativeLayout>
 
-</LinearLayout>
+
+</RelativeLayout>

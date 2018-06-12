@@ -1,35 +1,219 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_marginBottom="10dp"
+    android:background="@color/md_white_1000"
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/reschedule_delivery"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary">
+
+        <TextView
+            style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Edit Item Subscription"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+    <!-- Reschedule   -->
+    <LinearLayout
+        android:id="@+id/item_reschedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/md_listitem_vertical_margin_choice"
-        android:paddingBottom="@dimen/md_listitem_vertical_margin_choice"
-        android:textColor="@color/md_black_1000"
-        android:text="Reschedule"
-        android:drawableTop="@drawable/calendar"
-        android:drawablePadding="@dimen/margin_vertical_between_non_co_element"
-        android:background="@color/md_white_1000"
-        />
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp">
+        <!-- Layout Left -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4">
 
-    <Button
-        android:id="@+id/change_size"
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/calendar" />
+
+        </RelativeLayout>
+
+        <!-- Layout right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Header -->
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Reschedule"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+
+            <!-- Sub Header -->
+
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/hint_edit_subscription_reschedule"
+                android:textColor="@color/md_grey_600"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/divide_color" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Change Size -->
+    <LinearLayout
+        android:id="@+id/item_change_size"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/md_listitem_vertical_margin_choice"
-        android:paddingBottom="@dimen/md_listitem_vertical_margin_choice"
-        android:textColor="@color/md_black_1000"
-        android:text="Change Size"
-        android:drawableTop="@drawable/shuffle"
-        android:drawablePadding="@dimen/margin_vertical_between_non_co_element"
-        android:background="@color/md_white_1000"
-        />
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="4dp">
+        <!-- Layout Left -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_logo" />
+
+        </RelativeLayout>
+
+        <!-- Layout right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Header -->
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="Change Size and Frequency"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+
+            <!-- Sub Header -->
+
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/hint_edit_subscription_change_size"
+                android:textColor="@color/md_grey_600"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/divide_color" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <!-- Cancel subscription-->
+    <LinearLayout
+        android:id="@+id/item_cancel_subscription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp">
+        <!-- Layout Left -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_cancel_grey_36px" />
+
+        </RelativeLayout>
+
+        <!-- Layout right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingBottom="5dp">
+
+            <!-- Header -->
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Ltpro.Bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="Cancel Subscription"
+                android:textColor="@color/md_grey_600"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+
+
+            <!-- Sub Header -->
+
+            <TextView
+                style="@style/AppTheme.Widget.Avenir.Next.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/hint_edit_subscription_cancel"
+                android:textColor="@color/md_grey_500"
+                android:textSize="11sp"
+                android:textStyle="normal" />
+
+
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

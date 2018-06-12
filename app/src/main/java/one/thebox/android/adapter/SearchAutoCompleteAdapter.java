@@ -1,8 +1,9 @@
 package one.thebox.android.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.View;
@@ -10,9 +11,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import one.thebox.android.Models.SearchResult;
+import one.thebox.android.Models.search.SearchResult;
 import one.thebox.android.R;
 import one.thebox.android.activity.MainActivity;
+import one.thebox.android.adapter.base.BaseRecyclerAdapter;
+import one.thebox.android.app.Constants;
 import one.thebox.android.util.CoreGsonUtils;
 
 /**
@@ -22,14 +25,11 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     private ArrayList<SearchResult> searchResults = new ArrayList<>();
     private Context context;
+    private String searchQuery;
 
     public SearchAutoCompleteAdapter(Context context) {
         super(context);
         this.context = context;
-    }
-
-    public void addSearchResult(SearchResult searchResult) {
-        searchResults.add(searchResult);
     }
 
     public ArrayList<SearchResult> getSearchResults() {
@@ -38,6 +38,15 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     public void setSearchResults(ArrayList<SearchResult> searchResults) {
         this.searchResults = searchResults;
+        notifyDataSetChanged();
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
     }
 
     @Override
@@ -62,16 +71,20 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
 
     @Override
     public void onBindViewItemHolder(final ItemHolder holder, final int position) {
+
+        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+        itemViewHolder.setViews(searchResults.get(position), position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(new Intent(mContext, MainActivity.class)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_NO, 4)
-                        .putExtra(MainActivity.EXTRA_ATTACH_FRAGMENT_DATA, CoreGsonUtils.toJson(searchResults.get(position))));
+
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra(Constants.EXTRA_ATTACH_FRAGMENT_NO, 4);
+                intent.putExtra(Constants.EXTRA_SEARCH_RESULT_DATA, CoreGsonUtils.toJson(searchResults.get(position)));
+                ((Activity) mContext).setResult(1, intent);
+                ((Activity) mContext).finish();
             }
         });
-        ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-        itemViewHolder.setViews(searchResults.get(position));
     }
 
     @Override
@@ -125,14 +138,18 @@ public class SearchAutoCompleteAdapter extends BaseRecyclerAdapter {
             searchResultText = (TextView) itemView.findViewById(R.id.text_search_result);
         }
 
-        public void setViews(SearchResult searchResult) {
-            if (searchResult.getId() == 0) {
-                searchResultText.setText(searchResult.getResult());
-            } else {
-                searchResultText.setTextColor(context.getResources().getColor(R.color.md_green_800));
-                SpannableStringBuilder str = new SpannableStringBuilder("See All " + searchResult.getResult());
-                str.setSpan(new android.text.style.ForegroundColorSpan(context.getResources().getColor(R.color.light_grey)), 0, 7, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                searchResultText.setText(str);
+        public void setViews(SearchResult searchResult, int position) {
+            try {
+                if (searchResult.isCategory()) {
+                    searchResultText.setText(Html.fromHtml("<font color=\"#979797\">" + "See All " + "</font>" +
+                            "<font color=\"#4CAF50\">" + searchResult.getTitle() + "</font>"));
+                } else {
+                    searchResultText.setTextColor(context.getResources().getColor(R.color.davy_grey));
+                    searchResultText.setText(Html.fromHtml(searchResult.getTitle()));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
