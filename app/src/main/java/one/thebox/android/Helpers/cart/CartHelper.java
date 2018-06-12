@@ -226,7 +226,7 @@ public class CartHelper {
     }
 
     /**
-     * Clear Cart
+     * Clear Cartr
      */
     public static void clearCart(final boolean shallBroadCast) {
         Realm realm = TheBox.getRealm();

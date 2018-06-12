@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.PageIndicator;
+/*import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.PageIndicator;*/
 
 import one.thebox.android.R;
 import one.thebox.android.activity.RequestOtpActivity;
@@ -29,7 +29,7 @@ public class OnBoardSequenceContainerFragment extends FragmentBase {
     private OnBoardSequenceFragmentAdapter onBoardSequenceFragmentAdapter;
 
     private ViewPager viewPager;
-    private PageIndicator pageIndicator;
+    /*private PageIndicator pageIndicator;*/
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,8 +53,8 @@ public class OnBoardSequenceContainerFragment extends FragmentBase {
         viewPager = (ViewPager) getView().findViewById(R.id.pager);
         viewPager.setAdapter(onBoardSequenceFragmentAdapter);
 
-        pageIndicator = (CirclePageIndicator) getView().findViewById(R.id.indicator);
-        pageIndicator.setViewPager(viewPager);
+       /* pageIndicator = (CirclePageIndicator) getView().findViewById(R.id.indicator);
+        pageIndicator.setViewPager(viewPager);*/
 
         //move to signin Activity
         TextView getStartedButton = (TextView) getView().findViewById(R.id.button_get_started);

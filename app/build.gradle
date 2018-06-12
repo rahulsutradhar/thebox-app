@@ -209,7 +209,6 @@ dependencies {
     /**
      * ViewPagerIndicator
      */
-    compile 'com.mcxiaoke.viewpagerindicator:library:2.4.1@aar'
 
     /**
      * CleverTap Analytics

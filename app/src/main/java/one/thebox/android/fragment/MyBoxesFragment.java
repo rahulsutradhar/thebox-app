@@ -153,7 +153,6 @@ public class MyBoxesFragment extends Fragment implements AppBarObserver.OnOffset
             }
             subscriptions.clear();
             subscriptions.addAll(filteredItem);
-            setupRecyclerView();
         } else {
             setupEmptyStateView();
         }

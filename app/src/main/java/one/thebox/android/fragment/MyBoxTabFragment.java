@@ -94,7 +94,8 @@ public class MyBoxTabFragment extends Fragment {
             listTitle.add("Deliveries");
 
 
-            ViewPagerAdapterHome adapter = new ViewPagerAdapterHome(getActivity().getSupportFragmentManager(), getActivity(), listTitle);
+            ViewPagerAdapterHome adapter = new ViewPagerAdapterHome(getActivity().getSupportFragmentManager(),
+                    getActivity(), listTitle);
             Bundle args = new Bundle();
             args.putBoolean("show_loader", show_loader);
 

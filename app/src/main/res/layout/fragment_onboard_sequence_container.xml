@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="56dp" />
 
-        <com.viewpagerindicator.CirclePageIndicator
+       <!-- <com.viewpagerindicator.CirclePageIndicator
             android:id="@+id/indicator"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             app:pageColor="@color/md_green_100"
             app:radius="4dp"
             app:strokeColor="@color/md_green_500"
-            app:strokeWidth="0dp" />
+            app:strokeWidth="0dp" />-->
 
     </RelativeLayout>
 

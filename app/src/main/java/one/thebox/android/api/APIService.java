@@ -87,7 +87,8 @@ public interface APIService {
      * Update GCM Token
      */
     @POST("consumer/api/v1/users/device")
-    Call<DeviceTokenResponse> storeGcmRegistrationToken(@Header("Authorization") String accessToken, @Body RegistrationIdRequestBody registrationIdRequestBody);
+    Call<DeviceTokenResponse> storeGcmRegistrationToken(@Header("Authorization") String accessToken,
+                                                        @Body RegistrationIdRequestBody registrationIdRequestBody);
 
     /**
      * User Setting API
